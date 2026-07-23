@@ -1,5 +1,8 @@
 extends Node2D
 
+const WORKBENCH_TEXTURE := preload("res://assets/concepts/clerk-desk.png")
+const VALIDATION_TEXTURE := preload("res://assets/concepts/validation-machine.png")
+
 const CASES := [
 	{
 		"department": "第十二区居住配置处",
@@ -26,7 +29,8 @@ const CASES := [
 
 var case_index := 0
 var form: Panel
-var form_home := Vector2(420, 166)
+var form_home := Vector2(435, 252)
+var form_base_scale := Vector2(0.86, 0.86)
 var dragging_form := false
 var form_drag_offset := Vector2.ZERO
 var form_stamped := false
@@ -35,6 +39,9 @@ var stamp_mark: Label
 var status_label: Label
 var slot: Panel
 var slot_light: ColorRect
+var applicant_card_label: Label
+var validation_overlay: Control
+var validation_image: TextureRect
 var parallax_layers: Array[Control] = []
 var stamp_tools: Array[Panel] = []
 
@@ -90,77 +97,91 @@ func add_text(parent: Node, text: String, size: int, color: Color, position: Vec
 
 
 func build_scene() -> void:
-	var backdrop := ColorRect.new()
-	backdrop.name = "OfficeBackdrop"
-	backdrop.color = colors.wall
+	var backdrop := TextureRect.new()
+	backdrop.name = "ClerkDeskConcept"
+	backdrop.texture = WORKBENCH_TEXTURE
 	backdrop.position = Vector2.ZERO
 	backdrop.size = Vector2(1280, 720)
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(backdrop)
 
-	var upper_wall := ColorRect.new()
-	upper_wall.color = colors.wall_mid
-	upper_wall.position = Vector2(0, 0)
-	upper_wall.size = Vector2(1280, 280)
-	upper_wall.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	backdrop.add_child(upper_wall)
-	parallax_layers.append(upper_wall)
+	var vignette := ColorRect.new()
+	vignette.name = "InteractionContrast"
+	vignette.color = Color(0.04, 0.045, 0.04, 0.18)
+	vignette.position = Vector2.ZERO
+	vignette.size = Vector2(1280, 720)
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(vignette)
 
-	var title := add_text(upper_wall, "中央现实管理局 · 第十二区", 20, Color("9aa398"), Vector2(42, 28), Vector2(520, 30))
-	title.add_theme_constant_override("outline_size", 4)
-	title.add_theme_color_override("font_outline_color", colors.wall)
-
-	var terminal := Panel.new()
-	terminal.name = "ApplicantTerminal"
-	terminal.position = Vector2(42, 84)
-	terminal.size = Vector2(290, 205)
-	terminal.add_theme_stylebox_override("panel", style_box(Color("111816"), 8, colors.brass, 3))
-	upper_wall.add_child(terminal)
-	parallax_layers.append(terminal)
-	add_text(terminal, "申请人通信终端", 15, colors.green_glow, Vector2(18, 14), Vector2(240, 25))
-	add_text(terminal, "信号已建立\n身份影像：受限\n语音记录：等待调阅", 17, colors.green, Vector2(18, 58), Vector2(250, 110))
+	var case_card := Panel.new()
+	case_card.name = "ApplicantCard"
+	case_card.position = Vector2(1010, 350)
+	case_card.size = Vector2(235, 112)
+	case_card.add_theme_stylebox_override("panel", style_box(Color(0.08, 0.075, 0.06, 0.94), 4, colors.brass, 2))
+	add_child(case_card)
+	add_text(case_card, "当前申请人档案", 12, Color("b9aa88"), Vector2(14, 10), Vector2(200, 20))
+	applicant_card_label = add_text(case_card, "", 14, Color("ddd0ac"), Vector2(14, 35), Vector2(207, 67))
 
 	slot = Panel.new()
 	slot.name = "RealityValidationSlot"
-	slot.position = Vector2(932, 62)
-	slot.size = Vector2(300, 170)
-	slot.add_theme_stylebox_override("panel", style_box(Color("101312"), 4, colors.brass, 3))
-	upper_wall.add_child(slot)
-	parallax_layers.append(slot)
-	add_text(slot, "现实验收设施 / 接收口", 15, Color("bab09a"), Vector2(18, 14), Vector2(250, 25))
+	slot.position = Vector2(1010, 475)
+	slot.size = Vector2(235, 92)
+	slot.add_theme_stylebox_override("panel", style_box(Color(0.035, 0.035, 0.03, 0.96), 5, colors.brass, 3))
+	add_child(slot)
+	add_text(slot, "送交中央现实验收", 15, Color("d0c09b"), Vector2(16, 11), Vector2(190, 22))
 	var opening := ColorRect.new()
-	opening.color = Color("050606")
-	opening.position = Vector2(28, 72)
-	opening.size = Vector2(244, 30)
+	opening.color = Color("030303")
+	opening.position = Vector2(16, 47)
+	opening.size = Vector2(202, 20)
 	opening.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(opening)
 	slot_light = ColorRect.new()
 	slot_light.color = colors.red
-	slot_light.position = Vector2(258, 18)
-	slot_light.size = Vector2(14, 14)
+	slot_light.position = Vector2(207, 13)
+	slot_light.size = Vector2(10, 10)
 	slot_light.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(slot_light)
-	add_text(slot, "仅接收已完成形式处理之材料", 12, Color("766e60"), Vector2(28, 118), Vector2(250, 22))
 
-	var desk_shadow := Polygon2D.new()
-	desk_shadow.polygon = PackedVector2Array([Vector2(20, 302), Vector2(1260, 302), Vector2(1280, 720), Vector2(0, 720)])
-	desk_shadow.color = colors.desk_edge
-	add_child(desk_shadow)
-	var desk := Polygon2D.new()
-	desk.name = "DeskPerspective"
-	desk.polygon = PackedVector2Array([Vector2(70, 320), Vector2(1210, 320), Vector2(1280, 690), Vector2(0, 690)])
-	desk.color = colors.desk
-	add_child(desk)
+	var status_back := Panel.new()
+	status_back.position = Vector2(370, 680)
+	status_back.size = Vector2(540, 34)
+	status_back.add_theme_stylebox_override("panel", style_box(Color(0.04, 0.035, 0.025, 0.92), 4, colors.brass, 1))
+	add_child(status_back)
+	status_label = add_text(status_back, "请完成申请的形式处理。", 14, Color("d8c9a9"), Vector2(14, 6), Vector2(510, 22))
+	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	var blotter := Polygon2D.new()
-	blotter.polygon = PackedVector2Array([Vector2(310, 350), Vector2(930, 350), Vector2(1015, 690), Vector2(230, 690)])
-	blotter.color = Color("28322d")
-	add_child(blotter)
+	create_stamp_tool("批准", colors.green, Vector2(275, 535))
+	create_stamp_tool("驳回", colors.red, Vector2(900, 535))
+	create_validation_overlay()
 
-	status_label = add_text(self, "请完成申请的形式处理。", 16, Color("c7bda5"), Vector2(32, 680), Vector2(760, 28))
 
-	create_stamp_tool("批准", colors.green, Vector2(1030, 440))
-	create_stamp_tool("驳回", colors.red, Vector2(1135, 510))
+func create_validation_overlay() -> void:
+	validation_overlay = Control.new()
+	validation_overlay.name = "ValidationTransition"
+	validation_overlay.position = Vector2.ZERO
+	validation_overlay.size = Vector2(1280, 720)
+	validation_overlay.z_index = 100
+	validation_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	validation_overlay.visible = false
+	add_child(validation_overlay)
+	validation_image = TextureRect.new()
+	validation_image.texture = VALIDATION_TEXTURE
+	validation_image.size = Vector2(1280, 720)
+	validation_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	validation_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	validation_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	validation_overlay.add_child(validation_image)
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, 0.2)
+	shade.size = Vector2(1280, 720)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	validation_overlay.add_child(shade)
+	var receipt := add_text(validation_overlay, "现实效力请求已进入设施队列", 24, Color("e1d3b0"), Vector2(370, 646), Vector2(540, 42))
+	receipt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	receipt.add_theme_constant_override("outline_size", 6)
+	receipt.add_theme_color_override("font_outline_color", Color("16120e"))
 
 
 func create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
@@ -232,11 +253,13 @@ func create_case() -> void:
 	form_stamped = false
 	form_stamp_type = ""
 	var data: Dictionary = CASES[case_index % CASES.size()]
+	applicant_card_label.text = "%s\n%s\n%s" % [data.applicant, data.code, data.department]
 	form = Panel.new()
 	form.name = "ApplicationForm"
 	form.position = form_home
 	form.size = Vector2(485, 475)
 	form.pivot_offset = form.size / 2.0
+	form.scale = form_base_scale
 	form.add_theme_stylebox_override("panel", style_box(colors.paper, 2, Color("786f58"), 2))
 	form.gui_input.connect(_on_form_input)
 	add_child(form)
@@ -289,13 +312,13 @@ func _on_form_input(event: InputEvent) -> void:
 			form_drag_offset = event.position
 			form.z_index = 10
 			var tween := create_tween().set_parallel(true)
-			tween.tween_property(form, "scale", Vector2(1.025, 1.025), 0.1)
+			tween.tween_property(form, "scale", form_base_scale * 1.035, 0.1)
 			tween.tween_property(form, "rotation", -0.012, 0.1)
 		else:
 			dragging_form = false
 			form.z_index = 5
 			var tween := create_tween().set_parallel(true)
-			tween.tween_property(form, "scale", Vector2.ONE, 0.12)
+			tween.tween_property(form, "scale", form_base_scale, 0.12)
 			tween.tween_property(form, "rotation", 0.0, 0.12)
 			if form.get_global_rect().intersects(slot.get_global_rect()):
 				submit_form()
@@ -338,18 +361,34 @@ func submit_form() -> void:
 	tween.tween_property(form, "global_position", target, 0.55)
 	tween.tween_property(form, "scale", Vector2(0.28, 0.06), 0.55)
 	tween.tween_property(form, "modulate:a", 0.0, 0.5).set_delay(0.18)
-	tween.finished.connect(next_case)
+	tween.finished.connect(show_validation_transition)
+
+
+func show_validation_transition() -> void:
+	validation_overlay.visible = true
+	validation_overlay.modulate.a = 0.0
+	validation_image.scale = Vector2(1.035, 1.035)
+	validation_image.pivot_offset = validation_image.size / 2.0
+	var fade_in := create_tween().set_parallel(true)
+	fade_in.tween_property(validation_overlay, "modulate:a", 1.0, 0.28)
+	fade_in.tween_property(validation_image, "scale", Vector2.ONE, 1.4)
+	await get_tree().create_timer(1.35).timeout
+	var fade_out := create_tween()
+	fade_out.tween_property(validation_overlay, "modulate:a", 0.0, 0.32)
+	await fade_out.finished
+	validation_overlay.visible = false
+	next_case()
 
 
 func next_case() -> void:
 	case_index = (case_index + 1) % CASES.size()
-	await get_tree().create_timer(0.45).timeout
+	await get_tree().create_timer(0.18).timeout
 	create_case()
 	form.modulate.a = 0.0
-	form.scale = Vector2(0.92, 0.92)
+	form.scale = form_base_scale * 0.92
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(form, "modulate:a", 1.0, 0.25)
-	tween.tween_property(form, "scale", Vector2.ONE, 0.3)
+	tween.tween_property(form, "scale", form_base_scale, 0.3)
 	status_label.text = "下一件申请已送达。"
 
 
