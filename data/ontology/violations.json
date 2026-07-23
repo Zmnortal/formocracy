@@ -1,0 +1,5 @@
+[
+  {"id":"VIOLATION-MISSING-DOCUMENT","name":"必需材料缺失","severity":"procedural"},
+  {"id":"VIOLATION-ADDRESS-MISMATCH","name":"地址记录不一致","severity":"substantive"},
+  {"id":"VIOLATION-EXPIRED","name":"证明已过有效期","severity":"substantive"}
+]

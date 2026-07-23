@@ -1,0 +1,5 @@
+[
+  {"id":"CONSEQUENCE-CORRECT","performance":30,"fine":0,"political_credit":1,"delay_days":0},
+  {"id":"CONSEQUENCE-WRONG","performance":0,"fine":80,"political_credit":-2,"delay_days":0},
+  {"id":"CONSEQUENCE-DELAYED","performance":0,"fine":120,"political_credit":-3,"delay_days":2}
+]

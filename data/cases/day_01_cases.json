@@ -1,0 +1,35 @@
+[
+  {
+    "id":"CASE-001","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/住房用途变更申请",
+    "document_ids":["DOC-APP-001","DOC-ID-001","DOC-RESIDENCE-001","DOC-DECLARATION-001"],
+    "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION"],
+    "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"DOC-APP-001","document_type_id":"DOCTYPE-APPLICATION","title":"共同居住申请表","fields":{"request":"将单人居住配额变更为二人共同配额","address":"第十二区 17-4"}},
+      {"id":"DOC-ID-001","document_type_id":"DOCTYPE-IDENTITY","title":"身份记录","fields":{"name":"林默","address":"第十二区 17-4"}},
+      {"id":"DOC-RESIDENCE-001","document_type_id":"DOCTYPE-RESIDENCE","title":"居住证明","fields":{"address":"第十二区 17-4","valid":true}},
+      {"id":"DOC-DECLARATION-001","document_type_id":"DOCTYPE-DECLARATION","title":"共同居住人知情声明","fields":{"signed":true}}
+    ]
+  },
+  {
+    "id":"CASE-002","person_id":"PERSON-ZHOU","purpose_id":"PURPOSE-WATER","form_code":"W-08/饮水额度临时调整",
+    "document_ids":["DOC-APP-002","DOC-ID-002","DOC-RESIDENCE-002"],
+    "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE"],
+    "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"DOC-APP-002","document_type_id":"DOCTYPE-APPLICATION","title":"饮水额度申请表","fields":{"request":"因家庭照护临时提高净水领取额度"}},
+      {"id":"DOC-ID-002","document_type_id":"DOCTYPE-IDENTITY","title":"身份记录","fields":{"name":"周循","address":"第十二区 5-8"}},
+      {"id":"DOC-RESIDENCE-002","document_type_id":"DOCTYPE-RESIDENCE","title":"居住证明","fields":{"address":"第十二区 9-1","valid":true}}
+    ]
+  },
+  {
+    "id":"CASE-003","person_id":"PERSON-XU","purpose_id":"PURPOSE-MEDICAL","form_code":"M-31/非计划医疗通行申请",
+    "document_ids":["DOC-APP-003","DOC-MEDICAL-003"],
+    "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-MEDICAL"],
+    "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-NOT-EXPIRED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"DOC-APP-003","document_type_id":"DOCTYPE-APPLICATION","title":"医疗通行申请表","fields":{"request":"限制时段前往第五诊疗站复查"}},
+      {"id":"DOC-MEDICAL-003","document_type_id":"DOCTYPE-MEDICAL","title":"诊疗站回执","fields":{"station":"第五诊疗站","valid":false}}
+    ]
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "id":"WORKDAY-001","day_number":1,"duration_seconds":180,"case_ids":["CASE-001","CASE-002","CASE-003"],
+  "base_salary":180,"living_expenses":{"rent":70,"food":35,"family":25},
+  "report_title":"工作日处理回执 / 第 1 日","finish_current_case_after_timeout":true
+}

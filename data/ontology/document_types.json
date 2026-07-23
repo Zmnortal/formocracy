@@ -1,0 +1,7 @@
+[
+  {"id":"DOCTYPE-APPLICATION","name":"事项申请表","is_primary":true},
+  {"id":"DOCTYPE-IDENTITY","name":"身份记录","is_primary":false},
+  {"id":"DOCTYPE-RESIDENCE","name":"居住证明","is_primary":false},
+  {"id":"DOCTYPE-DECLARATION","name":"知情声明","is_primary":false},
+  {"id":"DOCTYPE-MEDICAL","name":"诊疗站回执","is_primary":false}
+]

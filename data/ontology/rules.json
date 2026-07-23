@@ -1,0 +1,5 @@
+[
+  {"id":"RULE-REQUIRED-DOCUMENTS","kind":"required_documents","violation_id":"VIOLATION-MISSING-DOCUMENT","required":true},
+  {"id":"RULE-ADDRESS-MATCH","kind":"fields_equal","left":"DOCTYPE-IDENTITY.address","right":"DOCTYPE-RESIDENCE.address","violation_id":"VIOLATION-ADDRESS-MISMATCH","required":true},
+  {"id":"RULE-NOT-EXPIRED","kind":"field_equals","field":"DOCTYPE-MEDICAL.valid","value":true,"violation_id":"VIOLATION-EXPIRED","required":true}
+]
