@@ -28,7 +28,7 @@ developer_console_enabled=true
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/mode=3
+window/size/mode=0
 window/stretch/mode="disabled"
 
 [physics]
