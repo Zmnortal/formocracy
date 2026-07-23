@@ -1,0 +1,18 @@
+{
+  "pack": "formocracy_day1_8bit",
+  "logical_viewport": [320, 180],
+  "filter": "nearest",
+  "assets": [
+    { "id": "office_validation_room", "file": "background/office_validation_room.png", "role": "background", "interactive": false },
+    { "id": "applicant_terminal", "file": "interactive/applicant_terminal.png", "role": "applicant_chat", "interactive": true, "anchor": "bottom_left" },
+    { "id": "water_request_form", "file": "interactive/water_request_form.png", "role": "primary_form", "interactive": true, "anchor": "center" },
+    { "id": "water_regulation_handbook", "file": "interactive/water_regulation_handbook.png", "role": "rules", "interactive": true, "anchor": "bottom_right" },
+    { "id": "citizen_id", "file": "interactive/citizen_id.png", "role": "evidence", "interactive": true, "anchor": "center" },
+    { "id": "attachments_stack", "file": "interactive/attachments_stack.png", "role": "evidence", "interactive": true, "anchor": "center" },
+    { "id": "return_stamp", "file": "interactive/return_stamp.png", "role": "decision_return", "interactive": true, "anchor": "bottom_center" },
+    { "id": "approve_stamp", "file": "interactive/approve_stamp.png", "role": "decision_approve", "interactive": true, "anchor": "bottom_center" },
+    { "id": "secretary_note", "file": "interactive/secretary_note.png", "role": "secretary_guidance", "interactive": true, "anchor": "bottom_right" },
+    { "id": "candidate_rack", "file": "interactive/candidate_rack.png", "role": "approved_queue", "interactive": true, "anchor": "top_center" },
+    { "id": "validation_machine", "file": "interactive/validation_machine.png", "role": "optional_animated_machine", "interactive": true, "anchor": "bottom_center" }
+  ]
+}

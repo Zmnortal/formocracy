@@ -16,7 +16,8 @@ func run() -> void:
 	root.add_child(console)
 	await process_frame
 	assert(console.dev_button != null, "DEV button must be created")
-	assert(console.scene_selector.item_count == 3, "scene selector must expose three scenes")
+	assert(console.scene_selector.item_count == 4, "scene selector must expose opening plus three development scenes")
+	assert(console.scene_selector.get_item_metadata(0) == "res://scenes/opening.tscn", "opening scene must be selectable")
 	console.toggle_console()
 	assert(console.is_open and console.blocker.visible, "console must open")
 	console.fill_test_records("mixed")

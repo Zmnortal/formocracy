@@ -1,7 +1,9 @@
 extends Node2D
 
-const WORKBENCH_TEXTURE := preload("res://assets/concepts/clerk-desk.png")
-const VALIDATION_TEXTURE := preload("res://assets/concepts/validation-machine.png")
+const WORKBENCH_TEXTURE := preload("res://assets/day1_8bit/background/office_validation_room.png")
+const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
+const APPROVE_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/approve_stamp.png")
+const RETURN_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/return_stamp.png")
 
 const CASES := [
 	{
@@ -152,8 +154,8 @@ func build_scene() -> void:
 	status_label = add_text(status_back, "请完成申请的形式处理。", 14, Color("d8c9a9"), Vector2(14, 6), Vector2(510, 22))
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	create_stamp_tool("批准", colors.green, Vector2(275, 535))
-	create_stamp_tool("驳回", colors.red, Vector2(900, 535))
+	create_stamp_tool("批准", colors.green, Vector2(850, 565))
+	create_stamp_tool("驳回", colors.red, Vector2(945, 565))
 	create_validation_overlay()
 
 
@@ -168,9 +170,10 @@ func create_validation_overlay() -> void:
 	add_child(validation_overlay)
 	validation_image = TextureRect.new()
 	validation_image.texture = VALIDATION_TEXTURE
-	validation_image.size = Vector2(1280, 720)
+	validation_image.position = Vector2(425, 95)
+	validation_image.size = Vector2(430, 470)
 	validation_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	validation_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	validation_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	validation_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	validation_overlay.add_child(validation_image)
 	var shade := ColorRect.new()
@@ -192,26 +195,17 @@ func create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 	tool.set_meta("home", at)
 	tool.set_meta("kind", kind)
 	tool.set_meta("dragging", false)
-	tool.add_theme_stylebox_override("panel", style_box(Color("28221c"), 10, colors.brass, 3))
+	tool.add_theme_stylebox_override("panel", style_box(Color(0, 0, 0, 0), 0))
 	add_child(tool)
 	stamp_tools.append(tool)
-	var handle := ColorRect.new()
-	handle.color = Color("6c573c")
-	handle.position = Vector2(34, 8)
-	handle.size = Vector2(36, 34)
-	handle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tool.add_child(handle)
-	var face := Label.new()
-	face.text = kind
-	face.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	face.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	face.position = Vector2(10, 47)
-	face.size = Vector2(84, 34)
-	face.add_theme_font_size_override("font_size", 20)
-	face.add_theme_color_override("font_color", color)
-	face.add_theme_stylebox_override("normal", style_box(Color("d0c3a1"), 2, color, 3))
-	face.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tool.add_child(face)
+	var stamp_image := TextureRect.new()
+	stamp_image.texture = APPROVE_STAMP_TEXTURE if kind == "批准" else RETURN_STAMP_TEXTURE
+	stamp_image.position = Vector2(-18, -20)
+	stamp_image.size = Vector2(140, 132)
+	stamp_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	stamp_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	stamp_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tool.add_child(stamp_image)
 	tool.gui_input.connect(_on_stamp_input.bind(tool))
 
 
