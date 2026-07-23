@@ -1,6 +1,7 @@
 extends Node2D
 
-const WORKBENCH_TEXTURE := preload("res://assets/day1_8bit/background/office_validation_room.png")
+# The opening slideshow's configured final image is also the day-one gameplay plate.
+const WORKBENCH_TEXTURE := preload("res://assets/opening/opening-03-day-one-reveal-8bit-v1.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
 const APPROVE_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/approve_stamp.png")
@@ -24,6 +25,20 @@ var validation_overlay: Control
 var validation_image: TextureRect
 var parallax_layers: Array[Control] = []
 var stamp_tools: Array[Panel] = []
+var envelope: Panel
+var envelope_opened := false
+var envelope_on_desk := false
+var envelope_dragging := false
+var envelope_home := Vector2(94, 470)
+var document_panels: Array[Panel] = []
+var packed_document_ids: Array[String] = []
+var npc_panel: Panel
+var queue_label: Label
+var timer_label: Label
+var case_started_at := 0.0
+var accepting_new_cases := true
+var primary_document_id := ""
+var gameplay_state := "NPC_ENTERING"
 
 var colors := {
 	"wall": Color("171b1a"),
@@ -45,8 +60,8 @@ var colors := {
 func _ready() -> void:
 	OpeningMusic.stop_opening(1.2)
 	build_scene()
-	LevelDirector.ensure_active_level()
-	current_case = LevelDirector.get_next_case()
+	LevelDirector.start_gameplay_workday()
+	current_case = LevelDirector.get_next_gameplay_case()
 	create_case()
 	for layer in parallax_layers:
 		layer.set_meta("base_position", layer.position)
@@ -148,7 +163,21 @@ func build_scene() -> void:
 
 	create_stamp_tool("批准", colors.green, Vector2(850, 565))
 	create_stamp_tool("驳回", colors.red, Vector2(945, 565))
+	create_queue_display()
 	create_validation_overlay()
+
+
+func create_queue_display() -> void:
+	npc_panel = Panel.new()
+	npc_panel.name = "NpcWindow"
+	npc_panel.position = Vector2(36, 80)
+	npc_panel.size = Vector2(260, 170)
+	npc_panel.add_theme_stylebox_override("panel", style_box(Color(0.055, 0.07, 0.06, 0.94), 4, colors.brass, 2))
+	add_child(npc_panel)
+	add_text(npc_panel, "办事窗口 / 当前来访者", 14, Color("b9aa88"), Vector2(14, 10), Vector2(230, 24))
+	queue_label = add_text(npc_panel, "队列准备中", 16, Color("ddd0ac"), Vector2(14, 45), Vector2(230, 100))
+	timer_label = add_text(self, "剩余 03:00", 18, Color("ddd0ac"), Vector2(1040, 28), Vector2(190, 28))
+	timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 
 # 创建送交申请后的“现实验收设施”转场动画层。
@@ -265,14 +294,30 @@ func return_stamp(tool: Panel) -> void:
 func create_case() -> void:
 	if is_instance_valid(form):
 		form.queue_free()
+	if is_instance_valid(envelope):
+		envelope.queue_free()
+	for document in document_panels:
+		if is_instance_valid(document):
+			document.queue_free()
+	document_panels.clear()
+	packed_document_ids.clear()
+	primary_document_id = ""
 	form_stamped = false
 	form_stamp_type = ""
+	envelope_opened = false
+	envelope_on_desk = false
+	gameplay_state = "NPC_ENTERING"
+	case_started_at = Time.get_ticks_msec() / 1000.0
 	var data := current_case
 	if data.is_empty():
 		applicant_card_label.text = "配置错误\n未能生成当前案件"
 		status_label.text = "无法生成案件，请打开 DEV 控制台检查配置。"
 		return
 	applicant_card_label.text = "%s\n%s\n%s" % [data.applicant, data.code, data.department]
+	queue_label.text = "%s\n正在进场\n后续排队：%d 人" % [
+		String(data.get("person", {}).get("display_name", "身份受限")),
+		LevelDirector.get_gameplay_queue().size(),
+	]
 	form = Panel.new()
 	form.name = "ApplicationForm"
 	form.position = form_home
@@ -286,6 +331,7 @@ func create_case() -> void:
 	form.mouse_exited.connect(_on_form_hover.bind(false))
 	add_child(form)
 	form.z_index = 5
+	form.visible = false
 
 	var shadow := Panel.new()
 	shadow.name = "PaperShadow"
@@ -327,6 +373,129 @@ func create_case() -> void:
 	stamp_mark.add_theme_font_override("font", PIXEL_FONT)
 	stamp_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	form.add_child(stamp_mark)
+	create_documents(data.get("documents", []))
+	create_envelope()
+
+
+func create_envelope() -> void:
+	envelope = Panel.new()
+	envelope.name = "CaseEnvelope"
+	envelope.position = envelope_home
+	envelope.size = Vector2(285, 155)
+	envelope.z_index = 12
+	envelope.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	envelope.add_theme_stylebox_override("panel", style_box(Color("ad9162"), 4, Color("6e5534"), 3))
+	add_child(envelope)
+	add_text(envelope, "封存文件袋", 19, colors.ink, Vector2(18, 15), Vector2(245, 26))
+	add_text(envelope, "%s\n%s\n目录：%d 份材料" % [current_case.applicant, current_case.code, current_case.get("documents", []).size()], 13, colors.ink, Vector2(18, 50), Vector2(250, 80))
+	var flap := Button.new()
+	flap.name = "EnvelopeFlap"
+	flap.text = "按住或点击封口拆开"
+	flap.position = Vector2(18, 120)
+	flap.size = Vector2(248, 28)
+	flap.disabled = true
+	envelope.add_child(flap)
+	flap.button_down.connect(func(): if envelope_on_desk: open_envelope())
+	envelope.gui_input.connect(_on_envelope_input)
+	var delivery := create_tween()
+	delivery.tween_property(envelope, "position", Vector2(115, 320), 0.28)
+	delivery.finished.connect(func():
+		gameplay_state = "ENVELOPE_DELIVERED"
+		queue_label.text = "%s\n已投递文件袋\n等待办理" % String(current_case.get("person", {}).get("display_name", "身份受限"))
+	)
+
+
+func create_documents(raw_documents: Array) -> void:
+	var index := 0
+	for document_data in raw_documents:
+		var type_data := ConfigDatabase.get_ontology("document_types", String(document_data.get("document_type_id", "")))
+		if bool(type_data.get("is_primary", false)):
+			primary_document_id = String(document_data.get("id", ""))
+			continue
+		var document := Panel.new()
+		document.name = String(document_data.get("id", "Document"))
+		document.position = Vector2(350 + index * 54, 230 + index * 32)
+		document.size = Vector2(300, 230)
+		document.z_index = 6 + index
+		document.visible = false
+		document.set_meta("document_id", String(document_data.get("id", "")))
+		document.set_meta("dragging", false)
+		document.add_theme_stylebox_override("panel", style_box(Color("d8cba7"), 2, Color("746a52"), 2))
+		add_child(document)
+		add_text(document, String(document_data.get("title", "证明材料")), 19, colors.ink, Vector2(18, 14), Vector2(260, 28))
+		var lines: Array[String] = []
+		for field_name in document_data.get("fields", {}):
+			lines.append("%s：%s" % [field_name, str(document_data.fields[field_name])])
+		add_text(document, "\n".join(lines), 14, colors.ink, Vector2(18, 55), Vector2(260, 145))
+		document.gui_input.connect(_on_document_input.bind(document))
+		document.mouse_default_cursor_shape = Control.CURSOR_MOVE
+		document_panels.append(document)
+		index += 1
+
+
+func _on_envelope_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			envelope_dragging = true
+			envelope.z_index = 30
+		else:
+			envelope_dragging = false
+			envelope.z_index = 12
+			if not envelope_on_desk:
+				envelope_on_desk = envelope.position.x > 300
+				if envelope_on_desk:
+					gameplay_state = "ENVELOPE_ON_DESK"
+					envelope.get_node("EnvelopeFlap").disabled = false
+					status_label.text = "文件袋已置于工作台，点击封口拆开。"
+			elif envelope.get_global_rect().intersects(slot.get_global_rect()):
+				submit_form()
+	elif event is InputEventMouseMotion and envelope_dragging:
+		envelope.position += event.relative
+
+
+func open_envelope() -> void:
+	if envelope_opened or not envelope_on_desk:
+		return
+	envelope_opened = true
+	gameplay_state = "REVIEWING"
+	envelope.visible = false
+	form.visible = true
+	for document in document_panels:
+		document.visible = true
+	status_label.text = "文件袋已拆开：展开主表单与 %d 份证明材料。" % document_panels.size()
+
+
+func _on_document_input(event: InputEvent, document: Panel) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		document.set_meta("dragging", event.pressed)
+		if event.pressed:
+			document.z_index = 25
+		else:
+			document.z_index = 8
+			if document.get_global_rect().has_point(Vector2(250, 540)):
+				pack_document(String(document.get_meta("document_id")))
+	elif event is InputEventMouseMotion and bool(document.get_meta("dragging")):
+		document.position += event.relative
+
+
+func pack_document(document_id: String) -> void:
+	if not packed_document_ids.has(document_id):
+		packed_document_ids.append(document_id)
+	for document in document_panels:
+		if String(document.get_meta("document_id")) == document_id:
+			document.visible = false
+	if packed_document_ids.size() == current_case.get("documents", []).size():
+		gameplay_state = "READY_FOR_VALIDATION"
+		form.visible = false
+		envelope.visible = true
+		envelope.position = Vector2(420, 485)
+		status_label.text = "全部材料已重新装袋，可送入验收区。"
+
+
+func pack_all_documents() -> void:
+	pack_document(primary_document_id)
+	for document in document_panels:
+		pack_document(String(document.get_meta("document_id")))
 
 
 # 鼠标悬停在申请表上时的缩放反馈。
@@ -358,8 +527,8 @@ func _on_form_input(event: InputEvent) -> void:
 			var tween := create_tween().set_parallel(true)
 			tween.tween_property(form, "scale", form_base_scale, 0.12)
 			tween.tween_property(form, "rotation", 0.0, 0.12)
-			if form.get_global_rect().intersects(slot.get_global_rect()):
-				submit_form()
+			if form.position.x < 300 and form.position.y > 430:
+				pack_document(primary_document_id)
 	elif event is InputEventMouseMotion and dragging_form:
 		form.position += event.relative
 
@@ -392,22 +561,35 @@ func apply_stamp(kind: String, local_position: Vector2) -> void:
 # 动画结束后调用 show_validation_transition() 进入设施转场。
 func submit_form() -> void:
 	dragging_form = false
+	var procedure_errors: Array[String] = []
 	if not form_stamped:
-		status_label.text = "材料退回：未发现有效的形式处理印记。"
-		flash_slot(colors.red)
-		var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_property(form, "position", form_home, 0.45)
-		return
+		procedure_errors.append("漏盖章")
+	if packed_document_ids.size() < current_case.get("documents", []).size():
+		procedure_errors.append("遗漏材料")
+	if not envelope_opened:
+		procedure_errors.append("未拆封归档")
 	status_label.text = "材料已接收。批准不构成现实效力承诺。"
-	WorkdayState.record_case(current_case, form_stamp_type)
+	WorkdayState.record_case_result(
+		current_case,
+		form_stamp_type,
+		procedure_errors,
+		Time.get_ticks_msec() / 1000.0 - case_started_at,
+		packed_document_ids
+	)
+	gameplay_state = "SUBMITTED"
 	flash_slot(colors.green_glow)
-	form.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if is_instance_valid(form):
+		form.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if is_instance_valid(envelope):
+		envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var target := slot.global_position + Vector2(80, 76)
 	var tween := create_tween().set_parallel(true)
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(form, "global_position", target, 0.55)
-	tween.tween_property(form, "scale", Vector2(0.28, 0.06), 0.55)
-	tween.tween_property(form, "modulate:a", 0.0, 0.5).set_delay(0.18)
+	var submitted_object: Control = envelope if is_instance_valid(envelope) and envelope.visible else form
+	submitted_object.visible = true
+	tween.tween_property(submitted_object, "global_position", target, 0.55)
+	tween.tween_property(submitted_object, "scale", Vector2(0.28, 0.06), 0.55)
+	tween.tween_property(submitted_object, "modulate:a", 0.0, 0.5).set_delay(0.18)
 	tween.finished.connect(show_validation_transition)
 
 
@@ -415,6 +597,7 @@ func submit_form() -> void:
 # 先淡入设施图片并伴随轻微缩放复位，停留约 1.35 秒后淡出；
 # 若当日记录数量已达 CASES_PER_DAY 则切换到日报场景；否则调用 next_case() 继续处理下一份申请。
 func show_validation_transition() -> void:
+	gameplay_state = "NPC_LEAVING"
 	validation_overlay.visible = true
 	validation_overlay.modulate.a = 0.0
 	validation_image.scale = Vector2(1.035, 1.035)
@@ -427,7 +610,7 @@ func show_validation_transition() -> void:
 	fade_out.tween_property(validation_overlay, "modulate:a", 0.0, 0.32)
 	await fade_out.finished
 	validation_overlay.visible = false
-	if WorkdayState.should_show_report():
+	if WorkdayState.should_show_report() or not accepting_new_cases:
 		var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
 		if error != OK:
 			status_label.text = "内部日报生成失败，当前记录已保留。"
@@ -441,7 +624,7 @@ func show_validation_transition() -> void:
 func next_case() -> void:
 	case_index += 1
 	await get_tree().create_timer(0.18).timeout
-	current_case = LevelDirector.get_next_case()
+	current_case = LevelDirector.get_next_gameplay_case()
 	create_case()
 	if not is_instance_valid(form):
 		return
@@ -467,6 +650,14 @@ func flash_slot(color: Color) -> void:
 # 每帧更新背景视差效果。
 # 根据鼠标位置相对于屏幕中心计算归一化偏移，使 parallax_layers 中的各层以不同幅度（i + 1）产生轻微移动，增强场景深度感。
 func _process(_delta: float) -> void:
+	if not get_tree().paused and accepting_new_cases:
+		WorkdayState.tick(_delta)
+		if is_instance_valid(timer_label):
+			var remaining := ceili(WorkdayState.seconds_remaining)
+			timer_label.text = "剩余 %02d:%02d" % [remaining / 60, remaining % 60]
+		if WorkdayState.is_time_up():
+			accepting_new_cases = false
+			status_label.text = "工作时间结束：完成当前案件后停止接待。"
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0 or viewport_size.y <= 0:
 		return
@@ -485,5 +676,6 @@ func fit_to_window() -> void:
 		return
 	# Fill the complete live viewport; this prototype intentionally allows
 	# slight aspect deformation instead of letterboxing or edge cropping.
-	scale = Vector2(viewport_size.x / 1280.0, viewport_size.y / 720.0)
-	position = Vector2.ZERO
+	var cover_scale := maxf(viewport_size.x / 1280.0, viewport_size.y / 720.0)
+	scale = Vector2.ONE * cover_scale
+	position = (viewport_size - Vector2(1280, 720) * cover_scale) / 2.0

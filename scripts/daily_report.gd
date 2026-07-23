@@ -27,17 +27,21 @@ func _ready() -> void:
 func populate_report() -> void:
 	var day: int = WorkdayState.day_number
 	var summary: Dictionary = WorkdayState.get_summary()
+	var settlement: Dictionary = WorkdayState.get_settlement()
 	title_label.text = WorkdayState.report_title
 	metadata_label.text = "工作日：%02d    回执：D12-%04d    生成时间：当日终止后" % [day, day]
-	stats_label.text = "形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    退回补正 %02d\n取得现实效力 %02d    等待设施处理 %02d" % [
+	stats_label.text = "形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    程序错误 %02d\n日薪 %+d  绩效 %+d  罚款 -%d  生活支出 -%d  本日结余 %+d  %s" % [
 		summary.reviewed, summary.submitted, summary.approved,
-		summary.rejected, summary.returned, summary.effective, summary.pending
+		summary.rejected, summary.procedure_errors,
+		settlement.base_salary, settlement.performance, settlement.fines,
+		settlement.living_expenses, settlement.net, settlement.political_evaluation
 	]
 	var lines: Array[String] = []
 	for i in WorkdayState.records.size():
 		var record: Dictionary = WorkdayState.records[i]
-		lines.append("%02d / %s / %s / 处理：%s / 效力：等待验收" % [
-			i + 1, record.code, record.applicant, record.decision
+		lines.append("%02d / %s / %s / 处理：%s / 程序：%s" % [
+			i + 1, record.code, record.applicant, record.decision,
+			"完整" if record.get("procedure_errors", []).is_empty() else "、".join(record.get("procedure_errors", []))
 		])
 	if lines.is_empty():
 		lines.append("00 / 本工作日未形成可供汇总的事项记录")
