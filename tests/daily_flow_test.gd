@@ -1,10 +1,14 @@
 extends SceneTree
 
+# 日常流程测试。
+# 验证连续处理 3 件案件后自动切换到日报场景。
+
 
 func _init() -> void:
 	call_deferred("run")
 
 
+# 运行日常流程完整测试。
 func run() -> void:
 	var state := root.get_node_or_null("WorkdayState")
 	if state == null:
@@ -19,8 +23,8 @@ func run() -> void:
 	assert(current_scene != null, "main scene must become current")
 	for i in 3:
 		var desk := current_scene
-		desk.apply_stamp("批准" if i != 1 else "驳回", Vector2(350, 360))
-		desk.submit_form()
+		desk.presenter.apply_stamp("批准" if i != 1 else "驳回", Vector2(350, 360))
+		desk.submission_mgr.submit(desk.presenter, desk.current_case)
 		await create_timer(2.6).timeout
 	assert(current_scene.name == "DailyReport", "third processed case must open daily report")
 	assert(state.records.size() == 3, "daily report must retain all three records")

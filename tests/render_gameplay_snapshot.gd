@@ -18,8 +18,8 @@ func run() -> void:
 	assert(error == OK, "main scene must open for render verification")
 	await process_frame
 	await process_frame
-	current_scene.envelope_on_desk = true
-	current_scene.open_envelope()
+	current_scene.presenter.set_envelope_on_desk(true)
+	current_scene.presenter.open_envelope()
 	await process_frame
 	var image := root.get_viewport().get_texture().get_image()
 	assert(not image.is_empty(), "rendered viewport must produce an image")
