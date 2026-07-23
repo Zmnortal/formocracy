@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const MAIN_SCENE := "res://main.tscn"
+const MENU_SCENE := "res://scenes/main_menu.tscn"
 const OPENING_SCENE := "res://scenes/opening.tscn"
 const REPORT_SCENE := "res://scenes/daily_report.tscn"
 const VALIDATION_SCENE := "res://scenes/validation_preview.tscn"
@@ -13,6 +14,8 @@ var blocker: ColorRect
 var console_panel: Panel
 var scene_selector: OptionButton
 var day_selector: SpinBox
+var level_selector: OptionButton
+var seed_selector: SpinBox
 var preset_selector: OptionButton
 var status_label: Label
 var output: RichTextLabel
@@ -114,14 +117,16 @@ func build_ui() -> void:
 	scene_selector = OptionButton.new()
 	scene_selector.position = Vector2(28, 100)
 	scene_selector.size = Vector2(250, 40)
-	scene_selector.add_item("游戏开场")
-	scene_selector.set_item_metadata(0, OPENING_SCENE)
+	scene_selector.add_item("标题主菜单")
+	scene_selector.set_item_metadata(0, MENU_SCENE)
+	scene_selector.add_item("首次叙事")
+	scene_selector.set_item_metadata(1, OPENING_SCENE)
 	scene_selector.add_item("主工作台")
-	scene_selector.set_item_metadata(1, MAIN_SCENE)
+	scene_selector.set_item_metadata(2, MAIN_SCENE)
 	scene_selector.add_item("工作日处理回执")
-	scene_selector.set_item_metadata(2, REPORT_SCENE)
+	scene_selector.set_item_metadata(3, REPORT_SCENE)
 	scene_selector.add_item("现实验收设施预览")
-	scene_selector.set_item_metadata(3, VALIDATION_SCENE)
+	scene_selector.set_item_metadata(4, VALIDATION_SCENE)
 	console_panel.add_child(scene_selector)
 	var switch_button := create_button("立即切换", Vector2(292, 100), Vector2(126, 40))
 	switch_button.pressed.connect(_on_switch_scene)
@@ -137,9 +142,29 @@ func build_ui() -> void:
 	var set_day_button := create_button("设置", Vector2(220, 156), Vector2(92, 40))
 	set_day_button.pressed.connect(_on_set_day)
 
+	level_selector = OptionButton.new()
+	level_selector.position = Vector2(330, 156)
+	level_selector.size = Vector2(170, 40)
+	for level_id in ConfigDatabase.get_level_ids():
+		level_selector.add_item(level_id)
+		level_selector.set_item_metadata(level_selector.item_count - 1, level_id)
+	console_panel.add_child(level_selector)
+	seed_selector = SpinBox.new()
+	seed_selector.position = Vector2(512, 156)
+	seed_selector.size = Vector2(150, 40)
+	seed_selector.min_value = -1
+	seed_selector.max_value = 999999
+	seed_selector.value = -1
+	seed_selector.prefix = "种子 "
+	console_panel.add_child(seed_selector)
+	var start_level_button := create_button("启动关卡", Vector2(674, 156), Vector2(130, 40))
+	start_level_button.pressed.connect(_on_start_level)
+	var reload_config_button := create_button("重载配置", Vector2(816, 156), Vector2(130, 40))
+	reload_config_button.pressed.connect(_on_reload_config)
+
 	status_label = Label.new()
-	status_label.position = Vector2(450, 84)
-	status_label.size = Vector2(520, 116)
+	status_label.position = Vector2(450, 68)
+	status_label.size = Vector2(520, 82)
 	status_label.add_theme_color_override("font_color", Color("d8c98b"))
 	status_label.add_theme_font_size_override("font_size", 17)
 	console_panel.add_child(status_label)
@@ -263,9 +288,10 @@ func refresh_status() -> void:
 	var current := "无场景"
 	if get_tree().current_scene != null:
 		current = get_tree().current_scene.name
-	status_label.text = "当前场景：%s\n工作日：%d\n当日记录：%d / %d\n日报状态：%s" % [
-		current, WorkdayState.day_number, WorkdayState.records.size(),
-		WorkdayState.CASES_PER_DAY,
+	status_label.text = "场景：%s  关卡：%s\n工作日：%d  记录：%d / %d\n日报：%s" % [
+		current, WorkdayState.current_level_id,
+		WorkdayState.day_number, WorkdayState.records.size(),
+		WorkdayState.target_case_count,
 		"可生成" if WorkdayState.should_show_report() else "未满足触发条件"
 	]
 
@@ -295,6 +321,27 @@ func _on_set_day() -> void:
 	WorkdayState.day_number = int(day_selector.value)
 	append_output("工作日已设置为 %d" % WorkdayState.day_number)
 	refresh_status()
+
+
+func _on_start_level() -> void:
+	if level_selector.item_count == 0:
+		append_output("没有可用关卡。")
+		return
+	var level_id := String(level_selector.get_item_metadata(level_selector.selected))
+	var seed := int(seed_selector.value)
+	if LevelDirector.start_level(level_id, seed):
+		append_output("已启动关卡：%s / 种子 %d" % [level_id, seed])
+		switch_scene(MAIN_SCENE)
+	else:
+		append_output("关卡启动失败：" + "；".join(LevelDirector.runtime_errors))
+
+
+func _on_reload_config() -> void:
+	if LevelDirector.reload_configs():
+		append_output("CSV 配置已重载。")
+		refresh_status()
+	else:
+		append_output("配置重载失败：" + "；".join(ConfigDatabase.errors))
 
 
 # 测试数据预设按钮回调。
@@ -369,13 +416,14 @@ func execute_command(command: String) -> void:
 	var parts := clean.split(" ", false)
 	match parts[0].to_lower():
 		"help":
-			append_output("scene opening | scene main | scene report | scene validation | scene reload")
-			append_output("report fill | day next | state | clear")
+			append_output("scene menu | scene opening | scene main | scene report | scene validation | scene reload")
+			append_output("level <id> [seed] | config reload | queue | report fill | day next | state | clear")
 		"scene":
 			if parts.size() < 2:
-				append_output("用法：scene opening|main|report|validation|reload")
+				append_output("用法：scene menu|opening|main|report|validation|reload")
 			else:
 				match parts[1].to_lower():
+					"menu": switch_scene(MENU_SCENE)
 					"opening": switch_scene(OPENING_SCENE)
 					"main": switch_scene(MAIN_SCENE)
 					"report": switch_scene(REPORT_SCENE)
@@ -392,6 +440,22 @@ func execute_command(command: String) -> void:
 				next_day()
 			else:
 				append_output("用法：day next")
+		"level":
+			if parts.size() < 2:
+				append_output("用法：level <level_id> [seed]")
+			else:
+				var seed := int(parts[2]) if parts.size() > 2 else -1
+				if LevelDirector.start_level(parts[1], seed):
+					append_output("已启动关卡：%s / 种子 %d" % [parts[1], seed])
+				else:
+					append_output("关卡启动失败：" + "；".join(LevelDirector.runtime_errors))
+		"config":
+			if parts.size() > 1 and parts[1].to_lower() == "reload":
+				_on_reload_config()
+			else:
+				append_output("用法：config reload")
+		"queue":
+			append_output(JSON.stringify(LevelDirector.get_state_summary()))
 		"state": refresh_status(); append_output(status_label.text.replace("\n", " | "))
 		"clear": output.clear()
 		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])

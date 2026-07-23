@@ -1,0 +1,6 @@
+case_id,character_id,department,form_code,request_text,check_1,check_2,check_3,correct_decision,pool_tags
+case_housing_001,char_lin_mo,第十二区居住配置处,R-12/住房用途变更申请,申请将单人居住配额变更为二人共同配额。,身份记录与现居地址一致,共同居住人已提交知情声明,申请未形成事实性居住承诺,批准,story_day1
+case_water_001,char_zhou_xun,公共供给连续性办公室,W-08/饮水额度临时调整,因家庭照护事项申请临时提高净水领取额度。,申报家庭成员记录完整,照护事由证明处于有效期,申请人已知悉调整不保证供给,批准,story_day1
+case_medical_001,char_xu_qiao,中央医疗秩序协调科,M-31/非计划医疗通行申请,申请于限制时段前往第五诊疗站接受复查。,诊疗站回执编号可辨认,通行时段与复查安排相符,紧急程度未由申请人自行认定,驳回,day1_normal
+case_work_001,char_gu_yuan,劳动配置复核室,L-17/工位调换申请,申请由夜间装配线调换至日间清点岗位。,现岗位服务期已达到最低要求,接收岗位存在登记空缺,申请未援引未经备案的健康理由,批准,day1_normal
+case_water_pool_001,char_zhou_xun,公共供给连续性办公室,W-09/净水领取时段变更,申请将每周净水领取时段由凌晨调整至晚间。,身份记录与领取卡一致,原领取时段尚未产生缺勤记录,调整不增加个人供给额度,驳回,day1_normal

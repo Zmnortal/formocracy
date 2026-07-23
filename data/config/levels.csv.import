@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ibf3yob554lj"
+
+[deps]
+
+files=["res://data/config/levels.day.translation", "res://data/config/levels.case.translation", "res://data/config/levels.normal.translation", "res://data/config/levels.random.translation", "res://data/config/levels.report.translation"]
+
+source_file="res://data/config/levels.csv"
+dest_files=["res://data/config/levels.day.translation", "res://data/config/levels.case.translation", "res://data/config/levels.normal.translation", "res://data/config/levels.random.translation", "res://data/config/levels.report.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

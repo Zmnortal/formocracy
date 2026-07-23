@@ -6,31 +6,8 @@ const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proport
 const APPROVE_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/approve_stamp.png")
 const RETURN_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/return_stamp.png")
 
-const CASES := [
-	{
-		"department": "第十二区居住配置处",
-		"code": "R-12/住房用途变更申请",
-		"applicant": "林默，公民序号 74-119-02",
-		"request": "申请将单人居住配额变更为二人共同配额。",
-		"checks": ["身份记录与现居地址一致", "共同居住人已提交知情声明", "申请未形成事实性居住承诺"]
-	},
-	{
-		"department": "公共供给连续性办公室",
-		"code": "W-08/饮水额度临时调整",
-		"applicant": "周循，公民序号 20-441-88",
-		"request": "因家庭照护事项申请临时提高净水领取额度。",
-		"checks": ["申报家庭成员记录完整", "照护事由证明处于有效期", "申请人已知悉调整不保证供给"]
-	},
-	{
-		"department": "中央医疗秩序协调科",
-		"code": "M-31/非计划医疗通行申请",
-		"applicant": "许桥，公民序号 51-004-63",
-		"request": "申请于限制时段前往第五诊疗站接受复查。",
-		"checks": ["诊疗站回执编号可辨认", "通行时段与复查安排相符", "紧急程度未由申请人自行认定"]
-	}
-]
-
 var case_index := 0
+var current_case: Dictionary = {}
 var form: Panel
 var form_home := Vector2(435, 252)
 var form_base_scale := Vector2(0.86, 0.86)
@@ -67,6 +44,8 @@ var colors := {
 # 并连接视口尺寸变化信号以持续适配 1280x720 的基准分辨率。
 func _ready() -> void:
 	build_scene()
+	LevelDirector.ensure_active_level()
+	current_case = LevelDirector.get_next_case()
 	create_case()
 	for layer in parallax_layers:
 		layer.set_meta("base_position", layer.position)
@@ -287,7 +266,11 @@ func create_case() -> void:
 		form.queue_free()
 	form_stamped = false
 	form_stamp_type = ""
-	var data: Dictionary = CASES[case_index % CASES.size()]
+	var data := current_case
+	if data.is_empty():
+		applicant_card_label.text = "配置错误\n未能生成当前案件"
+		status_label.text = "无法生成案件，请打开 DEV 控制台检查配置。"
+		return
 	applicant_card_label.text = "%s\n%s\n%s" % [data.applicant, data.code, data.department]
 	form = Panel.new()
 	form.name = "ApplicationForm"
@@ -415,8 +398,7 @@ func submit_form() -> void:
 		tween.tween_property(form, "position", form_home, 0.45)
 		return
 	status_label.text = "材料已接收。批准不构成现实效力承诺。"
-	var case_data: Dictionary = CASES[case_index % CASES.size()]
-	WorkdayState.record_case(case_data, form_stamp_type)
+	WorkdayState.record_case(current_case, form_stamp_type)
 	flash_slot(colors.green_glow)
 	form.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var target := slot.global_position + Vector2(80, 76)
@@ -456,9 +438,12 @@ func show_validation_transition() -> void:
 # 推进到下一个案件。
 # 案件索引循环递增，短暂延迟后调用 create_case() 生成新表单，并播放从透明缩小到正常显示的入场动画，状态栏提示下一份申请已送达。
 func next_case() -> void:
-	case_index = (case_index + 1) % CASES.size()
+	case_index += 1
 	await get_tree().create_timer(0.18).timeout
+	current_case = LevelDirector.get_next_case()
 	create_case()
+	if not is_instance_valid(form):
+		return
 	form.modulate.a = 0.0
 	form.scale = form_base_scale * 0.92
 	var tween := create_tween().set_parallel(true)

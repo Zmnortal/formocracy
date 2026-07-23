@@ -1,0 +1,5 @@
+character_id,display_name,citizen_id,portrait_path,character_type,tags,notes
+char_lin_mo,林默,74-119-02,,main,day1|housing,第一位主线申请人
+char_zhou_xun,周循,20-441-88,,main,day1|water,可因林默案件结果进入固定槽位
+char_xu_qiao,许桥,51-004-63,,normal,day1|medical,普通申请人
+char_gu_yuan,顾原,32-770-16,,normal,day1|work,普通申请人

@@ -1,6 +1,7 @@
 extends Control
 
 @onready var metadata_label: Label = $Terminal/Receipt/Metadata
+@onready var title_label: Label = $Terminal/Receipt/Title
 @onready var stats_label: Label = $Terminal/Receipt/Stats/StatsText
 @onready var cases_label: Label = $Terminal/Receipt/CasesText
 @onready var declaration: CheckBox = $Terminal/Receipt/Declaration
@@ -26,6 +27,7 @@ func _ready() -> void:
 func populate_report() -> void:
 	var day: int = WorkdayState.day_number
 	var summary: Dictionary = WorkdayState.get_summary()
+	title_label.text = WorkdayState.report_title
 	metadata_label.text = "工作日：%02d    回执：D12-%04d    生成时间：当日终止后" % [day, day]
 	stats_label.text = "形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    退回补正 %02d\n取得现实效力 %02d    等待设施处理 %02d" % [
 		summary.reviewed, summary.submitted, summary.approved,

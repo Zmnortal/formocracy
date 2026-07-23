@@ -1,0 +1,4 @@
+level_id,slot,case_id,is_story,required_case_id,required_decision
+day_1,1,case_housing_001,true,,
+day_1,2,case_water_001,true,case_housing_001,批准
+day_1,3,,false,,

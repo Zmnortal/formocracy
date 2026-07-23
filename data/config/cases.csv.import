@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://b8il204xwjep"
+
+[deps]
+
+files=["res://data/config/cases.character.translation", "res://data/config/cases.department.translation", "res://data/config/cases.form.translation", "res://data/config/cases.request.translation", "res://data/config/cases.check.translation", "res://data/config/cases.check.translation", "res://data/config/cases.check.translation", "res://data/config/cases.correct.translation", "res://data/config/cases.pool.translation"]
+
+source_file="res://data/config/cases.csv"
+dest_files=["res://data/config/cases.character.translation", "res://data/config/cases.department.translation", "res://data/config/cases.form.translation", "res://data/config/cases.request.translation", "res://data/config/cases.check.translation", "res://data/config/cases.check.translation", "res://data/config/cases.check.translation", "res://data/config/cases.correct.translation", "res://data/config/cases.pool.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dg7jb3v2yvavu"
+
+[deps]
+
+files=["res://data/config/level_slots.slot.translation", "res://data/config/level_slots.case.translation", "res://data/config/level_slots.is.translation", "res://data/config/level_slots.required.translation", "res://data/config/level_slots.required.translation"]
+
+source_file="res://data/config/level_slots.csv"
+dest_files=["res://data/config/level_slots.slot.translation", "res://data/config/level_slots.case.translation", "res://data/config/level_slots.is.translation", "res://data/config/level_slots.required.translation", "res://data/config/level_slots.required.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
