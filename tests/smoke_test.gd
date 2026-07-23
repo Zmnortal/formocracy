@@ -22,6 +22,8 @@ func run() -> void:
 	assert(main.get_node("ClerkDeskConcept").texture != null, "workbench concept must be loaded")
 	assert(main.case_index == 0, "first case must be active")
 	assert(main.form_stamped == false, "new form must be unstamped")
+	assert(main.form.mouse_default_cursor_shape == Control.CURSOR_MOVE, "form must advertise drag interaction")
+	assert(main.stamp_tools.all(func(tool): return tool.size == Vector2(140, 132)), "stamp hit areas must match their visible textures")
 
 	main.apply_stamp("批准", Vector2(360, 365))
 	assert(main.form_stamped == true, "stamp state must be recorded")

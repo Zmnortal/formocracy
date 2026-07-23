@@ -5,3 +5,10 @@
 [resource]
 default_font = ExtResource("1_font")
 default_font_size = 16
+Label/font_sizes/font_size = 16
+Button/font_sizes/font_size = 16
+CheckBox/font_sizes/font_size = 16
+LineEdit/font_sizes/font_size = 16
+OptionButton/font_sizes/font_size = 16
+RichTextLabel/font_sizes/normal_font_size = 16
+SpinBox/font_sizes/font_size = 16

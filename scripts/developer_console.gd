@@ -57,6 +57,7 @@ func build_ui() -> void:
 	root_control = Control.new()
 	root_control.position = Vector2.ZERO
 	root_control.size = Vector2(1280, 720)
+	root_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root_control)
 
 	dev_button = Button.new()

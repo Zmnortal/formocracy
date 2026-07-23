@@ -16,6 +16,7 @@ func run() -> void:
 	root.add_child(console)
 	await process_frame
 	assert(console.dev_button != null, "DEV button must be created")
+	assert(console.root_control.mouse_filter == Control.MOUSE_FILTER_IGNORE, "closed developer console must not intercept game input")
 	assert(console.scene_selector.item_count == 4, "scene selector must expose opening plus three development scenes")
 	assert(console.scene_selector.get_item_metadata(0) == "res://scenes/opening.tscn", "opening scene must be selectable")
 	console.toggle_console()

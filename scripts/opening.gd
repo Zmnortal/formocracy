@@ -1,6 +1,7 @@
 extends Control
 
 const MAIN_SCENE := "res://main.tscn"
+const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
 const SLIDES := [
 	preload("res://assets/opening/opening-01-identity-form-8bit-v1.png"),
 	preload("res://assets/opening/opening-02-reality-effective-8bit-v1.png"),
@@ -47,6 +48,7 @@ func build_scene() -> void:
 	skip_button.text = "跳过开场  >>"
 	skip_button.position = Vector2(930, 26)
 	skip_button.size = Vector2(150, 42)
+	skip_button.add_theme_font_override("font", PIXEL_FONT)
 	skip_button.pressed.connect(show_final_slide)
 	add_child(skip_button)
 
@@ -54,6 +56,7 @@ func build_scene() -> void:
 	progress_label.position = Vector2(34, 666)
 	progress_label.size = Vector2(260, 32)
 	progress_label.add_theme_font_size_override("font_size", 15)
+	progress_label.add_theme_font_override("font", PIXEL_FONT)
 	progress_label.add_theme_color_override("font_color", Color("d8cfad"))
 	progress_label.add_theme_constant_override("outline_size", 5)
 	progress_label.add_theme_color_override("font_outline_color", Color("171811"))
@@ -72,6 +75,7 @@ func build_scene() -> void:
 	prompt.size = Vector2(420, 34)
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	prompt.add_theme_font_size_override("font_size", 18)
+	prompt.add_theme_font_override("font", PIXEL_FONT)
 	prompt.add_theme_color_override("font_color", Color("e4d8b2"))
 	prompt.add_theme_constant_override("outline_size", 6)
 	prompt.add_theme_color_override("font_outline_color", Color("11130f"))
@@ -83,6 +87,7 @@ func build_scene() -> void:
 	start_button.position = Vector2(90, 42)
 	start_button.size = Vector2(240, 50)
 	start_button.add_theme_font_size_override("font_size", 20)
+	start_button.add_theme_font_override("font", PIXEL_FONT)
 	start_button.pressed.connect(start_first_day)
 	start_panel.add_child(start_button)
 

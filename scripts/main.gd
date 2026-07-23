@@ -2,6 +2,7 @@ extends Node2D
 
 const WORKBENCH_TEXTURE := preload("res://assets/day1_8bit/background/office_validation_room.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
+const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
 const APPROVE_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/approve_stamp.png")
 const RETURN_STAMP_TEXTURE := preload("res://assets/day1_8bit/interactive/return_stamp.png")
 
@@ -92,6 +93,7 @@ func add_text(parent: Node, text: String, size: int, color: Color, position: Vec
 	label.position = position
 	label.size = dimensions
 	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_override("font", PIXEL_FONT)
 	label.add_theme_color_override("font_color", color)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	parent.add_child(label)
@@ -190,23 +192,34 @@ func create_validation_overlay() -> void:
 func create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 	var tool := Panel.new()
 	tool.name = kind + "Stamp"
-	tool.position = at
-	tool.size = Vector2(104, 92)
-	tool.set_meta("home", at)
+	var visual_position := at - Vector2(18, 20)
+	tool.position = visual_position
+	tool.size = Vector2(140, 132)
+	tool.set_meta("home", visual_position)
 	tool.set_meta("kind", kind)
 	tool.set_meta("dragging", false)
+	tool.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	tool.add_theme_stylebox_override("panel", style_box(Color(0, 0, 0, 0), 0))
 	add_child(tool)
 	stamp_tools.append(tool)
 	var stamp_image := TextureRect.new()
 	stamp_image.texture = APPROVE_STAMP_TEXTURE if kind == "批准" else RETURN_STAMP_TEXTURE
-	stamp_image.position = Vector2(-18, -20)
+	stamp_image.position = Vector2.ZERO
 	stamp_image.size = Vector2(140, 132)
 	stamp_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	stamp_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	stamp_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tool.add_child(stamp_image)
 	tool.gui_input.connect(_on_stamp_input.bind(tool))
+	tool.mouse_entered.connect(_on_stamp_hover.bind(tool, true))
+	tool.mouse_exited.connect(_on_stamp_hover.bind(tool, false))
+
+
+func _on_stamp_hover(tool: Panel, entered: bool) -> void:
+	if bool(tool.get_meta("dragging")):
+		return
+	var tween := create_tween()
+	tween.tween_property(tool, "scale", Vector2(1.04, 1.04) if entered else Vector2.ONE, 0.08)
 
 
 func _on_stamp_input(event: InputEvent, tool: Panel) -> void:
@@ -256,6 +269,9 @@ func create_case() -> void:
 	form.scale = form_base_scale
 	form.add_theme_stylebox_override("panel", style_box(colors.paper, 2, Color("786f58"), 2))
 	form.gui_input.connect(_on_form_input)
+	form.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	form.mouse_entered.connect(_on_form_hover.bind(true))
+	form.mouse_exited.connect(_on_form_hover.bind(false))
 	add_child(form)
 	form.z_index = 5
 
@@ -283,6 +299,7 @@ func create_case() -> void:
 		check.position = Vector2(28, 305 + i * 35)
 		check.size = Vector2(420, 30)
 		check.add_theme_font_size_override("font_size", 14)
+		check.add_theme_font_override("font", PIXEL_FONT)
 		check.add_theme_color_override("font_color", colors.ink)
 		check.add_theme_color_override("font_pressed_color", colors.ink)
 		form.add_child(check)
@@ -295,8 +312,17 @@ func create_case() -> void:
 	stamp_mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	stamp_mark.rotation = -0.12
 	stamp_mark.add_theme_font_size_override("font_size", 27)
+	stamp_mark.add_theme_font_override("font", PIXEL_FONT)
 	stamp_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	form.add_child(stamp_mark)
+
+
+func _on_form_hover(entered: bool) -> void:
+	if dragging_form or not is_instance_valid(form):
+		return
+	var target_scale := form_base_scale * (1.012 if entered else 1.0)
+	var tween := create_tween()
+	tween.tween_property(form, "scale", target_scale, 0.08)
 
 
 func _on_form_input(event: InputEvent) -> void:
