@@ -6,6 +6,9 @@ const OPENING_SCENE := "res://scenes/opening.tscn"
 const REPORT_SCENE := "res://scenes/daily_report.tscn"
 const VALIDATION_SCENE := "res://scenes/validation_preview.tscn"
 
+# 共享 UI 样式工具库
+const UI := preload("res://scripts/ui/bureau_ui.gd")
+
 var enabled := true
 var is_open := false
 var root_control: Control
@@ -49,18 +52,7 @@ func _ready() -> void:
 # 用于统一控制台各控件（面板、按钮、终端背景等）的背景色、边框色、边框宽度与圆角半径，减少重复代码。
 # color 为背景色；border_color 为边框色；border 为四边边框宽度；radius 为四角圆角半径。
 func make_box(color: Color, border_color: Color, border := 2, radius := 3) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = color
-	box.border_width_left = border
-	box.border_width_top = border
-	box.border_width_right = border
-	box.border_width_bottom = border
-	box.border_color = border_color
-	box.corner_radius_top_left = radius
-	box.corner_radius_top_right = radius
-	box.corner_radius_bottom_left = radius
-	box.corner_radius_bottom_right = radius
-	return box
+	return UI.make_box(color, border_color, border, radius)
 
 
 # 构建控制台完整 UI。
@@ -78,14 +70,12 @@ func build_ui() -> void:
 	dev_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	dev_button.position = Vector2(-76, 14)
 	dev_button.size = Vector2(60, 34)
-	dev_button.add_theme_color_override("font_color", Color("b9d778"))
-	dev_button.add_theme_stylebox_override("normal", make_box(Color(0.03, 0.07, 0.04, 0.92), Color("6e8d45")))
-	dev_button.add_theme_stylebox_override("hover", make_box(Color(0.08, 0.15, 0.08, 0.98), Color("9bbb60")))
+	UI.style_button(dev_button, 16)
 	dev_button.pressed.connect(toggle_console)
 	root_control.add_child(dev_button)
 
 	blocker = ColorRect.new()
-	blocker.color = Color(0, 0, 0, 0.72)
+	blocker.color = UI.COLOR_BACKDROP
 	blocker.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	blocker.visible = false
@@ -95,21 +85,21 @@ func build_ui() -> void:
 	console_panel.set_anchors_preset(Control.PRESET_CENTER)
 	console_panel.position = Vector2(-500, -300)
 	console_panel.size = Vector2(1000, 600)
-	console_panel.add_theme_stylebox_override("panel", make_box(Color("08100c"), Color("78934f"), 3, 5))
+	UI.style_panel(console_panel)
 	blocker.add_child(console_panel)
 
 	var title := Label.new()
 	title.text = "FORMOCRACY // 开发控制台"
 	title.position = Vector2(26, 18)
 	title.size = Vector2(600, 32)
-	title.add_theme_color_override("font_color", Color("a9ca6b"))
-	title.add_theme_font_size_override("font_size", 22)
+	UI.style_label(title, 22)
 	console_panel.add_child(title)
 
 	var close_button := Button.new()
 	close_button.text = "关闭 [`]"
 	close_button.position = Vector2(850, 16)
 	close_button.size = Vector2(122, 34)
+	UI.style_button(close_button, 15)
 	close_button.pressed.connect(toggle_console)
 	console_panel.add_child(close_button)
 
@@ -165,8 +155,7 @@ func build_ui() -> void:
 	status_label = Label.new()
 	status_label.position = Vector2(450, 68)
 	status_label.size = Vector2(520, 82)
-	status_label.add_theme_color_override("font_color", Color("d8c98b"))
-	status_label.add_theme_font_size_override("font_size", 17)
+	UI.style_label(status_label, 17)
 	console_panel.add_child(status_label)
 
 	create_section_label("测试数据与快捷操作", Vector2(28, 222))
@@ -195,12 +184,16 @@ func build_ui() -> void:
 	output.bbcode_enabled = true
 	output.scroll_active = true
 	output.add_theme_color_override("default_color", Color("9fbd72"))
+	output.add_theme_font_override("normal_font", UI.PIXEL_FONT)
+	output.add_theme_font_size_override("normal_font_size", 15)
 	output.add_theme_stylebox_override("normal", make_box(Color("030604"), Color("36472d"), 1, 1))
 	console_panel.add_child(output)
 	command_input = LineEdit.new()
 	command_input.placeholder_text = "输入命令，例如：scene report"
 	command_input.position = Vector2(28, 530)
 	command_input.size = Vector2(944, 44)
+	command_input.add_theme_font_override("font", UI.PIXEL_FONT)
+	command_input.add_theme_font_size_override("font_size", 16)
 	command_input.text_submitted.connect(execute_command)
 	command_input.gui_input.connect(_on_command_input_gui)
 	console_panel.add_child(command_input)
@@ -213,7 +206,7 @@ func create_section_label(text: String, at: Vector2) -> void:
 	label.text = text
 	label.position = at
 	label.size = Vector2(400, 26)
-	label.add_theme_color_override("font_color", Color("7f9c5c"))
+	UI.style_label(label, 16, true)
 	console_panel.add_child(label)
 
 
@@ -224,6 +217,7 @@ func create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
 	button.text = text
 	button.position = at
 	button.size = dimensions
+	UI.style_button(button, 15)
 	console_panel.add_child(button)
 	return button
 

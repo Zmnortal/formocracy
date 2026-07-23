@@ -1,10 +1,14 @@
 extends SceneTree
 
+# 本体与配置数据库测试。
+# 验证 CSV 配置加载、JSON 本体索引、案件引用解析与规则评估。
+
 
 func _init() -> void:
 	call_deferred("run")
 
 
+# 运行本体与配置完整测试流程。
 func run() -> void:
 	await process_frame
 	var database = root.get_node("ConfigDatabase")

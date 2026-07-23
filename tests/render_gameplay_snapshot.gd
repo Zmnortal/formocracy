@@ -1,5 +1,8 @@
 extends SceneTree
 
+# 渲染快照测试。
+# 进入主工作台场景、拆封文件袋并保存视口截图，用于人工或自动验证画面。
+
 const SNAPSHOT_PATH := "/tmp/formocracy-core-gameplay.png"
 
 
@@ -7,6 +10,7 @@ func _init() -> void:
 	call_deferred("run")
 
 
+# 运行渲染快照测试流程。
 func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.reset_for_tests()

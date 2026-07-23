@@ -1,6 +1,10 @@
 extends Node2D
 
-# The opening slideshow's configured final image is also the day-one gameplay plate.
+# 主工作台场景。
+# 负责构建办公桌视觉、处理申请表单的拖拽与盖章、管理文件袋与材料、
+# 以及将处理结果提交到现实验收设施并驱动案件队列。
+
+# 开场幻灯片的最终图片同时作为第一天工作台的背景纹理。
 const WORKBENCH_TEXTURE := preload("res://assets/opening/opening-03-day-one-reveal-8bit-v1.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
@@ -377,6 +381,7 @@ func create_case() -> void:
 	create_envelope()
 
 
+# 创建承载当前案件的文件袋，并播放投递到工作台动画。
 func create_envelope() -> void:
 	envelope = Panel.new()
 	envelope.name = "CaseEnvelope"
@@ -405,6 +410,7 @@ func create_envelope() -> void:
 	)
 
 
+# 根据案件数据创建除主材料外的辅助证明材料面板。
 func create_documents(raw_documents: Array) -> void:
 	var index := 0
 	for document_data in raw_documents:
@@ -433,6 +439,7 @@ func create_documents(raw_documents: Array) -> void:
 		index += 1
 
 
+# 文件袋的拖拽处理：左键按下拖动、释放时判断是否放到工作台或送交槽。
 func _on_envelope_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -465,6 +472,7 @@ func open_envelope() -> void:
 	status_label.text = "文件袋已拆开：展开主表单与 %d 份证明材料。" % document_panels.size()
 
 
+# 单个材料的拖拽处理：左键按下拖动、释放时判断是否进入装袋区域。
 func _on_document_input(event: InputEvent, document: Panel) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		document.set_meta("dragging", event.pressed)
@@ -478,6 +486,7 @@ func _on_document_input(event: InputEvent, document: Panel) -> void:
 		document.position += event.relative
 
 
+# 将指定材料标记为已装袋并隐藏对应面板。
 func pack_document(document_id: String) -> void:
 	if not packed_document_ids.has(document_id):
 		packed_document_ids.append(document_id)
@@ -492,6 +501,7 @@ func pack_document(document_id: String) -> void:
 		status_label.text = "全部材料已重新装袋，可送入验收区。"
 
 
+# 一键装袋所有材料（包括主材料和全部辅助材料）。
 func pack_all_documents() -> void:
 	pack_document(primary_document_id)
 	for document in document_panels:

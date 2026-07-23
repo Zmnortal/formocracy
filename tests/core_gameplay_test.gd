@@ -1,10 +1,14 @@
 extends SceneTree
 
+# 核心玩法测试。
+# 验证主工作台场景构建、文件袋拆封、材料装袋、盖章与提交记录。
+
 
 func _init() -> void:
 	call_deferred("run")
 
 
+# 运行核心玩法完整测试流程。
 func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.reset_for_tests()

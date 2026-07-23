@@ -1,7 +1,11 @@
 class_name RuleEvaluator
 extends RefCounted
 
+# 规则评估器。
+# 根据案件材料和规则集合判断案件是否合规：无违规返回“批准”，否则返回“驳回”并列出违规 ID。
 
+
+# 评估案件。支持 required_documents、fields_equal 与 field_equals 三种规则类型。
 static func evaluate(case_data: Dictionary, rules_by_id: Dictionary) -> Dictionary:
 	var violations: Array[String] = []
 	var documents := _documents_by_id(case_data.get("documents", []))
@@ -31,6 +35,7 @@ static func evaluate(case_data: Dictionary, rules_by_id: Dictionary) -> Dictiona
 	}
 
 
+# 将材料数组按 ID 索引为字典，便于按 document_id 查找。
 static func _documents_by_id(raw_documents: Array) -> Dictionary:
 	var result := {}
 	for document in raw_documents:
@@ -38,6 +43,8 @@ static func _documents_by_id(raw_documents: Array) -> Dictionary:
 	return result
 
 
+# 解析 field_path（如 "doc_01.address"），返回对应材料字段值。
+# 若按 ID 找不到材料，会尝试按 document_type_id 匹配。
 static func _resolve_field(documents: Dictionary, path: String) -> Variant:
 	var separator := path.find(".")
 	if separator < 0:
