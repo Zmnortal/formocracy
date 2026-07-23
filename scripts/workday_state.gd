@@ -13,6 +13,9 @@ var save_path := DEFAULT_SAVE_PATH
 var current_level_id := "day_1"
 var target_case_count := CASES_PER_DAY
 var report_title := "工作日处理回执"
+var player_name := ""
+var reinstatement_date := ""
+var player_signature: Array = []
 
 # 案件决策缓存与后续后果
 var decision_by_case_id: Dictionary = {}
@@ -191,6 +194,9 @@ func start_new_game() -> void:
 	current_level_id = "day_1"
 	target_case_count = CASES_PER_DAY
 	report_title = "工作日处理回执"
+	player_name = ""
+	reinstatement_date = ""
+	player_signature.clear()
 	decision_by_case_id.clear()
 	balance = 0
 	political_credit = 0
@@ -213,6 +219,9 @@ func save_progress() -> bool:
 		"current_level_id": current_level_id,
 		"target_case_count": target_case_count,
 		"report_title": report_title,
+		"player_name": player_name,
+		"reinstatement_date": reinstatement_date,
+		"player_signature": player_signature,
 		"decision_by_case_id": decision_by_case_id,
 		"balance": balance,
 		"political_credit": political_credit,
@@ -236,6 +245,9 @@ func load_progress() -> bool:
 	current_level_id = String(parsed.get("current_level_id", "day_1"))
 	target_case_count = maxi(1, int(parsed.get("target_case_count", CASES_PER_DAY)))
 	report_title = String(parsed.get("report_title", "工作日处理回执"))
+	player_name = String(parsed.get("player_name", ""))
+	reinstatement_date = String(parsed.get("reinstatement_date", ""))
+	player_signature = parsed.get("player_signature", []).duplicate(true)
 	decision_by_case_id = parsed.get("decision_by_case_id", {}).duplicate()
 	balance = int(parsed.get("balance", 0))
 	political_credit = int(parsed.get("political_credit", 0))
@@ -257,6 +269,9 @@ func reset_for_tests() -> void:
 	current_level_id = "day_1"
 	target_case_count = CASES_PER_DAY
 	report_title = "工作日处理回执"
+	player_name = ""
+	reinstatement_date = ""
+	player_signature.clear()
 	decision_by_case_id.clear()
 	workday_duration = 180.0
 	seconds_remaining = workday_duration

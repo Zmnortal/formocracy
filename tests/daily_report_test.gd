@@ -12,6 +12,7 @@ func run() -> void:
 		state.name = "WorkdayState"
 		root.add_child(state)
 	state.reset_for_tests()
+	state.player_name = "测试审批员"
 	for i in 3:
 		state.record_case({
 			"department": "测试部门",
@@ -25,6 +26,7 @@ func run() -> void:
 	var report := packed.instantiate()
 	root.add_child(report)
 	await process_frame
+	assert(report.metadata_label.text.contains("测试审批员"), "daily report must use the name entered during reinstatement")
 	assert(report.stats_label.text.contains("批准 02"), "report must aggregate approvals")
 	assert(report.stats_label.text.contains("驳回 01"), "report must aggregate rejections")
 	assert(report.cases_label.text.contains("T-00/测试事项"), "report must list daily cases")

@@ -82,6 +82,18 @@ func build(root: Node2D) -> DeskNodes:
 	)
 	desk.status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
+	var clerk_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "未登记职员"
+	var identity_label := WorkbenchUI.add_text(
+		root,
+		"经办员：%s  /  第 %02d 工作日" % [clerk_name, WorkdayState.day_number],
+		14,
+		Color("d8c9a9"),
+		Vector2(36, 28),
+		Vector2(520, 28)
+	)
+	identity_label.add_theme_constant_override("outline_size", 5)
+	identity_label.add_theme_color_override("font_outline_color", Color("11130f"))
+
 	_build_machine_ingestion_zone(root, desk)
 	_build_queue_display(root, desk)
 	_build_validation_overlay(root, desk)

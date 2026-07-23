@@ -29,7 +29,8 @@ func populate_report() -> void:
 	var summary: Dictionary = WorkdayState.get_summary()
 	var settlement: Dictionary = WorkdayState.get_settlement()
 	title_label.text = WorkdayState.report_title
-	metadata_label.text = "工作日：%02d    回执：D12-%04d    生成时间：当日终止后" % [day, day]
+	var clerk_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "未登记职员"
+	metadata_label.text = "经办员：%s    工作日：%02d    回执：D12-%04d    生成时间：当日终止后" % [clerk_name, day, day]
 	stats_label.text = "形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    程序错误 %02d\n日薪 %+d  绩效 %+d  罚款 -%d  生活支出 -%d  本日结余 %+d  %s" % [
 		summary.reviewed, summary.submitted, summary.approved,
 		summary.rejected, summary.procedure_errors,

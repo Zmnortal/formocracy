@@ -38,6 +38,9 @@ func run() -> void:
 	assert(not menu.save_panel.visible, "save choice must begin hidden")
 	assert(not state.has_save(), "test must begin without a save")
 	state.day_number = 4
+	state.player_name = "测试审批员"
+	state.reinstatement_date = "2026-07-23"
+	state.player_signature = [[[1.0, 2.0], [3.0, 4.0]]]
 	state.records.clear()
 	state.records.append({"decision": "批准"})
 	assert(state.save_progress(), "save progress must succeed")
@@ -51,9 +54,13 @@ func run() -> void:
 	menu.close_overwrite_panel()
 	menu.close_save_panel()
 	state.day_number = 1
+	state.player_name = ""
+	state.player_signature.clear()
 	state.records.clear()
 	assert(state.load_progress(), "saved progress must load")
 	assert(state.day_number == 4, "saved workday must restore")
+	assert(state.player_name == "测试审批员", "player identity from the opening form must persist globally")
+	assert(state.player_signature.size() == 1, "handwritten signature strokes must persist")
 	assert(state.records.size() == 1, "saved records must restore")
 	state.start_new_game()
 	assert(not state.has_save(), "new game must remove old save")
