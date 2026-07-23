@@ -18,6 +18,10 @@ func run() -> void:
 	await process_frame
 	assert(menu.start_button.text == "游戏开始", "main menu must expose game start")
 	assert(menu.exit_button.text == "退出游戏", "main menu must expose exit")
+	assert(menu.continue_button != null, "continue button reference must be retained for save-menu focus")
+	var artwork := menu.get_node("TitleArtwork") as TextureRect
+	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
+	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")
 	assert(not menu.save_panel.visible, "save choice must begin hidden")
 	assert(not state.has_save(), "test must begin without a save")
 	state.day_number = 4
@@ -25,6 +29,10 @@ func run() -> void:
 	state.records.append({"decision": "批准"})
 	assert(state.save_progress(), "save progress must succeed")
 	assert(state.has_save(), "save file must exist")
+	menu.on_start_pressed()
+	assert(menu.save_panel.visible, "existing save must open the save-choice panel")
+	assert(menu.continue_button.has_focus(), "continue button must receive focus without a node-path lookup")
+	menu.close_save_panel()
 	state.day_number = 1
 	state.records.clear()
 	assert(state.load_progress(), "saved progress must load")

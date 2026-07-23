@@ -22,6 +22,7 @@ var start_panel: Control
 # 构建包含幻灯片、跳过按钮、进度标签、开始按钮与自动推进计时器的完整 UI，
 # 显示第一张幻灯片（无淡入动画），并连接视口尺寸变化信号以适配窗口。
 func _ready() -> void:
+	OpeningMusic.play_opening()
 	build_scene()
 	show_slide(0, false)
 	get_viewport().size_changed.connect(fit_to_window)

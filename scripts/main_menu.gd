@@ -7,23 +7,22 @@ const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proport
 
 var start_button: Button
 var exit_button: Button
+var continue_button: Button
 var save_panel: Panel
 var overwrite_dialog: ConfirmationDialog
 
 
 func _ready() -> void:
+	OpeningMusic.play_opening()
 	build_scene()
-	get_viewport().size_changed.connect(fit_to_window)
-	fit_to_window()
 	start_button.grab_focus()
 
 
 func build_scene() -> void:
-	size = Vector2(1280, 720)
 	var background := TextureRect.new()
 	background.name = "TitleArtwork"
 	background.texture = TITLE_TEXTURE
-	background.size = size
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -31,13 +30,14 @@ func build_scene() -> void:
 
 	var shade := ColorRect.new()
 	shade.color = Color(0.0, 0.0, 0.02, 0.2)
-	shade.size = size
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shade)
 
 	var menu := VBoxContainer.new()
 	menu.name = "PrimaryMenu"
-	menu.position = Vector2(970, 525)
+	menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	menu.position = Vector2(-310, -195)
 	menu.size = Vector2(260, 130)
 	menu.add_theme_constant_override("separation", 14)
 	add_child(menu)
@@ -68,7 +68,8 @@ func make_button(label_text: String) -> Button:
 func build_save_panel() -> void:
 	save_panel = Panel.new()
 	save_panel.name = "SaveChoicePanel"
-	save_panel.position = Vector2(440, 430)
+	save_panel.set_anchors_preset(Control.PRESET_CENTER)
+	save_panel.position = Vector2(-200, -120)
 	save_panel.size = Vector2(400, 240)
 	save_panel.visible = false
 	add_child(save_panel)
@@ -87,7 +88,7 @@ func build_save_panel() -> void:
 	choices.size = Vector2(260, 150)
 	choices.add_theme_constant_override("separation", 8)
 	save_panel.add_child(choices)
-	var continue_button := make_button("继续游戏")
+	continue_button = make_button("继续游戏")
 	continue_button.name = "ContinueButton"
 	continue_button.pressed.connect(continue_game)
 	choices.add_child(continue_button)
@@ -114,7 +115,6 @@ func build_overwrite_dialog() -> void:
 func on_start_pressed() -> void:
 	if WorkdayState.has_save():
 		save_panel.visible = true
-		var continue_button := save_panel.get_node("VBoxContainer/ContinueButton") as Button
 		continue_button.grab_focus()
 	else:
 		start_new_game()
@@ -161,12 +161,3 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			close_save_panel()
 		else:
 			on_exit_pressed()
-
-
-func fit_to_window() -> void:
-	var viewport_size := get_viewport_rect().size
-	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
-		return
-	scale = Vector2(viewport_size.x / 1280.0, viewport_size.y / 720.0)
-	position = Vector2.ZERO
-	size = Vector2(1280, 720)

@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 WorkdayState="*res://scripts/workday_state.gd"
 ConfigDatabase="*res://scripts/config_database.gd"
 LevelDirector="*res://scripts/level_director.gd"
+OpeningMusic="*res://scripts/opening_music.gd"
+PauseMenu="*res://scripts/pause_menu.gd"
 DeveloperConsole="*res://scripts/developer_console.gd"
 
 [debug]
@@ -30,7 +32,7 @@ developer_console_enabled=true
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/mode=0
+window/size/mode=3
 window/stretch/mode="disabled"
 
 [physics]

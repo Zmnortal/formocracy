@@ -43,6 +43,7 @@ var colors := {
 # 依次构建完整的办公桌场景、创建第一份申请表单，为所有视差层记录基准位置，
 # 并连接视口尺寸变化信号以持续适配 1280x720 的基准分辨率。
 func _ready() -> void:
+	OpeningMusic.stop_opening(1.2)
 	build_scene()
 	LevelDirector.ensure_active_level()
 	current_case = LevelDirector.get_next_case()

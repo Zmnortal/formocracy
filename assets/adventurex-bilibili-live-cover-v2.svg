@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080706"/>
+      <stop offset="0.52" stop-color="#120b08"/>
+      <stop offset="1" stop-color="#3b0b05"/>
+    </linearGradient>
+    <radialGradient id="flare" cx="78%" cy="42%" r="58%">
+      <stop offset="0" stop-color="#ff4b16" stop-opacity=".55"/>
+      <stop offset=".46" stop-color="#a31408" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff3b12"/>
+      <stop offset="1" stop-color="#ff9b38"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="conceptClip">
+      <rect x="930" y="100" width="930" height="790" rx="42"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#flare)"/>
+
+  <g clip-path="url(#conceptClip)" opacity=".42">
+    <image href="official-adventurex/adventurex-logo-concept.webp"
+      x="-420" y="170" width="3000" height="800" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="930" y="100" width="930" height="790" fill="url(#bg)" opacity=".22"/>
+  </g>
+
+  <g opacity=".28" stroke="#ff5b22" fill="none">
+    <path d="M-80 960 C420 890 660 1050 1110 820 S1740 520 2040 610" stroke-width="2"/>
+    <path d="M-120 1000 C410 930 700 1090 1150 850 S1750 550 2050 645" stroke-width="1"/>
+    <path d="M1350 -120 L1090 1160" stroke-width="2"/>
+    <path d="M1470 -80 L1210 1160" stroke-width="1"/>
+  </g>
+
+  <g transform="translate(1170 125)" filter="url(#glow)">
+    <circle cx="265" cy="265" r="248" fill="#0b0806" fill-opacity=".86" stroke="#ff5822" stroke-opacity=".35" stroke-width="2"/>
+    <image href="official-adventurex/favicon.svg" x="77" y="105" width="376" height="321"
+      style="filter:invert(1)"/>
+  </g>
+
+  <g transform="translate(110 110)">
+    <text x="0" y="44" fill="#ff6a2b" font-family="Arial, Helvetica, sans-serif"
+      font-size="34" font-weight="700" letter-spacing="8">ADVENTUREX 2026</text>
+    <rect x="0" y="78" width="720" height="4" rx="2" fill="url(#orange)"/>
+
+    <g transform="translate(0 112)">
+      <rect width="650" height="74" rx="12" fill="#fff" fill-opacity=".06"
+        stroke="#ff6628" stroke-opacity=".75" stroke-width="2"/>
+      <text x="28" y="50" fill="#ff7a38" font-family="PingFang SC, Noto Sans CJK SC, sans-serif"
+        font-size="34" font-weight="700">做游戏</text>
+      <rect x="158" y="21" width="2" height="32" fill="#ff6628" opacity=".75"/>
+      <text x="185" y="50" fill="#fff" font-family="Arial, Helvetica, sans-serif"
+        font-size="34" font-weight="800" letter-spacing="3">FORMOCRACY</text>
+    </g>
+
+    <text x="0" y="335" fill="#fff" font-family="PingFang SC, Noto Sans CJK SC, sans-serif"
+      font-size="144" font-weight="800" letter-spacing="-5">黑客松</text>
+    <text x="0" y="488" fill="#fff" font-family="PingFang SC, Noto Sans CJK SC, sans-serif"
+      font-size="144" font-weight="800" letter-spacing="-5">现场直播</text>
+
+    <g transform="translate(0 565)">
+      <rect width="445" height="94" rx="47" fill="url(#orange)"/>
+      <circle cx="55" cy="47" r="13" fill="#fff"/>
+      <text x="88" y="63" fill="#fff" font-family="PingFang SC, Noto Sans CJK SC, sans-serif"
+        font-size="43" font-weight="700" letter-spacing="1">从 0 到 Demo</text>
+    </g>
+
+    <text x="0" y="690" fill="#bfb7b0" font-family="PingFang SC, Noto Sans CJK SC, sans-serif"
+      font-size="30" font-weight="500" letter-spacing="3">连接 · 探索 · 创造</text>
+    <text x="0" y="745" fill="#6f6862" font-family="Arial, Helvetica, sans-serif"
+      font-size="23" font-weight="600" letter-spacing="5">LIVE FROM THE HACKATHON</text>
+  </g>
+
+  <g transform="translate(1450 830)">
+    <circle cx="0" cy="0" r="7" fill="#ff5b22"/>
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#ff5b22" stroke-opacity=".45"/>
+    <text x="38" y="10" fill="#fff" font-family="Arial, Helvetica, sans-serif"
+      font-size="28" font-weight="700" letter-spacing="5">LIVE</text>
+  </g>
+
+  <rect x="24" y="24" width="1872" height="1032" rx="24" fill="none" stroke="#fff" stroke-opacity=".08"/>
+</svg>
