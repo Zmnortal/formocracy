@@ -155,6 +155,7 @@ func show_final_slide() -> void:
 # 停止自动推进计时器并切换到主工作台场景；切换失败时输出错误信息到 Godot 错误日志。
 func start_first_day() -> void:
 	auto_timer.stop()
+	WorkdayState.save_progress()
 	var error := get_tree().change_scene_to_file(MAIN_SCENE)
 	if error != OK:
 		push_error("无法进入第一工作日：%s" % error_string(error))

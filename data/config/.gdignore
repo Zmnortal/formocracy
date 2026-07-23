@@ -1,0 +1,2 @@
+# Keep designer-authored CSV files as raw runtime data.
+# Godot otherwise imports arbitrary CSV columns as translation locales.
