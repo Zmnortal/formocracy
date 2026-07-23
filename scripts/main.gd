@@ -353,6 +353,8 @@ func submit_form() -> void:
 		tween.tween_property(form, "position", form_home, 0.45)
 		return
 	status_label.text = "材料已接收。批准不构成现实效力承诺。"
+	var case_data: Dictionary = CASES[case_index % CASES.size()]
+	WorkdayState.record_case(case_data, form_stamp_type)
 	flash_slot(colors.green_glow)
 	form.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var target := slot.global_position + Vector2(80, 76)
@@ -377,7 +379,13 @@ func show_validation_transition() -> void:
 	fade_out.tween_property(validation_overlay, "modulate:a", 0.0, 0.32)
 	await fade_out.finished
 	validation_overlay.visible = false
-	next_case()
+	if WorkdayState.should_show_report():
+		var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
+		if error != OK:
+			status_label.text = "内部日报生成失败，当前记录已保留。"
+			next_case()
+	else:
+		next_case()
 
 
 func next_case() -> void:

@@ -1,0 +1,207 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/daily_report.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="TerminalPanel"]
+bg_color = Color(0.035, 0.055, 0.045, 0.98)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.44, 0.52, 0.32, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="ReceiptPanel"]
+bg_color = Color(0.82, 0.78, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.32, 0.31, 0.24, 1)
+
+[sub_resource type="StyleBoxFlat" id="StatPanel"]
+bg_color = Color(0.69, 0.67, 0.53, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.39, 0.39, 0.29, 1)
+
+[sub_resource type="StyleBoxFlat" id="ButtonNormal"]
+bg_color = Color(0.12, 0.19, 0.13, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.56, 0.29, 1)
+
+[sub_resource type="StyleBoxFlat" id="ButtonHover"]
+bg_color = Color(0.2, 0.31, 0.18, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.66, 0.78, 0.43, 1)
+
+[node name="DailyReport" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.012, 0.018, 0.015, 1)
+mouse_filter = 2
+
+[node name="Terminal" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 34.0
+offset_right = 1210.0
+offset_bottom = 694.0
+theme_override_styles/panel = SubResource("TerminalPanel")
+
+[node name="Header" type="Label" parent="Terminal"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 20.0
+offset_right = 1106.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.55, 0.7, 0.37, 1)
+theme_override_font_sizes/font_size = 22
+text = "FORMOCRACY // 内部记录终端"
+
+[node name="StatusLine" type="Label" parent="Terminal"]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 22.0
+offset_right = 1104.0
+offset_bottom = 52.0
+theme_override_colors/font_color = Color(0.74, 0.53, 0.25, 1)
+text = "记录状态：等待人员确认"
+horizontal_alignment = 2
+
+[node name="Receipt" type="Panel" parent="Terminal"]
+layout_mode = 0
+offset_left = 78.0
+offset_top = 76.0
+offset_right = 1062.0
+offset_bottom = 622.0
+theme_override_styles/panel = SubResource("ReceiptPanel")
+
+[node name="Agency" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 952.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+text = "中央现实管理局 · 第十二区行政记录处"
+
+[node name="Title" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 56.0
+offset_right = 952.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(0.1, 0.12, 0.09, 1)
+theme_override_font_sizes/font_size = 30
+text = "工作日处理回执 / 内部日报"
+horizontal_alignment = 1
+
+[node name="Metadata" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 108.0
+offset_right = 950.0
+offset_bottom = 136.0
+theme_override_colors/font_color = Color(0.28, 0.29, 0.22, 1)
+text = "工作日：01    回执：D12-0001    生成时间：当日终止后"
+
+[node name="Stats" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 148.0
+offset_right = 952.0
+offset_bottom = 235.0
+theme_override_styles/panel = SubResource("StatPanel")
+
+[node name="StatsText" type="Label" parent="Terminal/Receipt/Stats"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 12.0
+offset_right = -18.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.13, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+text = "形式审查 00    送交验收 00    批准 00    驳回 00\n取得现实效力 00    等待设施处理 00"
+
+[node name="CasesTitle" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 250.0
+offset_right = 420.0
+offset_bottom = 276.0
+theme_override_colors/font_color = Color(0.22, 0.23, 0.17, 1)
+text = "当日事项记录"
+
+[node name="CasesText" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 280.0
+offset_right = 950.0
+offset_bottom = 372.0
+theme_override_colors/font_color = Color(0.12, 0.14, 0.1, 1)
+theme_override_font_sizes/font_size = 15
+text = "01 / 尚无事项记录"
+autowrap_mode = 2
+
+[node name="Notice" type="Label" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 382.0
+offset_right = 950.0
+offset_bottom = 428.0
+theme_override_colors/font_color = Color(0.38, 0.24, 0.14, 1)
+text = "设施通告：已获批准但尚未验收之事项，不构成任何权利、事实、时限或行政承诺。"
+autowrap_mode = 2
+
+[node name="Declaration" type="CheckBox" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 440.0
+offset_right = 660.0
+offset_bottom = 482.0
+theme_override_colors/font_color = Color(0.13, 0.15, 0.1, 1)
+theme_override_colors/font_pressed_color = Color(0.13, 0.15, 0.1, 1)
+text = "本人确认以上记录完整，且未形成额外行政承诺。"
+
+[node name="ConfirmButton" type="Button" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 668.0
+offset_top = 436.0
+offset_right = 950.0
+offset_bottom = 490.0
+theme_override_colors/font_color = Color(0.72, 0.84, 0.49, 1)
+theme_override_colors/font_hover_color = Color(0.9, 0.96, 0.67, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/pressed = SubResource("ButtonHover")
+text = "确认并结束工作日"
+disabled = true

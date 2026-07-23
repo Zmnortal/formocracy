@@ -6,6 +6,12 @@ func _init() -> void:
 
 
 func run() -> void:
+	var state := root.get_node_or_null("WorkdayState")
+	if state == null:
+		state = load("res://scripts/workday_state.gd").new()
+		state.name = "WorkdayState"
+		root.add_child(state)
+	state.reset_for_tests()
 	var packed: PackedScene = load("res://main.tscn")
 	assert(packed != null, "main scene must load")
 	var main := packed.instantiate()
