@@ -20,3 +20,5 @@ var timer_label: Label
 var validation_overlay: Control
 var validation_image: TextureRect
 var npc_panel: Panel
+var machine_drop_zone: Control
+var machine_mouth_mask: ColorRect

@@ -8,6 +8,7 @@ signal submission_finished
 
 var root: Node2D
 var desk: DeskNodes
+var submission_in_progress := false
 
 
 func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
@@ -18,6 +19,9 @@ func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
 # 提交当前案件。
 # 检查程序错误，记录结果，播放验收动画与转场。
 func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
+	if submission_in_progress:
+		return
+	submission_in_progress = true
 	var procedure_errors: Array[String] = []
 	if not presenter.is_stamped():
 		procedure_errors.append("漏盖章")
@@ -26,9 +30,60 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	if not presenter.envelope_opened:
 		procedure_errors.append("未拆封归档")
 
-	if is_instance_valid(desk.status_label):
-		desk.status_label.text = "材料已接收。批准不构成现实效力承诺。"
+	if is_instance_valid(presenter.form):
+		presenter.form.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		presenter.form.visible = false
+	if is_instance_valid(presenter.envelope):
+		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for document in presenter.document_panels:
+		if is_instance_valid(document):
+			document.visible = false
 
+	var submitted_object: Control = presenter.envelope if is_instance_valid(presenter.envelope) else null
+	if not is_instance_valid(submitted_object):
+		_record_submission(presenter, case_data, procedure_errors)
+		_show_validation_transition()
+		return
+
+	submitted_object.visible = true
+	submitted_object.pivot_offset = submitted_object.size / 2.0
+	submitted_object.z_index = 46
+	if is_instance_valid(desk.machine_mouth_mask):
+		desk.machine_mouth_mask.visible = true
+	var zone_rect := desk.machine_drop_zone.get_global_rect()
+	var target := zone_rect.position + Vector2(
+		(zone_rect.size.x - submitted_object.size.x) / 2.0,
+		zone_rect.size.y * 0.56
+	)
+
+	var snap := root.create_tween().set_parallel(true)
+	snap.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	snap.tween_property(submitted_object, "global_position", target, 0.2)
+	snap.tween_property(submitted_object, "scale", Vector2(0.78, 0.46), 0.2)
+	snap.tween_property(submitted_object, "rotation", -0.065, 0.2)
+	await snap.finished
+
+	submitted_object.z_index = 40
+	var ingest := root.create_tween().set_parallel(true)
+	ingest.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	ingest.tween_property(submitted_object, "global_position", target + Vector2(0, -92), 0.58)
+	ingest.tween_property(submitted_object, "scale", Vector2(0.54, 0.035), 0.58)
+	ingest.tween_property(submitted_object, "rotation", 0.0, 0.4)
+	ingest.tween_property(submitted_object, "modulate:a", 0.0, 0.18).set_delay(0.42)
+	await ingest.finished
+
+	submitted_object.visible = false
+	if is_instance_valid(desk.machine_mouth_mask):
+		desk.machine_mouth_mask.visible = false
+	_record_submission(presenter, case_data, procedure_errors)
+	_show_validation_transition()
+
+
+func _record_submission(
+		presenter: CasePresenter,
+		case_data: Dictionary,
+		procedure_errors: Array[String]
+) -> void:
 	WorkdayState.record_case_result(
 		case_data,
 		presenter.stamp_type(),
@@ -36,31 +91,14 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 		Time.get_ticks_msec() / 1000.0 - presenter.case_started_at,
 		presenter.packed_document_ids.duplicate()
 	)
-
+	if is_instance_valid(desk.status_label):
+		desk.status_label.text = "材料已吞入。批准不构成现实效力承诺。"
 	_flash_slot(WorkbenchUI.COLORS.green_glow)
-
-	if is_instance_valid(presenter.form):
-		presenter.form.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if is_instance_valid(presenter.envelope):
-		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var submitted_object: Control = presenter.envelope if is_instance_valid(presenter.envelope) and presenter.envelope.visible else presenter.form
-	if not is_instance_valid(submitted_object):
-		_show_validation_transition()
-		return
-
-	submitted_object.visible = true
-	var target := desk.slot.global_position + Vector2(80, 76)
-	var tween := root.create_tween().set_parallel(true)
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(submitted_object, "global_position", target, 0.55)
-	tween.tween_property(submitted_object, "scale", Vector2(0.28, 0.06), 0.55)
-	tween.tween_property(submitted_object, "modulate:a", 0.0, 0.5).set_delay(0.18)
-	tween.finished.connect(_show_validation_transition)
 
 
 func _show_validation_transition() -> void:
 	if not is_instance_valid(desk.validation_overlay):
+		submission_in_progress = false
 		submission_finished.emit()
 		return
 
@@ -79,6 +117,7 @@ func _show_validation_transition() -> void:
 	await fade_out.finished
 
 	desk.validation_overlay.visible = false
+	submission_in_progress = false
 	submission_finished.emit()
 
 

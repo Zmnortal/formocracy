@@ -4,6 +4,7 @@ extends SceneTree
 # 进入主工作台场景、拆封文件袋并保存视口截图，用于人工或自动验证画面。
 
 const SNAPSHOT_PATH := "/tmp/formocracy-core-gameplay.png"
+const INGESTION_SNAPSHOT_PATH := "/tmp/formocracy-machine-ingestion.png"
 
 
 func _init() -> void:
@@ -28,5 +29,15 @@ func run() -> void:
 	var image := root.get_viewport().get_texture().get_image()
 	assert(not image.is_empty(), "rendered viewport must produce an image")
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "render verification screenshot must be saved")
-	print("FORMOCRACY_RENDER_SNAPSHOT_OK " + SNAPSHOT_PATH)
+	current_scene.presenter.apply_stamp("批准", Vector2(350, 360))
+	current_scene.presenter.pack_all_documents()
+	current_scene.submission_mgr.submit(current_scene.presenter, current_scene.current_case)
+	await create_timer(0.4).timeout
+	var ingestion_image := root.get_viewport().get_texture().get_image()
+	assert(not ingestion_image.is_empty(), "machine ingestion must produce a rendered frame")
+	assert(
+		ingestion_image.save_png(INGESTION_SNAPSHOT_PATH) == OK,
+		"machine ingestion screenshot must be saved"
+	)
+	print("FORMOCRACY_RENDER_SNAPSHOT_OK %s %s" % [SNAPSHOT_PATH, INGESTION_SNAPSHOT_PATH])
 	quit(0)

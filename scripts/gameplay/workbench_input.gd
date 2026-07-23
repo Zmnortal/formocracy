@@ -5,13 +5,13 @@ extends RefCounted
 
 signal envelope_submitted
 
-const DOCUMENT_PACK_POINT := Vector2(250, 540)
-
 var root: Node2D
 var desk: DeskNodes
 
 var form_dragging := false
 var envelope_dragging := false
+var envelope_in_machine_zone := false
+var envelope_preview_tween: Tween
 
 
 func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
@@ -21,6 +21,8 @@ func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
 
 # 为当前案件的表单、文件袋和材料连接输入事件。
 func bind_case(presenter: CasePresenter) -> void:
+	envelope_dragging = false
+	envelope_in_machine_zone = false
 	if is_instance_valid(presenter.form):
 		presenter.form.gui_input.connect(_on_form_input.bind(presenter))
 		presenter.form.mouse_entered.connect(_on_form_hover.bind(presenter, true))
@@ -58,7 +60,7 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 			var tween := root.create_tween().set_parallel(true)
 			tween.tween_property(presenter.form, "scale", desk.form_base_scale, 0.12)
 			tween.tween_property(presenter.form, "rotation", 0.0, 0.12)
-			if presenter.form.position.x < 300 and presenter.form.position.y > 430:
+			if _is_over_open_envelope(presenter.form, presenter):
 				presenter.pack_document(presenter.primary_document_id)
 	elif event is InputEventMouseMotion and form_dragging:
 		presenter.form.position += event.relative
@@ -68,21 +70,62 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 func _on_envelope_input(event: InputEvent, presenter: CasePresenter) -> void:
 	if not is_instance_valid(presenter.envelope):
 		return
+	if presenter.envelope_opened and not presenter.all_documents_packed():
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			envelope_dragging = true
 			presenter.envelope.z_index = 30
 		else:
 			envelope_dragging = false
-			presenter.envelope.z_index = 12
+			if envelope_in_machine_zone and presenter.envelope_on_desk:
+				if is_instance_valid(envelope_preview_tween):
+					envelope_preview_tween.kill()
+				presenter.envelope.z_index = 46
+				envelope_submitted.emit()
+			else:
+				presenter.envelope.z_index = 12
+				_set_machine_preview(presenter, false)
 			if not presenter.envelope_on_desk:
 				presenter.set_envelope_on_desk(presenter.envelope.position.x > 300)
 				if presenter.envelope_on_desk and is_instance_valid(desk.status_label):
 					desk.status_label.text = "文件袋已置于工作台，点击封口拆开。"
-			elif presenter.envelope_on_desk and presenter.envelope.get_global_rect().intersects(desk.slot.get_global_rect()):
-				envelope_submitted.emit()
 	elif event is InputEventMouseMotion and envelope_dragging:
 		presenter.envelope.position += event.relative
+		var entered := (
+			presenter.envelope_on_desk
+			and is_instance_valid(desk.machine_drop_zone)
+			and presenter.envelope.get_global_rect().intersects(desk.machine_drop_zone.get_global_rect())
+		)
+		if entered != envelope_in_machine_zone:
+			_set_machine_preview(presenter, entered)
+
+
+func _set_machine_preview(presenter: CasePresenter, active: bool) -> void:
+	envelope_in_machine_zone = active
+	if not is_instance_valid(presenter.envelope):
+		return
+	if is_instance_valid(envelope_preview_tween):
+		envelope_preview_tween.kill()
+	presenter.envelope.pivot_offset = presenter.envelope.size / 2.0
+	envelope_preview_tween = root.create_tween().set_parallel(true)
+	envelope_preview_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	envelope_preview_tween.tween_property(
+		presenter.envelope,
+		"scale",
+		Vector2(0.92, 0.62) if active else Vector2.ONE,
+		0.14
+	)
+	envelope_preview_tween.tween_property(
+		presenter.envelope,
+		"rotation",
+		-0.055 if active else 0.0,
+		0.14
+	)
+	if is_instance_valid(desk.slot_light):
+		desk.slot_light.color = Color("d7aa45") if active else WorkbenchUI.COLORS.red
+	if active and is_instance_valid(desk.status_label):
+		desk.status_label.text = "验收机器已锁定文件袋：松手送入。"
 
 
 # 单个材料的拖拽与装袋处理。
@@ -95,7 +138,16 @@ func _on_document_input(event: InputEvent, document: Panel, presenter: CasePrese
 			document.z_index = 25
 		else:
 			document.z_index = 8
-			if document.get_global_rect().has_point(DOCUMENT_PACK_POINT):
+			if _is_over_open_envelope(document, presenter):
 				presenter.pack_document(String(document.get_meta("document_id")))
 	elif event is InputEventMouseMotion and bool(document.get_meta("dragging")):
 		document.position += event.relative
+
+
+func _is_over_open_envelope(item: Control, presenter: CasePresenter) -> bool:
+	return (
+		presenter.envelope_opened
+		and is_instance_valid(presenter.envelope)
+		and presenter.envelope.visible
+		and item.get_global_rect().intersects(presenter.envelope.get_global_rect())
+	)

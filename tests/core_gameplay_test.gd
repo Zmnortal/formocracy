@@ -24,10 +24,19 @@ func run() -> void:
 	desk.presenter.set_envelope_on_desk(true)
 	desk.presenter.open_envelope()
 	assert(desk.presenter.form.visible and desk.presenter.document_panels.size() >= 1, "opening must reveal one primary form and supporting documents")
+	assert(desk.presenter.envelope.visible, "opened envelope must remain visible as the repacking target")
+	assert(desk.presenter.envelope_flap.text.contains("拖回袋中"), "opened envelope must explain where documents should be repacked")
 	desk.presenter.apply_stamp("批准", Vector2(350, 360))
 	desk.presenter.pack_all_documents()
 	assert(desk.presenter.packed_document_ids.size() == desk.current_case.documents.size(), "all materials must return to the original envelope")
+	desk.input_mgr._set_machine_preview(desk.presenter, true)
+	await create_timer(0.16).timeout
+	assert(desk.presenter.envelope.scale.y < 0.7, "machine hover must tilt the envelope with pseudo-3D compression")
+	assert(desk.desk.slot_light.color == Color("d7aa45"), "machine hover must show an amber lock indicator")
 	desk.submission_mgr.submit(desk.presenter, desk.current_case)
+	assert(state.records.is_empty(), "case result must wait until the machine has swallowed the envelope")
+	assert(desk.submission_mgr.submission_in_progress, "machine ingestion must lock duplicate submissions")
+	await create_timer(0.9).timeout
 	assert(state.records.size() == 1, "validation submission must create an immutable processing record")
 	assert(state.records[0].procedure_errors.is_empty(), "complete operation must not record a procedural error")
 

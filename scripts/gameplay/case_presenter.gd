@@ -258,7 +258,12 @@ func open_envelope() -> void:
 	if envelope_opened or not envelope_on_desk:
 		return
 	envelope_opened = true
-	envelope.visible = false
+	envelope.visible = true
+	envelope.position = Vector2(78, 505)
+	envelope.z_index = 4
+	if is_instance_valid(envelope_flap):
+		envelope_flap.disabled = true
+		envelope_flap.text = "将盖章表单与证明材料拖回袋中"
 	form.visible = true
 	for document in document_panels:
 		document.visible = true
@@ -280,7 +285,9 @@ func pack_document(document_id: String) -> bool:
 			form.visible = false
 		if is_instance_valid(envelope):
 			envelope.visible = true
-			envelope.position = Vector2(420, 485)
+			envelope.z_index = 12
+		if is_instance_valid(envelope_flap):
+			envelope_flap.text = "材料已封装，可送入中央验收机器"
 		if is_instance_valid(desk.status_label):
 			desk.status_label.text = "全部材料已重新装袋，可送入验收区。"
 		return true

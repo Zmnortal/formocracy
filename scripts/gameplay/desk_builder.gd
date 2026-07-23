@@ -82,10 +82,32 @@ func build(root: Node2D) -> DeskNodes:
 	)
 	desk.status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
+	_build_machine_ingestion_zone(root, desk)
 	_build_queue_display(root, desk)
 	_build_validation_overlay(root, desk)
 
 	return desk
+
+
+func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:
+	desk.machine_drop_zone = Control.new()
+	desk.machine_drop_zone.name = "MachineDropZone"
+	desk.machine_drop_zone.position = Vector2(485, 205)
+	desk.machine_drop_zone.size = Vector2(310, 285)
+	desk.machine_drop_zone.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(desk.machine_drop_zone)
+
+	# 覆盖传送口前沿。文件袋在吞入阶段降到该层之后，
+	# 会逐步被这块前景遮住，形成进入机器内部的效果。
+	desk.machine_mouth_mask = ColorRect.new()
+	desk.machine_mouth_mask.name = "MachineMouthForeground"
+	desk.machine_mouth_mask.position = Vector2(565, 350)
+	desk.machine_mouth_mask.size = Vector2(150, 44)
+	desk.machine_mouth_mask.color = Color(0.018, 0.022, 0.019, 0.88)
+	desk.machine_mouth_mask.z_index = 45
+	desk.machine_mouth_mask.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk.machine_mouth_mask.visible = false
+	root.add_child(desk.machine_mouth_mask)
 
 
 func _build_queue_display(root: Node2D, desk: DeskNodes) -> void:
