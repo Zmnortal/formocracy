@@ -18,6 +18,11 @@ config/icon="res://icon.svg"
 [autoload]
 
 WorkdayState="*res://scripts/workday_state.gd"
+DeveloperConsole="*res://scripts/developer_console.gd"
+
+[debug]
+
+developer_console_enabled=true
 
 [display]
 

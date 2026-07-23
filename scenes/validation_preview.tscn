@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/concepts/validation-machine.png" id="1_image"]
+[ext_resource type="Script" path="res://scripts/validation_preview.gd" id="2_script"]
+
+[node name="ValidationPreview" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+script = ExtResource("2_script")
+
+[node name="Image" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+texture = ExtResource("1_image")
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0, 0, 0, 0.18)
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="."]
+layout_mode = 0
+offset_left = 370.0
+offset_top = 650.0
+offset_right = 910.0
+offset_bottom = 692.0
+theme_override_colors/font_color = Color(0.89, 0.83, 0.68, 1)
+theme_override_constants/outline_size = 6
+theme_override_colors/font_outline_color = Color(0.06, 0.05, 0.04, 1)
+theme_override_font_sizes/font_size = 22
+text = "开发预览 // 中央现实验收设施"
+horizontal_alignment = 1
