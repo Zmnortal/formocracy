@@ -62,6 +62,9 @@ var colors := {
 }
 
 
+# 进入主工作台场景时调用。
+# 依次构建完整的办公桌场景、创建第一份申请表单，为所有视差层记录基准位置，
+# 并连接视口尺寸变化信号以持续适配 1280x720 的基准分辨率。
 func _ready() -> void:
 	build_scene()
 	create_case()
@@ -71,6 +74,8 @@ func _ready() -> void:
 	fit_to_window()
 
 
+# 创建 StyleBoxFlat 的辅助工厂方法。
+# 可设置背景色、圆角、边框颜色与边框宽度；仅当 border 大于 0 时才配置四边边框，避免无意义的开销。
 func style_box(color: Color, radius := 0, border_color := Color.TRANSPARENT, border := 0) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = color
@@ -87,6 +92,8 @@ func style_box(color: Color, radius := 0, border_color := Color.TRANSPARENT, bor
 	return box
 
 
+# 通用文本标签工厂方法。
+# 在指定 parent 下创建 Label，配置字体大小、像素字体、颜色、位置、尺寸与智能自动换行，并返回 Label 引用供后续修改。
 func add_text(parent: Node, text: String, size: int, color: Color, position: Vector2, dimensions: Vector2) -> Label:
 	var label := Label.new()
 	label.text = text
@@ -100,6 +107,9 @@ func add_text(parent: Node, text: String, size: int, color: Color, position: Vec
 	return label
 
 
+# 构建整个主工作台视觉场景。
+# 依次添加背景图、暗角、申请人档案卡、现实验收送交槽、状态栏、批准/驳回印章工具，
+# 并调用 create_validation_overlay() 创建送交后的设施转场层。
 func build_scene() -> void:
 	var backdrop := TextureRect.new()
 	backdrop.name = "ClerkDeskConcept"
@@ -161,6 +171,8 @@ func build_scene() -> void:
 	create_validation_overlay()
 
 
+# 创建送交申请后的“现实验收设施”转场动画层。
+# 包含设施图片、半透明遮罩与提示文字，初始状态为隐藏，由 submit_form() 在完成送交后触发显示。
 func create_validation_overlay() -> void:
 	validation_overlay = Control.new()
 	validation_overlay.name = "ValidationTransition"
@@ -189,6 +201,9 @@ func create_validation_overlay() -> void:
 	receipt.add_theme_color_override("font_outline_color", Color("16120e"))
 
 
+# 创建一枚可拖拽的印章工具。
+# kind 为印章类型（“批准”或“驳回”），决定显示的印章纹理；color 用于悬停反馈；at 为印章默认位置。
+# 设置 home 位置、类型元数据与拖拽标记，绑定 gui_input 与鼠标悬停事件，并加入 stamp_tools 数组统一管理。
 func create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 	var tool := Panel.new()
 	tool.name = kind + "Stamp"
@@ -215,6 +230,8 @@ func create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 	tool.mouse_exited.connect(_on_stamp_hover.bind(tool, false))
 
 
+# 鼠标进入或离开印章时的悬停反馈。
+# 当印章未被拖拽时，通过 Tween 轻微放大（1.04）或恢复原始尺寸，增强交互感。
 func _on_stamp_hover(tool: Panel, entered: bool) -> void:
 	if bool(tool.get_meta("dragging")):
 		return
@@ -222,6 +239,10 @@ func _on_stamp_hover(tool: Panel, entered: bool) -> void:
 	tween.tween_property(tool, "scale", Vector2(1.04, 1.04) if entered else Vector2.ONE, 0.08)
 
 
+# 印章的鼠标事件处理。
+# 左键按下时开始拖拽，记录鼠标相对于印章的偏移、提升 z_index 并放大；
+# 左键释放时取消拖拽，调用 try_apply_stamp() 尝试盖章，然后调用 return_stamp() 使印章归位；
+# 鼠标移动且处于拖拽状态时，更新印章位置。
 func _on_stamp_input(event: InputEvent, tool: Panel) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -238,6 +259,8 @@ func _on_stamp_input(event: InputEvent, tool: Panel) -> void:
 		tool.position += event.relative
 
 
+# 释放印章时判断是否盖到申请表上。
+# 计算印章中心点，若该点位于申请表的全局矩形内，则在申请表本地坐标下盖上对应类型的印章。
 func try_apply_stamp(tool: Panel) -> void:
 	if not is_instance_valid(form):
 		return
@@ -246,6 +269,8 @@ func try_apply_stamp(tool: Panel) -> void:
 		apply_stamp(String(tool.get_meta("kind")), center - form.global_position)
 
 
+# 通过 Tween 将印章平滑归位到 home 位置并恢复原始缩放。
+# 动画结束后将 z_index 重置为 0，避免影响后续交互层级。
 func return_stamp(tool: Panel) -> void:
 	var tween := create_tween().set_parallel(true)
 	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -254,6 +279,9 @@ func return_stamp(tool: Panel) -> void:
 	tween.finished.connect(func(): tool.z_index = 0)
 
 
+# 创建当前案件的申请表单。
+# 先销毁旧表单（如果存在），重置盖章状态；从 CASES 数组中循环取出当前案件数据，更新右侧申请人档案卡；
+# 然后新建申请表单面板、阴影、部门标题、申请表头、申请人信息、申请事项、形式审查复选框以及盖章标记占位。
 func create_case() -> void:
 	if is_instance_valid(form):
 		form.queue_free()
@@ -317,6 +345,8 @@ func create_case() -> void:
 	form.add_child(stamp_mark)
 
 
+# 鼠标悬停在申请表上时的缩放反馈。
+# 未拖拽时轻微放大表单（1.012 倍），模拟纸张被注意到的视觉效果；鼠标离开时恢复原始尺寸。
 func _on_form_hover(entered: bool) -> void:
 	if dragging_form or not is_instance_valid(form):
 		return
@@ -325,6 +355,10 @@ func _on_form_hover(entered: bool) -> void:
 	tween.tween_property(form, "scale", target_scale, 0.08)
 
 
+# 申请表的拖拽与提交处理。
+# 左键按下时开始拖拽，记录鼠标偏移、提升 z_index 并轻微倾斜放大；
+# 左键释放时恢复形态，若表单矩形与送交槽相交则调用 submit_form() 完成送交；
+# 鼠标移动且处于拖拽状态时，根据相对位移更新表单位置。
 func _on_form_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
@@ -346,6 +380,10 @@ func _on_form_input(event: InputEvent) -> void:
 		form.position += event.relative
 
 
+# 在申请表上生成“批准”或“驳回”的印章文字。
+# kind 为印章类型；local_position 为印章中心相对于表单左上角的本地坐标。
+# 记录盖章状态与类型，将印章位置裁剪到合理区域，设置对应颜色与描边，
+# 并通过 Tween 播放从放大半透明到正常显示的动画，同时更新状态栏提示。
 func apply_stamp(kind: String, local_position: Vector2) -> void:
 	form_stamped = true
 	form_stamp_type = kind
@@ -364,6 +402,10 @@ func apply_stamp(kind: String, local_position: Vector2) -> void:
 	status_label.text = "已加盖“%s”印章，可送交现实验收。" % kind
 
 
+# 将处理完毕的表单送交现实验收。
+# 若表单未盖章，则提示“材料退回”并通过 Tween 将表单弹回原位，同时闪烁红灯；
+# 若已盖章，则将案件结果记录到 WorkdayState，闪烁绿灯，禁用表单交互，播放表单被吸入验收槽的动画，
+# 动画结束后调用 show_validation_transition() 进入设施转场。
 func submit_form() -> void:
 	dragging_form = false
 	if not form_stamped:
@@ -386,6 +428,9 @@ func submit_form() -> void:
 	tween.finished.connect(show_validation_transition)
 
 
+# 播放现实验收设施的转场动画。
+# 先淡入设施图片并伴随轻微缩放复位，停留约 1.35 秒后淡出；
+# 若当日记录数量已达 CASES_PER_DAY 则切换到日报场景；否则调用 next_case() 继续处理下一份申请。
 func show_validation_transition() -> void:
 	validation_overlay.visible = true
 	validation_overlay.modulate.a = 0.0
@@ -408,6 +453,8 @@ func show_validation_transition() -> void:
 		next_case()
 
 
+# 推进到下一个案件。
+# 案件索引循环递增，短暂延迟后调用 create_case() 生成新表单，并播放从透明缩小到正常显示的入场动画，状态栏提示下一份申请已送达。
 func next_case() -> void:
 	case_index = (case_index + 1) % CASES.size()
 	await get_tree().create_timer(0.18).timeout
@@ -420,6 +467,8 @@ func next_case() -> void:
 	status_label.text = "下一件申请已送达。"
 
 
+# 让验收槽指示灯按指定颜色闪烁三次，用于提供视觉反馈。
+# 闪烁结束后恢复为默认红色。
 func flash_slot(color: Color) -> void:
 	slot_light.color = color
 	var tween := create_tween()
@@ -429,6 +478,8 @@ func flash_slot(color: Color) -> void:
 	tween.tween_callback(func(): slot_light.color = colors.red)
 
 
+# 每帧更新背景视差效果。
+# 根据鼠标位置相对于屏幕中心计算归一化偏移，使 parallax_layers 中的各层以不同幅度（i + 1）产生轻微移动，增强场景深度感。
 func _process(_delta: float) -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0 or viewport_size.y <= 0:
@@ -440,6 +491,8 @@ func _process(_delta: float) -> void:
 			layer.position += (layer.get_meta("base_position", layer.position) + normalized * float(i + 1) * 1.2 - layer.position) * 0.04
 
 
+# 以 1280x720 为设计分辨率，按实际视口尺寸缩放整个 Node2D 并将位置归零。
+# 该原型允许轻微形变以填满屏幕，避免黑边或裁剪。
 func fit_to_window() -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:

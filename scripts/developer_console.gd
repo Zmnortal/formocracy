@@ -22,6 +22,10 @@ var history_index := 0
 var status_elapsed := 0.0
 
 
+# 开发控制台入口初始化。
+# 设置 CanvasLayer 层级为 1000 并启用 PROCESS_MODE_ALWAYS，确保在暂停等状态下仍能响应；
+# 读取 ProjectSettings 中的 debug/developer_console_enabled 决定是否启用控制台。启用时构建 UI、绑定窗口缩放事件、输出欢迎信息、刷新状态，
+# 若命令行参数包含 --dev-console-open 则在启动时自动打开控制台。
 func _ready() -> void:
 	layer = 1000
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -38,6 +42,9 @@ func _ready() -> void:
 		toggle_console()
 
 
+# 工厂方法：创建并返回一个 StyleBoxFlat。
+# 用于统一控制台各控件（面板、按钮、终端背景等）的背景色、边框色、边框宽度与圆角半径，减少重复代码。
+# color 为背景色；border_color 为边框色；border 为四边边框宽度；radius 为四角圆角半径。
 func make_box(color: Color, border_color: Color, border := 2, radius := 3) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = color
@@ -53,6 +60,9 @@ func make_box(color: Color, border_color: Color, border := 2, radius := 3) -> St
 	return box
 
 
+# 构建控制台完整 UI。
+# 依次创建根 Control、DEV 入口按钮、黑色半透明遮罩、中央面板、标题、关闭按钮、场景选择下拉框、工作日设置 SpinBox、状态标签、
+# 测试数据预设选择、快捷操作按钮、RichTextLabel 命令输出区以及 LineEdit 命令输入框，并为各交互控件绑定回调。
 func build_ui() -> void:
 	root_control = Control.new()
 	root_control.position = Vector2.ZERO
@@ -171,6 +181,8 @@ func build_ui() -> void:
 	console_panel.add_child(command_input)
 
 
+# 在控制台面板指定位置创建一个 400x26 的分区说明标签。
+# 使用统一的暗绿色字体，用于对控制台不同功能区进行文字分组。
 func create_section_label(text: String, at: Vector2) -> void:
 	var label := Label.new()
 	label.text = text
@@ -180,6 +192,8 @@ func create_section_label(text: String, at: Vector2) -> void:
 	console_panel.add_child(label)
 
 
+# 在控制台面板指定位置创建按钮并返回引用。
+# text 为按钮文字；at 为按钮左上角坐标；dimensions 为按钮宽高。返回的引用可继续连接 pressed 等信号。
 func create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
 	var button := Button.new()
 	button.text = text
@@ -189,6 +203,9 @@ func create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
 	return button
 
 
+# 全局输入监听。
+# 控制台启用时，按下反引号（`）切换显示/隐藏；控制台打开时，按下 ESC 关闭。
+# 处理完成后调用 set_input_as_handled()，避免事件继续传播到游戏场景。
 func _input(event: InputEvent) -> void:
 	if not enabled:
 		return
@@ -200,6 +217,8 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+# 切换控制台的显示/隐藏状态。
+# 同步 blocker（主面板）与 dev_button（入口）的可见性；打开时同步工作日选择器数值、刷新状态并让命令输入框获得焦点；关闭时释放焦点。
 func toggle_console() -> void:
 	is_open = not is_open
 	blocker.visible = is_open
@@ -212,6 +231,8 @@ func toggle_console() -> void:
 		command_input.release_focus()
 
 
+# 每帧更新控制台的实时状态。
+# 累加 status_elapsed，每 0.25 秒调用一次 refresh_status()，使状态标签中的场景名、工作日、记录数等保持实时同步。
 func _process(delta: float) -> void:
 	if not enabled or not is_open:
 		return
@@ -221,6 +242,8 @@ func _process(delta: float) -> void:
 		refresh_status()
 
 
+# 根据当前可视视口大小缩放控制台根节点。
+# 以 1280x720 为基准分辨率进行等比例缩放，使控制台在不同窗口尺寸下都能铺满屏幕。
 func fit_to_window() -> void:
 	if root_control == null:
 		return
@@ -231,6 +254,9 @@ func fit_to_window() -> void:
 	root_control.position = Vector2.ZERO
 
 
+# 刷新控制台状态标签。
+# 显示当前场景名、WorkdayState.day_number、当日记录数与 CASES_PER_DAY 之比，
+# 以及根据 should_show_report() 判断的日报触发状态（可生成 / 未满足触发条件）。
 func refresh_status() -> void:
 	if status_label == null:
 		return
@@ -244,11 +270,15 @@ func refresh_status() -> void:
 	]
 
 
+# 场景选择器回调。
+# 读取当前选中项的 metadata（场景文件路径），并调用 switch_scene() 执行切换。
 func _on_switch_scene() -> void:
 	var path := String(scene_selector.get_item_metadata(scene_selector.selected))
 	switch_scene(path)
 
 
+# 切换到指定场景文件。
+# path 为目标场景的资源路径。切换成功时向输出区打印日志，若控制台当前打开则自动关闭；切换失败时输出错误码以便排查。
 func switch_scene(path: String) -> void:
 	var error: Error = get_tree().change_scene_to_file(path)
 	if error == OK:
@@ -259,12 +289,16 @@ func switch_scene(path: String) -> void:
 		append_output("场景切换失败：%s / 错误码 %d" % [path, error])
 
 
+# 工作日设置按钮回调。
+# 将 WorkdayState.day_number 设置为工作日选择器的整数值，向输出区打印变更信息并刷新状态标签。
 func _on_set_day() -> void:
 	WorkdayState.day_number = int(day_selector.value)
 	append_output("工作日已设置为 %d" % WorkdayState.day_number)
 	refresh_status()
 
 
+# 测试数据预设按钮回调。
+# 根据 preset_selector 的选中项决定：清空记录、填充全部批准/驳回/混合的测试申请，然后切换到日报场景。
 func _on_apply_preset() -> void:
 	match preset_selector.selected:
 		0:
@@ -278,6 +312,9 @@ func _on_apply_preset() -> void:
 	switch_scene(REPORT_SCENE)
 
 
+# 使用内置示例数据填充当日申请记录。
+# mode 可选 "approved"（全部批准）、"rejected"（全部驳回）或 "mixed"（第二件驳回，其余批准）。
+# 填充前会先清空现有记录，完成后向输出区打印填充模式并刷新状态。
 func fill_test_records(mode: String = "mixed") -> void:
 	WorkdayState.records.clear()
 	var samples := [
@@ -294,12 +331,16 @@ func fill_test_records(mode: String = "mixed") -> void:
 	refresh_status()
 
 
+# 清空 WorkdayState.records 中所有当日申请记录。
+# 操作完成后向输出区打印提示并刷新状态标签。
 func clear_records() -> void:
 	WorkdayState.records.clear()
 	append_output("已清空当日记录。")
 	refresh_status()
 
 
+# 手动进入下一工作日。
+# 调用 WorkdayState.begin_next_day() 推进工作日，同步更新工作日选择器的显示值，向输出区打印新工作日并刷新状态。
 func next_day() -> void:
 	WorkdayState.begin_next_day()
 	day_selector.value = WorkdayState.day_number
@@ -307,11 +348,16 @@ func next_day() -> void:
 	refresh_status()
 
 
+# 重载当前场景。
+# 调用 get_tree().reload_current_scene()，根据返回的错误码在输出区显示成功或失败信息。
 func reload_scene() -> void:
 	var error: Error = get_tree().reload_current_scene()
 	append_output("当前场景已重载。" if error == OK else "场景重载失败：%d" % error)
 
 
+# 解析并执行玩家在命令终端输入的文本命令。
+# 支持的命令：help（帮助）、scene（切换场景）、report fill（填充测试数据）、day next（进入下一工作日）、state（刷新状态）、clear（清空输出区）。
+# 维护 command_history 与 history_index 以支持上下键历史浏览；未知命令会给出提示。
 func execute_command(command: String) -> void:
 	var clean := command.strip_edges()
 	command_input.clear()
@@ -351,6 +397,8 @@ func execute_command(command: String) -> void:
 		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])
 
 
+# 向命令输出区追加一行文本。
+# text 为要显示的字符串；追加后自动滚动到输出区最底部，确保最新反馈始终可见。
 func append_output(text: String) -> void:
 	if output == null:
 		return
@@ -358,6 +406,9 @@ func append_output(text: String) -> void:
 	output.scroll_to_line(maxi(0, output.get_line_count() - 1))
 
 
+# 处理命令输入框的键盘事件。
+# 按上键（KEY_UP）浏览更早的历史命令；按下键（KEY_DOWN）浏览更新的历史命令，到达末尾时清空输入框；
+# 每次切换历史后都将 caret_column 移到文本末尾，方便连续编辑或执行。
 func _on_command_input_gui(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed):
 		return

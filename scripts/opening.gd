@@ -18,6 +18,9 @@ var progress_label: Label
 var start_panel: Control
 
 
+# 开场场景初始化。
+# 构建包含幻灯片、跳过按钮、进度标签、开始按钮与自动推进计时器的完整 UI，
+# 显示第一张幻灯片（无淡入动画），并连接视口尺寸变化信号以适配窗口。
 func _ready() -> void:
 	build_scene()
 	show_slide(0, false)
@@ -25,6 +28,9 @@ func _ready() -> void:
 	fit_to_window()
 
 
+# 构建开场场景的全部 UI 元素。
+# 包括全屏幻灯片 TextureRect、暗角遮罩、跳过开场按钮、档案影像进度标签、
+# “开始第一天”按钮面板、黑色淡入淡出 ColorRect，以及用于自动轮播的 Timer。
 func build_scene() -> void:
 	size = Vector2(1280, 720)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -105,6 +111,10 @@ func build_scene() -> void:
 	add_child(auto_timer)
 
 
+# 显示指定索引的幻灯片。
+# index 为目标幻灯片索引；animate 控制是否播放淡出/淡入转场。
+# 会自动限制索引范围，更新进度文字，在最后一张幻灯片时显示开始面板；
+# 非最后一张时启动 AUTO_ADVANCE_SECONDS 的自动计时器。
 func show_slide(index: int, animate := true) -> void:
 	slide_index = clampi(index, 0, SLIDES.size() - 1)
 	start_panel.visible = slide_index == SLIDES.size() - 1
@@ -125,18 +135,24 @@ func show_slide(index: int, animate := true) -> void:
 		auto_timer.start()
 
 
+# 自动推进到下一幻灯片。
+# 若当前正在转场或已是最后一张，则不做任何操作。
 func advance_slide() -> void:
 	if transition_locked or slide_index >= SLIDES.size() - 1:
 		return
 	show_slide(slide_index + 1)
 
 
+# “跳过开场”按钮回调。
+# 若当前不是最后一张且未处于转场中，直接跳转到最后一张幻灯片。
 func show_final_slide() -> void:
 	if slide_index == SLIDES.size() - 1 or transition_locked:
 		return
 	show_slide(SLIDES.size() - 1)
 
 
+# “开始第一天”按钮回调。
+# 停止自动推进计时器并切换到主工作台场景；切换失败时输出错误信息到 Godot 错误日志。
 func start_first_day() -> void:
 	auto_timer.stop()
 	var error := get_tree().change_scene_to_file(MAIN_SCENE)
@@ -144,11 +160,15 @@ func start_first_day() -> void:
 		push_error("无法进入第一工作日：%s" % error_string(error))
 
 
+# 点击开场画面任意位置时推进幻灯片。
+# 仅在检测到鼠标左键按下时调用 advance_slide()。
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		advance_slide()
 
 
+# 键盘事件处理。
+# 空格或回车推进幻灯片；若已在最后一张，则相当于点击“开始第一天”。ESC 直接跳到最后一张。
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event.pressed or event.echo:
 		return
@@ -161,6 +181,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		show_final_slide()
 
 
+# 以 1280x720 为基准缩放开场场景并铺满视口，同时保持自身 size 属性。
 func fit_to_window() -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
