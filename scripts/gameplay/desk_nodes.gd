@@ -4,6 +4,7 @@ extends RefCounted
 # 工作台静态节点引用容器。
 # 由 DeskBuilder 创建并填充，供主脚本与各 gameplay 模块共享使用。
 
+const ARCHIVE_ENVELOPE_TEXTURE := preload("res://assets/documents/envelopes/bureau_envelope_desk_side.png")
 const FORM_HOME := Vector2(470, 390)
 const FORM_BASE_SCALE := Vector2(0.66, 0.66)
 
@@ -27,6 +28,9 @@ var machine_mouth_mask: ColorRect
 var archive_stack: Control
 var archive_count_label: Label
 var number_machine: TextureRect
+var filing_cabinet: TextureRect
+var filing_cabinet_upper_hit: Button
+var filing_cabinet_lower_hit: Button
 
 
 # 根据持久化的待送验档案数量刷新托盘内的文件袋堆叠。
@@ -40,21 +44,18 @@ func refresh_archive_stack(animate_latest := false) -> void:
 	var archive_count := WorkdayState.manager.get_pending_archives().size()
 	var visible_count := mini(archive_count, 7)
 	for index in visible_count:
-		var envelope := Panel.new()
+		var envelope := TextureRect.new()
 		envelope.name = "ArchivedEnvelope%02d" % (index + 1)
-		envelope.position = Vector2(27 + (index % 2) * 3, 47 - index * 5)
-		envelope.size = Vector2(142, 15)
+		envelope.texture = ARCHIVE_ENVELOPE_TEXTURE
+		envelope.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		envelope.stretch_mode = TextureRect.STRETCH_SCALE
+		envelope.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		envelope.position = Vector2(8 + (index % 2) * 3, -10 - index * 3)
+		envelope.size = Vector2(142, 72)
 		envelope.rotation = -0.012 if index % 2 == 0 else 0.014
 		envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		envelope.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("b99b68") if index % 2 == 0 else Color("a98b5b"), 1, Color("675039"), 1))
+		envelope.modulate = Color("fff4dc") if index % 2 == 0 else Color("e9d6b0")
 		archive_stack.add_child(envelope)
-
-		var seam := ColorRect.new()
-		seam.position = Vector2(8, 4)
-		seam.size = Vector2(126, 2)
-		seam.color = Color(0.32, 0.24, 0.15, 0.55)
-		seam.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		envelope.add_child(seam)
 
 		if animate_latest and index == visible_count - 1:
 			envelope.pivot_offset = envelope.size / 2.0

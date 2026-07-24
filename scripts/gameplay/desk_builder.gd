@@ -6,12 +6,13 @@ extends RefCounted
 
 const WORKBENCH_TEXTURE := preload("res://assets/office/background/service_hall_light.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
-const FILING_CABINET_TEXTURE := preload("res://assets/office/items/filing_cabinet.png")
+const FILING_CABINET_CLOSED_TEXTURE := preload("res://assets/office/filing_cabinet/states/00_closed.png")
 const NUMBER_MACHINE_TEXTURE := preload("res://assets/office/items/number_machine.png")
 const CALENDAR_TEXTURE := preload("res://assets/office/items/calendar.png")
 const SERVICE_RAILING_TEXTURE := preload("res://assets/office/foreground/service_railing.png")
 const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
 const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
+const ARCHIVE_TRAY_FOREGROUND_TEXTURE := preload("res://assets/office/interactive/archive_tray_foreground.png")
 const DESK_DEFORMATION_SHADER := preload("res://shaders/desk_deformation.gdshader")
 
 
@@ -73,10 +74,22 @@ func build(root: Node2D) -> DeskNodes:
 	archive_image.size = desk.slot.size
 	desk.archive_stack = Control.new()
 	desk.archive_stack.name = "ArchivedEnvelopeStack"
-	desk.archive_stack.position = Vector2.ZERO
-	desk.archive_stack.size = desk.slot.size
+	# 只在托盘内腔显示文件袋，避免袋子覆盖金属前挡板。
+	desk.archive_stack.position = Vector2(20, 31)
+	desk.archive_stack.size = Vector2(158, 31)
+	desk.archive_stack.clip_contents = true
 	desk.archive_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desk.slot.add_child(desk.archive_stack)
+	var archive_foreground := TextureRect.new()
+	archive_foreground.name = "ArchiveTrayForeground"
+	archive_foreground.texture = ARCHIVE_TRAY_FOREGROUND_TEXTURE
+	archive_foreground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	archive_foreground.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	archive_foreground.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	archive_foreground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	archive_foreground.position = Vector2.ZERO
+	archive_foreground.size = desk.slot.size
+	desk.slot.add_child(archive_foreground)
 	desk.archive_count_label = WorkbenchUI.add_text(desk.slot, "", 11, Color("ead8ad"), Vector2(145, 16), Vector2(42, 20))
 	desk.archive_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	desk.archive_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -133,9 +146,45 @@ func build(root: Node2D) -> DeskNodes:
 
 # 摆放文件柜、取号机与挂历等办公室陈设。
 func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
-	_add_prop(root, "FilingCabinet", FILING_CABINET_TEXTURE, Vector2(22, 315), Vector2(140, 190), -4)
+	_build_filing_cabinet(root, desk)
 	desk.number_machine = _add_prop(root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7)
 	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
+
+
+# 使用独立柜体贴图与上下抽屉热区构建左侧文件柜。
+# 512×640 素材四周保留透明安全区，因此绘制矩形会越过画布左边；
+# 实际非透明柜体仍落在原有的 22×315 位置附近。
+func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
+	desk.filing_cabinet = _add_prop(
+		root,
+		"FilingCabinet",
+		FILING_CABINET_CLOSED_TEXTURE,
+		Vector2(-18, 254),
+		Vector2(220, 256),
+		-4,
+	)
+
+	desk.filing_cabinet_upper_hit = Button.new()
+	desk.filing_cabinet_upper_hit.name = "UpperDrawerHit"
+	desk.filing_cabinet_upper_hit.position = Vector2(40, 70)
+	desk.filing_cabinet_upper_hit.size = Vector2(140, 82)
+	desk.filing_cabinet_upper_hit.flat = true
+	desk.filing_cabinet_upper_hit.focus_mode = Control.FOCUS_NONE
+	desk.filing_cabinet_upper_hit.tooltip_text = "打开上层：局务参考手册"
+	desk.filing_cabinet_upper_hit.add_to_group("debug_interaction_zone")
+	desk.filing_cabinet_upper_hit.set_meta("debug_zone_label", "文件柜上层 / 参考手册")
+	desk.filing_cabinet.add_child(desk.filing_cabinet_upper_hit)
+
+	desk.filing_cabinet_lower_hit = Button.new()
+	desk.filing_cabinet_lower_hit.name = "LowerDrawerHit"
+	desk.filing_cabinet_lower_hit.position = Vector2(40, 150)
+	desk.filing_cabinet_lower_hit.size = Vector2(140, 92)
+	desk.filing_cabinet_lower_hit.flat = true
+	desk.filing_cabinet_lower_hit.focus_mode = Control.FOCUS_NONE
+	desk.filing_cabinet_lower_hit.tooltip_text = "打开下层：私人证物"
+	desk.filing_cabinet_lower_hit.add_to_group("debug_interaction_zone")
+	desk.filing_cabinet_lower_hit.set_meta("debug_zone_label", "文件柜下层 / 私人证物")
+	desk.filing_cabinet.add_child(desk.filing_cabinet_lower_hit)
 
 
 # 构建服务围栏与带梯形形变 Shader 的前景桌面。
