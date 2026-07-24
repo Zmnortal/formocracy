@@ -31,9 +31,6 @@ var balance := 0
 var political_credit := 0
 var delayed_consequences: Array[Dictionary] = []
 var settled_day_number := 0
-var machine_capacity := 2
-var archived_cases: Array[Dictionary] = []
-var next_archive_serial := 1
 
 # 夜间地图状态
 var evening_day_number := 0
@@ -68,7 +65,6 @@ func configure_workday(workday: Dictionary) -> void:
 	target_case_count = workday.get("case_ids", []).size()
 	report_title = String(workday.get("report_title", "工作日处理回执"))
 	workday_duration = float(workday.get("duration_seconds", 180))
-	machine_capacity = maxi(1, int(workday.get("machine_capacity", 2)))
 	seconds_remaining = workday_duration
 	base_salary = int(workday.get("base_salary", 0))
 	living_expenses = workday.get("living_expenses", {}).duplicate(true)
@@ -112,22 +108,6 @@ func record_case_result(case_data: Dictionary, stamp_type: String, procedure_err
 		"submitted": true,
 		"effective": false
 	})
-	var recorded: Dictionary = records[-1]
-	archived_cases.append({
-		"archive_id": "ARCHIVE-%05d" % next_archive_serial,
-		"case_id": recorded.case_id,
-		"character_id": recorded.character_id,
-		"applicant": recorded.applicant,
-		"request": recorded.request,
-		"decision": recorded.decision,
-		"procedure_errors": recorded.procedure_errors.duplicate(),
-		"archived_day": day_number,
-		"waiting_days": 0,
-		"status": "ARCHIVED",
-		"loaded": false,
-		"effective_day": 0,
-	})
-	next_archive_serial += 1
 	var delay_days := int(consequence.get("delay_days", 0))
 	if delay_days > 0:
 		delayed_consequences.append({"due_day": day_number + delay_days, "case_id": case_data.get("case_id", ""), "consequence_id": consequence_id})
@@ -181,37 +161,6 @@ func get_case_decision(case_id: String) -> String:
 	return String(decision_by_case_id.get(case_id, ""))
 
 
-func get_pending_archives() -> Array[Dictionary]:
-	var pending: Array[Dictionary] = []
-	for archive in archived_cases:
-		if String(archive.get("status", "ARCHIVED")) != "EFFECTIVE":
-			pending.append(archive)
-	return pending
-
-
-func validate_archive_batch(archive_ids: Array) -> bool:
-	if archive_ids.is_empty() or archive_ids.size() > machine_capacity:
-		return false
-	var selected := {}
-	for archive_id in archive_ids:
-		selected[archive_id] = true
-	for archive in archived_cases:
-		if selected.has(String(archive.get("archive_id", ""))) and String(archive.get("status", "ARCHIVED")) == "EFFECTIVE":
-			return false
-	for archive in archived_cases:
-		if not selected.has(String(archive.get("archive_id", ""))):
-			continue
-		archive.status = "EFFECTIVE"
-		archive.loaded = false
-		archive.effective_day = day_number
-		for record in records:
-			if String(record.get("case_id", "")) == String(archive.get("case_id", "")):
-				record.effective = true
-	if persistence_enabled:
-		save_progress()
-	return true
-
-
 # 遍历当日记录并生成统计摘要。
 # 统计字段包括 reviewed（已审查数）、submitted（已送交数）、approved（批准数）、rejected（驳回数）、returned（退回补正数，当前固定 0）、
 # effective（已取得现实效力数）与 pending（等待设施处理数）。返回的字典供日报界面使用。
@@ -246,9 +195,6 @@ func get_summary() -> Dictionary:
 func begin_next_day() -> void:
 	var completed_day := day_number
 	settle_current_day()
-	for archive in archived_cases:
-		if String(archive.get("status", "ARCHIVED")) != "EFFECTIVE":
-			archive.waiting_days = int(archive.get("waiting_days", 0)) + 1
 	day_number += 1
 	records.clear()
 	# 跨日时立即建立新一天的夜间额度，避免主场景或存档恢复期间短暂携带昨日的 0 次行动。
@@ -311,40 +257,27 @@ func get_personal_form_count(form_type_id: String, status := "") -> int:
 	return count
 
 
-# 将档案袋中的第一份指定空白表单填写并送交。
+# 将档案袋中的第一份指定空白表单填写并送交。每个夜晚最多提交一份个人表单。
 func submit_personal_form(form_type_id: String, fields: Dictionary) -> bool:
-	var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
-	if form.is_empty():
-		return false
-	var required_fields: Array = form.get(
-		"required_fields",
-		["applicant_name", "residence", "request_reason"]
-	)
+	for existing in personal_form_inventory:
+		if int(existing.get("submitted_day", -1)) == day_number:
+			return false
+	var required_fields := ["applicant_name", "residence", "request_reason"]
 	for field in required_fields:
 		if String(fields.get(field, "")).strip_edges().is_empty():
 			return false
 	for item in personal_form_inventory:
 		if String(item.get("form_type_id", "")) != form_type_id or String(item.get("status", "")) != "blank":
 			continue
+		var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
 		item.status = "pending"
 		item.fields = fields.duplicate(true)
 		item.submitted_day = day_number
 		item.effective_day = day_number + int(form.get("effective_delay_days", 1))
-		item.fulfillment_id = String(form.get("fulfillment_id", ""))
-		item.memory_clue_id = String(form.get("memory_clue_id", ""))
 		if persistence_enabled:
 			save_progress()
 		return true
 	return false
-
-
-# 返回档案袋中的空白表单条目，供申请局生成可提交目录。
-func get_blank_personal_forms() -> Array[Dictionary]:
-	var result: Array[Dictionary] = []
-	for item in personal_form_inventory:
-		if String(item.get("status", "")) == "blank":
-			result.append(item)
-	return result
 
 
 # 审核到期的个人表单。饮水表字段与登记身份一致时核发，否则退回补正。
@@ -355,21 +288,19 @@ func process_due_personal_forms() -> void:
 			continue
 		var form_type_id := String(item.get("form_type_id", ""))
 		var fields: Dictionary = item.get("fields", {})
-		var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
-		var required_fields: Array = form.get("required_fields", [])
-		var approved := bool(fields.get("truth_declared", false))
-		for field in required_fields:
-			approved = approved and not String(fields.get(field, "")).strip_edges().is_empty()
-		if form_type_id == "PERSONAL-FORM-WATER-R01":
-			approved = (
-				approved
-				and (player_name.is_empty() or String(fields.get("applicant_name", "")) == player_name)
-				and String(fields.get("residence", "")).contains("12-C")
-			)
+		var approved := (
+			form_type_id == "PERSONAL-FORM-WATER-R01"
+			and not String(fields.get("applicant_name", "")).is_empty()
+			and (player_name.is_empty() or String(fields.get("applicant_name", "")) == player_name)
+			and String(fields.get("residence", "")).contains("12-C")
+			and not String(fields.get("request_reason", "")).is_empty()
+			and bool(fields.get("truth_declared", false))
+		)
 		item.status = "effective" if approved else "returned"
 		item.processed_day = day_number
 		item.review_result = "批准" if approved else "退回补正"
-		if approved and form_type_id == "PERSONAL-FORM-WATER-R01":
+		if approved:
+			var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
 			water_covered_until_day = maxi(water_covered_until_day, day_number + int(form.get("valid_for_days", 1)) - 1)
 		else:
 			item.review_reason = "申请人身份、登记住所、申请事由或真实性声明不符合记录"
@@ -566,9 +497,6 @@ func start_new_game() -> void:
 	political_credit = 0
 	delayed_consequences.clear()
 	settled_day_number = 0
-	machine_capacity = 2
-	archived_cases.clear()
-	next_archive_serial = 1
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"
@@ -583,6 +511,8 @@ func start_new_game() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
 
 
+# 更新防崩溃临时进度，不创建时间线节点。
+func save_progress() -> bool:
 # 将当前状态捕获为可独立恢复的完整快照。
 func _capture_state() -> Dictionary:
 	return {
@@ -599,9 +529,6 @@ func _capture_state() -> Dictionary:
 		"political_credit": political_credit,
 		"delayed_consequences": delayed_consequences,
 		"settled_day_number": settled_day_number,
-		"machine_capacity": machine_capacity,
-		"archived_cases": archived_cases,
-		"next_archive_serial": next_archive_serial,
 		"evening_day_number": evening_day_number,
 		"evening_actions_remaining": evening_actions_remaining,
 		"evening_location_id": evening_location_id,
@@ -661,9 +588,6 @@ func _apply_state(state: Dictionary) -> void:
 	political_credit = int(state.get("political_credit", 0))
 	delayed_consequences.assign(state.get("delayed_consequences", []))
 	settled_day_number = int(state.get("settled_day_number", 0))
-	machine_capacity = maxi(1, int(state.get("machine_capacity", 2)))
-	archived_cases.assign(state.get("archived_cases", []))
-	next_archive_serial = maxi(1, int(state.get("next_archive_serial", archived_cases.size() + 1)))
 	evening_day_number = int(state.get("evening_day_number", 0))
 	evening_actions_remaining = clampi(int(state.get("evening_actions_remaining", 2)), 0, 2)
 	evening_location_id = String(state.get("evening_location_id", "LOCATION-OFFICE"))
@@ -700,8 +624,6 @@ func _read_or_migrate_document() -> Dictionary:
 	if not parsed is Dictionary:
 		return {}
 	if int(parsed.get("version", 1)) >= SAVE_TREE_VERSION and parsed.has("nodes"):
-		if active_checkpoint_id.is_empty():
-			active_checkpoint_id = String(parsed.get("active_checkpoint_id", ""))
 		return parsed
 	return _migrate_legacy_document(parsed)
 
@@ -818,9 +740,6 @@ func reset_for_tests() -> void:
 	political_credit = 0
 	delayed_consequences.clear()
 	settled_day_number = 0
-	machine_capacity = 2
-	archived_cases.clear()
-	next_archive_serial = 1
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"

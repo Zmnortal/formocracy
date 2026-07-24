@@ -28,11 +28,15 @@ func run() -> void:
 	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
 	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")
 	assert(not state.has_save(), "test must begin without a save")
-	state.day_number = 4
+	state.day_number = 1
 	state.player_name = "测试审批员"
 	state.reinstatement_date = "2026-07-23"
 	state.player_signature = [[[1.0, 2.0], [3.0, 4.0]]]
-	state.records.clear()
+	assert(state.create_initial_checkpoint(), "opening completion must create the beginning node")
+	state.persistence_enabled = true
+	state.begin_next_day()
+	state.begin_next_day()
+	state.begin_next_day()
 	state.records.append({"decision": "批准"})
 	assert(state.save_progress(), "save progress must succeed")
 	assert(state.has_save(), "save file must exist")
@@ -42,11 +46,13 @@ func run() -> void:
 	root.add_child(selector)
 	await process_frame
 	assert(selector.title_label.text == "选择一天来继续或者从头开始游戏", "selector must present the workday timeline heading")
-	assert(selector.new_game_button.visible, "new game must remain the first timeline node")
+	assert(selector.timeline_scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_AUTO, "deep save trees must expose horizontal scrolling")
+	assert(selector.timeline_scroll.follow_focus, "keyboard navigation must scroll focused checkpoints into view")
+	assert(not selector.new_game_button.visible, "an existing save must render as one pure tree without a detached new-game card")
 	assert(selector.save_button.visible, "existing save must appear as a timeline node")
-	assert(selector.save_button.size == selector.new_game_button.size, "new game and saved workday cards must align at equal size")
-	assert(selector.save_button.custom_minimum_size == selector.new_game_button.custom_minimum_size, "card content must not expand one timeline node beyond the other")
-	assert(selector.save_button.text.contains("第 4 工作日"), "save slot must show the saved workday")
+	for checkpoint_button in selector.checkpoint_buttons.values():
+		assert(checkpoint_button.size == Vector2(150, 92), "all checkpoint cards must share one actual size")
+	assert(selector.save_button.text.contains("第 3 天"), "latest checkpoint must represent the last completed day")
 	assert(selector.delete_button.visible, "saved workday must expose the delete action")
 	assert(not selector.confirmation_layer.visible, "selector confirmation state must begin hidden")
 	selector.request_delete_save()

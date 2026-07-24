@@ -12,9 +12,19 @@ func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.save_path = "user://formocracy-workday-selector-render.json"
 	state.start_new_game()
-	state.day_number = 4
 	state.player_name = "张子奕"
-	assert(state.save_progress(), "selector render save must be created")
+	assert(state.create_initial_checkpoint(), "selector render root must be created")
+	state.persistence_enabled = true
+	state.begin_next_day()
+	var nodes: Array[Dictionary] = state.get_checkpoint_nodes()
+	var day_one_id := ""
+	for node in nodes:
+		if int(node.completed_day) == 1:
+			day_one_id = String(node.node_id)
+	state.begin_next_day()
+	assert(state.load_checkpoint(day_one_id), "render must return to day one")
+	state.balance = 77
+	state.begin_next_day()
 	var error := change_scene_to_file("res://scenes/workday_selector.tscn")
 	assert(error == OK, "workday selector scene must load")
 	await process_frame

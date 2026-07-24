@@ -73,6 +73,8 @@ func run() -> void:
 	await process_frame
 	assert(state.player_name == "测试职员", "submitting the form must establish the global player identity")
 	assert(not state.player_signature.is_empty(), "submitting the form must persist handwritten signature strokes")
+	var checkpoints: Array[Dictionary] = state.get_checkpoint_nodes()
+	assert(checkpoints.size() == 1 and int(checkpoints[0].completed_day) == 0, "opening completion must create the immutable beginning checkpoint")
 	assert(current_scene != null and current_scene.scene_file_path == "res://main.tscn", "machine ingestion must finish by entering the first workday")
 	state.start_new_game()
 	state.save_path = state.DEFAULT_SAVE_PATH

@@ -7,6 +7,7 @@ const UI := preload("res://scripts/ui/bureau_ui.gd")
 
 var canvas: Control
 var title_label: Label
+var timeline_scroll: ScrollContainer
 var timeline: Control
 var new_game_button: Button
 var save_button: Button
@@ -18,6 +19,11 @@ var confirmation_copy: Label
 var confirm_button: Button
 var cancel_button: Button
 var pending_action := ""
+var selected_checkpoint_id := ""
+var checkpoint_buttons: Dictionary = {}
+var checkpoint_nodes_by_id: Dictionary = {}
+var checkpoint_positions: Dictionary = {}
+var next_leaf_row := 0
 
 
 func _ready() -> void:
@@ -46,34 +52,27 @@ func build_scene() -> void:
 	canvas.add_child(make_line(Vector2(0, 132), Vector2(1280, 2)))
 	canvas.add_child(make_line(Vector2(0, 630), Vector2(1280, 2)))
 
+	timeline_scroll = ScrollContainer.new()
+	timeline_scroll.name = "TimelineScroll"
+	timeline_scroll.position = Vector2(24, 150)
+	timeline_scroll.size = Vector2(1232, 450)
+	timeline_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	timeline_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	timeline_scroll.follow_focus = true
+	canvas.add_child(timeline_scroll)
+	UI.style_range(timeline_scroll.get_h_scroll_bar())
+	UI.style_range(timeline_scroll.get_v_scroll_bar())
+
 	timeline = Control.new()
 	timeline.name = "Timeline"
-	timeline.position = Vector2(24, 150)
-	timeline.size = Vector2(900, 300)
-	canvas.add_child(timeline)
+	timeline.size = Vector2(1232, 450)
+	timeline.custom_minimum_size = Vector2(1232, 450)
+	timeline_scroll.add_child(timeline)
 
-	var node_one := make_label("※\n1", 16, Vector2(42, 0), Vector2(70, 62), true)
-	node_one.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	timeline.add_child(node_one)
-
-	new_game_button = make_timeline_button("新游戏", Vector2(0, 72), Vector2(150, 92))
+	new_game_button = make_timeline_button("新游戏", Vector2(0, 342), Vector2(150, 70))
 	new_game_button.name = "NewGameButton"
 	new_game_button.pressed.connect(request_new_game)
 	timeline.add_child(new_game_button)
-
-	var connector := make_line(Vector2(150, 117), Vector2(32, 2))
-	connector.name = "SaveConnector"
-	timeline.add_child(connector)
-
-	var node_two := make_label("※\n2", 16, Vector2(194, 0), Vector2(70, 62), true)
-	node_two.name = "SaveNodeNumber"
-	node_two.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	timeline.add_child(node_two)
-
-	save_button = make_timeline_button("", Vector2(182, 72), Vector2(150, 92))
-	save_button.name = "SaveButton"
-	save_button.pressed.connect(request_continue_game)
-	timeline.add_child(save_button)
 
 	back_button = make_footer_button("返回", Vector2(470, 650), Vector2(340, 52))
 	back_button.name = "BackButton"
@@ -128,18 +127,39 @@ func build_confirmation_layer() -> void:
 
 
 func refresh_save_slot() -> void:
-	var has_save := WorkdayState.has_save()
-	save_button.visible = has_save
-	timeline.get_node("SaveConnector").visible = has_save
-	timeline.get_node("SaveNodeNumber").visible = has_save
-	delete_button.visible = has_save
-	if has_save:
-		var summary: Dictionary = WorkdayState.get_save_summary()
-		save_button.text = "%s  %s\n第 %d 工作日" % [
-			String(summary.get("date", "--/--")),
-			String(summary.get("time", "--:--")),
-			int(summary.get("day_number", 1)),
-		]
+	for child in timeline.get_children():
+		if child != new_game_button:
+			child.queue_free()
+	checkpoint_buttons.clear()
+	checkpoint_nodes_by_id.clear()
+	checkpoint_positions.clear()
+	next_leaf_row = 0
+	save_button = null
+	var nodes: Array[Dictionary] = WorkdayState.get_checkpoint_nodes()
+	for node in nodes:
+		checkpoint_nodes_by_id[String(node.get("node_id", ""))] = node
+	if nodes.is_empty():
+		new_game_button.visible = true
+		new_game_button.position = Vector2(0, 72)
+		delete_button.visible = false
+		return
+	# 存档存在时，“一开始”就是整棵树唯一的根入口。
+	# 不再额外显示脱离树结构的“新游戏”卡片。
+	new_game_button.visible = false
+	var roots: Array[String] = []
+	for node in nodes:
+		if String(node.get("parent_id", "")).is_empty():
+			roots.append(String(node.get("node_id", "")))
+	for root_id in roots:
+		assign_tree_position(root_id, 0)
+	update_timeline_bounds()
+	draw_tree_connections(nodes)
+	for node in nodes:
+		add_checkpoint_button(node)
+	selected_checkpoint_id = WorkdayState.active_checkpoint_id
+	if selected_checkpoint_id.is_empty() or not checkpoint_buttons.has(selected_checkpoint_id):
+		selected_checkpoint_id = String(nodes[-1].get("node_id", ""))
+	refresh_checkpoint_selection()
 
 
 func request_new_game() -> void:
@@ -158,18 +178,21 @@ func request_new_game() -> void:
 
 
 func request_continue_game() -> void:
-	if not WorkdayState.has_save():
+	if selected_checkpoint_id.is_empty():
 		refresh_save_slot()
 		return
 	open_confirmation(
 		"继续工作日",
-		"将读取所选工作档案并返回工作岗位。\n是否继续？",
+		"将从此节点之后继续工作。\n原有后续分支不会被覆盖。",
 		"continue"
 	)
 
 
 func request_delete_save() -> void:
-	if not WorkdayState.has_save():
+	if selected_checkpoint_id.is_empty():
+		return
+	var selected: Dictionary = checkpoint_nodes_by_id.get(selected_checkpoint_id, {})
+	if int(selected.get("completed_day", 0)) == 0:
 		return
 	open_confirmation(
 		"销毁工作档案",
@@ -206,7 +229,8 @@ func confirm_pending_action() -> void:
 		"continue":
 			continue_game()
 		"delete":
-			WorkdayState.delete_save()
+			WorkdayState.delete_checkpoint(selected_checkpoint_id)
+			selected_checkpoint_id = WorkdayState.active_checkpoint_id
 			close_confirmation()
 			refresh_save_slot()
 
@@ -218,7 +242,7 @@ func start_new_game() -> void:
 
 
 func continue_game() -> void:
-	if WorkdayState.load_progress():
+	if WorkdayState.load_checkpoint(selected_checkpoint_id):
 		Sfx.play("start")
 		change_scene(GAME_SCENE)
 	else:
@@ -252,6 +276,93 @@ func make_line(at: Vector2, dimensions: Vector2) -> ColorRect:
 	line.color = Color("52644e")
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return line
+
+
+func assign_tree_position(node_id: String, depth: int) -> float:
+	var children := get_child_ids(node_id)
+	var row: float
+	if children.is_empty():
+		row = float(next_leaf_row)
+		next_leaf_row += 1
+	else:
+		var first_row := assign_tree_position(children[0], depth + 1)
+		var last_row := first_row
+		for index in range(1, children.size()):
+			last_row = assign_tree_position(children[index], depth + 1)
+		row = (first_row + last_row) * 0.5
+	checkpoint_positions[node_id] = Vector2(depth * 190, 72 + row * 112)
+	return row
+
+
+func get_child_ids(parent_id: String) -> Array[String]:
+	var children: Array[Dictionary] = []
+	for node in checkpoint_nodes_by_id.values():
+		if String(node.get("parent_id", "")) == parent_id:
+			children.append(node)
+	children.sort_custom(func(a: Dictionary, b: Dictionary):
+		return int(a.get("branch_order", 0)) < int(b.get("branch_order", 0))
+	)
+	var ids: Array[String] = []
+	for child in children:
+		ids.append(String(child.get("node_id", "")))
+	return ids
+
+
+func update_timeline_bounds() -> void:
+	var required_width := 1232.0
+	var required_height := 450.0
+	for position_value in checkpoint_positions.values():
+		var position: Vector2 = position_value
+		required_width = maxf(required_width, position.x + 190.0)
+		required_height = maxf(required_height, position.y + 122.0)
+	timeline.custom_minimum_size = Vector2(required_width, required_height)
+	timeline.size = timeline.custom_minimum_size
+
+
+func draw_tree_connections(nodes: Array[Dictionary]) -> void:
+	for node in nodes:
+		var parent_id := String(node.get("parent_id", ""))
+		var node_id := String(node.get("node_id", ""))
+		if parent_id.is_empty() or not checkpoint_positions.has(parent_id):
+			continue
+		var parent_pos: Vector2 = checkpoint_positions[parent_id]
+		var child_pos: Vector2 = checkpoint_positions[node_id]
+		var start := parent_pos + Vector2(150, 46)
+		var finish := child_pos + Vector2(0, 46)
+		var midpoint_x := (start.x + finish.x) * 0.5
+		timeline.add_child(make_line(start, Vector2(midpoint_x - start.x, 2)))
+		timeline.add_child(make_line(Vector2(midpoint_x, minf(start.y, finish.y)), Vector2(2, absf(finish.y - start.y) + 2)))
+		timeline.add_child(make_line(Vector2(midpoint_x, finish.y), Vector2(finish.x - midpoint_x, 2)))
+
+
+func add_checkpoint_button(node: Dictionary) -> void:
+	var node_id := String(node.get("node_id", ""))
+	var completed_day := int(node.get("completed_day", 0))
+	var created := Time.get_datetime_dict_from_unix_time(int(node.get("created_at", 0)))
+	var label_text := "一开始" if completed_day == 0 else "第 %d 天\n%02d/%02d  %02d:%02d" % [
+		completed_day, created.month, created.day, created.hour, created.minute
+	]
+	var button := make_timeline_button(label_text, checkpoint_positions[node_id], Vector2(150, 92))
+	button.name = "Checkpoint_%s" % node_id
+	button.pressed.connect(select_checkpoint.bind(node_id))
+	timeline.add_child(button)
+	checkpoint_buttons[node_id] = button
+	if completed_day > 0:
+		save_button = button
+
+
+func select_checkpoint(node_id: String) -> void:
+	selected_checkpoint_id = node_id
+	refresh_checkpoint_selection()
+	request_continue_game()
+
+
+func refresh_checkpoint_selection() -> void:
+	for node_id in checkpoint_buttons:
+		var button: Button = checkpoint_buttons[node_id]
+		button.modulate = Color.WHITE if node_id == selected_checkpoint_id else Color("a3aa91")
+	var selected: Dictionary = checkpoint_nodes_by_id.get(selected_checkpoint_id, {})
+	delete_button.visible = not selected.is_empty() and int(selected.get("completed_day", 0)) > 0
 
 
 func make_timeline_button(text: String, at: Vector2, dimensions: Vector2) -> Button:

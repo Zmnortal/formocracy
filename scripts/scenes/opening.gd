@@ -479,7 +479,7 @@ func complete_reinstatement() -> void:
 	if not submission_locked:
 		return
 	Sfx.play("start")
-	WorkdayState.save_progress()
+	WorkdayState.create_initial_checkpoint()
 	enter_first_day()
 
 
