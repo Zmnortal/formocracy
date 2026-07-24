@@ -1,6 +1,9 @@
 extends Control
 
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const SHOP_BACKGROUND := preload("res://assets/shop/background/form_shop_interior.png")
+const ZHOU_PORTRAIT := preload("res://assets/shop/characters/zhou_proprietor.png")
+const TRANSACTION_TRAY := preload("res://assets/shop/items/form_transaction_tray.png")
 const DESIGN_SIZE := Vector2(1280, 720)
 const SHOP_LOCATION_ID := "LOCATION-FORM-SHOP"
 const FORM_IDS := [
@@ -30,26 +33,45 @@ func build_scene() -> void:
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 
-	var wall := ColorRect.new()
-	wall.position = Vector2(34, 28)
-	wall.size = Vector2(1212, 650)
-	wall.color = Color("24271c")
-	add_child(wall)
+	var shop_background := TextureRect.new()
+	shop_background.texture = SHOP_BACKGROUND
+	shop_background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shop_background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	shop_background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	shop_background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	shop_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shop_background)
+
+	var shade := ColorRect.new()
+	shade.color = Color(0.02, 0.025, 0.018, 0.28)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shade)
 
 	var title := make_label("第十二区合作供销社 · 表单发行窗口", 28, Color("d2bd72"))
-	title.position = Vector2(70, 54)
+	title.position = Vector2(52, 34)
 	title.size = Vector2(760, 42)
 	add_child(title)
 
 	balance_label = make_label("", 17, Color("b5a66b"))
-	balance_label.position = Vector2(920, 62)
+	balance_label.position = Vector2(932, 42)
 	balance_label.size = Vector2(270, 34)
 	balance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	add_child(balance_label)
 
+	var zhou := TextureRect.new()
+	zhou.texture = ZHOU_PORTRAIT
+	zhou.position = Vector2(62, 100)
+	zhou.size = Vector2(286, 286)
+	zhou.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	zhou.stretch_mode = TextureRect.STRETCH_SCALE
+	zhou.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	zhou.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(zhou)
+
 	var proprietor_panel := make_panel(Color("0b0e0b"), Color("79835b"), 3)
-	proprietor_panel.position = Vector2(70, 116)
-	proprietor_panel.size = Vector2(1140, 118)
+	proprietor_panel.position = Vector2(360, 126)
+	proprietor_panel.size = Vector2(844, 142)
 	add_child(proprietor_panel)
 
 	var proprietor := make_label("周姨", 22, Color("d9c26f"))
@@ -58,25 +80,35 @@ func build_scene() -> void:
 	proprietor_panel.add_child(proprietor)
 
 	dialogue_label = make_label("", 17, Color("b8bd98"))
-	dialogue_label.position = Vector2(164, 18)
-	dialogue_label.size = Vector2(930, 72)
+	dialogue_label.position = Vector2(24, 58)
+	dialogue_label.size = Vector2(794, 62)
 	dialogue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	proprietor_panel.add_child(dialogue_label)
+
+	var tray := TextureRect.new()
+	tray.texture = TRANSACTION_TRAY
+	tray.position = Vector2(960, 276)
+	tray.size = Vector2(244, 138)
+	tray.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tray.stretch_mode = TextureRect.STRETCH_SCALE
+	tray.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	tray.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(tray)
 
 	for index in FORM_IDS.size():
 		var form_id: String = FORM_IDS[index]
 		var card := build_form_card(form_id)
-		card.position = Vector2(70 + index * 380, 264)
+		card.position = Vector2(52 + index * 398, 418)
 		add_child(card)
 
 	dossier_label = make_label("", 15, Color("9fa77d"))
-	dossier_label.position = Vector2(70, 620)
+	dossier_label.position = Vector2(52, 674)
 	dossier_label.size = Vector2(720, 34)
 	add_child(dossier_label)
 
 	var back_button := make_button("收起档案袋并返回地图")
-	back_button.position = Vector2(890, 610)
-	back_button.size = Vector2(320, 48)
+	back_button.position = Vector2(914, 664)
+	back_button.size = Vector2(290, 42)
 	back_button.pressed.connect(return_to_map)
 	add_child(back_button)
 
@@ -84,38 +116,38 @@ func build_scene() -> void:
 func build_form_card(form_id: String) -> Panel:
 	var form := ConfigDatabase.get_ontology("personal_forms", form_id)
 	var card := make_panel(Color("c6b883"), Color("51472d"), 3)
-	card.size = Vector2(350, 320)
+	card.size = Vector2(374, 226)
 
 	var agency := make_label("第十二区表单发行管理处", 13, Color("4b432d"))
-	agency.position = Vector2(20, 18)
-	agency.size = Vector2(310, 24)
+	agency.position = Vector2(16, 12)
+	agency.size = Vector2(342, 22)
 	card.add_child(agency)
 
-	var name := make_label(String(form.get("name", "未登记表单")), 20, Color("222319"))
-	name.position = Vector2(20, 54)
-	name.size = Vector2(310, 58)
+	var name := make_label(String(form.get("name", "未登记表单")), 18, Color("222319"))
+	name.position = Vector2(16, 40)
+	name.size = Vector2(342, 34)
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(name)
 
 	var code := make_label("%s · 版本 %s" % [form.get("form_code", ""), form.get("version", "")], 13, Color("514a34"))
-	code.position = Vector2(20, 118)
-	code.size = Vector2(310, 26)
+	code.position = Vector2(16, 77)
+	code.size = Vector2(342, 22)
 	card.add_child(code)
 
-	var description := make_label(String(form.get("description", "")), 14, Color("403c2a"))
-	description.position = Vector2(20, 154)
-	description.size = Vector2(310, 78)
+	var description := make_label(String(form.get("description", "")), 13, Color("403c2a"))
+	description.position = Vector2(16, 103)
+	description.size = Vector2(342, 47)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(description)
 
 	var fee := make_label("空白表单工本费  %d 配给券" % int(form.get("fee", 0)), 14, Color("6a3528"))
-	fee.position = Vector2(20, 236)
-	fee.size = Vector2(310, 28)
+	fee.position = Vector2(16, 154)
+	fee.size = Vector2(342, 24)
 	card.add_child(fee)
 
 	var buy_button := make_button("请周姨发行")
-	buy_button.position = Vector2(20, 272)
-	buy_button.size = Vector2(310, 38)
+	buy_button.position = Vector2(16, 184)
+	buy_button.size = Vector2(342, 30)
 	buy_button.pressed.connect(func(): purchase_form(form_id))
 	card.add_child(buy_button)
 	card_buttons[form_id] = buy_button
