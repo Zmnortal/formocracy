@@ -240,6 +240,29 @@ func get_personal_form_count(form_type_id: String, status := "") -> int:
 	return count
 
 
+# 将档案袋中的第一份指定空白表单填写并送交。每个夜晚最多提交一份个人表单。
+func submit_personal_form(form_type_id: String, fields: Dictionary) -> bool:
+	for existing in personal_form_inventory:
+		if int(existing.get("submitted_day", -1)) == day_number:
+			return false
+	var required_fields := ["applicant_name", "residence", "request_reason"]
+	for field in required_fields:
+		if String(fields.get(field, "")).strip_edges().is_empty():
+			return false
+	for item in personal_form_inventory:
+		if String(item.get("form_type_id", "")) != form_type_id or String(item.get("status", "")) != "blank":
+			continue
+		var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+		item.status = "pending"
+		item.fields = fields.duplicate(true)
+		item.submitted_day = day_number
+		item.effective_day = day_number + int(form.get("effective_delay_days", 1))
+		if persistence_enabled:
+			save_progress()
+		return true
+	return false
+
+
 # 在抵达地点后登记一次夜间行动。回家始终可达，行动数不会低于零。
 func arrive_at_evening_location(location_id: String) -> void:
 	evening_location_id = location_id

@@ -80,6 +80,11 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.72, 0.67, 0.36, 1)
 
+[sub_resource type="StyleBoxFlat" id="PaperField"]
+bg_color = Color(0.73, 0.68, 0.51, 1)
+border_width_bottom = 2
+border_color = Color(0.28, 0.25, 0.17, 1)
+
 [node name="EveningMap" type="Control"]
 layout_mode = 3
 offset_right = 1280.0
@@ -474,3 +479,176 @@ offset_bottom = 140.0
 theme_override_colors/font_color = Color(0.60, 0.65, 0.47, 1)
 theme_override_font_sizes/font_size = 14
 text = "档案袋内没有空白个人表单。"
+
+[node name="HomeWindow" type="Panel" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 280.0
+offset_top = 94.0
+offset_right = 1000.0
+offset_bottom = 626.0
+theme_override_styles/panel = SubResource("HeaderPanel")
+
+[node name="Title" type="Label" parent="HomeWindow"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 560.0
+offset_bottom = 52.0
+theme_override_colors/font_color = Color(0.82, 0.71, 0.38, 1)
+theme_override_font_sizes/font_size = 21
+text = "职员宿舍 12-C · 个人表单填写台"
+
+[node name="CloseButton" type="Button" parent="HomeWindow"]
+layout_mode = 0
+offset_left = 626.0
+offset_top = 16.0
+offset_right = 694.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+text = "关闭"
+
+[node name="FormPaper" type="Panel" parent="HomeWindow"]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 70.0
+offset_right = 666.0
+offset_bottom = 420.0
+theme_override_styles/panel = SubResource("PaperPanel")
+
+[node name="Agency" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 588.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.25, 0.23, 0.16, 1)
+theme_override_font_sizes/font_size = 13
+text = "第十二区公共供给连续性办公室"
+
+[node name="FormTitle" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 48.0
+offset_right = 588.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.12, 0.13, 0.09, 1)
+theme_override_font_sizes/font_size = 22
+text = "居民饮水配额领取申请  R-01"
+horizontal_alignment = 1
+
+[node name="ApplicantLabel" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 98.0
+offset_right = 158.0
+offset_bottom = 126.0
+theme_override_colors/font_color = Color(0.30, 0.28, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "申请人"
+
+[node name="ApplicantInput" type="LineEdit" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 91.0
+offset_right = 572.0
+offset_bottom = 130.0
+theme_override_colors/font_color = Color(0.13, 0.14, 0.10, 1)
+theme_override_colors/caret_color = Color(0.45, 0.20, 0.13, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("PaperField")
+theme_override_styles/focus = SubResource("PaperField")
+placeholder_text = "填写申请人姓名"
+
+[node name="ResidenceLabel" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 148.0
+offset_right = 158.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(0.30, 0.28, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "登记住所"
+
+[node name="ResidenceInput" type="LineEdit" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 141.0
+offset_right = 572.0
+offset_bottom = 180.0
+theme_override_colors/font_color = Color(0.13, 0.14, 0.10, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("PaperField")
+theme_override_styles/focus = SubResource("PaperField")
+placeholder_text = "填写登记住所"
+
+[node name="ReasonLabel" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 198.0
+offset_right = 158.0
+offset_bottom = 226.0
+theme_override_colors/font_color = Color(0.30, 0.28, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "申请事由"
+
+[node name="ReasonInput" type="LineEdit" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 191.0
+offset_right = 572.0
+offset_bottom = 230.0
+theme_override_colors/font_color = Color(0.13, 0.14, 0.10, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("PaperField")
+theme_override_styles/focus = SubResource("PaperField")
+placeholder_text = "例如：本周期日常饮用"
+
+[node name="TruthDeclaration" type="CheckBox" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 252.0
+offset_right = 572.0
+offset_bottom = 292.0
+theme_override_colors/font_color = Color(0.22, 0.23, 0.16, 1)
+theme_override_colors/font_pressed_color = Color(0.22, 0.23, 0.16, 1)
+theme_override_font_sizes/font_size = 14
+text = "本人确认以上内容真实，并接受延迟审查。"
+
+[node name="Notice" type="Label" parent="HomeWindow/FormPaper"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 306.0
+offset_right = 572.0
+offset_bottom = 334.0
+theme_override_colors/font_color = Color(0.39, 0.22, 0.14, 1)
+theme_override_font_sizes/font_size = 12
+text = "注意：送交后不可撤回；表单预计于下一工作日处理。"
+
+[node name="FormStatus" type="Label" parent="HomeWindow"]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 438.0
+offset_right = 420.0
+offset_bottom = 470.0
+theme_override_colors/font_color = Color(0.58, 0.64, 0.45, 1)
+theme_override_font_sizes/font_size = 14
+text = "状态：等待申请人填写"
+
+[node name="SubmitButton" type="Button" parent="HomeWindow"]
+layout_mode = 0
+offset_left = 438.0
+offset_top = 432.0
+offset_right = 666.0
+offset_bottom = 486.0
+theme_override_colors/font_color = Color(0.91, 0.83, 0.50, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.42, 0.32, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("PurchaseButton")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
+text = "签署并送交表单"
+disabled = true

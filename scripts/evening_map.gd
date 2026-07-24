@@ -42,6 +42,14 @@ const LOCATION_NAMES := {
 @onready var dossier_panel: Panel = $DossierPanel
 @onready var dossier_contents: Label = $DossierPanel/Contents
 @onready var close_dossier_button: Button = $DossierPanel/CloseButton
+@onready var home_window: Panel = $HomeWindow
+@onready var applicant_input: LineEdit = $HomeWindow/FormPaper/ApplicantInput
+@onready var residence_input: LineEdit = $HomeWindow/FormPaper/ResidenceInput
+@onready var reason_input: LineEdit = $HomeWindow/FormPaper/ReasonInput
+@onready var truth_declaration: CheckBox = $HomeWindow/FormPaper/TruthDeclaration
+@onready var submit_form_button: Button = $HomeWindow/SubmitButton
+@onready var close_home_button: Button = $HomeWindow/CloseButton
+@onready var home_form_status: Label = $HomeWindow/FormStatus
 
 var moving := false
 var purchasing := false
@@ -61,6 +69,12 @@ func _ready() -> void:
 	close_ration_button.pressed.connect(func(): ration_window.visible = false)
 	dossier_button.pressed.connect(toggle_dossier)
 	close_dossier_button.pressed.connect(func(): dossier_panel.visible = false)
+	close_home_button.pressed.connect(func(): home_window.visible = false)
+	submit_form_button.pressed.connect(submit_water_form)
+	applicant_input.text_changed.connect(func(_text): refresh_home_form_validity())
+	residence_input.text_changed.connect(func(_text): refresh_home_form_validity())
+	reason_input.text_changed.connect(func(_text): refresh_home_form_validity())
+	truth_declaration.toggled.connect(func(_pressed): refresh_home_form_validity())
 	populate_water_catalog()
 	player_token.position = LOCATION_POSITIONS.get(WorkdayState.evening_location_id, LOCATION_POSITIONS[LOCATION_OFFICE]) - player_token.size * 0.5
 	refresh_map_state()
@@ -93,6 +107,7 @@ func select_location(location_id: String) -> void:
 	arrival_card.visible = false
 	ration_window.visible = false
 	dossier_panel.visible = false
+	home_window.visible = false
 	moving = true
 	set_location_buttons_enabled(false)
 	active_route_points = build_route(WorkdayState.evening_location_id, location_id)
@@ -136,10 +151,69 @@ func show_arrival_card(location_id: String) -> void:
 			ration_window.visible = true
 			refresh_purchase_ui()
 		LOCATION_HOME:
-			arrival_body.text = "住宅门禁已确认身份。\n回家填写个人表单将在后续阶段接入。"
+			arrival_body.text = "住宅门禁已确认身份。\n可以从个人档案袋取出一张空白表单。"
+			open_home_window()
 		_:
 			arrival_body.text = "特殊窗口仅在收到行政通知时办理。\n当前没有可办理事项。"
 	arrival_card.visible = true
+
+
+func open_home_window() -> void:
+	home_window.visible = true
+	applicant_input.text = WorkdayState.player_name
+	residence_input.text = "第十二区 · 职员宿舍 12-C"
+	reason_input.clear()
+	truth_declaration.button_pressed = false
+	submit_form_button.text = "签署并送交表单"
+	home_form_status.text = "状态：等待申请人填写"
+	set_home_fields_enabled(true)
+	refresh_home_form_validity()
+
+
+func refresh_home_form_validity() -> void:
+	var blank_count := WorkdayState.get_personal_form_count(WATER_FORM_ID, "blank")
+	var already_submitted := false
+	for item in WorkdayState.personal_form_inventory:
+		if int(item.get("submitted_day", -1)) == WorkdayState.day_number:
+			already_submitted = true
+			break
+	var fields_complete := (
+		not applicant_input.text.strip_edges().is_empty()
+		and not residence_input.text.strip_edges().is_empty()
+		and not reason_input.text.strip_edges().is_empty()
+		and truth_declaration.button_pressed
+	)
+	submit_form_button.disabled = blank_count <= 0 or already_submitted or not fields_complete
+	if blank_count <= 0:
+		home_form_status.text = "状态：档案袋中没有空白饮水表"
+	elif already_submitted:
+		home_form_status.text = "状态：今晚已经送交过一份个人表单"
+
+
+func set_home_fields_enabled(enabled: bool) -> void:
+	applicant_input.editable = enabled
+	residence_input.editable = enabled
+	reason_input.editable = enabled
+	truth_declaration.disabled = not enabled
+
+
+func submit_water_form() -> void:
+	var fields := {
+		"applicant_name": applicant_input.text.strip_edges(),
+		"residence": residence_input.text.strip_edges(),
+		"request_reason": reason_input.text.strip_edges(),
+		"truth_declared": truth_declaration.button_pressed,
+	}
+	if not WorkdayState.submit_personal_form(WATER_FORM_ID, fields):
+		home_form_status.text = "状态：送交失败，请检查空白表单和必填字段"
+		refresh_home_form_validity()
+		return
+	set_home_fields_enabled(false)
+	submit_form_button.disabled = true
+	submit_form_button.text = "已送交 · 等待次日处理"
+	home_form_status.text = "回执：P-12/%02d · 预计第 %02d 工作日处理" % [WorkdayState.day_number, WorkdayState.day_number + 1]
+	notice_label.text = "个人饮水表已送交。当前状态：等待处理。"
+	refresh_purchase_ui()
 
 
 func populate_water_catalog() -> void:
@@ -154,11 +228,15 @@ func refresh_purchase_ui() -> void:
 	var form := ConfigDatabase.get_ontology("personal_forms", WATER_FORM_ID)
 	var fee := int(form.get("fee", 0))
 	var owned := WorkdayState.get_personal_form_count(WATER_FORM_ID, "blank")
+	var pending := WorkdayState.get_personal_form_count(WATER_FORM_ID, "pending")
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
-	dossier_button.text = "个人档案袋  空白表单 × %d" % owned
+	dossier_button.text = "个人档案袋  空白 × %d  待处理 × %d" % [owned, pending]
 	buy_button.text = "购买空白表单  -%d" % fee
 	buy_button.disabled = purchasing or WorkdayState.balance < fee
-	dossier_contents.text = "居民饮水配额领取申请\nR-01 / 版本 01 / 空白\n持有数量：%d" % owned if owned > 0 else "档案袋内没有空白个人表单。"
+	if owned + pending <= 0:
+		dossier_contents.text = "档案袋内没有个人表单。"
+	else:
+		dossier_contents.text = "居民饮水配额领取申请\nR-01 / 空白 × %d / 待处理 × %d" % [owned, pending]
 
 
 func purchase_water_form() -> void:
@@ -228,6 +306,10 @@ func apply_pixel_theme(node: Node) -> void:
 	if node is Label:
 		node.add_theme_font_override("font", UI.PIXEL_FONT)
 	elif node is Button:
+		node.add_theme_font_override("font", UI.PIXEL_FONT)
+	elif node is LineEdit:
+		node.add_theme_font_override("font", UI.PIXEL_FONT)
+	elif node is CheckBox:
 		node.add_theme_font_override("font", UI.PIXEL_FONT)
 	for child in node.get_children():
 		apply_pixel_theme(child)
