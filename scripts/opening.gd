@@ -3,14 +3,20 @@ extends Control
 const MAIN_SCENE := "res://main.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const FORM_TEXTURE := preload("res://assets/opening/position-reinstatement-form-v2.png")
-const MACHINE_TEXTURE := preload("res://assets/opening/opening-02-reality-effective-8bit-v1.png")
+const MACHINE_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
 const SignaturePadScene := preload("res://scripts/ui/signature_pad.gd")
 const HandwrittenCheckScene := preload("res://scripts/ui/handwritten_check.gd")
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const APPROACH_FRAME_COUNT := 8
+const INGEST_FRAME_COUNT := 10
+const STOP_MOTION_FRAME_SECONDS := 0.25
 
 var form_stage: Control
+var form_viewport: SubViewport
+var projected_form: Polygon2D
 var machine: TextureRect
+var machine_foreground: TextureRect
 var black: ColorRect
 var name_input: LineEdit
 var year_input: LineEdit
@@ -21,7 +27,11 @@ var confirmation
 var confirm_button: Button
 var status_label: Label
 var clear_signature_button: Button
+var welcome_panel: Control
+var pass_button: Button
 var submission_locked := false
+var submission_snap_count := 0
+var submission_phase := "form"
 
 
 func _ready() -> void:
@@ -44,9 +54,10 @@ func build_scene() -> void:
 	machine = TextureRect.new()
 	machine.name = "ValidationMachine"
 	machine.texture = MACHINE_TEXTURE
-	machine.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	machine.position = Vector2(417, 96)
+	machine.size = Vector2(446, 502)
 	machine.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	machine.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	machine.stretch_mode = TextureRect.STRETCH_SCALE
 	machine.modulate.a = 0.0
 	add_child(machine)
 
@@ -68,6 +79,9 @@ func build_scene() -> void:
 
 	add_form_copy()
 	add_form_inputs()
+
+	build_machine_foreground()
+	build_welcome_panel()
 
 func add_form_copy() -> void:
 	var title := make_label("职位恢复申请", 30, Vector2(408, 122), Vector2(464, 42))
@@ -145,6 +159,50 @@ func add_form_inputs() -> void:
 	confirm_button.visible = false
 	confirm_button.pressed.connect(submit_form)
 	form_stage.add_child(confirm_button)
+
+
+func build_machine_foreground() -> void:
+	var mouth_texture := AtlasTexture.new()
+	mouth_texture.atlas = MACHINE_TEXTURE
+	# 只分离机器插槽的下沿。大块矩形裁切会像一张贴图压在纸面上，
+	# 这里保留很窄的一层，用来在吞入阶段建立“纸张进入插槽后方”的遮挡。
+	mouth_texture.region = Rect2(83, 164, 164, 48)
+	machine_foreground = TextureRect.new()
+	machine_foreground.name = "MachineMouthForeground"
+	machine_foreground.texture = mouth_texture
+	machine_foreground.position = Vector2(529, 318)
+	machine_foreground.size = Vector2(222, 65)
+	machine_foreground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	machine_foreground.stretch_mode = TextureRect.STRETCH_SCALE
+	machine_foreground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	machine_foreground.modulate.a = 0.0
+	add_child(machine_foreground)
+
+
+func build_welcome_panel() -> void:
+	welcome_panel = Control.new()
+	welcome_panel.name = "WelcomePanel"
+	welcome_panel.size = Vector2(1280, 720)
+	welcome_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	welcome_panel.visible = false
+	add_child(welcome_panel)
+
+	var welcome := Label.new()
+	welcome.text = "欢迎回来"
+	welcome.position = Vector2(390, 262)
+	welcome.size = Vector2(500, 72)
+	welcome.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UI.style_label(welcome, 42)
+	welcome_panel.add_child(welcome)
+
+	pass_button = Button.new()
+	pass_button.name = "PassButton"
+	pass_button.text = "我通过"
+	pass_button.position = Vector2(500, 386)
+	pass_button.size = Vector2(280, 62)
+	UI.style_button(pass_button, 22)
+	pass_button.pressed.connect(complete_reinstatement)
+	welcome_panel.add_child(pass_button)
 
 
 func make_label(text: String, font_size: int, at: Vector2, dimensions: Vector2, muted := false) -> Label:
@@ -252,7 +310,8 @@ func play_form_reveal() -> void:
 	reveal.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	reveal.tween_property(form_stage, "modulate:a", 1.0, 1.15)
 	await reveal.finished
-	name_input.grab_focus()
+	if not submission_locked:
+		name_input.grab_focus()
 
 
 func submit_form() -> void:
@@ -262,10 +321,13 @@ func submit_form() -> void:
 	WorkdayState.player_name = name_input.text.strip_edges()
 	WorkdayState.reinstatement_date = entered_date()
 	WorkdayState.player_signature = signature_pad.serialize_strokes()
-	WorkdayState.save_progress()
 	set_form_interaction(false)
+	# 只捕获完成后的纸面内容，开发交互控件不应进入吞噬动画。
+	confirm_button.visible = false
+	status_label.visible = false
+	clear_signature_button.visible = false
+	await prepare_projected_form()
 	await play_submission()
-	enter_first_day()
 
 
 func set_form_interaction(enabled: bool) -> void:
@@ -282,27 +344,137 @@ func set_form_interaction(enabled: bool) -> void:
 
 
 func play_submission() -> void:
+	await play_stop_motion_approach()
+	await play_stop_motion_ingestion()
+	if DisplayServer.get_name() != "headless":
+		await get_tree().create_timer(0.5).timeout
+	await fade_machine_out()
+	await show_welcome()
+
+
+func prepare_projected_form() -> void:
+	projected_form = Polygon2D.new()
+	projected_form.name = "ProjectedForm"
+	if DisplayServer.get_name() == "headless":
+		# Headless 渲染器不推进 SubViewport 捕获；测试使用静态纹理验证几何与时序。
+		projected_form.texture = FORM_TEXTURE
+		form_stage.visible = false
+	else:
+		form_viewport = SubViewport.new()
+		form_viewport.name = "FormCaptureViewport"
+		form_viewport.size = Vector2i(1280, 720)
+		form_viewport.transparent_bg = true
+		form_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		add_child(form_viewport)
+		form_stage.reparent(form_viewport)
+		form_stage.position = Vector2.ZERO
+		form_stage.scale = Vector2.ONE
+		form_stage.rotation_degrees = 0.0
+		projected_form.texture = form_viewport.get_texture()
+	projected_form.uv = PackedVector2Array([
+		Vector2(0, 0),
+		Vector2(1280, 0),
+		Vector2(1280, 720),
+		Vector2(0, 720),
+	])
+	set_projected_form_pose(1.0, 1.0, 0.0, 0.0)
+	add_child(projected_form)
+	move_child(projected_form, machine_foreground.get_index())
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+
+
+func play_stop_motion_approach() -> void:
+	submission_phase = "approach"
+	submission_snap_count = 0
 	var machine_reveal := create_tween()
+	machine_reveal.set_parallel(true)
 	machine_reveal.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	machine_reveal.tween_property(machine, "modulate:a", 1.0, 1.25)
-	await machine_reveal.finished
+	machine_reveal.tween_property(machine, "modulate:a", 1.0, APPROACH_FRAME_COUNT * STOP_MOTION_FRAME_SECONDS)
 
-	var feed := create_tween()
-	feed.set_parallel(true)
-	feed.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
-	feed.tween_property(form_stage, "rotation_degrees", -7.0, 1.25)
-	feed.tween_property(form_stage, "scale", Vector2(0.36, 0.36), 1.25)
-	feed.tween_property(form_stage, "position", Vector2(0, 56), 1.25)
-	await feed.finished
+	for frame in range(1, APPROACH_FRAME_COUNT + 1):
+		var t := float(frame) / float(APPROACH_FRAME_COUNT)
+		set_projected_form_pose(
+			lerpf(1.0, 0.64, t),
+			lerpf(1.0, 0.48, t),
+			lerpf(0.0, 0.24, t),
+			lerpf(0.0, 12.0, t)
+		)
+		submission_snap_count += 1
+		if DisplayServer.get_name() != "headless":
+			await get_tree().create_timer(STOP_MOTION_FRAME_SECONDS).timeout
+	if DisplayServer.get_name() == "headless":
+		machine_reveal.kill()
+	# 定格循环与淡入时长相同；循环结束时 Tween 可能已经发出 finished。
+	# 此处直接收束到目标状态，避免等待一个已经错过的信号而永久卡住演出。
+	machine.modulate.a = 1.0
 
-	var swallow := create_tween()
-	swallow.set_parallel(true)
-	swallow.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
-	swallow.tween_property(form_stage, "scale", Vector2(0.08, 0.08), 0.65)
-	swallow.tween_property(form_stage, "position", Vector2(0, 8), 0.65)
-	swallow.tween_property(form_stage, "modulate:a", 0.0, 0.65)
-	await swallow.finished
-	await get_tree().create_timer(0.45).timeout
+
+func play_stop_motion_ingestion() -> void:
+	submission_phase = "ingestion"
+	# 遮挡只在纸张真正进入插槽时出现；靠近机器时不能盖住表单。
+	machine_foreground.modulate.a = 1.0
+	for frame in range(1, INGEST_FRAME_COUNT + 1):
+		var t := float(frame) / float(INGEST_FRAME_COUNT)
+		set_projected_form_pose(
+			lerpf(0.64, 0.035, t),
+			lerpf(0.48, 0.012, t),
+			lerpf(0.24, 0.42, t),
+			lerpf(12.0, 20.0, t)
+		)
+		submission_snap_count += 1
+		if DisplayServer.get_name() != "headless":
+			await get_tree().create_timer(STOP_MOTION_FRAME_SECONDS).timeout
+	projected_form.visible = false
+
+
+func set_projected_form_pose(width_scale: float, height_scale: float, perspective: float, offset_y: float) -> void:
+	var center := Vector2(640.0, 360.0 + offset_y)
+	var bottom_width := 1280.0 * width_scale
+	var top_width := bottom_width * (1.0 - perspective)
+	var height := 720.0 * height_scale
+	var top_y := center.y - height * 0.5
+	var bottom_y := center.y + height * 0.5
+	projected_form.polygon = PackedVector2Array([
+		Vector2(center.x - top_width * 0.5, top_y),
+		Vector2(center.x + top_width * 0.5, top_y),
+		Vector2(center.x + bottom_width * 0.5, bottom_y),
+		Vector2(center.x - bottom_width * 0.5, bottom_y),
+	])
+
+
+func fade_machine_out() -> void:
+	submission_phase = "machine_fade"
+	if DisplayServer.get_name() == "headless":
+		machine.modulate.a = 0.0
+		machine_foreground.modulate.a = 0.0
+		return
+	var fade_out := create_tween()
+	fade_out.set_parallel(true)
+	fade_out.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	fade_out.tween_property(machine, "modulate:a", 0.0, 3.0)
+	fade_out.tween_property(machine_foreground, "modulate:a", 0.0, 3.0)
+	await fade_out.finished
+
+
+func show_welcome() -> void:
+	submission_phase = "welcome"
+	welcome_panel.modulate.a = 0.0
+	welcome_panel.visible = true
+	if DisplayServer.get_name() == "headless":
+		welcome_panel.modulate.a = 1.0
+		return
+	var reveal := create_tween()
+	reveal.tween_property(welcome_panel, "modulate:a", 1.0, 0.8)
+	await reveal.finished
+	pass_button.grab_focus()
+
+
+func complete_reinstatement() -> void:
+	if not submission_locked:
+		return
+	WorkdayState.save_progress()
+	enter_first_day()
 
 
 func return_to_menu() -> void:
