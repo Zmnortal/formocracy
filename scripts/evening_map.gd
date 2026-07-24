@@ -81,13 +81,22 @@ func _ready() -> void:
 	close_dossier_button.pressed.connect(func(): dossier_panel.visible = false)
 	close_home_button.pressed.connect(func(): home_window.visible = false)
 	submit_form_button.pressed.connect(submit_water_form)
-	applicant_input.text_changed.connect(func(_text): refresh_home_form_validity())
-	residence_input.text_changed.connect(func(_text): refresh_home_form_validity())
-	reason_input.text_changed.connect(func(_text): refresh_home_form_validity())
-	truth_declaration.toggled.connect(func(_pressed): refresh_home_form_validity())
+	applicant_input.text_changed.connect(func(_text):
+		Sfx.typewriter_tick()
+		refresh_home_form_validity())
+	residence_input.text_changed.connect(func(_text):
+		Sfx.typewriter_tick()
+		refresh_home_form_validity())
+	reason_input.text_changed.connect(func(_text):
+		Sfx.typewriter_tick()
+		refresh_home_form_validity())
+	truth_declaration.toggled.connect(func(_pressed):
+		Sfx.play("ui_switch")
+		refresh_home_form_validity())
 	end_night_button.pressed.connect(end_night)
 	enter_workday_button.pressed.connect(enter_next_workday)
 	populate_water_catalog()
+	attach_button_sounds(self)
 	player_token.position = LOCATION_POSITIONS.get(WorkdayState.evening_location_id, LOCATION_POSITIONS[LOCATION_OFFICE]) - player_token.size * 0.5
 	refresh_map_state()
 	get_viewport().size_changed.connect(fit_to_window)
@@ -100,6 +109,17 @@ func connect_location_button(button: Button, location_id: String) -> void:
 	button.mouse_entered.connect(func(): animate_button_hover(button, true))
 	button.mouse_exited.connect(func(): animate_button_hover(button, false))
 	button.pivot_offset = button.size * 0.5
+
+
+# 为场景内所有按钮统一挂接点击与悬停音效。
+func attach_button_sounds(node: Node) -> void:
+	if node is Button:
+		node.pressed.connect(func(): Sfx.play("ui_click"))
+		node.mouse_entered.connect(func():
+			if not node.disabled:
+				Sfx.play("ui_hover"))
+	for child in node.get_children():
+		attach_button_sounds(child)
 
 
 func animate_button_hover(button: Button, hovered: bool) -> void:
@@ -127,7 +147,9 @@ func select_location(location_id: String) -> void:
 	highlighted_route_points = [active_route_points[0]]
 	notice_label.text = "正在前往：%s" % LOCATION_NAMES[location_id]
 	refresh_route_overlay()
+	Sfx.start_walking()
 	await animate_route(active_route_points)
+	Sfx.stop_walking()
 	WorkdayState.arrive_at_evening_location(location_id)
 	moving = false
 	show_arrival_card(location_id)
@@ -176,6 +198,7 @@ func refresh_route_overlay() -> void:
 
 
 func show_arrival_card(location_id: String) -> void:
+	Sfx.play("door")
 	arrival_title.text = "已抵达 · %s" % LOCATION_NAMES[location_id]
 	match location_id:
 		LOCATION_RATION:
@@ -270,6 +293,7 @@ func end_night() -> void:
 
 
 func enter_next_workday() -> void:
+	Sfx.play("start")
 	var error := get_tree().change_scene_to_file("res://main.tscn")
 	if error != OK:
 		review_detail_label.text = "进入下一工作日失败：%s" % error_string(error)
@@ -307,6 +331,7 @@ func purchase_water_form() -> void:
 		return
 	purchasing = true
 	buy_button.disabled = true
+	Sfx.play("bling")
 	notice_label.text = "表单已登记，正在装入个人档案袋……"
 	await animate_form_to_dossier()
 	purchasing = false

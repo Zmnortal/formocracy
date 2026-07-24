@@ -2,6 +2,7 @@ extends CanvasLayer
 
 const MAIN_SCENE := "res://main.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
+const WORKDAY_SELECTOR_SCENE := "res://scenes/workday_selector.tscn"
 const OPENING_SCENE := "res://scenes/opening.tscn"
 const REPORT_SCENE := "res://scenes/daily_report.tscn"
 const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
@@ -110,16 +111,18 @@ func build_ui() -> void:
 	scene_selector.size = Vector2(250, 40)
 	scene_selector.add_item("标题主菜单")
 	scene_selector.set_item_metadata(0, MENU_SCENE)
+	scene_selector.add_item("工作日选择")
+	scene_selector.set_item_metadata(1, WORKDAY_SELECTOR_SCENE)
 	scene_selector.add_item("首次叙事")
-	scene_selector.set_item_metadata(1, OPENING_SCENE)
+	scene_selector.set_item_metadata(2, OPENING_SCENE)
 	scene_selector.add_item("主工作台")
-	scene_selector.set_item_metadata(2, MAIN_SCENE)
+	scene_selector.set_item_metadata(3, MAIN_SCENE)
 	scene_selector.add_item("工作日处理回执")
-	scene_selector.set_item_metadata(3, REPORT_SCENE)
+	scene_selector.set_item_metadata(4, REPORT_SCENE)
 	scene_selector.add_item("下班后的城市地图")
-	scene_selector.set_item_metadata(4, EVENING_MAP_SCENE)
+	scene_selector.set_item_metadata(5, EVENING_MAP_SCENE)
 	scene_selector.add_item("现实验收设施预览")
-	scene_selector.set_item_metadata(5, VALIDATION_SCENE)
+	scene_selector.set_item_metadata(6, VALIDATION_SCENE)
 	console_panel.add_child(scene_selector)
 	var switch_button := create_button("立即切换", Vector2(292, 100), Vector2(126, 40))
 	switch_button.pressed.connect(_on_switch_scene)
@@ -413,14 +416,15 @@ func execute_command(command: String) -> void:
 	var parts := clean.split(" ", false)
 	match parts[0].to_lower():
 		"help":
-			append_output("scene menu | scene opening | scene main | scene report | scene map | scene validation | scene reload")
+			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
 			append_output("level <id> [seed] | config reload | queue | report fill | day next | state | clear")
 		"scene":
 			if parts.size() < 2:
-				append_output("用法：scene menu|opening|main|report|map|validation|reload")
+				append_output("用法：scene menu|days|opening|main|report|map|validation|reload")
 			else:
 				match parts[1].to_lower():
 					"menu": switch_scene(MENU_SCENE)
+					"days": switch_scene(WORKDAY_SELECTOR_SCENE)
 					"opening": switch_scene(OPENING_SCENE)
 					"main": switch_scene(MAIN_SCENE)
 					"report": switch_scene(REPORT_SCENE)

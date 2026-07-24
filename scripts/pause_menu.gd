@@ -129,6 +129,8 @@ func create_menu_button(text: String) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(280, 54)
 	UI.style_button(button, 18)
+	button.pressed.connect(func(): Sfx.play("ui_click"))
+	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
 	return button
 
 
@@ -231,6 +233,7 @@ func open_menu() -> void:
 	if is_open or not is_current_scene_allowed():
 		return
 	is_open = true
+	Sfx.play("ui_switch")
 	overlay.visible = true
 	get_tree().paused = true
 	refresh_fullscreen_label()
@@ -240,6 +243,8 @@ func open_menu() -> void:
 
 # 关闭暂停菜单并恢复游戏树。
 func close_menu() -> void:
+	if is_open:
+		Sfx.play("ui_switch")
 	is_open = false
 	overlay.visible = false
 	menu_confirmation.close()

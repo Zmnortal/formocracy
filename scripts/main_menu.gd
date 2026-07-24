@@ -1,21 +1,14 @@
 extends Control
 
 # 标题主菜单场景。
-# 负责展示标题、背景、开始/退出按钮，以及检测到存档时的继续/新游戏选择弹窗。
-const NARRATIVE_SCENE := "res://scenes/opening.tscn"
-const GAME_SCENE := "res://main.tscn"
+# 负责展示标题、背景、开始/退出按钮。
+const WORKDAY_SELECTOR_SCENE := "res://scenes/workday_selector.tscn"
 const TITLE_TEXTURE := preload("res://assets/menu/formocracy-title.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
-const BureauModalScene := preload("res://scripts/ui/bureau_modal.gd")
 
 # UI 控件引用
 var start_button: Button
 var exit_button: Button
-var continue_button: Button
-var new_game_button: Button
-var save_panel
-var overwrite_panel
-var overwrite_confirm_button: Button
 
 
 # 初始化主菜单：播放开场音乐、构建场景并聚焦开始按钮。
@@ -61,8 +54,6 @@ func build_scene() -> void:
 	exit_button.pressed.connect(on_exit_pressed)
 	menu.add_child(exit_button)
 
-	build_save_panel()
-	build_overwrite_panel()
 
 
 # 创建主菜单按钮，统一使用像素字体与固定最小尺寸。
@@ -72,109 +63,15 @@ func make_button(label_text: String) -> Button:
 	button.custom_minimum_size = Vector2(380, 76)
 	button.add_theme_font_override("font", PIXEL_FONT)
 	button.add_theme_font_size_override("font_size", 30)
+	button.pressed.connect(func(): Sfx.play("ui_click"))
+	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
 	return button
 
 
-# 构建“检测到现有工作档案”选择弹窗。
-# 提供继续游戏、开始新游戏和返回三个操作，并记录关键按钮引用以便聚焦。
-func build_save_panel() -> void:
-	save_panel = BureauModalScene.new()
-	save_panel.name = "SaveChoicePanel"
-	save_panel.configure(
-		"检测到现有工作档案",
-		"档案仍在流转中。请选择继续处理，或开始新的工作记录。",
-		Vector2(560, 440),
-		true
-	)
-	save_panel.action_pressed.connect(_on_save_action)
-	add_child(save_panel)
-	continue_button = save_panel.add_action("continue", "继续游戏", true)
-	continue_button.name = "ContinueButton"
-	new_game_button = save_panel.add_action("new_game", "开始新游戏")
-	new_game_button.name = "NewGameButton"
-	var back_button: Button = save_panel.add_action("back", "返回")
-	back_button.name = "BackButton"
-	save_panel.set_cancel_action("back")
-
-
-# 构建“覆盖工作档案”确认弹窗。
-# 用于在开始新游戏时提醒玩家当前进度将被清除，避免误操作。
-func build_overwrite_panel() -> void:
-	overwrite_panel = BureauModalScene.new()
-	overwrite_panel.name = "OverwritePanel"
-	overwrite_panel.z_index = 20
-	overwrite_panel.configure(
-		"覆盖工作档案",
-		"开始新游戏会清除当前进度。\n此操作无法撤销，是否继续？",
-		Vector2(680, 360)
-	)
-	overwrite_panel.action_pressed.connect(_on_overwrite_action)
-	add_child(overwrite_panel)
-	var cancel_button: Button = overwrite_panel.add_action("cancel", "取消")
-	cancel_button.name = "CancelButton"
-	overwrite_confirm_button = overwrite_panel.add_action("confirm", "确认覆盖", true, true)
-	overwrite_confirm_button.name = "ConfirmButton"
-	overwrite_panel.set_cancel_action("cancel")
-
-
-# 处理存档选择弹窗的按钮动作。
-func _on_save_action(action_id: String) -> void:
-	match action_id:
-		"continue":
-			continue_game()
-		"new_game":
-			confirm_new_game()
-		"back":
-			close_save_panel()
-
-
-# 处理覆盖确认弹窗的按钮动作。
-func _on_overwrite_action(action_id: String) -> void:
-	match action_id:
-		"confirm":
-			start_new_game()
-		"cancel":
-			close_overwrite_panel()
-
-
 # 点击“游戏开始”时调用。
-# 若存在存档则打开选择弹窗，否则直接进入新游戏叙事流程。
+# 始终进入独立的工作日选择场景。
 func on_start_pressed() -> void:
-	if WorkdayState.has_save():
-		save_panel.open()
-	else:
-		start_new_game()
-
-
-# 关闭存档选择弹窗并恢复开始按钮焦点。
-func close_save_panel() -> void:
-	save_panel.close()
-	start_button.grab_focus()
-
-
-# 确认要开始新游戏：打开覆盖确认弹窗。
-func confirm_new_game() -> void:
-	overwrite_panel.open()
-
-
-# 关闭覆盖确认弹窗并恢复新游戏按钮焦点。
-func close_overwrite_panel() -> void:
-	overwrite_panel.close()
-	new_game_button.grab_focus()
-
-
-# 开始新游戏：重置存档并进入开场叙事场景。
-func start_new_game() -> void:
-	WorkdayState.start_new_game()
-	change_scene(NARRATIVE_SCENE)
-
-
-# 继续游戏：加载存档并进入主工作台；若加载失败则开始新游戏。
-func continue_game() -> void:
-	if not WorkdayState.load_progress():
-		start_new_game()
-		return
-	change_scene(GAME_SCENE)
+	change_scene(WORKDAY_SELECTOR_SCENE)
 
 
 # 点击“退出游戏”时调用。
@@ -194,12 +91,7 @@ func change_scene(path: String) -> void:
 		push_error("场景切换失败：%s / %s" % [path, error_string(error)])
 
 
-# 全局键盘输入：ESC 关闭弹窗或退出游戏。
+# 全局键盘输入：ESC 退出游戏。
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		if overwrite_panel.visible:
-			close_overwrite_panel()
-		elif save_panel.visible:
-			close_save_panel()
-		else:
-			on_exit_pressed()
+		on_exit_pressed()

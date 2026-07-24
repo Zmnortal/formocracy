@@ -17,6 +17,7 @@ var accepting_new_cases := true
 # 进入主工作台场景时调用：构建工作台、初始化各模块并启动第一个案件。
 func _ready() -> void:
 	OpeningMusic.stop_opening(1.2)
+	Sfx.start_ambience()
 
 	desk = DeskBuilder.new().build(self)
 	presenter = CasePresenter.new(self, desk)
@@ -71,6 +72,12 @@ func _on_day_finished() -> void:
 	var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
 	if error != OK and is_instance_valid(desk.status_label):
 		desk.status_label.text = "内部日报生成失败，当前记录已保留。"
+
+
+# 离开工作台场景时停止办公室环境音。
+func _exit_tree() -> void:
+	Sfx.stop_ambience()
+	Sfx.stop_conveyor()
 
 
 # 每帧更新倒计时，时间到后停止接收新案件。

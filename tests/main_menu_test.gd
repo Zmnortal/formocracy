@@ -1,7 +1,7 @@
 extends SceneTree
 
 # 主菜单功能测试。
-# 验证标题界面、按钮、存档检测、继续/新游戏/覆盖弹窗交互。
+# 验证标题界面和独立工作日选择场景入口。
 
 
 func _init() -> void:
@@ -24,18 +24,9 @@ func run() -> void:
 	assert(menu.exit_button.text == "退出游戏", "main menu must expose exit")
 	assert(menu.start_button.get_theme_font_size("font_size") == 30, "main menu text must remain legible at high resolutions")
 	assert(menu.start_button.custom_minimum_size == Vector2(380, 76), "main menu buttons must use the large presentation size")
-	assert(menu.continue_button != null, "continue button reference must be retained for save-menu focus")
-	assert(menu.overwrite_panel.panel.size == Vector2(680, 360), "overwrite confirmation must use the shared bureau modal")
-	assert(menu.overwrite_panel.panel.get_theme_stylebox("panel").border_color == Color("84945c"), "modal must use the pause-menu border color")
-	assert(menu.overwrite_confirm_button.get_theme_font_size("font_size") == 18, "overwrite actions must use the shared pixel button style")
-	assert(menu.save_panel.panel.scale.x >= 1.0, "bureau modal must scale up instead of shrinking on large viewports")
-	var modal_visual_size: Vector2 = menu.save_panel.panel.size * menu.save_panel.panel.scale
-	var modal_center: Vector2 = menu.save_panel.panel.position + modal_visual_size / 2.0
-	assert(modal_center.distance_to(menu.save_panel.size / 2.0) < 1.0, "bureau modal must remain centered after viewport scaling")
 	var artwork := menu.get_node("TitleArtwork") as TextureRect
 	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
 	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")
-	assert(not menu.save_panel.visible, "save choice must begin hidden")
 	assert(not state.has_save(), "test must begin without a save")
 	state.day_number = 4
 	state.player_name = "测试审批员"
@@ -45,14 +36,32 @@ func run() -> void:
 	state.records.append({"decision": "批准"})
 	assert(state.save_progress(), "save progress must succeed")
 	assert(state.has_save(), "save file must exist")
-	menu.on_start_pressed()
-	assert(menu.save_panel.visible, "existing save must open the save-choice panel")
-	assert(menu.continue_button.has_focus(), "continue button must receive focus without a node-path lookup")
-	menu.confirm_new_game()
-	assert(menu.overwrite_panel.visible, "new game must open the custom overwrite panel")
-	assert(menu.overwrite_confirm_button.has_focus(), "overwrite confirmation must receive keyboard focus")
-	menu.close_overwrite_panel()
-	menu.close_save_panel()
+	var selector_scene: PackedScene = load(menu.WORKDAY_SELECTOR_SCENE)
+	assert(selector_scene != null, "game start must point to the full-screen workday selector")
+	var selector = selector_scene.instantiate()
+	root.add_child(selector)
+	await process_frame
+	assert(selector.title_label.text == "选择一天来继续或者从头开始游戏", "selector must present the workday timeline heading")
+	assert(selector.new_game_button.visible, "new game must remain the first timeline node")
+	assert(selector.save_button.visible, "existing save must appear as a timeline node")
+	assert(selector.save_button.size == selector.new_game_button.size, "new game and saved workday cards must align at equal size")
+	assert(selector.save_button.custom_minimum_size == selector.new_game_button.custom_minimum_size, "card content must not expand one timeline node beyond the other")
+	assert(selector.save_button.text.contains("第 4 工作日"), "save slot must show the saved workday")
+	assert(selector.delete_button.visible, "saved workday must expose the delete action")
+	assert(not selector.confirmation_layer.visible, "selector confirmation state must begin hidden")
+	selector.request_delete_save()
+	assert(selector.confirmation_layer.visible, "delete must use the selector's full-screen confirmation state")
+	assert(selector.pending_action == "delete", "delete confirmation must retain its requested action")
+	selector.close_confirmation()
+	selector.request_continue_game()
+	assert(selector.confirmation_layer.visible, "saved workday must require confirmation before loading")
+	assert(selector.pending_action == "continue", "continue confirmation must retain its requested action")
+	selector.close_confirmation()
+	selector.request_new_game()
+	assert(selector.confirmation_layer.visible, "new game must require overwrite confirmation when a save exists")
+	assert(selector.pending_action == "new_game", "overwrite confirmation must retain its requested action")
+	selector.close_confirmation()
+	selector.queue_free()
 	state.day_number = 1
 	state.player_name = ""
 	state.player_signature.clear()

@@ -98,6 +98,7 @@ func add_action(action_id: String, text: String, primary := false, danger := fal
 	button.custom_minimum_size = action_button_size
 	UI.style_button(button, 18, danger)
 	button.pressed.connect(_on_action.bind(action_id))
+	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
 	action_row.add_child(button)
 	if primary or default_button == null:
 		default_button = button
@@ -135,6 +136,7 @@ func _gui_input(event: InputEvent) -> void:
 
 # 内部：按钮按下时发射 action_pressed 信号。
 func _on_action(action_id: String) -> void:
+	Sfx.play("ui_click")
 	action_pressed.emit(action_id)
 
 

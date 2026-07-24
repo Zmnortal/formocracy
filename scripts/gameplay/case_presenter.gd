@@ -52,6 +52,7 @@ func start_case(data: Dictionary) -> void:
 		desk.queue_label.text = "%s\n正在进场\n后续排队：%d 人" % [
 			display_name, LevelDirector.get_gameplay_queue().size()
 		]
+	Sfx.play_voice(String(current_case.get("person", {}).get("id", "")))
 
 	_create_form()
 	_create_documents(current_case.get("documents", []))
@@ -258,6 +259,7 @@ func open_envelope() -> void:
 	if envelope_opened or not envelope_on_desk:
 		return
 	envelope_opened = true
+	Sfx.play("ui_switch")
 	envelope.visible = true
 	envelope.position = Vector2(78, 505)
 	envelope.z_index = 4
@@ -276,6 +278,7 @@ func open_envelope() -> void:
 func pack_document(document_id: String) -> bool:
 	if not packed_document_ids.has(document_id) and not document_id.is_empty():
 		packed_document_ids.append(document_id)
+		Sfx.play("ui_click")
 	for document in document_panels:
 		if String(document.get_meta("document_id")) == document_id:
 			document.visible = false

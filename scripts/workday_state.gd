@@ -340,6 +340,33 @@ func has_save() -> bool:
 	return FileAccess.file_exists(save_path)
 
 
+# 读取存档选择页所需的只读摘要，不改变当前运行状态。
+func get_save_summary() -> Dictionary:
+	if not has_save():
+		return {}
+	var file := FileAccess.open(save_path, FileAccess.READ)
+	if file == null:
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return {}
+	var modified := FileAccess.get_modified_time(save_path)
+	var datetime := Time.get_datetime_dict_from_unix_time(modified)
+	return {
+		"day_number": maxi(1, int(parsed.get("day_number", 1))),
+		"player_name": String(parsed.get("player_name", "")),
+		"date": "%02d/%02d" % [datetime.month, datetime.day],
+		"time": "%02d:%02d" % [datetime.hour, datetime.minute],
+	}
+
+
+# 删除当前工作档案；供工作日选择页的销毁操作使用。
+func delete_save() -> bool:
+	if not has_save():
+		return true
+	return DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path)) == OK
+
+
 # 开始新游戏：重置所有状态并删除旧存档。
 func start_new_game() -> void:
 	day_number = 1

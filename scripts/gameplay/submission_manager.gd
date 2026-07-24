@@ -48,6 +48,7 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	submitted_object.visible = true
 	submitted_object.pivot_offset = submitted_object.size / 2.0
 	submitted_object.z_index = 46
+	Sfx.start_conveyor()
 	if is_instance_valid(desk.machine_mouth_mask):
 		desk.machine_mouth_mask.visible = true
 	var zone_rect := desk.machine_drop_zone.get_global_rect()
@@ -75,6 +76,7 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	submitted_object.visible = false
 	if is_instance_valid(desk.machine_mouth_mask):
 		desk.machine_mouth_mask.visible = false
+	Sfx.stop_conveyor()
 	_record_submission(presenter, case_data, procedure_errors)
 	_show_validation_transition()
 
@@ -93,6 +95,7 @@ func _record_submission(
 	)
 	if is_instance_valid(desk.status_label):
 		desk.status_label.text = "材料已吞入。批准不构成现实效力承诺。"
+	Sfx.play("bling")
 	_flash_slot(WorkbenchUI.COLORS.green_glow)
 
 

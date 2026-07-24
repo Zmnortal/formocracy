@@ -21,6 +21,7 @@ WorkdayState="*res://scripts/workday_state.gd"
 ConfigDatabase="*res://scripts/config_database.gd"
 LevelDirector="*res://scripts/level_director.gd"
 OpeningMusic="*res://scripts/opening_music.gd"
+Sfx="*res://scripts/sfx.gd"
 PauseMenu="*res://scripts/pause_menu.gd"
 DeveloperConsole="*res://scripts/developer_console.gd"
 

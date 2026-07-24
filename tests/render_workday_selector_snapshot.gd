@@ -1,0 +1,36 @@
+extends SceneTree
+
+const SNAPSHOT_PATH := "/tmp/formocracy-workday-selector.png"
+const CONFIRMATION_SNAPSHOT_PATH := "/tmp/formocracy-workday-selector-confirmation.png"
+
+
+func _init() -> void:
+	call_deferred("run")
+
+
+func run() -> void:
+	var state = root.get_node("WorkdayState")
+	state.save_path = "user://formocracy-workday-selector-render.json"
+	state.start_new_game()
+	state.day_number = 4
+	state.player_name = "张子奕"
+	assert(state.save_progress(), "selector render save must be created")
+	var error := change_scene_to_file("res://scenes/workday_selector.tscn")
+	assert(error == OK, "workday selector scene must load")
+	await process_frame
+	await process_frame
+	await create_timer(0.2).timeout
+	var image := root.get_viewport().get_texture().get_image()
+	assert(not image.is_empty(), "selector viewport must produce an image")
+	assert(image.save_png(SNAPSHOT_PATH) == OK, "selector snapshot must save")
+	current_scene.request_continue_game()
+	await process_frame
+	var confirmation_image := root.get_viewport().get_texture().get_image()
+	assert(
+		confirmation_image.save_png(CONFIRMATION_SNAPSHOT_PATH) == OK,
+		"selector confirmation snapshot must save"
+	)
+	state.start_new_game()
+	state.save_path = state.DEFAULT_SAVE_PATH
+	print("FORMOCRACY_WORKDAY_SELECTOR_RENDER_OK %s %s" % [SNAPSHOT_PATH, CONFIRMATION_SNAPSHOT_PATH])
+	quit(0)

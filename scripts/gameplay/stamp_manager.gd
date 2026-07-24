@@ -54,6 +54,8 @@ func _create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 func _on_stamp_hover(tool: Panel, entered: bool) -> void:
 	if bool(tool.get_meta("dragging")):
 		return
+	if entered:
+		Sfx.play("ui_hover")
 	var tween := root.create_tween()
 	tween.tween_property(tool, "scale", Vector2(1.04, 1.04) if entered else Vector2.ONE, 0.08)
 
@@ -81,6 +83,7 @@ func _try_apply_stamp(tool: Panel) -> void:
 		return
 	var center := tool.get_global_rect().get_center()
 	if presenter.form.get_global_rect().has_point(center):
+		Sfx.play("stamp")
 		stamp_applied.emit(String(tool.get_meta("kind")), center - presenter.form.global_position)
 
 
