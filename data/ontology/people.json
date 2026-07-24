@@ -1,5 +1,5 @@
 [
-  {"id":"PERSON-LIN","display_name":"林默","citizen_id":"74-119-02","queue_label":"A01"},
-  {"id":"PERSON-ZHOU","display_name":"周循","citizen_id":"20-441-88","queue_label":"A02"},
-  {"id":"PERSON-XU","display_name":"许桥","citizen_id":"51-004-63","queue_label":"A03"}
+  {"id":"PERSON-LIN","display_name":"林默","citizen_id":"74-119-02","queue_label":"A01","actor_tint":"c4b7a4","actor_scale":0.34,"move_speed":1.0},
+  {"id":"PERSON-ZHOU","display_name":"周循","citizen_id":"20-441-88","queue_label":"A02","actor_tint":"9eb6a3","actor_scale":0.32,"move_speed":1.08},
+  {"id":"PERSON-XU","display_name":"许桥","citizen_id":"51-004-63","queue_label":"A03","actor_tint":"b6a4a8","actor_scale":0.35,"move_speed":0.92}
 ]

@@ -417,7 +417,7 @@ func execute_command(command: String) -> void:
 	match parts[0].to_lower():
 		"help":
 			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
-			append_output("level <id> [seed] | config reload | queue | report fill | day next | state | clear")
+			append_output("level <id> [seed] | config reload | queue | npc state | npc skip | report fill | day next | state | clear")
 		"scene":
 			if parts.size() < 2:
 				append_output("用法：scene menu|days|opening|main|report|map|validation|reload")
@@ -458,6 +458,18 @@ func execute_command(command: String) -> void:
 				append_output("用法：config reload")
 		"queue":
 			append_output(JSON.stringify(LevelDirector.get_state_summary()))
+		"npc":
+			var scene := get_tree().current_scene
+			var performance = scene.get("npc_performance") if scene != null else null
+			if performance == null:
+				append_output("当前场景没有 NPC 演出控制器。")
+			elif parts.size() > 1 and parts[1].to_lower() == "skip":
+				performance.skip_current_performance()
+				append_output("已跳过当前 NPC 演出阶段。")
+			elif parts.size() > 1 and parts[1].to_lower() == "state":
+				append_output("NPC 状态：" + performance.state)
+			else:
+				append_output("用法：npc state | npc skip")
 		"state": refresh_status(); append_output(status_label.text.replace("\n", " | "))
 		"clear": output.clear()
 		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])

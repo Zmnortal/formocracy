@@ -9,6 +9,7 @@ var stamp_mgr: StampManager
 var input_mgr: WorkbenchInput
 var submission_mgr: SubmissionManager
 var sequence: CaseSequence
+var npc_performance: NpcPerformanceController
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
@@ -25,6 +26,7 @@ func _ready() -> void:
 	input_mgr = WorkbenchInput.new(self, desk)
 	submission_mgr = SubmissionManager.new(self, desk)
 	sequence = CaseSequence.new()
+	npc_performance = NpcPerformanceController.new(self)
 
 	sequence.case_started.connect(presenter.start_case)
 	sequence.case_started.connect(func(_data): input_mgr.bind_case(presenter))
@@ -32,6 +34,8 @@ func _ready() -> void:
 	stamp_mgr.stamp_applied.connect(presenter.apply_stamp)
 	input_mgr.envelope_submitted.connect(_on_envelope_submitted)
 	submission_mgr.submission_finished.connect(_on_submission_finished)
+	npc_performance.delivery_finished.connect(_on_npc_delivery_finished)
+	npc_performance.departure_finished.connect(_on_npc_departed)
 	sequence.day_finished.connect(_on_day_finished)
 
 	get_viewport().size_changed.connect(fit_to_window)
@@ -51,6 +55,28 @@ var case_index := 0
 func _on_case_started(case_data: Dictionary) -> void:
 	current_case = case_data
 	case_index = sequence.case_index
+	if is_instance_valid(presenter.envelope):
+		presenter.envelope.visible = false
+		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	npc_performance.start_case(case_data, LevelDirector.get_gameplay_queue())
+
+
+func _on_npc_delivery_finished() -> void:
+	if not is_instance_valid(presenter.envelope):
+		return
+	presenter.envelope.position = Vector2(365, 300)
+	presenter.envelope.visible = true
+	presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var delivery := create_tween()
+	delivery.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	delivery.tween_property(presenter.envelope, "position", Vector2(115, 320), 0.32)
+	await delivery.finished
+	if is_instance_valid(presenter.envelope):
+		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_STOP
+	if is_instance_valid(desk.queue_label):
+		desk.queue_label.text = "%s\n已投递文件袋\n等待办理" % String(
+			current_case.get("person", {}).get("display_name", "身份受限")
+		)
 
 
 func _on_envelope_submitted() -> void:
@@ -58,6 +84,10 @@ func _on_envelope_submitted() -> void:
 
 
 func _on_submission_finished() -> void:
+	npc_performance.react_and_leave(presenter.stamp_type())
+
+
+func _on_npc_departed() -> void:
 	if WorkdayState.should_show_report() or not accepting_new_cases:
 		var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
 		if error != OK:

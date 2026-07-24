@@ -187,11 +187,6 @@ func _create_envelope() -> void:
 
 	var delivery := root.create_tween()
 	delivery.tween_property(envelope, "position", Vector2(115, 320), 0.28)
-	delivery.finished.connect(func():
-		if is_instance_valid(desk.queue_label):
-			var display_name := String(current_case.get("person", {}).get("display_name", "身份受限"))
-			desk.queue_label.text = "%s\n已投递文件袋\n等待办理" % display_name
-	)
 
 
 func _on_flap_pressed() -> void:

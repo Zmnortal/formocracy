@@ -1,6 +1,7 @@
 [
   {
     "id":"CASE-001","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/住房用途变更申请",
+    "dialogue":{"greeting":"您好。我来办理共同居住配额。","delivery":"材料都在这里，请您过目。","waiting":"我们已经等了三个月。住址没有变，只是想住在一起。","waiting_delay_seconds":8,"approved":"谢谢。我会回去等正式通知。","rejected":"还缺什么？……算了，我会重新申请。"},
     "document_ids":["DOC-APP-001","DOC-ID-001","DOC-RESIDENCE-001","DOC-DECLARATION-001"],
     "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION"],
     "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
@@ -13,6 +14,7 @@
   },
   {
     "id":"CASE-002","person_id":"PERSON-ZHOU","purpose_id":"PURPOSE-WATER","form_code":"W-08/饮水额度临时调整",
+    "dialogue":{"greeting":"家里有人需要照护，我来申请临时水额。","delivery":"身份证和居住证明都带来了。","waiting":"配给站说今天再办不下来，就只能等下个周期。","waiting_delay_seconds":7,"approved":"至少这个周期能撑过去了。","rejected":"地址不一致？可我们一直住在那里。"},
     "document_ids":["DOC-APP-002","DOC-ID-002","DOC-RESIDENCE-002"],
     "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE"],
     "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
@@ -24,6 +26,7 @@
   },
   {
     "id":"CASE-003","person_id":"PERSON-XU","purpose_id":"PURPOSE-MEDICAL","form_code":"M-31/非计划医疗通行申请",
+    "dialogue":{"greeting":"第五诊疗站让我今天过去复查。","delivery":"这是诊疗站给我的回执。","waiting":"通行时段快结束了。麻烦您快一点。","waiting_delay_seconds":6,"approved":"谢谢，我现在就去诊疗站。","rejected":"回执过期了？他们昨天才交给我。"},
     "document_ids":["DOC-APP-003","DOC-MEDICAL-003"],
     "required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-MEDICAL"],
     "rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-NOT-EXPIRED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",

@@ -24,8 +24,9 @@ func run() -> void:
 	for i in 3:
 		var desk := current_scene
 		desk.presenter.apply_stamp("批准" if i != 1 else "驳回", Vector2(350, 360))
+		desk.npc_performance.skip_requested = true
 		desk.submission_mgr.submit(desk.presenter, desk.current_case)
-		await create_timer(2.6).timeout
+		await create_timer(3.8).timeout
 	assert(current_scene.name == "DailyReport", "third processed case must open daily report")
 	assert(state.records.size() == 3, "daily report must retain all three records")
 	assert(current_scene.stats_label.text.contains("批准 02"), "daily report must show decisions")

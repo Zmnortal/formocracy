@@ -36,10 +36,11 @@ func run() -> void:
 	assert(main.presenter.stamp_type() == "批准", "stamp type must be recorded")
 	assert(main.presenter.stamp_mark.text.contains("批准"), "stamp must be visible on form")
 
+	main.npc_performance.skip_requested = true
 	main.submission_mgr.submit(main.presenter, main.current_case)
 	await create_timer(0.9).timeout
 	assert(main.desk.validation_overlay.visible, "validation concept transition must appear")
-	await create_timer(2.0).timeout
+	await create_timer(3.1).timeout
 	assert(main.case_index == 1, "accepted form must advance to next case")
 	assert(main.presenter.is_stamped() == false, "next case must reset stamp state")
 	assert(main.presenter.form != null, "next form must be created")
