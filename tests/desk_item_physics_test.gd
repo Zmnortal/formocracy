@@ -30,9 +30,11 @@ func run() -> void:
 	item.set_meta("desk_last_motion", Vector2(20, -4))
 	controller._end_press(item)
 	await create_timer(0.9).timeout
-	assert(is_equal_approx(item.position.y, 634.0), "released item must fall to the desk baseline")
-	assert(item.position.x <= 1202.0, "released item must return inside horizontal desk bounds")
-	assert(state.get_desk_item_layout("physics_test_item").has("position"), "resting layout must persist")
+	var expected_floor_y := DeskGeometry.BOUNDS_FLOOR - item.size.y
+	var expected_right_edge := DeskGeometry.bounds_right_at(1.0) - item.size.x
+	assert(is_equal_approx(item.position.y, expected_floor_y), "released item must fall to the configured desk baseline")
+	assert(item.position.x <= expected_right_edge, "released item must return inside horizontal desk bounds")
+	assert(state.manager.get_desk_item_layout("physics_test_item").has("position"), "resting layout must persist")
 
 	var restored := Control.new()
 	restored.size = item.size

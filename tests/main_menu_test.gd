@@ -27,19 +27,19 @@ func run() -> void:
 	var artwork := menu.get_node("TitleArtwork") as TextureRect
 	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
 	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")
-	assert(not state.has_save(), "test must begin without a save")
+	assert(not state.save_system.has_save(), "test must begin without a save")
 	state.day_number = 1
 	state.player_name = "测试审批员"
 	state.reinstatement_date = "2026-07-23"
 	state.player_signature = [[[1.0, 2.0], [3.0, 4.0]]]
-	assert(state.create_initial_checkpoint(), "opening completion must create the beginning node")
+	assert(state.save_system.create_initial_checkpoint(), "opening completion must create the beginning node")
 	state.persistence_enabled = true
-	state.begin_next_day()
-	state.begin_next_day()
-	state.begin_next_day()
+	state.manager.begin_next_day()
+	state.manager.begin_next_day()
+	state.manager.begin_next_day()
 	state.records.append({"decision": "批准"})
 	assert(state.save_progress(), "save progress must succeed")
-	assert(state.has_save(), "save file must exist")
+	assert(state.save_system.has_save(), "save file must exist")
 	var selector_scene: PackedScene = load(menu.WORKDAY_SELECTOR_SCENE)
 	assert(selector_scene != null, "game start must point to the full-screen workday selector")
 	var selector = selector_scene.instantiate()
@@ -49,6 +49,8 @@ func run() -> void:
 	assert(selector.timeline_scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_AUTO, "deep save trees must expose horizontal scrolling")
 	assert(selector.timeline_scroll.follow_focus, "keyboard navigation must scroll focused checkpoints into view")
 	assert(not selector.new_game_button.visible, "an existing save must render as one pure tree without a detached new-game card")
+	assert(selector.resume_button.visible, "an existing save must expose the latest autosave as a distinct action")
+	assert(selector.resume_button.text.contains("第 4 工作日"), "latest autosave must display the working day")
 	assert(selector.save_button.visible, "existing save must appear as a timeline node")
 	for checkpoint_button in selector.checkpoint_buttons.values():
 		assert(checkpoint_button.size == Vector2(150, 92), "all checkpoint cards must share one actual size")
@@ -61,7 +63,11 @@ func run() -> void:
 	selector.close_confirmation()
 	selector.request_continue_game()
 	assert(selector.confirmation_layer.visible, "saved workday must require confirmation before loading")
-	assert(selector.pending_action == "continue", "continue confirmation must retain its requested action")
+	assert(selector.pending_action == "branch", "historical checkpoint confirmation must retain its branch action")
+	selector.close_confirmation()
+	selector.request_resume_game()
+	assert(selector.confirmation_layer.visible, "latest progress must require confirmation before loading")
+	assert(selector.pending_action == "resume", "latest progress confirmation must retain its resume action")
 	selector.close_confirmation()
 	selector.request_new_game()
 	assert(selector.confirmation_layer.visible, "new game must require overwrite confirmation when a save exists")
@@ -72,13 +78,13 @@ func run() -> void:
 	state.player_name = ""
 	state.player_signature.clear()
 	state.records.clear()
-	assert(state.load_progress(), "saved progress must load")
+	assert(state.save_system.load_progress(), "saved progress must load")
 	assert(state.day_number == 4, "saved workday must restore")
 	assert(state.player_name == "测试审批员", "player identity from the opening form must persist globally")
 	assert(state.player_signature.size() == 1, "handwritten signature strokes must persist")
 	assert(state.records.size() == 1, "saved records must restore")
 	state.start_new_game()
-	assert(not state.has_save(), "new game must remove old save")
+	assert(not state.save_system.has_save(), "new game must remove old save")
 	state.save_path = state.DEFAULT_SAVE_PATH
 	state.persistence_enabled = false
 	print("FORMOCRACY_MAIN_MENU_TEST_OK")

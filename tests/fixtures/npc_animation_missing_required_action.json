@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "character_id": "BROKEN-CONTRACT",
+  "default_animation": "idle",
+  "static_actor_texture": "../../assets/characters/idle_breathing/frame-00.png",
+  "action_contract": {
+    "required": ["idle", "deliver"],
+    "optional": ["queue_idle"],
+    "max_unique_pngs": 20
+  },
+  "actions": [
+    {
+      "action": "idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": ["../../assets/characters/idle_breathing/frame-00.png"]
+    }
+  ]
+}

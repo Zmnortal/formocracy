@@ -1,5 +1,16 @@
 [
   {"id":"RULE-REQUIRED-DOCUMENTS","kind":"required_documents","violation_id":"VIOLATION-MISSING-DOCUMENT","required":true},
   {"id":"RULE-ADDRESS-MATCH","kind":"fields_equal","left":"DOCTYPE-IDENTITY.address","right":"DOCTYPE-RESIDENCE.address","violation_id":"VIOLATION-ADDRESS-MISMATCH","required":true},
-  {"id":"RULE-NOT-EXPIRED","kind":"field_equals","field":"DOCTYPE-MEDICAL.valid","value":true,"violation_id":"VIOLATION-EXPIRED","required":true}
+  {"id":"RULE-NOT-EXPIRED","kind":"field_equals","field":"DOCTYPE-MEDICAL.valid","value":true,"violation_id":"VIOLATION-EXPIRED","required":true},
+  {"id":"RULE-APPLICATION-SIGNED","kind":"field_equals","field":"DOCTYPE-APPLICATION.signed","value":true,"violation_id":"VIOLATION-UNSIGNED","required":true},
+  {"id":"RULE-RESIDENCE-VALID","kind":"field_equals","field":"DOCTYPE-RESIDENCE.valid","value":true,"violation_id":"VIOLATION-INVALID-RESIDENCE","required":true},
+  {"id":"RULE-TRANSFER-VALID","kind":"field_equals","field":"DOCTYPE-TRANSFER.valid","value":true,"violation_id":"VIOLATION-INVALID-TRANSFER","required":true},
+  {"id":"RULE-TRANSLATION-CERTIFIED","kind":"field_equals","field":"DOCTYPE-TRANSLATION.certified","value":true,"violation_id":"VIOLATION-UNCERTIFIED-TRANSLATION","required":true},
+  {"id":"RULE-PERMIT-VALID","kind":"field_equals","field":"DOCTYPE-PERMIT.valid","value":true,"violation_id":"VIOLATION-INVALID-PERMIT","required":true},
+  {"id":"RULE-SEAL-PRESENT","kind":"field_equals","field":"DOCTYPE-EVIDENCE.sealed","value":true,"violation_id":"VIOLATION-MISSING-SEAL","required":true},
+  {"id":"RULE-MAINTENANCE-AUTHORIZED","kind":"field_equals","field":"DOCTYPE-MAINTENANCE.authorized","value":true,"violation_id":"VIOLATION-MISSING-SEAL","required":true},
+  {"id":"RULE-IDENTITY-VALID","kind":"field_equals","field":"DOCTYPE-IDENTITY.valid","value":true,"violation_id":"VIOLATION-EXPIRED","required":true},
+  {"id":"RULE-DECLARATION-SIGNED","kind":"field_equals","field":"DOCTYPE-DECLARATION.signed","value":true,"violation_id":"VIOLATION-UNSIGNED","required":true},
+  {"id":"RULE-UTILITY-PAID","kind":"field_equals","field":"DOCTYPE-UTILITY.paid","value":true,"violation_id":"VIOLATION-EXPIRED","required":true},
+  {"id":"RULE-RESOURCE-VALID","kind":"field_equals","field":"DOCTYPE-RESOURCE.valid","value":true,"violation_id":"VIOLATION-INVALID-PERMIT","required":true}
 ]

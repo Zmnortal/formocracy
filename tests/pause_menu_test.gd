@@ -12,6 +12,12 @@ func _init() -> void:
 func run() -> void:
 	var pause_menu = root.get_node("PauseMenu")
 	var developer_console = root.get_node("DeveloperConsole")
+	var project_text := FileAccess.get_file_as_string("res://project.godot")
+	assert(project_text.contains("window/size/mode=3"), "the game must be configured to start in true fullscreen mode")
+	assert(
+		project_text.contains('window/stretch/mode="canvas_items"') and project_text.contains('window/stretch/aspect="ignore"'),
+		"the 1280x720 game canvas must stretch across the entire fullscreen window"
+	)
 	assert(pause_menu.is_scene_allowed_path("res://main.tscn"), "main gameplay must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/daily_report.tscn"), "daily report must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/evening_map.tscn"), "evening map must allow pause menu")

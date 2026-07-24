@@ -1,5 +1,16 @@
 [
-  {"id":"PURPOSE-COHABITATION","name":"共同居住配额变更","department":"第十二区居住配置处"},
-  {"id":"PURPOSE-WATER","name":"净水领取额度调整","department":"公共供给连续性办公室"},
-  {"id":"PURPOSE-MEDICAL","name":"限制时段医疗通行","department":"中央医疗秩序协调科"}
+  {"id":"PURPOSE-COHABITATION","name":"共同居住与跨区迁入","department":"第十二区居住配置处"},
+  {"id":"PURPOSE-WATER","name":"净水与基础供给调整","department":"公共供给连续性办公室"},
+  {"id":"PURPOSE-MEDICAL","name":"医疗通行与健康资源","department":"中央医疗秩序协调科"},
+  {"id":"PURPOSE-RECORDS","name":"身份记录与证明副本","department":"第十二区人口登记所"},
+  {"id":"PURPOSE-LABOR","name":"岗位、轮班与单位担保","department":"劳动配置复核室"},
+  {"id":"PURPOSE-RATION","name":"家庭配给与代领关系","department":"公共配给资格科"},
+  {"id":"PURPOSE-TRANSIT","name":"夜间交通与通行时段","department":"区域交通秩序处"},
+  {"id":"PURPOSE-EDUCATION","name":"夜校与公共照明","department":"公共学习设施办公室"},
+  {"id":"PURPOSE-FOREIGN","name":"境外与外市人员居留","department":"市政外来人员服务处"},
+  {"id":"PURPOSE-POLLUTION","name":"污染暴露救助与安置","department":"公共事故应急处"},
+  {"id":"PURPOSE-ARCHIVE","name":"事故证据解封与续封","department":"中央档案索引局"},
+  {"id":"PURPOSE-RESOURCE","name":"稀缺保障资源排序","department":"公共资源优先验收室"},
+  {"id":"PURPOSE-HOUSING","name":"宿舍、维修与住址事项","department":"第十二区住房维护处"},
+  {"id":"PURPOSE-COMMERCE","name":"摊位、发行与合作社事项","department":"地方经营秩序科"}
 ]

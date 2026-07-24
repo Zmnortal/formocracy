@@ -1,93 +1,92 @@
 [
   {
-    "id": "PERSON-LIN",
-    "display_name": "林默",
-    "citizen_id": "74-119-02",
-    "queue_label": "A01",
-    "actor_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
-    "animation_table": "res://data/animations/person_lin/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.32,
-    "move_speed": 1.0,
-    "voice_sfx": "res://assets/audio/sfx/people_male_young.wav"
+    "id":"PERSON-LIN","display_name":"林默","age":28,"occupation":"市政信号维护员","citizen_id":"74-119-02","queue_label":"A01",
+    "administrative_status":"D12","registry":"第十二区 / 17-4","actual_residence":"第十二区 / 17-4","character_color":"3f5fa8",
+    "actor_texture":"res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png","animation_table":"res://data/animations/person_lin/animation_table.json","actor_tint":"ffffff","actor_scale":0.32,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_male_young.wav"
   },
   {
-    "id": "PERSON-ZHOU",
-    "display_name": "周循",
-    "citizen_id": "20-441-88",
-    "queue_label": "A02",
-    "actor_texture": "res://assets/characters/applicants/person_zhou/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_zhou/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.155,
-    "move_speed": 1.08,
-    "voice_sfx": "res://assets/audio/sfx/people_male_average.wav"
+    "id":"PERSON-ZHOU","display_name":"周循","age":44,"occupation":"锅炉与管线维修工","citizen_id":"20-441-88","queue_label":"A02",
+    "administrative_status":"HC-T","registry":"第十二区 / 5-8（旧）","actual_residence":"第十二区 / 9-1","character_color":"c78238",
+    "actor_texture":"res://assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png","animation_table":"res://data/animations/person_zhou/animation_table.json","actor_tint":"ffffff","actor_scale":0.36,"move_speed":1.08,"voice_sfx":"res://assets/audio/sfx/people_male_average.wav"
   },
   {
-    "id": "PERSON-XU",
-    "display_name": "许桥",
-    "citizen_id": "51-004-63",
-    "queue_label": "A03",
-    "actor_texture": "res://assets/characters/applicants/person_xu/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_xu/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.16,
-    "move_speed": 0.92,
-    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+    "id":"PERSON-XU","display_name":"许桥","age":25,"occupation":"区域文件递送员","citizen_id":"51-004-63","queue_label":"A03",
+    "administrative_status":"HC-X","registry":"第五区 / 22-6","actual_residence":"第十二区递送站宿舍 / 6-3","character_color":"d35245",
+    "actor_texture":"res://assets/characters/applicants/person_xu/fullbody_frames_20/02_idle_neutral_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_xu/fullbody_frames_20/02_idle_neutral_a_fullbody.png","animation_table":"res://data/animations/person_xu/animation_table.json","actor_tint":"ffffff","actor_scale":0.37,"move_speed":0.92,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
   },
   {
-    "id": "PERSON-MENG",
-    "display_name": "孟秋兰",
-    "citizen_id": "46-208-71",
-    "queue_label": "A04",
-    "actor_texture": "res://assets/characters/applicants/person_meng/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_meng/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.155,
-    "move_speed": 0.88,
-    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+    "id":"PERSON-MENG","display_name":"孟秋兰","age":48,"occupation":"公共食堂配餐员","citizen_id":"46-208-71","queue_label":"A04",
+    "administrative_status":"D12","registry":"第十二区 / 31-2","actual_residence":"第十二区 / 31-2","character_color":"d6a126",
+    "actor_texture":"res://assets/characters/applicants/person_meng/fullbody_frames_20/02_idle_neutral_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_meng/fullbody_frames_20/02_idle_neutral_a_fullbody.png","animation_table":"res://data/animations/person_meng/animation_table.json","actor_tint":"ffffff","actor_scale":0.36,"move_speed":0.88,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
   },
   {
-    "id": "PERSON-HE",
-    "display_name": "何芸",
-    "citizen_id": "65-331-09",
-    "queue_label": "A05",
-    "actor_texture": "res://assets/characters/applicants/person_he/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_he/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.155,
-    "move_speed": 0.96,
-    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+    "id":"PERSON-HE","display_name":"何芸","age":34,"occupation":"第七码头夜校教师","citizen_id":"65-331-09","queue_label":"A05",
+    "administrative_status":"DOM","registry":"泊河市南岸区 / 8-11","actual_residence":"第十二区码头宿舍 / 2-C","character_color":"2f9488",
+    "actor_texture":"res://assets/characters/applicants/person_he/fullbody.png","portrait_texture":"res://assets/characters/applicants/person_he/portrait.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.155,"move_speed":0.96,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
   },
   {
-    "id": "PERSON-DU",
-    "display_name": "杜春梅",
-    "citizen_id": "11-604-42",
-    "queue_label": "A06",
-    "actor_texture": "res://assets/characters/applicants/person_du/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_du/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.165,
-    "move_speed": 0.78,
-    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+    "id":"PERSON-DU","display_name":"杜春梅","age":69,"occupation":"退休电话接线员","citizen_id":"11-604-42","queue_label":"A06",
+    "administrative_status":"D12","registry":"第十二区 / 9-1","actual_residence":"第十二区 / 9-1","character_color":"945b82",
+    "actor_texture":"res://assets/characters/applicants/person_du/fullbody.png","portrait_texture":"res://assets/characters/applicants/person_du/portrait.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.165,"move_speed":0.78,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
   },
   {
-    "id": "PERSON-GU",
-    "display_name": "顾原",
-    "citizen_id": "32-770-16",
-    "queue_label": "A07",
-    "actor_texture": "res://assets/characters/applicants/person_gu/fullbody.png",
-    "portrait_texture": "res://assets/characters/applicants/person_gu/portrait.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
-    "actor_tint": "ffffff",
-    "actor_scale": 0.165,
-    "move_speed": 0.82,
-    "voice_sfx": "res://assets/audio/sfx/people_male_old.wav"
+    "id":"PERSON-GU","display_name":"顾原","age":62,"occupation":"夜间装配线领班","citizen_id":"32-770-16","queue_label":"A07",
+    "administrative_status":"D12","registry":"第十二区装配厂宿舍 / 4-B","actual_residence":"第十二区装配厂宿舍 / 4-B","character_color":"58745e",
+    "actor_texture":"res://assets/characters/applicants/person_gu/fullbody.png","portrait_texture":"res://assets/characters/applicants/person_gu/portrait.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.165,"move_speed":0.82,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
+  },
+  {
+    "id":"PERSON-SHEN","display_name":"沈青禾","age":27,"occupation":"印刷合作社校对员","citizen_id":"74-119-03","queue_label":"B01",
+    "administrative_status":"HC-X","registry":"第七区印刷社宿舍 / 3-A","actual_residence":"第十二区 / 17-4（未归档）","character_color":"69ac8a",
+    "actor_texture":"res://assets/characters/dossier/person_shen/concept.png","portrait_texture":"res://assets/characters/dossier/person_shen/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.96,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id":"PERSON-TANG","display_name":"唐霁","age":19,"occupation":"见习公文投递员","citizen_id":"03-882-14","queue_label":"B02",
+    "administrative_status":"HC-T","registry":"第三区 / 44-9","actual_residence":"第十二区递送站宿舍 / 6-5","character_color":"3474d4",
+    "actor_texture":"res://assets/characters/dossier/person_tang/concept.png","portrait_texture":"res://assets/characters/dossier/person_tang/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.08,"voice_sfx":"res://assets/audio/sfx/people_male_young.wav"
+  },
+  {
+    "id":"PERSON-LUO","display_name":"罗雨棠","age":32,"occupation":"夜班电车售票员","citizen_id":"87-140-55","queue_label":"B03",
+    "administrative_status":"HC-X","registry":"第九区 / 12-8","actual_residence":"第十二区交通调度室（轮班）","character_color":"e36f59",
+    "actor_texture":"res://assets/characters/dossier/person_luo/concept.png","portrait_texture":"res://assets/characters/dossier/person_luo/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.04,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id":"PROPRIETOR-ZHOU","display_name":"周姨","age":57,"occupation":"合作供销社表单发行人","citizen_id":"18-509-33","queue_label":"B04",
+    "administrative_status":"D12","registry":"第十二区供销社后屋 / 1","actual_residence":"同登记地址","character_color":"d89b38",
+    "actor_texture":"res://assets/characters/dossier/person_zhou_aunt/concept.png","portrait_texture":"res://assets/characters/dossier/person_zhou_aunt/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.88,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
+  },
+  {
+    "id":"PROPRIETOR-HE","display_name":"老赫","age":64,"occupation":"旧照相馆经营者","citizen_id":"09-377-61","queue_label":"B05",
+    "administrative_status":"UNK","registry":"旧第二区 / 编码失效","actual_residence":"第十二区废弃照相馆后室","character_color":"932d3e",
+    "actor_texture":"res://assets/characters/dossier/person_old_he/concept.png","portrait_texture":"res://assets/characters/dossier/person_old_he/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.76,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
+  },
+  {
+    "id":"PERSON-FANG","display_name":"方澄","age":31,"occupation":"第五诊疗站登记员","citizen_id":"60-214-79","queue_label":"B06",
+    "administrative_status":"HC-X","registry":"第五区诊疗站宿舍 / 2","actual_residence":"第五区；第十二区短期值勤","character_color":"3fa9a2",
+    "actor_texture":"res://assets/characters/dossier/person_fang/concept.png","portrait_texture":"res://assets/characters/dossier/person_fang/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id":"PERSON-LI","display_name":"黎素","age":42,"occupation":"中央档案索引员","citizen_id":"42-900-17","queue_label":"B07",
+    "administrative_status":"HC-X","registry":"第四区 / 18-7","actual_residence":"同登记地址","character_color":"7358a6",
+    "actor_texture":"res://assets/characters/dossier/person_li/concept.png","portrait_texture":"res://assets/characters/dossier/person_li/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.92,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id":"PERSON-WEI","display_name":"魏岚","age":46,"occupation":"内部程序监察员","citizen_id":"23-771-08","queue_label":"B08",
+    "administrative_status":"HC-T","registry":"中央行政带 / 保密","actual_residence":"第十二区公务宿舍 / 12-C","character_color":"637080",
+    "actor_texture":"res://assets/characters/dossier/person_wei/concept.png","portrait_texture":"res://assets/characters/dossier/person_wei/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.98,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
+  },
+  {
+    "id":"PERSON-JIANG","display_name":"蒋森","age":39,"occupation":"公共配给站班组长","citizen_id":"56-330-41","queue_label":"B09",
+    "administrative_status":"DOM","registry":"永川市河西区 / 3-4","actual_residence":"第十二区配给站宿舍","character_color":"829b45",
+    "actor_texture":"res://assets/characters/dossier/person_jiang/concept.png","portrait_texture":"res://assets/characters/dossier/person_jiang/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.02,"voice_sfx":"res://assets/audio/sfx/people_male_average.wav"
+  },
+  {
+    "id":"PERSON-SONG","display_name":"宋铎","age":52,"occupation":"日终验收机房技师","citizen_id":"31-225-67","queue_label":"B10",
+    "administrative_status":"INT","registry":"北陆联邦 / 工程师登记","actual_residence":"第十二区技师宿舍 / 1-A","character_color":"b8683d",
+    "actor_texture":"res://assets/characters/dossier/person_song/concept.png","portrait_texture":"res://assets/characters/dossier/person_song/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.9,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
+  },
+  {
+    "id":"PERSON-YE","display_name":"叶蓁","age":36,"occupation":"夜间交通调度员","citizen_id":"70-418-26","queue_label":"B11",
+    "administrative_status":"HC-T","registry":"第六区 / 原址已拆除","actual_residence":"第十二区交通宿舍待核准","character_color":"5267bd",
+    "actor_texture":"res://assets/characters/dossier/person_ye/concept.png","portrait_texture":"res://assets/characters/dossier/person_ye/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
   }
 ]

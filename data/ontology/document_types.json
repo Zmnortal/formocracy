@@ -1,72 +1,146 @@
 [
   {
-    "id":"DOCTYPE-APPLICATION",
-    "name":"事项申请表",
-    "is_primary":true,
+    "id":"DOCTYPE-APPLICATION","name":"事项申请表","is_primary":true,
     "background":"res://assets/documents/templates/application_form.png",
-    "title_position":[46,57],
-    "title_size":[430,38],
-    "code_position":[510,60],
+    "title_position":[46,57],"title_size":[430,38],"code_position":[510,60],
     "fields":{
-      "request":{"label":"申请事项","position":[54,123],"size":[540,95],"font_size":17},
-      "address":{"label":"登记地址","position":[54,245],"size":[260,44],"font_size":15},
-      "name":{"label":"申请人","position":[330,245],"size":[260,44],"font_size":15},
-      "citizen_id":{"label":"公民序号","position":[54,312],"size":[260,42],"font_size":14}
+      "request":{"label":"申请事项","position":[54,123],"size":[540,82],"font_size":17},
+      "address":{"label":"事项地址","position":[54,224],"size":[260,44],"font_size":15},
+      "name":{"label":"申请人","position":[330,224],"size":[260,44],"font_size":15},
+      "citizen_id":{"label":"公民序号","position":[54,286],"size":[260,42],"font_size":14},
+      "signed":{"label":"申请签署","position":[330,286],"size":[260,42],"font_size":14},
+      "note":{"label":"补充说明","position":[54,346],"size":[536,64],"font_size":14}
     }
   },
   {
-    "id":"DOCTYPE-IDENTITY",
-    "name":"身份记录",
-    "is_primary":false,
+    "id":"DOCTYPE-IDENTITY","name":"本市或来源地身份证明","is_primary":false,
     "background":"res://assets/documents/templates/identity_record.png",
-    "title_position":[47,58],
-    "title_size":[445,38],
-    "code_position":[522,60],
+    "title_position":[47,58],"title_size":[445,38],"code_position":[522,60],
     "fields":{
       "name":{"label":"登记姓名","position":[270,145],"size":[320,42],"font_size":17},
-      "citizen_id":{"label":"公民序号","position":[270,205],"size":[320,42],"font_size":15},
-      "address":{"label":"登记住所","position":[270,265],"size":[320,68],"font_size":15}
+      "citizen_id":{"label":"身份编号","position":[270,205],"size":[320,42],"font_size":15},
+      "address":{"label":"登记住所","position":[270,265],"size":[320,68],"font_size":15},
+      "issuer":{"label":"签发机关","position":[48,350],"size":[542,42],"font_size":14},
+      "valid":{"label":"证明状态","position":[48,402],"size":[542,38],"font_size":14}
     }
   },
   {
-    "id":"DOCTYPE-RESIDENCE",
-    "name":"居住证明",
-    "is_primary":false,
+    "id":"DOCTYPE-RESIDENCE","name":"居住证明或临时居留备案","is_primary":false,
     "background":"res://assets/documents/templates/residence_certificate.png",
-    "title_position":[47,58],
-    "title_size":[530,38],
-    "code_position":[522,60],
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
       "address":{"label":"核准住所","position":[335,145],"size":[260,52],"font_size":16},
       "valid":{"label":"证明状态","position":[335,218],"size":[260,44],"font_size":16},
-      "name":{"label":"登记人","position":[335,289],"size":[260,44],"font_size":15}
+      "name":{"label":"登记人","position":[335,289],"size":[260,44],"font_size":15},
+      "issuer":{"label":"签发辖区","position":[48,358],"size":[547,40],"font_size":14},
+      "expires":{"label":"有效期限","position":[48,405],"size":[547,36],"font_size":14}
     }
   },
   {
-    "id":"DOCTYPE-DECLARATION",
-    "name":"知情声明",
-    "is_primary":false,
+    "id":"DOCTYPE-DECLARATION","name":"知情声明或关系证明","is_primary":false,
     "background":"res://assets/documents/templates/declaration.png",
-    "title_position":[47,58],
-    "title_size":[530,38],
-    "code_position":[522,60],
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
+      "subject":{"label":"声明事项","position":[60,142],"size":[512,76],"font_size":16},
+      "relation":{"label":"关系","position":[60,236],"size":[245,44],"font_size":15},
       "signed":{"label":"声明签署","position":[60,335],"size":[245,44],"font_size":16},
-      "name":{"label":"关联公民","position":[327,335],"size":[245,44],"font_size":15}
+      "name":{"label":"关联公民","position":[327,335],"size":[245,44],"font_size":15},
+      "note":{"label":"备注","position":[60,394],"size":[512,42],"font_size":14}
     }
   },
   {
-    "id":"DOCTYPE-MEDICAL",
-    "name":"诊疗站回执",
-    "is_primary":false,
+    "id":"DOCTYPE-MEDICAL","name":"诊疗站回执或医疗急件","is_primary":false,
     "background":"res://assets/documents/templates/medical_receipt.png",
-    "title_position":[47,58],
-    "title_size":[430,38],
-    "code_position":[510,60],
+    "title_position":[47,58],"title_size":[430,38],"code_position":[510,60],
     "fields":{
       "station":{"label":"诊疗机构","position":[305,145],"size":[285,48],"font_size":16},
       "valid":{"label":"回执状态","position":[305,216],"size":[285,48],"font_size":16},
-      "name":{"label":"就诊人","position":[305,287],"size":[285,48],"font_size":15}
+      "name":{"label":"就诊人","position":[305,287],"size":[285,48],"font_size":15},
+      "issued_at":{"label":"签发时间","position":[48,360],"size":[542,42],"font_size":14},
+      "priority":{"label":"医疗等级","position":[48,407],"size":[542,34],"font_size":14}
+    }
+  },
+  {
+    "id":"DOCTYPE-TRANSFER","name":"原区转送单或单位担保函","is_primary":false,
+    "background":"res://assets/documents/templates/declaration.png",
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "fields":{
+      "origin":{"label":"来源辖区","position":[60,142],"size":[245,44],"font_size":15},
+      "destination":{"label":"受理辖区","position":[327,142],"size":[245,44],"font_size":15},
+      "reason":{"label":"转送或担保事由","position":[60,210],"size":[512,72],"font_size":15},
+      "valid":{"label":"核验状态","position":[60,335],"size":[245,44],"font_size":16},
+      "issuer":{"label":"签发单位","position":[327,335],"size":[245,44],"font_size":15}
+    }
+  },
+  {
+    "id":"DOCTYPE-PERMIT","name":"工作、居留或通行许可","is_primary":false,
+    "background":"res://assets/documents/templates/identity_record.png",
+    "title_position":[47,58],"title_size":[445,38],"code_position":[522,60],
+    "fields":{
+      "permit_no":{"label":"许可编号","position":[270,145],"size":[320,42],"font_size":16},
+      "scope":{"label":"许可范围","position":[270,205],"size":[320,56],"font_size":15},
+      "valid":{"label":"许可状态","position":[270,283],"size":[320,42],"font_size":15},
+      "issuer":{"label":"签发机关","position":[48,350],"size":[542,42],"font_size":14},
+      "expires":{"label":"有效期限","position":[48,402],"size":[542,38],"font_size":14}
+    }
+  },
+  {
+    "id":"DOCTYPE-TRANSLATION","name":"认证译文","is_primary":false,
+    "background":"res://assets/documents/templates/declaration.png",
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "fields":{
+      "source":{"label":"原文文件","position":[60,142],"size":[512,56],"font_size":16},
+      "language":{"label":"原文语言","position":[60,220],"size":[245,44],"font_size":15},
+      "certified":{"label":"认证状态","position":[327,220],"size":[245,44],"font_size":15},
+      "translator":{"label":"认证译员","position":[60,335],"size":[512,44],"font_size":15}
+    }
+  },
+  {
+    "id":"DOCTYPE-EVIDENCE","name":"事故、劳动或交通证据","is_primary":false,
+    "background":"res://assets/documents/templates/declaration.png",
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "fields":{
+      "record_type":{"label":"记录类型","position":[60,142],"size":[245,44],"font_size":15},
+      "record_date":{"label":"记录日期","position":[327,142],"size":[245,44],"font_size":15},
+      "summary":{"label":"记录摘要","position":[60,210],"size":[512,86],"font_size":15},
+      "sealed":{"label":"机关印章","position":[60,335],"size":[245,44],"font_size":16},
+      "reference":{"label":"关联编号","position":[327,335],"size":[245,44],"font_size":15}
+    }
+  },
+  {
+    "id":"DOCTYPE-MAINTENANCE","name":"设备维护与时间同步记录","is_primary":false,
+    "background":"res://assets/documents/templates/declaration.png",
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "fields":{
+      "machine":{"label":"设备","position":[60,142],"size":[245,44],"font_size":15},
+      "adjustment":{"label":"调整内容","position":[327,142],"size":[245,44],"font_size":15},
+      "timestamp":{"label":"执行时间","position":[60,210],"size":[512,56],"font_size":15},
+      "authorized":{"label":"授权状态","position":[60,335],"size":[245,44],"font_size":16},
+      "technician":{"label":"执行技师","position":[327,335],"size":[245,44],"font_size":15}
+    }
+  },
+  {
+    "id":"DOCTYPE-UTILITY","name":"水电缴费与实际居住记录","is_primary":false,
+    "background":"res://assets/documents/templates/residence_certificate.png",
+    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "fields":{
+      "address":{"label":"服务地址","position":[335,145],"size":[260,52],"font_size":16},
+      "period":{"label":"计费期间","position":[335,218],"size":[260,44],"font_size":16},
+      "paid":{"label":"缴费状态","position":[335,289],"size":[260,44],"font_size":15},
+      "account":{"label":"账户编号","position":[48,358],"size":[547,40],"font_size":14}
+    }
+  },
+  {
+    "id":"DOCTYPE-RESOURCE","name":"资源优先或主管保障凭证","is_primary":false,
+    "background":"res://assets/documents/templates/application_form.png",
+    "title_position":[46,57],"title_size":[430,38],"code_position":[510,60],
+    "fields":{
+      "resource":{"label":"保障资源","position":[54,123],"size":[540,56],"font_size":17},
+      "priority":{"label":"优先等级","position":[54,205],"size":[260,44],"font_size":15},
+      "beneficiary":{"label":"受益人","position":[330,205],"size":[260,44],"font_size":15},
+      "valid":{"label":"凭证状态","position":[54,286],"size":[260,42],"font_size":14},
+      "issuer":{"label":"签发机关","position":[330,286],"size":[260,42],"font_size":14},
+      "note":{"label":"兑付说明","position":[54,346],"size":[536,64],"font_size":14}
     }
   }
 ]

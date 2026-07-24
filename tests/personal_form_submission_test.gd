@@ -10,8 +10,8 @@ func run() -> void:
 	state.reset_for_tests()
 	state.player_name = "测试职员"
 	state.balance = 10
-	assert(state.purchase_personal_form("PERSONAL-FORM-WATER-R01"), "test must acquire one blank water form")
-	state.begin_evening()
+	assert(state.manager.purchase_personal_form("PERSONAL-FORM-WATER-R01"), "test must acquire one blank water form")
+	state.manager.begin_evening()
 	state.evening_location_id = "LOCATION-RATION"
 	state.evening_actions_remaining = 1
 	var error := change_scene_to_file("res://scenes/evening_map.tscn")
@@ -31,8 +31,8 @@ func run() -> void:
 	map.refresh_home_form_validity()
 	assert(not map.submit_form_button.disabled, "complete fields and declaration must unlock submission")
 	map.submit_water_form()
-	assert(state.get_personal_form_count(map.WATER_FORM_ID, "blank") == 0, "submission must consume one blank form")
-	assert(state.get_personal_form_count(map.WATER_FORM_ID, "pending") == 1, "submission must create one pending form")
+	assert(state.manager.get_personal_form_count(map.WATER_FORM_ID, "blank") == 0, "submission must consume one blank form")
+	assert(state.manager.get_personal_form_count(map.WATER_FORM_ID, "pending") == 1, "submission must create one pending form")
 	var submitted: Dictionary = state.personal_form_inventory[0]
 	assert(submitted.fields.request_reason == "本周期日常饮用", "submitted form must preserve filled fields")
 	assert(int(submitted.effective_day) == 2, "water form must be scheduled for next-day processing")

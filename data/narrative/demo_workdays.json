@@ -1,0 +1,86 @@
+[
+  {
+    "id":"WORKDAY-001","day_number":1,"duration_seconds":300,"machine_capacity":4,"case_count":5,"random_seed":12031,
+    "base_salary":180,"living_expenses":{"rent":70,"food":35,"family":25},"report_title":"工作日处理回执 / 第 1 日",
+    "briefing_title":"第一章：申请表本身","policy_cards":["简单事项只核验当日有效申请表。","跨区共同居住必须追加迁入转送材料。"],
+    "slots":[
+      {"slot":1,"kind":"story","case_id":"CASE-001"},
+      {"slot":2,"kind":"general","case_id":"CASE-002"},
+      {"slot":3,"kind":"general","case_id":"CASE-003"},
+      {"slot":4,"kind":"general","pool_tag":"day1"},
+      {"slot":5,"kind":"general","pool_tag":"day1"}
+    ]
+  },
+  {
+    "id":"WORKDAY-002","day_number":2,"duration_seconds":300,"machine_capacity":4,"case_count":5,"random_seed":12032,
+    "base_salary":185,"living_expenses":{"rent":70,"food":36,"family":25},"report_title":"工作日处理回执 / 第 2 日",
+    "briefing_title":"第二章：申请人与身份证明","policy_cards":["多数事项必须同时提交申请表和有效身份证明。","医疗回执以验收机记录时点判断有效期。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day2"},
+      {"slot":2,"kind":"general","pool_tag":"day2"},
+      {"slot":3,"kind":"story","case_id":"CASE-S-M31-D2"},
+      {"slot":4,"kind":"general","pool_tag":"day2"},
+      {"slot":5,"kind":"general","pool_tag":"day2"}
+    ]
+  },
+  {
+    "id":"WORKDAY-003","day_number":3,"duration_seconds":300,"machine_capacity":4,"case_count":5,"random_seed":12033,
+    "base_salary":190,"living_expenses":{"rent":70,"food":37,"family":26},"report_title":"工作日处理回执 / 第 3 日",
+    "briefing_title":"第三章：身份、住所与辖区","policy_cards":["涉及住所、配给和家庭关系时必须核验居住证明。","本市外区居民迁入第十二区必须提交原区转送单。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day3"},
+      {"slot":2,"kind":"story","case_id":"CASE-S-R09-D3"},
+      {"slot":3,"kind":"general","pool_tag":"day3"},
+      {"slot":4,"kind":"story","case_id":"CASE-S-X14-D3"},
+      {"slot":5,"kind":"general","pool_tag":"day3"}
+    ]
+  },
+  {
+    "id":"WORKDAY-004","day_number":4,"duration_seconds":300,"machine_capacity":4,"case_count":5,"random_seed":12034,
+    "base_salary":195,"living_expenses":{"rent":70,"food":38,"family":26},"report_title":"工作日处理回执 / 第 4 日",
+    "briefing_title":"第四章：区外、外市与境外人员","policy_cards":["外市人员必须提交单位担保或有效居留依据。","境外文件必须附认证译文；北陆互惠今日暂停，紧急维修令除外。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day4"},
+      {"slot":2,"kind":"general","pool_tag":"day4"},
+      {"slot":3,"kind":"general","pool_tag":"day4"},
+      {"slot":4,"kind":"story","case_id":"CASE-S-F09-D4"},
+      {"slot":5,"kind":"general","pool_tag":"day4"}
+    ]
+  },
+  {
+    "id":"WORKDAY-005","day_number":5,"duration_seconds":300,"machine_capacity":3,"case_count":5,"random_seed":12035,
+    "base_salary":200,"living_expenses":{"rent":70,"food":39,"family":27},"report_title":"工作日处理回执 / 第 5 日",
+    "briefing_title":"第五章：公共急件与稀缺资源","policy_cards":["污染暴露急件可先处理生存需求，再标记异常日期复核。","当日高优先级资源位仅余一个，所有预留必须进入档案。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day5"},
+      {"slot":2,"kind":"story","case_id":"CASE-S-P44-D5"},
+      {"slot":3,"kind":"general","pool_tag":"day5"},
+      {"slot":4,"kind":"general","pool_tag":"day5"},
+      {"slot":5,"kind":"story","case_id":"CASE-S-M52-D5"}
+    ]
+  },
+  {
+    "id":"WORKDAY-006","day_number":6,"duration_seconds":300,"machine_capacity":3,"case_count":5,"random_seed":12036,
+    "base_salary":205,"living_expenses":{"rent":70,"food":40,"family":27},"report_title":"工作日处理回执 / 第 6 日",
+    "briefing_title":"第六章：异常附件与封存证据","policy_cards":["与事项无直接关系但可能涉及公共事故的附件不得擅自销毁。","新修订页要求事故证据解封必须附主管授权。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day6"},
+      {"slot":2,"kind":"story","case_id":"CASE-S-R12-D6"},
+      {"slot":3,"kind":"general","pool_tag":"day6"},
+      {"slot":4,"kind":"story","case_id":"CASE-S-A73-D6"},
+      {"slot":5,"kind":"general","pool_tag":"day6"}
+    ]
+  },
+  {
+    "id":"WORKDAY-007","day_number":7,"duration_seconds":300,"machine_capacity":2,"case_count":5,"random_seed":12037,
+    "base_salary":210,"living_expenses":{"rent":70,"food":41,"family":28},"report_title":"工作日处理回执 / 第 7 日",
+    "briefing_title":"第七章：程序正确与公共伤害","policy_cards":["事故续封和主管保障均属于有效行政权利。","材料有效不代表资源充足；最后一个高优先级位置不得重复兑付。"],
+    "slots":[
+      {"slot":1,"kind":"general","pool_tag":"day7"},
+      {"slot":2,"kind":"story","case_id":"CASE-S-S18-D7"},
+      {"slot":3,"kind":"general","pool_tag":"day7"},
+      {"slot":4,"kind":"general","pool_tag":"day7"},
+      {"slot":5,"kind":"story","case_id":"CASE-S-V01-D7"}
+    ]
+  }
+]

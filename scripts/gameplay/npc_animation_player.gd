@@ -29,6 +29,7 @@ var _playing := false
 var _shutdown := false
 
 
+# 初始化动画播放器；未提供精灵时自动创建并持有。
 func _init(target_sprite: AnimatedSprite2D = null) -> void:
 	if target_sprite != null:
 		sprite = target_sprite
@@ -40,20 +41,24 @@ func _init(target_sprite: AnimatedSprite2D = null) -> void:
 	set_process(false)
 
 
+# 设置并替换当前使用的 SpriteFrames 资源。
 func set_sprite_frames(frames: SpriteFrames) -> void:
 	cancel_current()
 	if is_instance_valid(sprite):
 		sprite.sprite_frames = frames
 
 
+# 返回当前控制的 AnimatedSprite2D。
 func get_sprite() -> AnimatedSprite2D:
 	return sprite
 
 
+# 返回是否由本播放器创建并持有精灵。
 func owns_sprite() -> bool:
 	return _owns_sprite
 
 
+# 播放指定动作，返回本次播放的 token。
 func play_action(action: StringName, mode: PlaybackMode = PlaybackMode.LOOP) -> int:
 	if _shutdown or not _has_action(action):
 		return INVALID_TOKEN
@@ -71,11 +76,13 @@ func play_action(action: StringName, mode: PlaybackMode = PlaybackMode.LOOP) -> 
 	return _playback_token
 
 
+# 取消当前播放，返回新的 token。
 func cancel_current() -> int:
 	_interrupt()
 	return _playback_token
 
 
+# 关闭播放器，之后不再接受任何播放请求。
 func shutdown() -> void:
 	if _shutdown:
 		return
@@ -83,30 +90,37 @@ func shutdown() -> void:
 	_interrupt()
 
 
+# 返回当前播放的动作名。
 func get_current_action() -> StringName:
 	return _current_action
 
 
+# 返回当前显示帧索引。
 func get_current_frame() -> int:
 	return _current_frame
 
 
+# 返回当前播放模式。
 func get_playback_mode() -> PlaybackMode:
 	return _current_mode
 
 
+# 返回当前播放 token。
 func get_playback_token() -> int:
 	return _playback_token
 
 
+# 返回是否正在播放动作。
 func is_playing_action() -> bool:
 	return _playing
 
 
+# 返回播放器是否已关闭。
 func is_shutdown() -> bool:
 	return _shutdown
 
 
+# 每帧推进手动动画，按帧率和模式处理循环/单次/停留。
 func _process(delta: float) -> void:
 	if not _playing:
 		return
@@ -135,6 +149,7 @@ func _process(delta: float) -> void:
 		advances += 1
 
 
+# 前进一帧；到达末尾时根据模式循环或结束。
 func _advance_frame(frame_count: int) -> void:
 	if _current_frame + 1 < frame_count:
 		_current_frame += 1
@@ -156,6 +171,7 @@ func _advance_frame(frame_count: int) -> void:
 	action_finished.emit(finished_action)
 
 
+# 计算当前帧的显示时长。
 func _get_frame_duration(frames: SpriteFrames) -> float:
 	var fps := frames.get_animation_speed(_current_action)
 	if fps <= 0.0:
@@ -164,6 +180,7 @@ func _get_frame_duration(frames: SpriteFrames) -> float:
 	return maxf(duration_multiplier / fps, 0.000001)
 
 
+# 检查精灵是否包含指定动作。
 func _has_action(action: StringName) -> bool:
 	if not is_instance_valid(sprite) or sprite.sprite_frames == null:
 		return false
@@ -172,6 +189,7 @@ func _has_action(action: StringName) -> bool:
 	return sprite.sprite_frames.get_frame_count(action) > 0
 
 
+# 中断当前播放，递增 token 并停止处理。
 func _interrupt() -> void:
 	_playback_token += 1
 	_playing = false

@@ -4,6 +4,24 @@
   "default_animation": "idle",
   "substitute_frames_with_static_actor": false,
   "static_actor_texture": "../../../assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+  "action_contract": {
+    "required": [
+      "idle",
+      "deliver",
+      "happy_react",
+      "happy_idle",
+      "angry_react",
+      "angry_idle",
+      "walk_out_happy",
+      "walk_out_angry"
+    ],
+    "optional": [
+      "queue_idle",
+      "blink",
+      "nervous"
+    ],
+    "max_unique_pngs": 20
+  },
   "asset_policy": {
     "body_coverage": "full_body_only",
     "active_png_count": 20,

@@ -1,0 +1,16 @@
+# Keep this aligned with gdformatrc and beat-pony's 200-column formatter.
+max-line-length: 200
+
+# Architecture limits are deliberately strict. Raise them only after deciding
+# that a larger script is preferable to extracting a focused object.
+max-file-lines: 1000
+max-public-methods: 20
+max-returns: 6
+
+disable: []
+
+excluded_directories: !!set
+  .git: null
+  .godot: null
+  output: null
+  tmp: null

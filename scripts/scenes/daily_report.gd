@@ -2,6 +2,8 @@ extends Control
 
 const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
 
+var confirming := false
+
 @onready var metadata_label: Label = $Terminal/Receipt/Metadata
 @onready var title_label: Label = $Terminal/Receipt/Title
 @onready var stats_label: Label = $Terminal/Receipt/Stats/StatsText
@@ -9,8 +11,6 @@ const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
 @onready var declaration: CheckBox = $Terminal/Receipt/Declaration
 @onready var confirm_button: Button = $Terminal/Receipt/ConfirmButton
 @onready var status_line: Label = $Terminal/StatusLine
-
-var confirming := false
 
 
 # 场景进入时初始化日报界面。
@@ -28,59 +28,87 @@ func _ready() -> void:
 # 事项列表按“序号 / 编号 / 申请人 / 处理结果 / 效力状态”渲染。若当日无记录，则显示占位说明。
 func populate_report() -> void:
 	var day: int = WorkdayState.day_number
-	var summary: Dictionary = WorkdayState.get_summary()
-	var settlement: Dictionary = WorkdayState.get_settlement()
+	var summary: Dictionary = WorkdayState.manager.get_summary()
+	var settlement: Dictionary = WorkdayState.manager.get_settlement()
 	title_label.text = WorkdayState.report_title
 	var clerk_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "未登记职员"
 	metadata_label.text = "经办员：%s    工作日：%02d    回执：D12-%04d    生成时间：当日终止后" % [clerk_name, day, day]
-	stats_label.text = "形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    程序错误 %02d\n日薪 %+d  绩效 %+d  罚款 -%d  生活支出 -%d  本日结余 %+d  %s" % [
-		summary.reviewed, summary.submitted, summary.approved,
-		summary.rejected, summary.procedure_errors,
-		settlement.base_salary, settlement.performance, settlement.fines,
-		settlement.living_expenses, settlement.net, settlement.political_evaluation
-	]
+	stats_label.text = (
+		"形式审查 %02d    送交验收 %02d    批准 %02d    驳回 %02d    程序错误 %02d\n日薪 %+d  绩效 %+d  罚款 -%d  生活支出 -%d  本日结余 %+d  %s"
+		% [
+			summary.reviewed,
+			summary.submitted,
+			summary.approved,
+			summary.rejected,
+			summary.procedure_errors,
+			settlement.base_salary,
+			settlement.performance,
+			settlement.fines,
+			settlement.living_expenses,
+			settlement.net,
+			settlement.political_evaluation
+		]
+	)
 	var lines: Array[String] = []
 	for i in WorkdayState.records.size():
 		var record: Dictionary = WorkdayState.records[i]
-		lines.append("%02d / %s / %s / 处理：%s / 程序：%s" % [
-			i + 1, record.code, record.applicant, record.decision,
-			"完整" if record.get("procedure_errors", []).is_empty() else "、".join(record.get("procedure_errors", []))
-		])
+		lines.append(
+			(
+				"%02d / %s / %s / 处理：%s / 程序：%s"
+				% [i + 1, record.code, record.applicant, record.decision, "完整" if record.get("procedure_errors", []).is_empty() else "、".join(record.get("procedure_errors", []))]
+			)
+		)
 	if lines.is_empty():
 		lines.append("00 / 本工作日未形成可供汇总的事项记录")
 	cases_label.text = "\n".join(lines)
 	_send_report_to_glass(day, summary, settlement)
 
 
+# 将当日统计、结算与政治评价汇总为多行文本，通过 RealityBridge 推送到外部展示端；桥不存在时静默跳过。
 func _send_report_to_glass(day: int, summary: Dictionary, settlement: Dictionary) -> void:
 	var bridge := get_tree().root.get_node_or_null("RealityBridge")
 	if bridge == null:
 		return
-	bridge.day_report(
-		[
-			"形式审查：%d　批准：%d　驳回：%d" % [
-				summary.reviewed,
-				summary.approved,
-				summary.rejected,
+	(
+		bridge
+		. day_report(
+			[
+				(
+					"形式审查：%d　批准：%d　驳回：%d"
+					% [
+						summary.reviewed,
+						summary.approved,
+						summary.rejected,
+					]
+				),
+				(
+					"程序错误：%d　现实生效：%d　等待处理：%d"
+					% [
+						summary.procedure_errors,
+						summary.effective,
+						summary.pending,
+					]
+				),
+				(
+					"日薪：%+d　绩效：%+d　罚款：-%d"
+					% [
+						settlement.base_salary,
+						settlement.performance,
+						settlement.fines,
+					]
+				),
+				(
+					"生活支出：-%d　本日结余：%+d"
+					% [
+						settlement.living_expenses,
+						settlement.net,
+					]
+				),
+				"政治评价：%s" % settlement.political_evaluation,
 			],
-			"程序错误：%d　现实生效：%d　等待处理：%d" % [
-				summary.procedure_errors,
-				summary.effective,
-				summary.pending,
-			],
-			"日薪：%+d　绩效：%+d　罚款：-%d" % [
-				settlement.base_salary,
-				settlement.performance,
-				settlement.fines,
-			],
-			"生活支出：-%d　本日结余：%+d" % [
-				settlement.living_expenses,
-				settlement.net,
-			],
-			"政治评价：%s" % settlement.political_evaluation,
-		],
-		day,
-		WorkdayState.report_title
+			day,
+			WorkdayState.report_title
+		)
 	)
 
 
@@ -103,7 +131,7 @@ func _on_confirm_pressed() -> void:
 	Sfx.play("ui_click")
 	confirm_button.disabled = true
 	status_line.text = "记录状态：正在封存"
-	WorkdayState.begin_evening()
+	WorkdayState.manager.begin_evening()
 	var error: Error = get_tree().change_scene_to_file(EVENING_MAP_SCENE)
 	if error != OK:
 		confirming = false

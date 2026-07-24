@@ -10,9 +10,9 @@ func run() -> void:
 	state.reset_for_tests()
 	state.base_salary = 20
 	state.day_number = 1
-	state.begin_evening()
+	state.manager.begin_evening()
 	assert(state.balance == 20, "daily settlement must reach the account before evening purchases")
-	state.begin_evening()
+	state.manager.begin_evening()
 	assert(state.balance == 20, "daily settlement must not be applied twice")
 	var form: Dictionary = root.get_node("ConfigDatabase").get_ontology("personal_forms", "PERSONAL-FORM-WATER-R01")
 	assert(form.get("issuer_location_id") == "LOCATION-RATION", "water form must be issued by ration depot")
@@ -28,12 +28,12 @@ func run() -> void:
 	map.purchase_water_form()
 	await create_timer(0.7).timeout
 	assert(state.balance == 15, "purchase must deduct configured fee")
-	assert(state.get_personal_form_count(map.WATER_FORM_ID, "blank") == 1, "purchase must create one blank inventory item")
+	assert(state.manager.get_personal_form_count(map.WATER_FORM_ID, "blank") == 1, "purchase must create one blank inventory item")
 	assert(map.dossier_button.text.contains("× 1"), "dossier counter must update")
 	assert(map.notice_label.text.contains("购买完成"), "purchase must confirm delivery")
 	state.balance = 0
 	map.purchase_water_form()
 	await process_frame
-	assert(state.get_personal_form_count(map.WATER_FORM_ID, "blank") == 1, "insufficient balance must not add inventory")
+	assert(state.manager.get_personal_form_count(map.WATER_FORM_ID, "blank") == 1, "insufficient balance must not add inventory")
 	print("FORMOCRACY_PERSONAL_FORM_PURCHASE_TEST_OK")
 	quit(0)

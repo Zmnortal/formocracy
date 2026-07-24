@@ -15,11 +15,11 @@ func run() -> void:
 	assert(error == OK, "main scene must open")
 	await process_frame
 	await process_frame
-	current_scene.secretary_briefing.skip()
+	current_scene.manager.briefing.skip()
 	for case_id in ["CASE-001", "CASE-002", "CASE-003"]:
 		var case_data: Dictionary = config.get_gameplay_case(case_id)
-		state.record_case_result(case_data, "批准", [], 5.0, case_data.document_ids)
-	current_scene.batch_validation.open()
+		state.manager.record_case_result(case_data, "批准", [], 5.0, case_data.document_ids)
+	current_scene.manager.batch_validation.open()
 	if DisplayServer.get_name() == "headless":
 		print("FORMOCRACY_BATCH_RENDER_OK (skipped on headless display)")
 		quit(0)

@@ -13,7 +13,7 @@ func run() -> void:
 	state.reset_for_tests()
 	state.player_name = "测试职员"
 	state.balance = 30
-	state.begin_evening()
+	state.manager.begin_evening()
 	state.evening_location_id = "LOCATION-FORM-SHOP"
 
 	var error := change_scene_to_file("res://scenes/form_shop.tscn")
@@ -24,8 +24,8 @@ func run() -> void:
 	assert(shop.dialogue_label.text.contains("测试职员"), "proprietor must address the entered player name")
 	shop.purchase_form(CLAIM_FORM)
 	shop.purchase_form(ARCHIVE_FORM)
-	assert(state.get_personal_form_count(CLAIM_FORM, "blank") == 1, "shop must issue the selected claim form")
-	assert(state.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "shop must issue the selected archive form")
+	assert(state.manager.get_personal_form_count(CLAIM_FORM, "blank") == 1, "shop must issue the selected claim form")
+	assert(state.manager.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "shop must issue the selected archive form")
 	assert(state.balance == 20, "shop must charge configured form fees")
 
 	state.evening_location_id = "LOCATION-FORMS"
@@ -40,12 +40,12 @@ func run() -> void:
 	office.reason_input.text = "认领与本人身份记录有关的旧物"
 	office.truth_check.button_pressed = true
 	office.submit_selected_form()
-	assert(state.get_personal_form_count(CLAIM_FORM, "pending") == 1, "submitted form must enter pending status")
-	assert(state.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "unsubmitted forms must remain blank")
+	assert(state.manager.get_personal_form_count(CLAIM_FORM, "pending") == 1, "submitted form must enter pending status")
+	assert(state.manager.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "unsubmitted forms must remain blank")
 
-	state.begin_next_day()
-	assert(state.get_personal_form_count(CLAIM_FORM, "effective") == 1, "approved application must become effective next day")
-	assert(state.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "unsubmitted form must survive the night")
+	state.manager.begin_next_day()
+	assert(state.manager.get_personal_form_count(CLAIM_FORM, "effective") == 1, "approved application must become effective next day")
+	assert(state.manager.get_personal_form_count(ARCHIVE_FORM, "blank") == 1, "unsubmitted form must survive the night")
 	var delivered: Dictionary = state.personal_form_inventory[0]
 	assert(String(delivered.get("fulfillment_id", "")) == "FULFILLMENT-OLD-TOOLBOX", "approved form must preserve configured fulfillment")
 	print("FORMOCRACY_FORM_SHOP_FLOW_TEST_OK")

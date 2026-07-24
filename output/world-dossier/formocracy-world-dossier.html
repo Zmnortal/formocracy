@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>衡川市世界观档案</title>
+  <!--
+    叙事角色：供编剧、策划与美术共用的世界观母档。
+    阅读距离：桌面与 A4 印刷。
+    视觉温度：权威、冷静、略带不安。
+    容量：14 页，每页一个明确制度问题。
+  -->
+  <style>
+    :root{--paper:#e8dfc9;--paper2:#f1ead9;--ink:#282b27;--muted:#6f716a;--line:#a9a48f;--green:#526858;--green2:#33483c;--red:#9c3b35;--amber:#a47735;--blue:#536a82;--violet:#735f80}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#171916;color:var(--ink);font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif}
+    body{display:flex;justify-content:center}
+    main{width:210mm}
+    .page{position:relative;width:210mm;height:297mm;overflow:hidden;background:
+      radial-gradient(circle at 20% 10%,rgba(255,255,255,.35),transparent 34%),
+      repeating-linear-gradient(0deg,transparent 0 8px,rgba(52,45,33,.025) 9px),
+      var(--paper);padding:15mm 16mm 14mm;margin:8mm 0;box-shadow:0 6mm 18mm rgba(0,0,0,.35);page-break-after:always}
+    .page:before{content:"";position:absolute;inset:7mm;border:1px solid rgba(46,48,43,.27);pointer-events:none}
+    h1,h2,h3,p{margin:0}
+    h1,h2{font-family:"Songti SC","STSong","Noto Serif CJK SC",serif}
+    .eyebrow{font:700 8px/1.35 ui-monospace,SFMono-Regular,monospace;letter-spacing:.18em;color:#63665f;text-transform:uppercase}
+    .page-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--green2);padding-bottom:4mm;margin-bottom:6mm}
+    .page-head h2{font-size:24pt;line-height:1.08;letter-spacing:.07em;margin-top:1.5mm}
+    .chapter{font:300 29pt/1 ui-monospace,monospace;color:var(--green)}
+    .lead{font:600 14px/1.75 "Songti SC",serif;max-width:150mm}
+    .body{font:9.5px/1.78 "Songti SC",serif;text-align:justify}
+    .folio{position:absolute;left:16mm;right:16mm;bottom:8.5mm;display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:2.5mm;font:700 7.5px/1.2 ui-monospace,monospace;letter-spacing:.13em;color:#64665f}
+    .label{font:800 7px/1.2 ui-monospace,monospace;letter-spacing:.13em;color:var(--green2)}
+    .stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:2mm 3mm;transform:rotate(-3deg);font:800 8px/1.25 ui-monospace,monospace;letter-spacing:.12em;text-align:center}
+    .cover{padding:0;background:#252b26;color:#eee6d3}
+    .cover:before{border-color:rgba(232,223,201,.3)}
+    .cover-map{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,27,23,.94) 0%,rgba(20,27,23,.62) 48%,rgba(20,27,23,.18)),url("../../assets/map/background/district_12_map.png") center/cover;filter:saturate(.65)}
+    .cover-content{position:absolute;inset:18mm;display:flex;flex-direction:column;justify-content:space-between}
+    .cover h1{font-size:38pt;line-height:1.02;letter-spacing:.08em;max-width:130mm}
+    .cover .en{margin-top:4mm;font:700 11px/1.4 ui-monospace,monospace;letter-spacing:.28em;color:#c4cdbf}
+    .cover-bottom{display:flex;justify-content:space-between;align-items:end}
+    .cover-bottom p{font-size:10px;line-height:1.7;color:#d3cbb9;max-width:110mm}
+    .cover .folio{color:#c8c0ad;border-color:#697267}
+    .statement{display:grid;grid-template-columns:1.1fr .9fr;gap:7mm;margin-top:10mm}
+    .statement blockquote{margin:0;border-left:5px solid var(--red);padding:4mm 5mm;font:italic 15px/1.7 "Songti SC",serif;background:rgba(156,59,53,.06)}
+    .facts{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm}
+    .fact{border-top:3px solid var(--green);padding:3mm;background:rgba(255,255,255,.2);min-height:31mm}
+    .fact b{display:block;font:800 7px/1.2 ui-monospace,monospace;letter-spacing:.12em;margin-bottom:2mm}
+    .fact p{font-size:8.7px;line-height:1.6}
+    .city-band{margin-top:8mm;padding:6mm;background:var(--green2);color:#eee7d7;display:grid;grid-template-columns:38mm 1fr;gap:6mm}
+    .city-band strong{font:300 38pt/1 ui-monospace,monospace}
+    .city-band p{font:10px/1.7 "Songti SC",serif}
+    .map-frame{border:1px solid #655e4d;padding:3mm;background:#302f27;margin-bottom:5mm}
+    .map-frame img{display:block;width:100%;height:116mm;object-fit:cover;filter:saturate(.75) contrast(1.05)}
+    .map-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}
+    .map-notes div{border-top:3px solid var(--green);padding-top:2.5mm}
+    .map-notes b{font-size:9px}.map-notes p{font-size:8px;line-height:1.55;margin-top:1mm}
+    .classes{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+    .class{--c:var(--green);display:grid;grid-template-columns:17mm 1fr;min-height:45mm;border-top:4px solid var(--c);background:rgba(255,255,255,.18)}
+    .class-code{display:grid;place-items:center;background:var(--c);color:white;font:800 10px/1.2 ui-monospace,monospace}
+    .class-copy{padding:3.5mm}.class-copy h3{font-size:11px;margin-bottom:1.5mm}.class-copy p{font-size:8px;line-height:1.55}.class-copy small{display:block;margin-top:2mm;color:#65665f;font-size:7px;line-height:1.4}
+    .doc-layout{display:grid;grid-template-columns:93mm 1fr;gap:7mm}
+    .doc-art{position:relative;border:1px solid #6b6657;background:#2e302b;padding:3mm;height:143mm;display:grid;place-items:center}
+    .doc-art img{width:100%;image-rendering:pixelated;filter:saturate(.72)}
+    .pin{position:absolute;width:8mm;height:8mm;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font:800 7px/1 ui-monospace,monospace;box-shadow:0 0 0 2px #efe5cd}
+    .fields{display:grid;gap:2mm}
+    .field{display:grid;grid-template-columns:10mm 1fr;border-bottom:1px solid var(--line);padding:2mm 0}
+    .field b{width:7mm;height:7mm;background:var(--green2);color:#fff;display:grid;place-items:center;font:800 6.5px/1 ui-monospace,monospace}
+    .field h3{font-size:9px;margin-bottom:1mm}.field p{font-size:7.8px;line-height:1.5}
+    .answer{margin-top:4mm;padding:4mm;background:rgba(82,104,88,.12);border-top:3px solid var(--green)}
+    .answer b{font-size:10px}.answer p{font:9px/1.7 "Songti SC",serif;margin-top:1.5mm}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:6mm}
+    .compare-card{border:1px solid #817a68;background:rgba(255,255,255,.22)}
+    .compare-card h3{padding:3mm 4mm;background:var(--green2);color:#fff;font-size:11px;letter-spacing:.08em}
+    .compare-card.res h3{background:var(--amber)}
+    .compare-card ul{margin:0;padding:4mm 6mm 5mm 9mm;font-size:8.7px;line-height:1.8}
+    .venn{position:relative;height:82mm;margin-top:8mm}
+    .circle{position:absolute;width:94mm;height:72mm;border:2px solid var(--green);border-radius:50%;padding:20mm 25mm 8mm 10mm;background:rgba(82,104,88,.1);font-size:9px;line-height:1.55}
+    .circle.right{right:0;border-color:var(--amber);background:rgba(164,119,53,.1);padding:20mm 10mm 8mm 27mm}
+    .circle.left{left:0}
+    .overlap{position:absolute;left:70mm;top:25mm;width:38mm;text-align:center;font:800 8px/1.5 ui-monospace,monospace}
+    .engine{display:grid;gap:3mm;margin-top:7mm}
+    .engine-row{display:grid;grid-template-columns:26mm 1fr 20mm;align-items:stretch}
+    .engine-no{display:grid;place-items:center;background:var(--green2);color:white;font:300 20pt/1 ui-monospace,monospace}
+    .engine-copy{padding:4mm;background:rgba(255,255,255,.2);border-block:1px solid var(--line)}
+    .engine-copy h3{font-size:11px;margin-bottom:1mm}.engine-copy p{font-size:8px;line-height:1.5}
+    .engine-plus{display:grid;place-items:center;font:300 18pt/1 ui-monospace,monospace;color:var(--red)}
+    .result{margin-top:4mm;background:var(--red);color:white;padding:5mm;text-align:center;font:800 11px/1.5 ui-monospace,monospace;letter-spacing:.08em}
+    .bulletin{border:1px solid #665f50;background:var(--paper2);padding:7mm;min-height:190mm;position:relative}
+    .bulletin:after{content:"今日有效";position:absolute;right:7mm;top:7mm;border:2px solid var(--red);color:var(--red);padding:2mm 3mm;transform:rotate(4deg);font:800 8px/1 ui-monospace,monospace}
+    .bulletin h3{font:700 18pt/1.25 "Songti SC",serif;padding-bottom:4mm;border-bottom:3px double #6e6757}
+    .bulletin .meta{display:flex;gap:6mm;margin:3mm 0;font:700 7px/1.4 ui-monospace,monospace}
+    .policy-table{width:100%;border-collapse:collapse;font-size:8px;margin-top:5mm}
+    .policy-table th,.policy-table td{border:1px solid #a7a08e;padding:2.3mm;vertical-align:top;text-align:left;line-height:1.5}
+    .policy-table th{background:#dad1bb;font:800 7px/1.3 ui-monospace,monospace;letter-spacing:.08em}
+    .foreign-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:2mm;margin:7mm 0}
+    .foreign-flow div{position:relative;min-height:42mm;background:rgba(255,255,255,.2);border-top:4px solid var(--violet);padding:4mm 3mm}
+    .foreign-flow b{display:block;font:300 19pt/1 ui-monospace,monospace;color:var(--violet);margin-bottom:2mm}.foreign-flow h3{font-size:9px;margin-bottom:1.5mm}.foreign-flow p{font-size:7.6px;line-height:1.5}
+    .foreign-flow div:not(:last-child):after{content:"→";position:absolute;right:-3.6mm;top:17mm;color:var(--red);font-weight:900;z-index:2}
+    .treaty{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+    .treaty div{padding:4mm;border:1px solid var(--line)}
+    .treaty h3{font-size:10px;margin-bottom:1.5mm}.treaty p{font-size:8px;line-height:1.6}
+    .cases{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+    .case{--c:var(--green);border-top:5px solid var(--c);background:rgba(255,255,255,.18);padding:4mm;min-height:90mm}
+    .case-code{font:800 7px/1.3 ui-monospace,monospace;letter-spacing:.1em;color:var(--c)}
+    .case h3{font-size:13px;margin:2mm 0}.case p{font-size:8.2px;line-height:1.6}
+    .case dl{margin:3mm 0 0;display:grid;grid-template-columns:22mm 1fr;font-size:7.7px;line-height:1.55}
+    .case dt{font-weight:800}.case dd{margin:0;border-bottom:1px dotted #aaa28f;padding-bottom:1.2mm;margin-bottom:1.2mm}
+    .machine{display:grid;grid-template-columns:1fr 18mm 1fr;align-items:center;margin-top:10mm}
+    .stack{display:grid;gap:2mm}
+    .paper{padding:3.5mm;border:1px solid #8e8673;background:#f4ecd8;box-shadow:2mm 2mm 0 rgba(64,62,54,.08);font-size:8px;line-height:1.5}
+    .arrow{font:300 28pt/1 ui-monospace,monospace;color:var(--red);text-align:center}
+    .validator{height:92mm;background:#2d332e;border:4px solid #676451;box-shadow:inset 0 0 0 3px #1c211d;color:#e5dcc7;padding:7mm;display:flex;flex-direction:column;justify-content:space-between}
+    .validator h3{font:700 16pt/1.2 "Songti SC",serif}.validator .screen{padding:5mm;background:#17231b;border:2px solid #63705f;color:#9cc18c;font:700 8px/1.7 ui-monospace,monospace}.validator small{font:7px/1.5 ui-monospace,monospace;color:#a6a696}
+    .echoes{margin-top:6mm;display:grid;grid-template-columns:repeat(3,1fr);gap:3mm}
+    .echo{padding:4mm;border-top:4px solid var(--green);background:rgba(255,255,255,.16);min-height:74mm}
+    .echo b{font:300 21pt/1 ui-monospace,monospace;color:var(--green)}.echo h3{font-size:10px;margin:2mm 0}.echo p{font-size:8px;line-height:1.6}
+    .cast-web{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-top:6mm}
+    .cast-link{display:grid;grid-template-columns:28mm 1fr;border:1px solid var(--line);min-height:31mm}
+    .cast-link b{display:grid;place-items:center;background:var(--green2);color:white;font-size:10px}
+    .cast-link p{padding:3mm;font-size:8px;line-height:1.5}
+    .glossary{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+    .term{border-bottom:1px solid var(--line);padding:3mm 0;display:grid;grid-template-columns:34mm 1fr;gap:3mm}
+    .term b{font-size:9px}.term p{font-size:8px;line-height:1.55}
+    .closing{margin-top:9mm;padding:8mm;background:var(--green2);color:#efe7d5}
+    .closing p{font:italic 15px/1.75 "Songti SC",serif}
+    @page{size:A4;margin:0}
+    @media print{html,body{background:transparent}.page{margin:0;box-shadow:none}}
+  </style>
+</head>
+<body>
+<main>
+  <section class="page cover">
+    <div class="cover-map"></div>
+    <div class="cover-content">
+      <div><div class="eyebrow" style="color:#c6cebf">CENTRAL REALITY ADMINISTRATION / HENGCHUAN</div><div class="eyebrow" style="color:#c6cebf">WORLD & POLICY ARCHIVE · 01</div></div>
+      <div><h1>衡川市<br>世界观档案</h1><div class="en">DISTRICT 12 · WORLD DOSSIER</div></div>
+      <div class="cover-bottom"><p>城市、辖区、身份、居住与每日政策。<br>供叙事、关卡、文件美术与案件配置共同使用。</p><div class="stamp" style="border-color:#d85a50;color:#d85a50">内部创作资料<br>不得作为证件</div></div>
+    </div>
+    <div class="folio"><span>FORMOCRACY / WORLD DOSSIER</span><span>01 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">01 / THE PREMISE</div><h2>一座由证明维持的城市</h2></div><div class="chapter">01</div></header>
+    <p class="lead">在衡川，身份不是一个人天然拥有的东西。身份是许多机构在同一天仍愿意互相承认的一组记录。</p>
+    <div class="statement">
+      <div><p class="body">衡川是一座被河道、铁路、旧工业区和行政带切开的城市。十四个区各自签发证明、分配资源并承担居民后果，所有决定却必须在夜间汇入中央现实管理局。白天，窗口职员处理的是纸；夜里，验收机把纸变成供水、住所、医疗、工作和通行权限。</p><blockquote style="margin-top:6mm">“系统不是在描述现实。<br>系统正在决定什么有资格成为现实。”</blockquote></div>
+      <div class="facts">
+        <div class="fact"><b>THE CITY / 城市</b><p>衡川市。国名在内部文件中通常只写“共和国”或“中央”。</p></div>
+        <div class="fact"><b>THE DISTRICT / 辖区</b><p>玩家负责第十二区，一个住宅、工厂、码头与临时宿舍混杂的旧工业区。</p></div>
+        <div class="fact"><b>THE WINDOW / 窗口</b><p>主要接待本区居民，也处理后果指向本区的跨区、外市与境外事项。</p></div>
+        <div class="fact"><b>THE CHANGE / 变化</b><p>每日通告会改变有效材料、签发机关、豁免条件与受理边界。</p></div>
+      </div>
+    </div>
+    <div class="city-band"><strong>14</strong><p>衡川有十四个辖区。区不是单纯地理分片，而是公共责任单位：一个人被哪个区承认，就由哪个区向他提供有限的生活资格。第十二区的问题，在于太多人住在这里，却被别的区、别的城市或别的国家记录。</p></div>
+    <div class="folio"><span>PREMISE / ADMINISTRATIVE REALITY</span><span>02 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">02 / DISTRICT 12</div><h2>第十二区：边缘与汇流</h2></div><div class="chapter">02</div></header>
+    <figure class="map-frame"><img src="../../assets/map/background/district_12_map.png" alt="第十二区地图"></figure>
+    <div class="map-notes">
+      <div><b>旧工业带</b><p>装配线、锅炉房、递送站与单位宿舍绑定。失去工作常意味着同时失去住所。</p></div>
+      <div><b>河港与夜间交通</b><p>外市工人、境外技师和跨区夜班人员聚集，实际人口永远快于登记更新。</p></div>
+      <div><b>中央行政走廊</b><p>表单、档案、验收与监察机构相邻。纸张移动几百米，就可能改变一个人的现实资格。</p></div>
+    </div>
+    <p class="body" style="margin-top:6mm">第十二区受理处的管辖逻辑不是“你从哪里来”，而是“这件事最后由谁承担”。一个第五区居民在第十二区受伤、一名外市工人在这里居住、一位境外专家维护本区机器，他们都会出现在玩家面前。窗口因此成为城市边界真正发生摩擦的地方。</p>
+    <div class="folio"><span>GEOGRAPHY / RESPONSIBILITY</span><span>03 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">03 / WHO ARRIVES</div><h2>谁会来到你的窗口</h2></div><div class="chapter">03</div></header>
+    <div class="classes">
+      <article class="class" style="--c:#526858"><div class="class-code">D12</div><div class="class-copy"><h3>第十二区常住居民</h3><p>本市身份证明有效，居住证明登记在第十二区。</p><small>材料通常最少，但家庭成员、地址重编与单位住房仍会制造冲突。</small></div></article>
+      <article class="class" style="--c:#536a82"><div class="class-code">HC-X</div><div class="class-copy"><h3>本市外区居民</h3><p>属于衡川市，但登记辖区不是第十二区。</p><small>常需跨区受理理由、原区转送单或证明后果确实发生在本区。</small></div></article>
+      <article class="class" style="--c:#a47735"><div class="class-code">HC-T</div><div class="class-copy"><h3>本市临时居住者</h3><p>拥有本市身份，实际住在第十二区但迁入尚未完成。</p><small>临时证明、房主声明与单位担保的有效期决定其生活权限。</small></div></article>
+      <article class="class" style="--c:#a45f3d"><div class="class-code">DOM</div><div class="class-copy"><h3>外市人员</h3><p>来自共和国其他城市，没有衡川市身份证明。</p><small>需要原籍身份文件、临时居留备案及工作或亲属担保。</small></div></article>
+      <article class="class" style="--c:#735f80"><div class="class-code">INT</div><div class="class-copy"><h3>境外人员</h3><p>持境外旅行、身份或专家文件进入衡川。</p><small>需要入境许可、认证译文、担保，以及当日仍有效的国际互惠条款。</small></div></article>
+      <article class="class" style="--c:#853e3a"><div class="class-code">UNK</div><div class="class-copy"><h3>身份存疑者</h3><p>编号冲突、记录注销、旧制证件或国籍无法确认。</p><small>不是“没有人”，而是系统无法用当前规则确认这个人。</small></div></article>
+    </div>
+    <div class="answer"><b>身份是状态，不是血统。</b><p>同一个人可以从 D12 变为 HC-T，也可以从 DOM 取得本市身份。每日政策甚至可能让昨日有效的身份暂时进入待复核状态。</p></div>
+    <div class="folio"><span>IDENTITY CLASSES / SIX STATES</span><span>04 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">04 / CITY IDENTITY</div><h2>本市身份证明</h2></div><div class="chapter">04</div></header>
+    <div class="doc-layout">
+      <figure class="doc-art"><img src="../../assets/documents/templates/identity_record.png" alt="身份记录模板"><i class="pin" style="left:18mm;top:47mm">1</i><i class="pin" style="right:29mm;top:48mm">2</i><i class="pin" style="right:29mm;top:70mm">3</i><i class="pin" style="right:29mm;top:94mm">4</i><i class="pin" style="left:27mm;bottom:15mm">5</i></figure>
+      <div><p class="lead" style="font-size:12px">它回答：<br>“这个人是否属于衡川市的行政人口？”</p>
+        <div class="fields" style="margin-top:5mm">
+          <div class="field"><b>1</b><div><h3>照片与体貌记录</h3><p>证明当前持有人与档案中的人相符。</p></div></div>
+          <div class="field"><b>2</b><div><h3>登记姓名</h3><p>译名、曾用名与归化姓名可能并存。</p></div></div>
+          <div class="field"><b>3</b><div><h3>公民序号</h3><p>稳定识别码；编号存在不等于状态有效。</p></div></div>
+          <div class="field"><b>4</b><div><h3>登记辖区</h3><p>说明行政归属，不证明当前实际住所。</p></div></div>
+          <div class="field"><b>5</b><div><h3>签发机关与校验码</h3><p>旧机关、撤销辖区与无校验码文件可能触发复核。</p></div></div>
+        </div>
+        <div class="answer"><b>不能证明什么？</b><p>它不能证明持有人现在住在第十二区，也不能自动赋予本区供水、配给或住房资格。</p></div>
+      </div>
+    </div>
+    <div class="folio"><span>DOCUMENT ANATOMY / CITY ID</span><span>05 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">05 / RESIDENCE</div><h2>居住证明</h2></div><div class="chapter">05</div></header>
+    <div class="doc-layout">
+      <figure class="doc-art"><img src="../../assets/documents/templates/residence_certificate.png" alt="居住证明模板"><i class="pin" style="right:25mm;top:48mm">1</i><i class="pin" style="right:25mm;top:68mm">2</i><i class="pin" style="right:25mm;top:90mm">3</i><i class="pin" style="left:23mm;bottom:16mm">4</i></figure>
+      <div><p class="lead" style="font-size:12px">它回答：<br>“这个人现在住在哪里，由哪个区承担公共责任？”</p>
+        <div class="fields" style="margin-top:5mm">
+          <div class="field"><b>1</b><div><h3>核准住所</h3><p>必须精确到辖区、街段与房间或单位。</p></div></div>
+          <div class="field"><b>2</b><div><h3>居住性质</h3><p>常住、临住、单位宿舍、轮班、安置或照护型居住。</p></div></div>
+          <div class="field"><b>3</b><div><h3>登记人与关系</h3><p>本人、共同居住人、房主、单位或担保人。</p></div></div>
+          <div class="field"><b>4</b><div><h3>有效期与签发机关</h3><p>签发机关必须对该地址拥有辖区权限。</p></div></div>
+        </div>
+        <div class="answer"><b>不能证明什么？</b><p>它不能单独证明持有人属于衡川市。外市与境外人员也可以合法住在第十二区。</p></div>
+      </div>
+    </div>
+    <div class="folio"><span>DOCUMENT ANATOMY / RESIDENCE</span><span>06 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">06 / TWO PROOFS</div><h2>两张纸，两个问题</h2></div><div class="chapter">06</div></header>
+    <p class="lead">身份证明与居住证明不是重复材料。制度故意把“你是谁”与“谁负责你”拆开。</p>
+    <div class="compare">
+      <article class="compare-card"><h3>本市身份证明 / CITY ID</h3><ul><li>证明衡川市行政人口资格</li><li>记录公民序号与登记辖区</li><li>可能长期有效</li><li>由人口登记机关签发</li><li>不能证明当前住所</li></ul></article>
+      <article class="compare-card res"><h3>居住证明 / RESIDENCE</h3><ul><li>证明实际住所与公共责任辖区</li><li>记录居住性质与共同关系</li><li>经常有短期有效期</li><li>由街区、单位或安置机关签发</li><li>不能证明本市身份</li></ul></article>
+    </div>
+    <div class="venn"><div class="circle left"><b>有本市身份，没本区住所</b><br>沈青禾、罗雨棠、叶蓁</div><div class="circle right"><b>有本区住所，没本市身份</b><br>何芸、蒋森、宋铎</div><div class="overlap">两证同时有效<br>≠ 自动批准<br><br>仍需看事项与当天政策</div></div>
+    <table class="policy-table">
+      <thead><tr><th>本市身份证明</th><th>居住证明</th><th>典型处境</th><th>窗口风险</th></tr></thead>
+      <tbody><tr><td>有效</td><td>本区有效</td><td>第十二区常住居民</td><td>字段一致、家庭关系与事项材料</td></tr><tr><td>有效</td><td>外区或临时</td><td>跨区 / 临居</td><td>受理权、迁入与有效期</td></tr><tr><td>无</td><td>本区有效</td><td>外市 / 境外居民</td><td>原籍文件、译文、担保</td></tr><tr><td>存疑</td><td>旧制或无</td><td>身份存疑者</td><td>人工复核与替代证据</td></tr></tbody>
+    </table>
+    <div class="folio"><span>DOCUMENT LOGIC / ID ≠ RESIDENCE</span><span>07 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">07 / DAILY POLICY ENGINE</div><h2>每天，规则重新组合</h2></div><div class="chapter">07</div></header>
+    <p class="lead">当天所需材料不是人物的固定清单，而是四层规则在窗口前临时叠加的结果。</p>
+    <div class="engine">
+      <div class="engine-row"><div class="engine-no">01</div><div class="engine-copy"><h3>身份层 / WHO</h3><p>D12、HC-X、HC-T、DOM、INT 或 UNK。决定基础证明与受理权。</p></div><div class="engine-plus">＋</div></div>
+      <div class="engine-row"><div class="engine-no">02</div><div class="engine-copy"><h3>事项层 / WHAT</h3><p>住房、供给、医疗、劳动、档案或交通。决定专项文件。</p></div><div class="engine-plus">＋</div></div>
+      <div class="engine-row"><div class="engine-no">03</div><div class="engine-copy"><h3>当日通告层 / TODAY</h3><p>临时增加、暂停、替换或豁免某类文件、签发机关和有效期。</p></div><div class="engine-plus">＋</div></div>
+      <div class="engine-row"><div class="engine-no">04</div><div class="engine-copy"><h3>例外层 / EXCEPTION</h3><p>紧急医疗、照护、未成年人、灾害安置、公务豁免与国际互惠。</p></div><div class="engine-plus">＝</div></div>
+    </div>
+    <div class="result">今日材料清单 + 字段核验规则 + 允许的替代证据</div>
+    <div class="answer"><b>玩法意义</b><p>玩家不能只记住“这个人上次带了什么”。熟悉的人在不同日子会面对不同规则，同一份材料也可能从合法变成失效，迫使玩家重新阅读政策而不是背答案。</p></div>
+    <div class="folio"><span>POLICY ENGINE / FOUR LAYERS</span><span>08 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">08 / SAMPLE BULLETIN</div><h2>示例：第七工作日通告</h2></div><div class="chapter">08</div></header>
+    <article class="bulletin">
+      <div class="eyebrow">衡川市中央现实管理局 · 临时政策通告</div>
+      <h3>关于第十二区居住记录集中复核的通知</h3>
+      <div class="meta"><span>执行日：第七工作日</span><span>效力：仅限当日受理</span><span>编号：HC/D12-07</span></div>
+      <p class="body">因街区重编数据与临时住所备案出现不一致，今日所有涉及供给与共同居住的申请，按以下清单核验：</p>
+      <table class="policy-table">
+        <thead><tr><th>身份类别</th><th>必须提交</th><th>今日新增核验</th><th>允许例外</th></tr></thead>
+        <tbody>
+          <tr><td>D12</td><td>居住证明</td><td>签发日期不得早于街区重编日</td><td>持旧址连续居住账本者可人工复核</td></tr>
+          <tr><td>HC-X</td><td>本市身份证明 + 跨区受理理由</td><td>原区转送单必须当日有效</td><td>紧急医疗不受此限</td></tr>
+          <tr><td>HC-T</td><td>本市身份证明 + 临时居住证明</td><td>单位担保不得用于家庭共同居住</td><td>灾害安置令可替代</td></tr>
+          <tr><td>DOM</td><td>原籍证明 + 居留备案 + 担保</td><td>担保单位须在第十二区登记</td><td>无</td></tr>
+          <tr><td>INT</td><td>旅行证 + 认证译文 + 居住证明</td><td>北陆互惠条款今日暂停</td><td>市政专家紧急维修令</td></tr>
+          <tr><td>UNK</td><td>人工复核单</td><td>不得仅凭旧编号自动通过</td><td>两名有效本市居民证言</td></tr>
+        </tbody>
+      </table>
+      <p class="body" style="margin-top:5mm">注意：本通告改变的是“今日可接受的证据”，不改变申请人的永久身份状态。日终未验收的案件次日须按新通告重新受理。</p>
+    </article>
+    <div class="folio"><span>DAILY BULLETIN / DAY 07</span><span>09 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">09 / FOREIGN APPLICANTS</div><h2>境外来访者如何进入系统</h2></div><div class="chapter">09</div></header>
+    <p class="lead">境外身份不会自动等于可疑；真正的难点是两套行政语言如何在同一个窗口里互相承认。</p>
+    <div class="foreign-flow">
+      <div><b>01</b><h3>境外原始文件</h3><p>旅行证、身份文件、工作许可或亲属关系证明。</p></div>
+      <div><b>02</b><h3>认证译文</h3><p>姓名、日期、机关和地址必须能与原件逐项对应。</p></div>
+      <div><b>03</b><h3>进入与担保</h3><p>入境许可、邀请单位、家庭担保或市政专家令。</p></div>
+      <div><b>04</b><h3>本区居住证明</h3><p>说明实际住址及第十二区为何承担公共责任。</p></div>
+    </div>
+    <div class="treaty">
+      <div><h3>北陆联邦</h3><p>工业技术与验收设备合作方。专家许可通常可替代部分工作证明，但互惠条款可能被临时暂停。宋铎由此进入叙事。</p></div>
+      <div><h3>澜岬共和国</h3><p>与衡川有长期人口往来。出生证明与姓名译法经常出现新旧版本冲突。黎素和叶蓁体现归化与归市的不同问题。</p></div>
+    </div>
+    <div class="answer"><b>设计原则</b><p>境外案件的压力不来自刻板的“外国人更危险”，而来自译文、互惠、担保、时效与同一个人在不同制度中拥有不同合法姓名。</p></div>
+    <div class="statement" style="margin-top:7mm"><blockquote>“一份文件在原来的国家证明你是谁，到了衡川，它首先要证明自己是一份文件。”</blockquote><p class="body">这让境外人物能够进入住房、劳动、医疗和关系叙事，而不是只作为边境检查题出现。</p></div>
+    <div class="folio"><span>FOREIGN STATUS / TRANSLATION & GUARANTEE</span><span>10 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">10 / FOUR CASES</div><h2>同一窗口，四种人生</h2></div><div class="chapter">10</div></header>
+    <div class="cases">
+      <article class="case" style="--c:#526858"><div class="case-code">D12 / 周循</div><h3>地址被重编的人</h3><p>他从未搬家，但系统把旧街段拆成两个新编号。</p><dl><dt>申请</dt><dd>照护型净水额度</dd><dt>冲突</dt><dd>身份地址 5-8，居住证明 9-1</dd><dt>关键</dt><dd>今日是否承认街区重编豁免</dd></dl></article>
+      <article class="case" style="--c:#536a82"><div class="case-code">HC-X / 沈青禾</div><h3>先生活、后迁入的人</h3><p>她属于衡川，却不属于第十二区；至少文件上还不是。</p><dl><dt>申请</dt><dd>与林默共同居住</dd><dt>冲突</dt><dd>本人没有第十二区居住证明</dd><dt>关键</dt><dd>共同居住声明能否替代迁入材料</dd></dl></article>
+      <article class="case" style="--c:#a45f3d"><div class="case-code">DOM / 何芸</div><h3>在这里工作却不属于这里的人</h3><p>她有合法住所，但没有本市身份证明。</p><dl><dt>申请</dt><dd>夜校照明配额</dd><dt>冲突</dt><dd>单位担保人数与学生名册不同</dd><dt>关键</dt><dd>外市人员能否为未备案学生申请</dd></dl></article>
+      <article class="case" style="--c:#735f80"><div class="case-code">INT / 宋铎</div><h3>维护机器的境外专家</h3><p>他能修复验收机，却不能用专家许可申请家庭事项。</p><dl><dt>申请</dt><dd>延长本区居住证明</dd><dt>冲突</dt><dd>北陆互惠条款当日暂停</dd><dt>关键</dt><dd>紧急维修令是否延伸到居住资格</dd></dl></article>
+    </div>
+    <div class="folio"><span>CASE DESIGN / IDENTITY IN PLAY</span><span>11 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">11 / THE VALIDATOR</div><h2>决定如何变成现实</h2></div><div class="chapter">11</div></header>
+    <p class="lead">玩家白天盖下的章不是结局。日终验收机把审批结果写回城市的其他系统，真正的后果从夜里开始。</p>
+    <div class="machine">
+      <div class="stack"><div class="paper"><b>批准 / 驳回</b><br>玩家在主表单上作出的决定</div><div class="paper"><b>材料事实</b><br>身份、地址、日期、担保与例外</div><div class="paper"><b>今日通告</b><br>提交当日仍有效的政策版本</div></div>
+      <div class="arrow">→</div>
+      <div class="validator"><h3>日终验收机</h3><div class="screen">CASE ACCEPTED<br>WRITEBACK QUEUED<br>RESIDENCE: D12<br>RATION: ENABLED<br>REVIEW: +14 DAYS</div><small>机器并不判断道德。它检查格式、权限与可执行性，然后把决定同步给住房、供给、医疗、劳动、档案和交通系统。</small></div>
+    </div>
+    <div class="echoes">
+      <div class="echo"><b>01</b><h3>即时权限</h3><p>门禁、供水、配额与通行状态在次日变化。NPC 会以生活状态回应玩家决定。</p></div>
+      <div class="echo"><b>02</b><h3>延迟复核</h3><p>敏感案件可能在数日后被监察、投诉或机器冲突重新打开。</p></div>
+      <div class="echo"><b>03</b><h3>关系回响</h3><p>批准一个人的住所，也可能让共同居住人、担保者或原辖区承担新的风险。</p></div>
+    </div>
+    <div class="answer"><b>世界观与玩法的连接点</b><p>玩家不是在选择一段对白，而是在改变哪些记录被城市共同承认。人物回访因此能够直接读取前次决定，而不是用旁白假装后果发生过。</p></div>
+    <div class="folio"><span>VALIDATION / REALITY WRITEBACK</span><span>12 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">12 / NARRATIVE DEPLOYMENT</div><h2>制度如何穿过人物</h2></div><div class="chapter">12</div></header>
+    <p class="lead">每一种身份规则都必须落在一个具体的人身上；每一次政策变化都必须改变至少一种生活，而不只是改变题目难度。</p>
+    <div class="cast-web">
+      <div class="cast-link"><b>林默<br>沈青禾</b><p>本区与跨区共同居住：两张合法身份证明不能自动生成同一个合法住所。</p></div>
+      <div class="cast-link"><b>周循<br>杜春梅</b><p>街区重编与亲属代办：地址不一致可能是系统错误，也可能掩盖真实迁居。</p></div>
+      <div class="cast-link"><b>许桥<br>方澄</b><p>跨区医疗与过期回执：签发时间、机器时间与病人的身体时间互相冲突。</p></div>
+      <div class="cast-link"><b>何芸<br>蒋森</b><p>外市人员与单位担保：工作让他们进入第十二区，也让居住权依赖雇主。</p></div>
+      <div class="cast-link"><b>黎素<br>叶蓁</b><p>归化与归市：一个拥有新身份，一个保留旧身份，但两人都要反复解释境外经历。</p></div>
+      <div class="cast-link"><b>宋铎<br>老赫</b><p>境外专家与旧制居民：一个文件过新，一个文件过旧，都在当前系统里留下空白。</p></div>
+    </div>
+    <div class="echoes">
+      <div class="echo"><b>A</b><h3>第一次来</h3><p>人物带着表面诉求和可核验材料进入窗口。</p></div>
+      <div class="echo"><b>B</b><h3>决定回响</h3><p>前次审批改变其住所、健康、工作或关系证明。</p></div>
+      <div class="echo"><b>C</b><h3>制度揭露</h3><p>人物的个案暴露城市如何制造大规模缺页、迁移与身份降级。</p></div>
+    </div>
+    <div class="closing"><p>好的政策题不是“找出哪一张纸错了”，而是“看懂为什么一个人的生活只能通过这张纸被看见”。</p></div>
+    <div class="folio"><span>NARRATIVE SYSTEM / CHARACTER ECHO</span><span>13 / 14</span></div>
+  </section>
+
+  <section class="page">
+    <header class="page-head"><div><div class="eyebrow">13 / WORKING GLOSSARY</div><h2>创作词汇与底线</h2></div><div class="chapter">13</div></header>
+    <div class="glossary">
+      <div class="term"><b>本市身份证明</b><p>证明当事人是否属于衡川市行政人口，不证明实际住所。</p></div>
+      <div class="term"><b>居住证明</b><p>证明实际住所、居住性质与责任辖区，不证明本市身份。</p></div>
+      <div class="term"><b>登记辖区</b><p>身份记录上的行政归属区，可能与实际住所不同。</p></div>
+      <div class="term"><b>实际住所</b><p>当事人真实生活的地方；只有被证明后才获得制度效力。</p></div>
+      <div class="term"><b>受理权</b><p>一个窗口为什么有权处理此事项。可来自住所、工作、后果或担保。</p></div>
+      <div class="term"><b>每日通告</b><p>只在指定工作日有效的规则组合，改变可接受材料与例外。</p></div>
+      <div class="term"><b>替代证据</b><p>在法定证明缺失时被当日政策允许使用的账本、证言、旧档案或安置令。</p></div>
+      <div class="term"><b>身份存疑</b><p>系统无法确认，不等于当事人不存在或必然违法。</p></div>
+      <div class="term"><b>日终验收</b><p>把窗口决定同步到其他公共系统，使其产生现实后果。</p></div>
+      <div class="term"><b>行政现实</b><p>被多个系统共同承认、因此能够持续产生生活权限的事实。</p></div>
+    </div>
+    <div class="closing"><p>衡川市的核心矛盾不是“规则太多”，而是生活永远比规则先发生。玩家站在两者之间，每天决定制度是否愿意追上现实。</p></div>
+    <div class="statement"><div><div class="label">DESIGN BOUNDARY / 创作底线</div><p class="body" style="margin-top:2mm">外区、外市和境外身份都不是道德阵营；复杂材料不能自动暗示角色有罪。政策变化必须同时创造机械差异、人物后果与世界信息。</p></div><div class="stamp">衡川市<br>第十二区</div></div>
+    <div class="folio"><span>GLOSSARY / END OF DOSSIER</span><span>14 / 14</span></div>
+  </section>
+</main>
+</body>
+</html>

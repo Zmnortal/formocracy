@@ -30,8 +30,8 @@ func run() -> void:
 	assert(console.is_open and console.blocker.visible, "console must open")
 	console.fill_test_records("mixed")
 	assert(state.records.size() == 3, "mixed preset must create three records")
-	assert(state.get_summary().approved == 2, "mixed preset must create two approvals")
-	assert(state.get_summary().rejected == 1, "mixed preset must create one rejection")
+	assert(state.manager.get_summary().approved == 2, "mixed preset must create two approvals")
+	assert(state.manager.get_summary().rejected == 1, "mixed preset must create one rejection")
 	console.day_selector.value = 12
 	console._on_set_day()
 	assert(state.day_number == 12, "day selector must update workday")

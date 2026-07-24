@@ -13,18 +13,18 @@ func run() -> void:
 	state.save_path = "user://formocracy-workday-selector-render.json"
 	state.start_new_game()
 	state.player_name = "张子奕"
-	assert(state.create_initial_checkpoint(), "selector render root must be created")
+	assert(state.save_system.create_initial_checkpoint(), "selector render root must be created")
 	state.persistence_enabled = true
-	state.begin_next_day()
-	var nodes: Array[Dictionary] = state.get_checkpoint_nodes()
+	state.manager.begin_next_day()
+	var nodes: Array[Dictionary] = state.save_system.get_checkpoint_nodes()
 	var day_one_id := ""
 	for node in nodes:
 		if int(node.completed_day) == 1:
 			day_one_id = String(node.node_id)
-	state.begin_next_day()
-	assert(state.load_checkpoint(day_one_id), "render must return to day one")
+	state.manager.begin_next_day()
+	assert(state.save_system.load_checkpoint(day_one_id), "render must return to day one")
 	state.balance = 77
-	state.begin_next_day()
+	state.manager.begin_next_day()
 	var error := change_scene_to_file("res://scenes/workday_selector.tscn")
 	assert(error == OK, "workday selector scene must load")
 	await process_frame
@@ -42,10 +42,7 @@ func run() -> void:
 	current_scene.request_continue_game()
 	await process_frame
 	var confirmation_image := root.get_viewport().get_texture().get_image()
-	assert(
-		confirmation_image.save_png(CONFIRMATION_SNAPSHOT_PATH) == OK,
-		"selector confirmation snapshot must save"
-	)
+	assert(confirmation_image.save_png(CONFIRMATION_SNAPSHOT_PATH) == OK, "selector confirmation snapshot must save")
 	state.start_new_game()
 	state.save_path = state.DEFAULT_SAVE_PATH
 	print("FORMOCRACY_WORKDAY_SELECTOR_RENDER_OK %s %s" % [SNAPSHOT_PATH, CONFIRMATION_SNAPSHOT_PATH])

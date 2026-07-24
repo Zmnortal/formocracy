@@ -29,42 +29,32 @@ func run() -> void:
 	var briefing_image := root.get_viewport().get_texture().get_image()
 	assert(not briefing_image.is_empty(), "daily briefing must produce a rendered frame")
 	assert(briefing_image.save_png(BRIEFING_SNAPSHOT_PATH) == OK, "daily briefing screenshot must be saved")
-	current_scene.start_first_case_for_tests()
+	current_scene.manager.start_first_case_for_tests()
 	await process_frame
 	await create_timer(0.9).timeout
 	var npc_image := root.get_viewport().get_texture().get_image()
 	assert(not npc_image.is_empty(), "NPC entrance must produce a rendered frame")
 	assert(npc_image.save_png(NPC_SNAPSHOT_PATH) == OK, "NPC performance screenshot must be saved")
-	current_scene.npc_performance.skip_current_performance()
+	current_scene.manager.npc_performance.skip_current_performance()
 	await create_timer(0.4).timeout
-	current_scene.presenter.set_envelope_on_desk(true)
-	current_scene.presenter.open_envelope()
-	current_scene.presenter.open_document(current_scene.presenter.primary_document_id)
-	if not current_scene.presenter.document_panels.is_empty():
-		var supporting = current_scene.presenter.document_panels[0]
-		current_scene.presenter.open_document(String(supporting.get_meta("document_id")))
-		current_scene.presenter.apply_stamp(
-			"驳回",
-			String(supporting.get_meta("document_id")),
-			Vector2(310, 238)
-		)
-	current_scene.presenter.apply_stamp("批准", Vector2(430, 350))
+	current_scene.manager.presenter.set_envelope_on_desk(true)
+	current_scene.manager.presenter.open_envelope()
+	current_scene.manager.presenter.open_document(current_scene.manager.presenter.primary_document_id)
+	if not current_scene.manager.presenter.document_panels.is_empty():
+		var supporting = current_scene.manager.presenter.document_panels[0]
+		current_scene.manager.presenter.open_document(String(supporting.get_meta("document_id")))
+		current_scene.manager.presenter.apply_stamp("驳回", String(supporting.get_meta("document_id")), Vector2(310, 238))
+	current_scene.manager.presenter.apply_stamp("批准", Vector2(430, 350))
 	await process_frame
 	await process_frame
 	var image := root.get_viewport().get_texture().get_image()
 	assert(not image.is_empty(), "rendered viewport must produce an image")
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "render verification screenshot must be saved")
-	current_scene.presenter.pack_all_documents()
-	current_scene.submission_mgr.submit(current_scene.presenter, current_scene.current_case)
+	current_scene.manager.presenter.pack_all_documents()
+	current_scene.manager.submission.submit(current_scene.manager.presenter, current_scene.manager.current_case)
 	await create_timer(0.75).timeout
 	var ingestion_image := root.get_viewport().get_texture().get_image()
 	assert(not ingestion_image.is_empty(), "machine ingestion must produce a rendered frame")
-	assert(
-		ingestion_image.save_png(INGESTION_SNAPSHOT_PATH) == OK,
-		"machine ingestion screenshot must be saved"
-	)
-	print(
-		"FORMOCRACY_RENDER_SNAPSHOT_OK %s %s %s %s"
-		% [BRIEFING_SNAPSHOT_PATH, NPC_SNAPSHOT_PATH, SNAPSHOT_PATH, INGESTION_SNAPSHOT_PATH]
-	)
+	assert(ingestion_image.save_png(INGESTION_SNAPSHOT_PATH) == OK, "machine ingestion screenshot must be saved")
+	print("FORMOCRACY_RENDER_SNAPSHOT_OK %s %s %s %s" % [BRIEFING_SNAPSHOT_PATH, NPC_SNAPSHOT_PATH, SNAPSHOT_PATH, INGESTION_SNAPSHOT_PATH])
 	quit(0)

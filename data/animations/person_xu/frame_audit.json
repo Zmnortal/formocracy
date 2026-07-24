@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-XU",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_xu_original_and_sources_2026-07-25/reference/fullbody.png",
+  "source_strips": [
+    "strip_01_neutral_nervous.png",
+    "strip_02_deliver_approve.png",
+    "strip_03_approve_reject.png",
+    "strip_04_reject_exit.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 25,
+    "role": "区域文件递送员",
+    "palette": "朱砂红",
+    "markers": [
+      "棕色贴头便帽",
+      "朱砂红短外套",
+      "米色翻领衬衫",
+      "深色及膝裙",
+      "棕色搭扣鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "急于证明自己能继续工作，只用换重心与护住伤处暴露工伤。",
+    "approved": "短暂惊讶后迅速释然，准备赶往第五诊疗站。",
+    "rejected": "先错愕、再争辩，最后带着压住伤处的克制愤怒离开。"
+  }
+}

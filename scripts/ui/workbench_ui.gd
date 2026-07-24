@@ -20,12 +20,7 @@ const COLORS := {
 
 # 创建 StyleBoxFlat 的辅助工厂方法。
 # 可设置背景色、圆角、边框颜色与边框宽度；仅当 border 大于 0 时才配置四边边框，避免无意义的开销。
-static func style_box(
-		color: Color,
-		radius := 0,
-		border_color := Color.TRANSPARENT,
-		border := 0
-) -> StyleBoxFlat:
+static func style_box(color: Color, radius := 0, border_color := Color.TRANSPARENT, border := 0) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = color
 	box.corner_radius_top_left = radius
@@ -43,14 +38,7 @@ static func style_box(
 
 # 通用文本标签工厂方法。
 # 在指定 parent 下创建 Label，配置字体大小、像素字体、颜色、位置、尺寸与智能自动换行，并返回 Label 引用供后续修改。
-static func add_text(
-		parent: Node,
-		text: String,
-		size: int,
-		color: Color,
-		position: Vector2,
-		dimensions: Vector2
-) -> Label:
+static func add_text(parent: Node, text: String, size: int, color: Color, position: Vector2, dimensions: Vector2) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.position = position

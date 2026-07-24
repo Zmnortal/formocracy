@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>特殊剧情表单 · HTML 写作模板</title>
+  <!--
+    叙事角色：可直接复制和填写的特殊剧情案件模板。
+    视觉温度：工具性、清晰、保持世界内行政文件的语气。
+    勾选状态保存在浏览器 localStorage；不依赖服务器。
+  -->
+  <link rel="stylesheet" href="storylines.css">
+</head>
+<body data-page="template">
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand-block" href="index.html"><span class="brand-seal">12区</span><span class="brand-copy"><strong>特殊故事线档案</strong><span>AUTHORING TEMPLATE</span></span></a>
+      <nav class="nav" aria-label="故事线导航">
+        <a href="index.html" data-nav="overview">七日总览</a>
+        <a href="story-01-cohabitation.html" data-nav="story-01">01 共同居住</a>
+        <a href="story-02-time-resources.html" data-nav="story-02">02 时间与资源</a>
+        <a href="story-03-pollution-archive.html" data-nav="story-03">03 污染与封档</a>
+        <a href="story-04-final-stamp.html" data-nav="story-04">04 最后盖章</a>
+        <a href="case-template.html" data-nav="template">案件模板</a>
+      </nav>
+      <div class="top-status">WRITER<br>TOOL</div>
+    </header>
+
+    <main class="paper">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">SPECIAL CASE AUTHORING / NARRATIVE × ADMINISTRATION</div>
+          <h1>不要先写剧情，再随便找一张表单承载</h1>
+          <p class="lead">每宗特殊剧情案件都应同时定义：申请人今天为什么必须来、玩家能够依据什么核验、文件哪里与现实冲突，以及这枚印章会如何改变下一次回访。</p>
+          <div class="hero-meta"><span>完整表名</span><span>真实生活需求</span><span>材料矛盾</span><span>三种决定</span><span>后续回响</span></div>
+        </div>
+        <figure class="hero-visual" data-caption="APPLICATION FORM / 具体表单是叙事入口">
+          <img src="../../assets/documents/templates/application_form.png" alt="申请表模板">
+        </figure>
+      </section>
+
+      <section class="section">
+        <header class="section-head"><div class="section-no">01</div><h2 class="section-title">特殊剧情案件填写模板</h2><p class="section-note">左侧目录可以快速跳转。右侧各区块可直接作为策划文档结构使用。</p></header>
+        <div class="template-layout">
+          <aside class="template-toc">
+            <h2>案件结构</h2>
+            <a href="#basic">01 基础信息</a>
+            <a href="#need">02 真实生活需求</a>
+            <a href="#materials">03 材料组合</a>
+            <a href="#conflict">04 表面错误与剧情矛盾</a>
+            <a href="#person">05 人物表现</a>
+            <a href="#decision">06 玩家决定</a>
+            <a href="#evidence-template">07 线索与回访</a>
+            <a href="#variables">08 状态变量</a>
+            <a href="#acceptance">09 验收检查</a>
+          </aside>
+
+          <div class="template-form">
+            <section class="template-section" id="basic">
+              <h2>01 · 基础信息</h2>
+              <div class="field-grid">
+                <div class="field"><b>剧情案件 ID</b><span>例如 STORY-D5-P44-MENG</span></div>
+                <div class="field"><b>出现日次与顺序</b><span>例如 Day 5 / Case 2</span></div>
+                <div class="field"><b>申请人 / 代办人</b><span>必须使用稳定人物 ID</span></div>
+                <div class="field"><b>所属故事线</b><span>01 / 02 / 03 / 04</span></div>
+                <div class="field"><b>完整表号与表名</b><span>不能写“主申请表”</span></div>
+                <div class="field"><b>手册章节与条目</b><span>例如 CH.7 §44</span></div>
+              </div>
+            </section>
+
+            <section class="template-section" id="need">
+              <h2>02 · 真实生活需求</h2>
+              <p>用一句具体的话说明申请人今天为什么必须来到窗口。不要写“申请人提交一份主申请表”，而要写“申请人需要在宵禁后前往第五诊疗站复查尚未愈合的工伤”。</p>
+              <div class="field"><b>一句话需求</b><span>谁，在今天，需要完成什么，否则会失去什么？</span></div>
+            </section>
+
+            <section class="template-section" id="materials">
+              <h2>03 · 材料组合</h2>
+              <table class="material-table">
+                <thead><tr><th>材料</th><th>它证明什么</th><th>它不能证明什么</th><th>可能错误</th></tr></thead>
+                <tbody>
+                  <tr><td>具体申请表</td><td>事项与公开诉求</td><td>申请人说法必然真实</td><td>漏填、日期、签名</td></tr>
+                  <tr><td>身份证明</td><td>申请人是谁</td><td>当前实际住址</td><td>过期、号码不一致</td></tr>
+                  <tr><td>居住证明</td><td>当前责任辖区</td><td>拥有本市身份</td><td>地址、签发机关</td></tr>
+                  <tr><td>专项证明</td><td>医疗、工作、污染等事实</td><td>自动获得最高优先级</td><td>机构、期限、对象</td></tr>
+                  <tr><td>当日通告</td><td>今天如何执行规则</td><td>过去发生的事实</td><td>版本、适用日期</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="template-section" id="conflict">
+              <h2>04 · 表面错误与剧情矛盾</h2>
+              <div class="field-grid">
+                <div class="field"><b>表面错误</b><span>玩家第一次阅读就能检查的字段或附件问题。</span></div>
+                <div class="field"><b>剧情矛盾</b><span>材料即使真实，现行规则仍无法完整解释的现实。</span></div>
+                <div class="field"><b>当前最多能确定</b><span>不要让玩家靠猜编剧意图作决定。</span></div>
+                <div class="field"><b>当前仍不能确定</b><span>为后续回访保留明确缺口。</span></div>
+              </div>
+            </section>
+
+            <section class="template-section" id="person">
+              <h2>05 · 人物表现</h2>
+              <div class="field-grid">
+                <div class="field"><b>公开说法</b><span>申请人愿意进入记录的版本。</span></div>
+                <div class="field"><b>回避问题</b><span>什么问题会让他停顿、改口或拒答？</span></div>
+                <div class="field"><b>批准反应</b><span>不必感谢，可以沉默或立刻追问后果。</span></div>
+                <div class="field"><b>驳回 / 延迟反应</b><span>分别写，不把两者视为同一种失败。</span></div>
+              </div>
+            </section>
+
+            <section class="template-section" id="decision">
+              <h2>06 · 玩家决定</h2>
+              <table class="material-table">
+                <thead><tr><th>决定</th><th>程序结果</th><th>当日生活后果</th><th>后续剧情后果</th></tr></thead>
+                <tbody>
+                  <tr><td>批准</td><td>填写</td><td>填写</td><td>填写</td></tr>
+                  <tr><td>驳回</td><td>填写</td><td>填写</td><td>填写</td></tr>
+                  <tr><td>延迟 / 补件</td><td>填写</td><td>填写</td><td>填写</td></tr>
+                  <tr><td>例外处理</td><td>如无例外则删除本行</td><td>填写</td><td>填写</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="template-section" id="evidence-template">
+              <h2>07 · 线索与回访</h2>
+              <div class="field-grid">
+                <div class="field"><b>本案产生的新线索</b><span>它的最小证明范围是什么？</span></div>
+                <div class="field"><b>此前解释它的线索</b><span>来自哪个人物、机构或旧页？</span></div>
+                <div class="field"><b>之后重新使用它的案件</b><span>明确日次、表号与用途。</span></div>
+                <div class="field"><b>能否进入正式档案</b><span>原件、批注、副本还是私人证物？</span></div>
+              </div>
+              <p>回访不必总让同一人物再次排队，可以通过补件、夜间地点、秘书电话、手册批注、退回件或另一个人物携带的关联材料发生。</p>
+            </section>
+
+            <section class="template-section" id="variables">
+              <h2>08 · 状态变量</h2>
+              <div class="field-grid">
+                <div class="field"><b>案件结果</b><span>批准 / 驳回 / 延迟 / 例外。</span></div>
+                <div class="field"><b>人物信任</b><span>谁的信任改变，为什么？</span></div>
+                <div class="field"><b>证据状态</b><span>未知 / 发现 / 保留 / 入档 / 封存。</span></div>
+                <div class="field"><b>程序风险</b><span>是否越过机器、旧页或现行规则？</span></div>
+                <div class="field"><b>公共伤害</b><span>具体谁失去住所、资源、医疗或记录？</span></div>
+                <div class="field"><b>General 池变化</b><span>是否解锁新的普通案件错误类型？</span></div>
+              </div>
+            </section>
+
+            <section class="template-section" id="acceptance">
+              <h2>09 · 验收检查</h2>
+              <div class="checklist">
+                <label class="check-row"><input type="checkbox" data-check-item="full-name"><span>表单拥有完整、具体、可信的名称。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="real-need"><span>申请人有明确、现实且当天必须处理的需求。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="manual-rule"><span>玩家能依据手册检查材料，不需要猜编剧意图。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="clue-not-answer"><span>剧情线索提供证明范围，不直接等于完整答案。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="three-results"><span>批准、驳回和延迟都有不同的现实后果。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="fallback"><span>前置选择不同，案件仍能通过替代证据或补件继续。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="no-perfect"><span>不存在没有风险、等待或损失的完美选项。</span></label>
+                <label class="check-row"><input type="checkbox" data-check-item="lin-npc"><span>玩家主角没有被写成林默；林默始终是 NPC。</span></label>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer"><span>SPECIAL CASE AUTHORING TEMPLATE</span><span>CHECKLIST STATE SAVED LOCALLY</span></footer>
+  </div>
+  <script src="storylines.js"></script>
+</body>
+</html>

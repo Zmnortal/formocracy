@@ -13,7 +13,7 @@ func run() -> void:
 	state.reset_for_tests()
 	state.player_name = "测试职员"
 	state.balance = 42
-	state.begin_evening()
+	state.manager.begin_evening()
 	state.evening_location_id = "LOCATION-FORM-SHOP"
 	var error := change_scene_to_file("res://scenes/form_shop.tscn")
 	assert(error == OK)

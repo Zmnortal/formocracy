@@ -31,15 +31,23 @@ RealityBridge="*res://RealityBridge.gd"
 [debug]
 
 developer_console_enabled=true
+gdscript/warnings/unsafe_call_argument=1
+gdscript/warnings/unsafe_cast=1
+gdscript/warnings/unsafe_method_access=1
+gdscript/warnings/unsafe_property_access=1
+gdscript/warnings/untyped_declaration=1
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-# 启动时使用最大化窗口。macOS 多显示器下直接以全屏模式创建窗口，
-# Godot 4.7 可能生成高度为 0 的后备纹理并导致游戏窗口无法出现。
-# 玩家仍可通过 ESC 菜单切换真正的全屏模式。
-window/size/mode=2
+# IMPORTANT: 游戏必须以真正的全屏模式启动；不要改成最大化（2）或窗口模式（0）。
+# 玩家启动后仍可通过 ESC 暂停菜单主动切换为窗口模式。
+window/size/mode=3
+# IMPORTANT: 全屏窗口内的 1280×720 游戏画布也必须铺满整个屏幕。
+# canvas_items + ignore 会横纵独立缩放；不要改成 disabled/keep，否则会重新出现黑边。
+window/stretch/mode="canvas_items"
+window/stretch/aspect="ignore"
 
 [gui]
 

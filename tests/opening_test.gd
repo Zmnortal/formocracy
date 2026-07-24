@@ -69,6 +69,7 @@ func run() -> void:
 	await opening.submit_form()
 	assert(opening.submission_snap_count == opening.APPROACH_FRAME_COUNT + opening.INGEST_FRAME_COUNT, "form ingestion must advance at exactly four held frames per second")
 	assert(opening.form_stage.rotation_degrees == 0.0, "perspective must not use left or right rotation")
+	assert(opening.projected_form.uv[2] == Vector2(opening.FORM_CAPTURE_RECT.size), "submission projection must capture only the paper bounds instead of the black full-screen stage")
 	var top_width: float = opening.projected_form.polygon[0].distance_to(opening.projected_form.polygon[1])
 	var bottom_width: float = opening.projected_form.polygon[3].distance_to(opening.projected_form.polygon[2])
 	assert(top_width < bottom_width, "forward tilt must be rendered as a perspective trapezoid")
@@ -81,7 +82,7 @@ func run() -> void:
 	await process_frame
 	assert(state.player_name == "测试职员", "submitting the form must establish the global player identity")
 	assert(not state.player_signature.is_empty(), "submitting the form must persist handwritten signature strokes")
-	var checkpoints: Array[Dictionary] = state.get_checkpoint_nodes()
+	var checkpoints: Array[Dictionary] = state.save_system.get_checkpoint_nodes()
 	assert(checkpoints.size() == 1 and int(checkpoints[0].completed_day) == 0, "opening completion must create the immutable beginning checkpoint")
 	assert(current_scene != null and current_scene.scene_file_path == "res://main.tscn", "machine ingestion must finish by entering the first workday")
 	state.start_new_game()

@@ -95,10 +95,7 @@ func _test_interrupt_token_and_shutdown() -> void:
 	player.shutdown()
 	player.shutdown()
 	assert(player.is_shutdown(), "shutdown must be idempotent")
-	assert(
-		player.play_action(&"fast", PlayerClass.PlaybackMode.LOOP) == PlayerClass.INVALID_TOKEN,
-		"a shut down player must reject new playback"
-	)
+	assert(player.play_action(&"fast", PlayerClass.PlaybackMode.LOOP) == PlayerClass.INVALID_TOKEN, "a shut down player must reject new playback")
 	player.free()
 
 

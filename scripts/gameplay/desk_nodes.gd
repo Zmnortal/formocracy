@@ -37,7 +37,7 @@ func refresh_archive_stack(animate_latest := false) -> void:
 	for child in archive_stack.get_children():
 		child.queue_free()
 
-	var archive_count := WorkdayState.get_pending_archives().size()
+	var archive_count := WorkdayState.manager.get_pending_archives().size()
 	var visible_count := mini(archive_count, 7)
 	for index in visible_count:
 		var envelope := Panel.new()
@@ -46,15 +46,7 @@ func refresh_archive_stack(animate_latest := false) -> void:
 		envelope.size = Vector2(142, 15)
 		envelope.rotation = -0.012 if index % 2 == 0 else 0.014
 		envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		envelope.add_theme_stylebox_override(
-			"panel",
-			WorkbenchUI.style_box(
-				Color("b99b68") if index % 2 == 0 else Color("a98b5b"),
-				1,
-				Color("675039"),
-				1
-			)
-		)
+		envelope.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("b99b68") if index % 2 == 0 else Color("a98b5b"), 1, Color("675039"), 1))
 		archive_stack.add_child(envelope)
 
 		var seam := ColorRect.new()

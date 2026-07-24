@@ -37,10 +37,5 @@ func _process(delta: float) -> bool:
 
 
 func _send_npc_line() -> void:
-	_bridge.npc_line(
-		"林默",
-		"您好。我来办理共同居住配额。",
-		"male",
-		"young"
-	)
+	_bridge.npc_line("林默", "您好。我来办理共同居住配额。", "male", "young")
 	_sent = true

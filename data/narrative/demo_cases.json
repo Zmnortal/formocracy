@@ -1,0 +1,358 @@
+[
+  {
+    "id":"CASE-G-D1-01","person_id":"PERSON-TANG","purpose_id":"PURPOSE-RECORDS","form_code":"Q-03/候办序号更正申请","difficulty":1,"content_kind":"general","pool_tags":["general","day1"],
+    "dialogue":{"greeting":"我的候办序号印错了一位。","delivery":"只需要这张更正表，对吧？","waiting":"下一趟投递快要发车了。","waiting_delay_seconds":8,"approved":"谢谢，我能赶上这一班。","rejected":"我再去领一张新表。"},
+    "document_ids":["D1G01-APP"],"required_document_type_ids":["DOCTYPE-APPLICATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[{"id":"D1G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"候办序号更正申请表","fields":{"request":"将候办序号 B20 更正为 B02","signed":true,"note":"原票据附在背面"}}]
+  },
+  {
+    "id":"CASE-G-D1-02","person_id":"PROPRIETOR-HE","purpose_id":"PURPOSE-RECORDS","form_code":"C-11/旧档案目录抄录申请","difficulty":1,"content_kind":"general","pool_tags":["general","day1"],
+    "dialogue":{"greeting":"我想抄一份旧照相馆的目录。","delivery":"表在这儿，字可能有点淡。","waiting":"目录不会自己长回来。","waiting_delay_seconds":9,"approved":"至少还有一份能看见。","rejected":"没签名？我这手早不听使唤了。"},
+    "document_ids":["D1G02-APP"],"required_document_type_ids":["DOCTYPE-APPLICATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[{"id":"D1G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"旧档案目录抄录申请表","fields":{"request":"抄录旧第二区照相登记目录","signed":false,"note":"申请人仅按指印，未签名"}}]
+  },
+  {
+    "id":"CASE-002","person_id":"PERSON-ZHOU","purpose_id":"PURPOSE-WATER","form_code":"W-04/净水领取时段登记","difficulty":1,"content_kind":"general","pool_tags":["general","day1"],
+    "dialogue":{"greeting":"我来登记下周的领水时段。","delivery":"就这一张，没有别的附件。","waiting":"早班前去领，家里才来得及吃药。","waiting_delay_seconds":8,"approved":"这样就能接上了。","rejected":"我明天再换一个时段。"},
+    "document_ids":["D1G03-APP"],"required_document_type_ids":["DOCTYPE-APPLICATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[{"id":"D1G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"净水领取时段登记表","fields":{"request":"登记每周二 06:10 领取净水","signed":true,"note":"不增加个人额度"}}]
+  },
+  {
+    "id":"CASE-003","person_id":"PERSON-XU","purpose_id":"PURPOSE-TRANSIT","form_code":"T-02/文件递送路线登记","difficulty":1,"content_kind":"general","pool_tags":["general","day1"],
+    "dialogue":{"greeting":"我来登记明早的文件递送路线。","delivery":"只有这张路线表。我可能忘了签名。","waiting":"第一班车不等补件。","waiting_delay_seconds":7,"approved":"我会照这条路线走。","rejected":"我现在补签还来得及吗？"},
+    "document_ids":["D1G04-APP"],"required_document_type_ids":["DOCTYPE-APPLICATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[{"id":"D1G04-APP","document_type_id":"DOCTYPE-APPLICATION","title":"文件递送路线登记表","fields":{"request":"登记第五区至第十二区晨间递送路线","signed":false,"note":"申请人签名栏为空"}}]
+  },
+  {
+    "id":"CASE-001","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/共同居住配额变更申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day1"],
+    "policy_hook":"跨区共同居住必须提交迁入转送材料。",
+    "dialogue":{"greeting":"您好。我来办理共同居住配额。","delivery":"我的材料都在这里。沈青禾的转送单还没下来。","waiting":"缺材料只会退件，不会触发调查，对吗？","waiting_delay_seconds":7,"approved":"谢谢。我们会等正式通知。","rejected":"我明白。我会把她的材料补齐。"},
+    "document_ids":["S1-APP","S1-ID","S1-RES","S1-DEC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-RESIDENCE-VALID","RULE-DECLARATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"S1-APP","document_type_id":"DOCTYPE-APPLICATION","title":"共同居住配额变更申请表","fields":{"request":"将单人居住配额变更为林默与沈青禾二人共同配额","address":"第十二区 17-4","signed":true,"note":"共同居住开始日期有多次涂改"}},
+      {"id":"S1-ID","document_type_id":"DOCTYPE-IDENTITY","title":"林默本市身份证明","fields":{"address":"第十二区 17-4","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S1-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"林默第十二区居住证明","fields":{"address":"第十二区 17-4","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"S1-DEC","document_type_id":"DOCTYPE-DECLARATION","title":"双方共同居住知情声明","fields":{"subject":"林默与沈青禾同意共同承担住所与家庭配额","relation":"伴侣","signed":true,"name":"沈青禾"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D2-01","person_id":"PERSON-MENG","purpose_id":"PURPOSE-HOUSING","form_code":"R-03/采暖表编号登记","difficulty":2,"content_kind":"general","pool_tags":["general","day2"],
+    "dialogue":{"greeting":"食堂宿舍换了采暖表。","delivery":"申请和身份证明都带了。","waiting":"旧编号月底就会注销。","waiting_delay_seconds":8,"approved":"这下不会被算成空房了。","rejected":"我去重新抄编号。"},
+    "document_ids":["D2G01-APP","D2G01-ID"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D2G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"采暖表编号登记表","fields":{"request":"登记采暖表 HC-31-2-09","address":"第十二区 31-2","signed":true}},
+      {"id":"D2G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"孟秋兰本市身份证明","fields":{"address":"第十二区 31-2","issuer":"第十二区人口登记所","valid":true}}
+    ]
+  },
+  {
+    "id":"CASE-G-D2-02","person_id":"PERSON-GU","purpose_id":"PURPOSE-LABOR","form_code":"L-04/夜班签到卡补发申请","difficulty":2,"content_kind":"general","pool_tags":["general","day2"],
+    "dialogue":{"greeting":"我的夜班签到卡磨坏了。","delivery":"旧证也放在里面。","waiting":"没有卡，今晚的人数就对不上。","waiting_delay_seconds":8,"approved":"我会把旧卡交回去。","rejected":"身份证明过期？我一直没离开工厂。"},
+    "document_ids":["D2G02-APP","D2G02-ID"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D2G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"夜班签到卡补发申请表","fields":{"request":"补发夜间装配线领班签到卡","signed":true}},
+      {"id":"D2G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"顾原旧身份证明","fields":{"address":"装配厂宿舍 4-B","issuer":"第十二区人口登记所","valid":false}}
+    ]
+  },
+  {
+    "id":"CASE-G-D2-03","person_id":"PERSON-HE","purpose_id":"PURPOSE-EDUCATION","form_code":"E-07/夜校公共照明延时申请","difficulty":2,"content_kind":"general","pool_tags":["general","day2"],
+    "dialogue":{"greeting":"夜校想把照明延长四十分钟。","delivery":"我以为申请表就够了。","waiting":"孩子们下工以后才有时间来。","waiting_delay_seconds":8,"approved":"今晚能把那一课讲完。","rejected":"还要身份证明？我回宿舍拿。"},
+    "document_ids":["D2G03-APP"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[{"id":"D2G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"夜校公共照明延时申请表","fields":{"request":"第七码头夜校照明延长至 22:10","signed":true,"note":"预计到课十九人"}}]
+  },
+  {
+    "id":"CASE-G-D2-04","person_id":"PERSON-LUO","purpose_id":"PURPOSE-TRANSIT","form_code":"T-06/夜班自行车通行登记","difficulty":2,"content_kind":"general","pool_tags":["general","day2"],
+    "dialogue":{"greeting":"末班车停后，我骑车回调度室。","delivery":"申请和本市证都在。","waiting":"有些晚上，时刻表上根本没有末班车。","waiting_delay_seconds":9,"approved":"至少今晚不会被拦。","rejected":"那我还是睡在车站。"},
+    "document_ids":["D2G04-APP","D2G04-ID"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D2G04-APP","document_type_id":"DOCTYPE-APPLICATION","title":"夜班自行车通行登记表","fields":{"request":"登记夜班结束后 23:00—00:20 自行车通行","signed":true}},
+      {"id":"D2G04-ID","document_type_id":"DOCTYPE-IDENTITY","title":"罗雨棠本市身份证明","fields":{"address":"第九区 12-8","issuer":"第九区人口登记所","valid":true}}
+    ]
+  },
+  {
+    "id":"CASE-S-M31-D2","person_id":"PERSON-XU","purpose_id":"PURPOSE-MEDICAL","form_code":"M-31/非计划医疗通行申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day2"],
+    "policy_hook":"医疗回执必须在验收机记录时点仍有效。",
+    "dialogue":{"greeting":"第五诊疗站让我今晚过去复查。","delivery":"医院回执写的是截止前，机器却说晚了二十三分钟。","waiting":"通行时段快结束了。麻烦您快一点。","waiting_delay_seconds":6,"approved":"谢谢，我现在就去诊疗站。","rejected":"回执过期了？他们昨天才交给我。"},
+    "document_ids":["S2-APP","S2-ID","S2-MED"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-MEDICAL"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-NOT-EXPIRED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S2-APP","document_type_id":"DOCTYPE-APPLICATION","title":"非计划医疗通行申请表","fields":{"request":"限制时段前往第五诊疗站复查工伤","signed":true,"note":"医院原始登记 18:37；机器验收 19:00"}},
+      {"id":"S2-ID","document_type_id":"DOCTYPE-IDENTITY","title":"许桥本市身份证明","fields":{"address":"第五区 22-6","issuer":"第五区人口登记所","valid":true}},
+      {"id":"S2-MED","document_type_id":"DOCTYPE-MEDICAL","title":"第五诊疗站急件回执","fields":{"station":"第五诊疗站","valid":false,"issued_at":"18:37","priority":"工伤复查 / 当日"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D3-01","person_id":"PERSON-TANG","purpose_id":"PURPOSE-HOUSING","form_code":"H-11/见习宿舍维修申请","difficulty":2,"content_kind":"general","pool_tags":["general","day3"],
+    "dialogue":{"greeting":"递送站宿舍的窗闩坏了。","delivery":"申请、身份和宿舍证明都在。","waiting":"夜里风会把文件吹满走廊。","waiting_delay_seconds":8,"approved":"我会通知维修队。","rejected":"我再核对一下地址。"},
+    "document_ids":["D3G01-APP","D3G01-ID","D3G01-RES"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D3G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"见习宿舍维修申请表","fields":{"request":"维修递送站宿舍 6-5 窗闩","address":"第十二区递送站宿舍 6-5","signed":true}},
+      {"id":"D3G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"唐霁见习身份证明","fields":{"address":"第十二区递送站宿舍 6-5","issuer":"区域递送局","valid":true}},
+      {"id":"D3G01-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"见习人员居住证明","fields":{"address":"第十二区递送站宿舍 6-5","valid":true,"issuer":"区域递送局"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D3-02","person_id":"PERSON-ZHOU","purpose_id":"PURPOSE-WATER","form_code":"W-09/净水领取时段变更","difficulty":2,"content_kind":"general","pool_tags":["general","day3"],
+    "dialogue":{"greeting":"我想把领水改到晚班以后。","delivery":"地址重编的两张证明都带了。","waiting":"同一个家，在两张表上有两个编号。","waiting_delay_seconds":7,"approved":"至少不用再让母亲等一整天。","rejected":"我知道地址对不上，可人没有搬。"},
+    "document_ids":["D3G02-APP","D3G02-ID","D3G02-RES"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-RESIDENCE-VALID","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D3G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"净水领取时段变更申请表","fields":{"request":"由凌晨领取改为晚间领取","signed":true}},
+      {"id":"D3G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"周循本市身份证明","fields":{"address":"第十二区 5-8","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"D3G02-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"街区重编临时居住证明","fields":{"address":"第十二区 9-1","valid":true,"issuer":"第十二区街区办"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D3-03","person_id":"PROPRIETOR-ZHOU","purpose_id":"PURPOSE-COMMERCE","form_code":"C-12/合作社表单柜台续期","difficulty":2,"content_kind":"general","pool_tags":["general","day3"],
+    "dialogue":{"greeting":"供销社的表单柜台要续期。","delivery":"商住证明和身份记录都在。","waiting":"你们明天改版，我今晚就得把旧表收走。","waiting_delay_seconds":8,"approved":"好，我会把新版放到最前面。","rejected":"那居民明天只能来窗口排队。"},
+    "document_ids":["D3G03-APP","D3G03-ID","D3G03-RES"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-ADDRESS-MATCH"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D3G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"合作社表单柜台续期申请表","fields":{"request":"续期官方空白表单发行柜台","address":"第十二区供销社后屋 1","signed":true}},
+      {"id":"D3G03-ID","document_type_id":"DOCTYPE-IDENTITY","title":"周姨本市身份证明","fields":{"address":"第十二区供销社后屋 1","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"D3G03-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"商住合一证明","fields":{"address":"第十二区供销社后屋 1","valid":true,"issuer":"地方经营秩序科"}}
+    ]
+  },
+  {
+    "id":"CASE-S-R09-D3","person_id":"PERSON-DU","purpose_id":"PURPOSE-RATION","form_code":"R-09/家庭配给领取人变更申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day3"],
+    "dialogue":{"greeting":"以后让周循替我领配给。","delivery":"我在旧领取人那里写了一个名字。系统可能找不到。","waiting":"事故那晚，他打过电话。我记得他的呼吸声。","waiting_delay_seconds":8,"approved":"谢谢。至少这次还能有人替我去。","rejected":"机器不记得他，不等于我也该忘。"},
+    "document_ids":["S3A-APP","S3A-ID","S3A-RES","S3A-DEC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-DECLARATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"S3A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"家庭配给领取人变更申请表","fields":{"request":"将家庭配给代领人变更为周循","address":"第十二区 9-1","signed":true,"note":"旧领取人：孟启川（系统无此人）"}},
+      {"id":"S3A-ID","document_type_id":"DOCTYPE-IDENTITY","title":"杜春梅退休居民证明","fields":{"address":"第十二区 9-1","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S3A-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"照护型居住证明","fields":{"address":"第十二区 9-1","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"S3A-DEC","document_type_id":"DOCTYPE-DECLARATION","title":"亲属代领声明","fields":{"subject":"授权周循代领净水、药品与基本配给","relation":"母子","signed":true,"name":"周循"}}
+    ]
+  },
+  {
+    "id":"CASE-S-X14-D3","person_id":"PERSON-SHEN","purpose_id":"PURPOSE-COHABITATION","form_code":"X-14/跨区共同居住预登记申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day3"],
+    "dialogue":{"greeting":"我是沈青禾，从第七区申请迁入。","delivery":"临住证明和工作说明都在，原区转送编号没有生成。","waiting":"那三个月我们住在第七码头附近。林默不想让我说。","waiting_delay_seconds":7,"approved":"至少这次，地址会留下来。","rejected":"我会补编号。但日期不会因此改变。"},
+    "document_ids":["S3B-APP","S3B-ID","S3B-RES","S3B-TR"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-TRANSFER-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"S3B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"跨区共同居住预登记申请表","fields":{"request":"由第七区迁入第十二区 17-4 与林默共同居住","address":"第十二区 17-4","signed":true,"note":"临住开始日期落在林默住所记录空白期"}},
+      {"id":"S3B-ID","document_type_id":"DOCTYPE-IDENTITY","title":"沈青禾本市身份证明","fields":{"address":"第七区印刷社宿舍 3-A","issuer":"第七区人口登记所","valid":true}},
+      {"id":"S3B-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"第十二区临时居住证明","fields":{"address":"第十二区 17-4","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"S3B-TR","document_type_id":"DOCTYPE-TRANSFER","title":"第七区迁入转送回执","fields":{"origin":"第七区","destination":"第十二区","reason":"共同居住预登记","valid":false,"issuer":"第七区居住配置处"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D4-01","person_id":"PERSON-GU","purpose_id":"PURPOSE-LABOR","form_code":"L-17/工位调换申请","difficulty":3,"content_kind":"general","pool_tags":["general","day4"],
+    "dialogue":{"greeting":"我申请从夜间装配线调去清点岗位。","delivery":"接收单位的转送函也在。","waiting":"再做几年夜班，我就认不清名单了。","waiting_delay_seconds":8,"approved":"谢谢。我会先把旧班表交接完。","rejected":"我知道宿舍也会跟着出问题。"},
+    "document_ids":["D4G01-APP","D4G01-ID","D4G01-TR"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-TRANSFER-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D4G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"工位调换申请表","fields":{"request":"由夜间装配线调往日间清点岗位","signed":true}},
+      {"id":"D4G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"顾原本市身份证明","fields":{"address":"装配厂宿舍 4-B","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"D4G01-TR","document_type_id":"DOCTYPE-TRANSFER","title":"日间清点组接收函","fields":{"origin":"夜间装配线","destination":"日间清点组","reason":"工位调换","valid":true,"issuer":"劳动配置复核室"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D4-02","person_id":"PERSON-HE","purpose_id":"PURPOSE-FOREIGN","form_code":"R-22/外市人员临时居留续期","difficulty":3,"content_kind":"general","pool_tags":["general","day4"],
+    "dialogue":{"greeting":"我的码头宿舍备案快到期了。","delivery":"工作担保函刚刚过期一天。","waiting":"夜校的学生名单还没转走。","waiting_delay_seconds":8,"approved":"我会让仓库尽快补新的担保。","rejected":"我明白。没有担保，人就先变成临时的。"},
+    "document_ids":["D4G02-APP","D4G02-ID","D4G02-RES","D4G02-TR"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-TRANSFER-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D4G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"外市人员临时居留续期申请表","fields":{"request":"续期第十二区码头宿舍临时居留备案","signed":true}},
+      {"id":"D4G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"泊河市居民证明","fields":{"address":"泊河市南岸区 8-11","issuer":"泊河市居民局","valid":true}},
+      {"id":"D4G02-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"第十二区临时居留备案","fields":{"address":"第十二区码头宿舍 2-C","valid":true,"issuer":"第十二区外来人员窗口"}},
+      {"id":"D4G02-TR","document_type_id":"DOCTYPE-TRANSFER","title":"仓库工作担保函","fields":{"origin":"泊河市","destination":"衡川第十二区","reason":"仓库统计与夜校教学","valid":false,"issuer":"第七码头仓库"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D4-03","person_id":"PERSON-JIANG","purpose_id":"PURPOSE-LABOR","form_code":"F-12/配给站设备检修通行许可","difficulty":3,"content_kind":"general","pool_tags":["general","day4"],
+    "dialogue":{"greeting":"今晚要检修配给站冷库。","delivery":"外市身份证和工作许可都在。","waiting":"冷库停一夜，明天少的就不是几个编号。","waiting_delay_seconds":7,"approved":"我会在规定时段内完成。","rejected":"那只能先转移易坏物资。"},
+    "document_ids":["D4G03-APP","D4G03-ID","D4G03-PER"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D4G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"配给站设备检修通行申请表","fields":{"request":"22:00—01:00 检修第十二区配给站冷库","signed":true}},
+      {"id":"D4G03-ID","document_type_id":"DOCTYPE-IDENTITY","title":"永川市居民证明","fields":{"address":"永川市河西区 3-4","issuer":"永川市居民局","valid":true}},
+      {"id":"D4G03-PER","document_type_id":"DOCTYPE-PERMIT","title":"衡川工作通行许可","fields":{"permit_no":"EMP-12-R","scope":"配给站设备与仓储管理","valid":true,"issuer":"市政外来人员服务处"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D4-04","person_id":"PERSON-LUO","purpose_id":"PURPOSE-TRANSIT","form_code":"T-14/夜班轮住许可续签","difficulty":3,"content_kind":"general","pool_tags":["general","day4"],
+    "dialogue":{"greeting":"我来续签交通调度室的轮住许可。","delivery":"身份证、轮住证明和夜班许可都在。","waiting":"末班车之后，总要有人守着真实路线。","waiting_delay_seconds":8,"approved":"我会继续按工作日使用。","rejected":"那今晚只能回第九区。"},
+    "document_ids":["D4G04-APP","D4G04-ID","D4G04-RES","D4G04-PER"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-PERMIT"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-PERMIT-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D4G04-APP","document_type_id":"DOCTYPE-APPLICATION","title":"夜班轮住许可续签申请表","fields":{"request":"续签第十二区交通调度室工作日轮住许可","signed":true}},
+      {"id":"D4G04-ID","document_type_id":"DOCTYPE-IDENTITY","title":"罗雨棠本市身份证明","fields":{"address":"第九区 12-8","issuer":"第九区人口登记所","valid":true}},
+      {"id":"D4G04-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"夜班轮住证明","fields":{"address":"第十二区交通调度室","valid":true,"issuer":"区域交通秩序处"}},
+      {"id":"D4G04-PER","document_type_id":"DOCTYPE-PERMIT","title":"夜班线路工作许可","fields":{"permit_no":"N12-TR","scope":"仅工作日夜班与调度室","valid":true,"issuer":"区域交通秩序处"}}
+    ]
+  },
+  {
+    "id":"CASE-S-F09-D4","person_id":"PERSON-SONG","purpose_id":"PURPOSE-FOREIGN","form_code":"F-09/境外专业人员居住许可延续申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day4"],
+    "policy_hook":"北陆互惠暂停；只有紧急维修令可构成居留续期例外。",
+    "dialogue":{"greeting":"我是宋铎，来延续机房维护期间的居住许可。","delivery":"旅行证、译文、居住证明和紧急维修令都在。","waiting":"机器不会自己改时间。它只执行一次被授权的同步。","waiting_delay_seconds":7,"approved":"我会继续维护它。至于那二十三分钟，您已经看见了。","rejected":"没有许可，我今晚也得先让验收机运行。"},
+    "document_ids":["S4-APP","S4-ID","S4-TRN","S4-RES","S4-PER","S4-MNT"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-TRANSLATION","DOCTYPE-RESIDENCE","DOCTYPE-PERMIT","DOCTYPE-MAINTENANCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-TRANSLATION-CERTIFIED","RULE-RESIDENCE-VALID","RULE-PERMIT-VALID","RULE-MAINTENANCE-AUTHORIZED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S4-APP","document_type_id":"DOCTYPE-APPLICATION","title":"境外专业人员居住许可延续申请表","fields":{"request":"延续验收机维护期间第十二区居住许可","signed":true}},
+      {"id":"S4-ID","document_type_id":"DOCTYPE-IDENTITY","title":"北陆联邦旅行证","fields":{"address":"北陆联邦工程师登记处","issuer":"北陆联邦","valid":true}},
+      {"id":"S4-TRN","document_type_id":"DOCTYPE-TRANSLATION","title":"旅行证认证译文","fields":{"source":"北陆联邦旅行证 31-225-67","language":"北陆语","certified":true,"translator":"衡川涉外文书处"}},
+      {"id":"S4-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"境外专家居住证明","fields":{"address":"第十二区技师宿舍 1-A","valid":true,"issuer":"市政外来人员服务处"}},
+      {"id":"S4-PER","document_type_id":"DOCTYPE-PERMIT","title":"境外专家紧急维修许可","fields":{"permit_no":"EX-3122567","scope":"日终验收机不可中断维护","valid":true,"issuer":"衡川设备管理局"}},
+      {"id":"S4-MNT","document_type_id":"DOCTYPE-MAINTENANCE","title":"事故当夜人工时间同步记录","fields":{"machine":"第十二区日终验收机","adjustment":"时钟前移 23 分钟","timestamp":"事故登记日前四日 18:41","authorized":true,"technician":"宋铎"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D5-01","person_id":"PERSON-ZHOU","purpose_id":"PURPOSE-POLLUTION","form_code":"P-11/公共管线污染采样申请","difficulty":3,"content_kind":"general","pool_tags":["general","day5"],
+    "dialogue":{"greeting":"九号街的水有金属味。","delivery":"缴费单和采样记录都带了，可记录上没有机关章。","waiting":"我修管线，不代表我能替水证明清白。","waiting_delay_seconds":7,"approved":"我会立刻封住那段阀门。","rejected":"少一个章，水还是会流。"},
+    "document_ids":["D5G01-APP","D5G01-ID","D5G01-RES","D5G01-UTL","D5G01-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-UTILITY","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-UTILITY-PAID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D5G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"公共管线污染采样申请表","fields":{"request":"对第十二区 9-1 入户管线进行污染采样","signed":true}},
+      {"id":"D5G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"周循本市身份证明","fields":{"address":"第十二区 9-1","issuer":"街区重编窗口","valid":true}},
+      {"id":"D5G01-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"街区重编居住证明","fields":{"address":"第十二区 9-1","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"D5G01-UTL","document_type_id":"DOCTYPE-UTILITY","title":"当期水费记录","fields":{"address":"第十二区 9-1","period":"本月","paid":true,"account":"W-09-1"}},
+      {"id":"D5G01-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"管线异味初检记录","fields":{"record_type":"入户管线初检","record_date":"今日 05:40","summary":"金属味与黄色沉积","sealed":false,"reference":"PIPE-09"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D5-02","person_id":"PERSON-FANG","purpose_id":"PURPOSE-MEDICAL","form_code":"M-18/移动诊疗值勤通行申请","difficulty":3,"content_kind":"general","pool_tags":["general","day5"],
+    "dialogue":{"greeting":"今晚移动诊疗车进第十二区。","delivery":"值勤转送单和许可都在。","waiting":"回执过期不等于病人会跟着康复。","waiting_delay_seconds":8,"approved":"我会把原始时间都留在纸面上。","rejected":"那诊疗车只能停在区界外。"},
+    "document_ids":["D5G02-APP","D5G02-ID","D5G02-TR","D5G02-PER"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-TRANSFER","DOCTYPE-PERMIT"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-TRANSFER-VALID","RULE-PERMIT-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D5G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"移动诊疗值勤通行申请表","fields":{"request":"第五诊疗站移动诊疗车夜间进入第十二区","signed":true}},
+      {"id":"D5G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"方澄本市身份证明","fields":{"address":"第五区诊疗站宿舍 2","issuer":"第五区人口登记所","valid":true}},
+      {"id":"D5G02-TR","document_type_id":"DOCTYPE-TRANSFER","title":"第五诊疗站值勤转送单","fields":{"origin":"第五区","destination":"第十二区","reason":"移动诊疗值勤","valid":true,"issuer":"第五诊疗站"}},
+      {"id":"D5G02-PER","document_type_id":"DOCTYPE-PERMIT","title":"医疗车辆夜间通行许可","fields":{"permit_no":"MED-MOBILE-12","scope":"诊疗车辆与登记员","valid":true,"issuer":"中央医疗秩序协调科"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D5-03","person_id":"PERSON-LI","purpose_id":"PURPOSE-FOREIGN","form_code":"F-22/境外出生档案译文复核","difficulty":3,"content_kind":"general","pool_tags":["general","day5"],
+    "dialogue":{"greeting":"今天又启用了境外出生复核。","delivery":"原始证明和译文都在，但认证章模糊。","waiting":"我已经有本市身份二十年了。","waiting_delay_seconds":8,"approved":"谢谢。这次它又暂时算数了。","rejected":"明白，我去重新认证自己的出生。"},
+    "document_ids":["D5G03-APP","D5G03-ID","D5G03-TRN"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-TRANSLATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-TRANSLATION-CERTIFIED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D5G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"境外出生档案译文复核申请表","fields":{"request":"复核归化档案中的出生证明译文","signed":true}},
+      {"id":"D5G03-ID","document_type_id":"DOCTYPE-IDENTITY","title":"黎素归化本市身份证明","fields":{"address":"第四区 18-7","issuer":"衡川人口总局","valid":true}},
+      {"id":"D5G03-TRN","document_type_id":"DOCTYPE-TRANSLATION","title":"澜岬出生证明译文","fields":{"source":"澜岬共和国出生记录","language":"澜岬语","certified":false,"translator":"旧涉外文书处"}}
+    ]
+  },
+  {
+    "id":"CASE-S-P44-D5","person_id":"PERSON-MENG","purpose_id":"PURPOSE-POLLUTION","form_code":"P-44/污染暴露应急供水与临时安置申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day5"],
+    "policy_hook":"检测早于官方事故日期并不自动等于无效，但必须作为异常附件保留。",
+    "dialogue":{"greeting":"家里的水有异味，我手上也开始灼痛。","delivery":"检测单比官方事故日期早四天。因为污染本来就早四天。","waiting":"先给我水。至于你们愿不愿承认日期，可以以后再说。","waiting_delay_seconds":7,"approved":"谢谢。请别把那张检测单丢掉。","rejected":"日期不对，受伤就不算发生吗？"},
+    "document_ids":["S5A-APP","S5A-ID","S5A-RES","S5A-UTL","S5A-MED","S5A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-UTILITY","DOCTYPE-MEDICAL","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-UTILITY-PAID","RULE-NOT-EXPIRED","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S5A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"污染暴露应急供水与临时安置申请表","fields":{"request":"紧急净水、皮肤灼伤处置与七日临时安置","address":"第十二区 31-2","signed":true}},
+      {"id":"S5A-ID","document_type_id":"DOCTYPE-IDENTITY","title":"孟秋兰本市身份证明","fields":{"address":"第十二区 31-2","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S5A-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"家庭居住证明","fields":{"address":"第十二区 31-2","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"S5A-UTL","document_type_id":"DOCTYPE-UTILITY","title":"连续水电缴费记录","fields":{"address":"第十二区 31-2","period":"近六个月","paid":true,"account":"U-31-2"}},
+      {"id":"S5A-MED","document_type_id":"DOCTYPE-MEDICAL","title":"皮肤灼伤诊疗急件","fields":{"station":"第五诊疗站","valid":true,"issued_at":"今日 06:15","priority":"污染暴露急件"}},
+      {"id":"S5A-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"第七码头水样污染检测单","fields":{"record_type":"地下转供管线水样","record_date":"官方事故日前四日","summary":"重金属与腐蚀性残留超标","sealed":true,"reference":"POLL-7-044"}}
+    ]
+  },
+  {
+    "id":"CASE-S-M52-D5","person_id":"PERSON-DU","purpose_id":"PURPOSE-RESOURCE","form_code":"M-52/慢性病生存资源优先验收申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day5"],
+    "dialogue":{"greeting":"我的药和净水都快断了。","delivery":"材料都有效。可系统说高优先级只剩一个位置。","waiting":"机器记得优先级，却不记得一个人断药以后会怎样。","waiting_delay_seconds":7,"approved":"谢谢。请别把这个位置又收回去。","rejected":"我知道。总得有人被排到后面。"},
+    "document_ids":["S5B-APP","S5B-ID","S5B-RES","S5B-MED","S5B-RSC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-MEDICAL","DOCTYPE-RESOURCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-NOT-EXPIRED","RULE-RESOURCE-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S5B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"慢性病生存资源优先验收申请表","fields":{"request":"优先核发慢性病净水与连续用药资源","address":"第十二区 9-1","signed":true}},
+      {"id":"S5B-ID","document_type_id":"DOCTYPE-IDENTITY","title":"杜春梅退休居民证明","fields":{"address":"第十二区 9-1","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S5B-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"照护型居住证明","fields":{"address":"第十二区 9-1","valid":true,"issuer":"第十二区街区办"}},
+      {"id":"S5B-MED","document_type_id":"DOCTYPE-MEDICAL","title":"慢性病连续用药登记卡","fields":{"station":"第五诊疗站","valid":true,"issued_at":"本月复核","priority":"高优先级 / 不可中断"}},
+      {"id":"S5B-RSC","document_type_id":"DOCTYPE-RESOURCE","title":"公共生存资源优先凭证","fields":{"resource":"净水与慢性病药品","priority":"高","beneficiary":"杜春梅","valid":true,"issuer":"公共资源优先验收室","note":"当日仅余一个高优先级位置"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D6-01","person_id":"PROPRIETOR-HE","purpose_id":"PURPOSE-RECORDS","form_code":"A-21/旧照片身份人工复核申请","difficulty":4,"content_kind":"general","pool_tags":["general","day6"],
+    "dialogue":{"greeting":"新系统说我的旧编号已经退役。","delivery":"旧证无效，但照片底片有连续年份。","waiting":"以前至少肯看一张脸。","waiting_delay_seconds":8,"approved":"这次，照片还算证据。","rejected":"编号退役，人也跟着退役。"},
+    "document_ids":["D6G01-APP","D6G01-ID","D6G01-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D6G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"旧照片身份人工复核申请表","fields":{"request":"以连续照片底片复核旧本市身份","signed":true}},
+      {"id":"D6G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"旧第二区身份记录","fields":{"address":"旧第二区照相馆","issuer":"已撤销签发机关","valid":false}},
+      {"id":"D6G01-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"三十年连续居住照片索引","fields":{"record_type":"照相底片与门牌影像","record_date":"连续三十年","summary":"同一申请人与同一经营地址","sealed":true,"reference":"PHOTO-OLD-09"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D6-02","person_id":"PERSON-GU","purpose_id":"PURPOSE-ARCHIVE","form_code":"L-34/事故夜班名单归档申请","difficulty":4,"content_kind":"general","pool_tags":["general","day6"],
+    "dialogue":{"greeting":"我想把一份旧夜班名单正式归档。","delivery":"名单上有几处曾被我改过。","waiting":"表上的空格也能埋人。","waiting_delay_seconds":8,"approved":"至少它现在会留下来。","rejected":"我明白。不是每份真名单都有资格进入档案。"},
+    "document_ids":["D6G02-APP","D6G02-ID","D6G02-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"D6G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"事故夜班名单归档申请表","fields":{"request":"将事故当夜原始轮班名单纳入补充档案","signed":true}},
+      {"id":"D6G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"顾原本市身份证明","fields":{"address":"装配厂宿舍 4-B","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"D6G02-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"夜间装配线原始轮班名单","fields":{"record_type":"工人签到与领班手记","record_date":"官方事故日前四日","summary":"九名人员在正式名单中被标为主动离区","sealed":true,"reference":"SHIFT-7-NIGHT"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D6-03","person_id":"PERSON-LUO","purpose_id":"PURPOSE-ARCHIVE","form_code":"T-27/夜间线路票根证据登记","difficulty":4,"content_kind":"general","pool_tags":["general","day6"],
+    "dialogue":{"greeting":"这些废票根记录了一班不存在的车。","delivery":"路线和时间都对，但没有机关章。","waiting":"票根不记名字，可它记得谁到过终点。","waiting_delay_seconds":8,"approved":"我会把剩下的也整理出来。","rejected":"没章的车票，当然证明不了没登记的车。"},
+    "document_ids":["D6G03-APP","D6G03-ID","D6G03-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D6G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"夜间线路票根证据登记表","fields":{"request":"登记非正式夜间线路乘车票根","signed":true}},
+      {"id":"D6G03-ID","document_type_id":"DOCTYPE-IDENTITY","title":"罗雨棠本市身份证明","fields":{"address":"第九区 12-8","issuer":"第九区人口登记所","valid":true}},
+      {"id":"D6G03-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"第七码头夜车废票根册","fields":{"record_type":"末班后乘车票根","record_date":"官方事故日前四日 23:48","summary":"终点为未进入时刻表的第七码头维护站","sealed":false,"reference":"TRAM-N7"}}
+    ]
+  },
+  {
+    "id":"CASE-S-R12-D6","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/共同居住配额变更申请（补件）","difficulty":4,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day6"],
+    "dialogue":{"greeting":"我们把缺的材料都补齐了。","delivery":"里面还有一张旧工作证明。它和共同居住无关，也可能有关。","waiting":"那三个月我在维护一条不存在的夜间线路。","waiting_delay_seconds":7,"approved":"谢谢。请让那张工作证明也留下。","rejected":"材料已经齐了。您驳回的是哪一部分生活？"},
+    "document_ids":["S6A-APP","S6A-ID","S6A-RES","S6A-TR","S6A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-TRANSFER","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-TRANSFER-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S6A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"共同居住配额变更申请表（补件）","fields":{"request":"核准林默与沈青禾共同居住并合并家庭配额","address":"第十二区 17-4","signed":true}},
+      {"id":"S6A-ID","document_type_id":"DOCTYPE-IDENTITY","title":"双方本市身份证明核验页","fields":{"address":"第十二区 17-4","issuer":"第七区与第十二区联合核验","valid":true}},
+      {"id":"S6A-RES","document_type_id":"DOCTYPE-RESIDENCE","title":"第十二区共同居住容量确认","fields":{"address":"第十二区 17-4","valid":true,"issuer":"第十二区居住配置处"}},
+      {"id":"S6A-TR","document_type_id":"DOCTYPE-TRANSFER","title":"第七区迁入正式转送单","fields":{"origin":"第七区","destination":"第十二区","reason":"沈青禾迁入共同居住","valid":true,"issuer":"第七区居住配置处"}},
+      {"id":"S6A-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"市政夜间线路维护工作证明","fields":{"record_type":"信号线路紧急维护","record_date":"官方事故日前四日","summary":"作业地点：第七码头临时维护站","sealed":true,"reference":"SIGNAL-N7-23"}}
+    ]
+  },
+  {
+    "id":"CASE-S-A73-D6","person_id":"PERSON-MENG","purpose_id":"PURPOSE-ARCHIVE","form_code":"A-73/公共事故封存证据临时解封使用申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day6"],
+    "policy_hook":"新修订页只接受已确认死亡人员直系亲属；孟秋兰的儿子没有死亡记录。",
+    "dialogue":{"greeting":"我想查看儿子失踪前的污染和夜班记录。","delivery":"亲属关系和封存编号都在。新的主管授权，我拿不到。","waiting":"旧手册说生存状态不明也能有限查看。你们昨天把那一行删了。","waiting_delay_seconds":7,"approved":"我只要看见一次他的名字。","rejected":"没有死亡记录，所以连证明他活过都不行。"},
+    "document_ids":["S6B-APP","S6B-ID","S6B-DEC","S6B-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-DECLARATION","DOCTYPE-EVIDENCE","DOCTYPE-PERMIT"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-DECLARATION-SIGNED","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S6B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"公共事故封存证据临时解封使用申请表","fields":{"request":"有限查看孟启川的污染检测、夜班名单与交通记录","signed":true,"note":"申请依据：旧版手册 7.3 条"}},
+      {"id":"S6B-ID","document_type_id":"DOCTYPE-IDENTITY","title":"孟秋兰本市身份证明","fields":{"address":"第十二区 31-2","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S6B-DEC","document_type_id":"DOCTYPE-DECLARATION","title":"亲属关系与生存状态声明","fields":{"subject":"孟启川为申请人之子，现无死亡或有效生活记录","relation":"母子","signed":true,"name":"孟启川"}},
+      {"id":"S6B-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"公共事故原证据封存索引","fields":{"record_type":"污染、劳动与交通联合索引","record_date":"事故登记日","summary":"索引含孟启川编号，正文页缺失","sealed":true,"reference":"SEALED-A73"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D7-01","person_id":"PERSON-LI","purpose_id":"PURPOSE-ARCHIVE","form_code":"A-61/事故档案缺页索引补录","difficulty":4,"content_kind":"general","pool_tags":["general","day7"],
+    "dialogue":{"greeting":"我来补录事故卷宗的缺页索引。","delivery":"只补索引，不申请打开正文。","waiting":"缺页往往不是意外。索引至少会承认它缺过。","waiting_delay_seconds":8,"approved":"谢谢。空白现在也有编号了。","rejected":"没有索引，缺页就会像从未存在。"},
+    "document_ids":["D7G01-APP","D7G01-ID","D7G01-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D7G01-APP","document_type_id":"DOCTYPE-APPLICATION","title":"事故档案缺页索引补录申请表","fields":{"request":"补录第七码头事故卷宗缺失的 14—19 页索引","signed":true}},
+      {"id":"D7G01-ID","document_type_id":"DOCTYPE-IDENTITY","title":"黎素归化本市身份证明","fields":{"address":"第四区 18-7","issuer":"衡川人口总局","valid":true}},
+      {"id":"D7G01-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"事故卷宗装订与页码核对表","fields":{"record_type":"卷宗缺页索引","record_date":"今日复核","summary":"14—19 页从装订线完整移除","sealed":true,"reference":"ARCHIVE-GAP-14"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D7-02","person_id":"PERSON-JIANG","purpose_id":"PURPOSE-RESOURCE","form_code":"P-55/应急净水跨站调拨申请","difficulty":4,"content_kind":"general","pool_tags":["general","day7"],
+    "dialogue":{"greeting":"三十一号街需要跨站调水。","delivery":"调拨令有效，但资源凭证已被预留标记覆盖。","waiting":"额度永远不够。缺口只是在等一个名字。","waiting_delay_seconds":7,"approved":"我会先把水送到街区。","rejected":"那我去看预留给了谁。"},
+    "document_ids":["D7G02-APP","D7G02-ID","D7G02-PER","D7G02-RSC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-RESOURCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-RESOURCE-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"D7G02-APP","document_type_id":"DOCTYPE-APPLICATION","title":"应急净水跨站调拨申请表","fields":{"request":"从中央储水站调拨净水至第十二区 31 号街","signed":true}},
+      {"id":"D7G02-ID","document_type_id":"DOCTYPE-IDENTITY","title":"蒋森外市居民证明","fields":{"address":"永川市河西区 3-4","issuer":"永川市居民局","valid":true}},
+      {"id":"D7G02-PER","document_type_id":"DOCTYPE-PERMIT","title":"配给站跨站调拨许可","fields":{"permit_no":"ALLOC-12","scope":"第十二区公共净水调拨","valid":true,"issuer":"公共供给连续性办公室"}},
+      {"id":"D7G02-RSC","document_type_id":"DOCTYPE-RESOURCE","title":"当日净水调拨凭证","fields":{"resource":"应急净水一批","priority":"公共急件","beneficiary":"第十二区 31 号街居民","valid":false,"issuer":"公共资源优先验收室","note":"资源位已被主管保障预留"}}
+    ]
+  },
+  {
+    "id":"CASE-G-D7-03","person_id":"PERSON-WEI","purpose_id":"PURPOSE-ARCHIVE","form_code":"W-71/程序监察调阅豁免登记","difficulty":4,"content_kind":"general","pool_tags":["general","day7"],
+    "dialogue":{"greeting":"我登记一次监察调阅豁免。","delivery":"地址字段依法遮蔽，豁免编号有效。","waiting":"程序不是正义。但它至少能留下异议。","waiting_delay_seconds":8,"approved":"我会把调阅日志留在原处。","rejected":"您可以驳回，但请写明依据。"},
+    "document_ids":["D7G03-APP","D7G03-ID","D7G03-PER","D7G03-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
+    "documents":[
+      {"id":"D7G03-APP","document_type_id":"DOCTYPE-APPLICATION","title":"程序监察调阅豁免登记表","fields":{"request":"调阅日终验收机与事故卷宗关联日志","signed":true}},
+      {"id":"D7G03-ID","document_type_id":"DOCTYPE-IDENTITY","title":"中央公务身份证明","fields":{"address":"依法遮蔽","issuer":"中央监察处","valid":true}},
+      {"id":"D7G03-PER","document_type_id":"DOCTYPE-PERMIT","title":"当日监察豁免令","fields":{"permit_no":"GOV-W71","scope":"第十二区事故与验收日志","valid":true,"issuer":"中央监察处"}},
+      {"id":"D7G03-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"拟调阅档案范围清单","fields":{"record_type":"验收机、污染、劳动联合日志","record_date":"七日范围","summary":"仅调阅，不改变原档案状态","sealed":true,"reference":"WATCH-71"}}
+    ]
+  },
+  {
+    "id":"CASE-S-S18-D7","person_id":"PERSON-GU","purpose_id":"PURPOSE-ARCHIVE","form_code":"S-18/公共事故档案续封申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day7"],
+    "dialogue":{"greeting":"工厂让我递交事故档案续封申请。","delivery":"材料都合法。名单、检测和票根都会继续封存。","waiting":"我签过第一次修改。今天这次，轮到您签。","waiting_delay_seconds":7,"approved":"我明白。它们会继续安静。","rejected":"那扇门一旦打开，就不会只出来一个名字。"},
+    "document_ids":["S7A-APP","S7A-ID","S7A-PER","S7A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S7A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"公共事故档案续封申请表","fields":{"request":"将第七码头事故联合卷宗续封十年","signed":true,"note":"申请单位：夜间装配厂"}},
+      {"id":"S7A-ID","document_type_id":"DOCTYPE-IDENTITY","title":"递件负责人身份证明","fields":{"address":"装配厂宿舍 4-B","issuer":"第十二区人口登记所","valid":true}},
+      {"id":"S7A-PER","document_type_id":"DOCTYPE-PERMIT","title":"事故档案续封授权","fields":{"permit_no":"SEAL-S18","scope":"第七码头事故全部联合附件","valid":true,"issuer":"公共事故应急处"}},
+      {"id":"S7A-EV","document_type_id":"DOCTYPE-EVIDENCE","title":"续封档案范围索引","fields":{"record_type":"污染、劳动、交通、设备维护","record_date":"事故登记日至今","summary":"含缺页索引与未确认人员名单","sealed":true,"reference":"SEALED-S18"}}
+    ]
+  },
+  {
+    "id":"CASE-S-V01-D7","person_id":"PERSON-WEI","purpose_id":"PURPOSE-RESOURCE","form_code":"V-01/主管保障资源兑付申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-FINAL-STAMP","pool_tags":["story","day7"],
+    "policy_hook":"材料完全合法；批准会占用当日最后一个高优先级资源位。",
+    "dialogue":{"greeting":"这是主管保障资源的正式兑付申请。","delivery":"每一张材料都有效。程序上没有理由驳回。","waiting":"您真正要决定的，不是它是否合法，而是合法性要让谁先活下去。","waiting_delay_seconds":7,"approved":"记录会显示：您按规定办事。","rejected":"记录也会显示：您主动拒绝了一项合法权利。"},
+    "document_ids":["S7B-APP","S7B-ID","S7B-PER","S7B-RSC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-RESOURCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-RESOURCE-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
+    "documents":[
+      {"id":"S7B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"主管保障资源兑付申请表","fields":{"request":"兑付主管家庭应急净水与药品保障券","signed":true,"note":"当日最后一个高优先级资源位"}},
+      {"id":"S7B-ID","document_type_id":"DOCTYPE-IDENTITY","title":"主管家庭受益人身份证明","fields":{"address":"中央行政带公务住宅","issuer":"衡川人口总局","valid":true}},
+      {"id":"S7B-PER","document_type_id":"DOCTYPE-PERMIT","title":"主管保障条例适用证明","fields":{"permit_no":"EXEC-V01","scope":"紧急公共资源优先兑付","valid":true,"issuer":"中央行政保障处"}},
+      {"id":"S7B-RSC","document_type_id":"DOCTYPE-RESOURCE","title":"主管保障资源凭证","fields":{"resource":"净水与连续用药组合","priority":"法定最高优先","beneficiary":"主管家庭成员","valid":true,"issuer":"中央行政保障处","note":"与公共急件 P-55、杜春梅 M-52 竞争同一资源位"}}
+    ]
+  }
+]

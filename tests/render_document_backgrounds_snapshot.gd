@@ -14,29 +14,37 @@ func run() -> void:
 	state.player_name = "测试职员"
 	state.balance = 42
 	state.records.clear()
-	state.records.append(
-		{
-			"code": "R-12/住房用途变更申请",
-			"applicant": "周砚",
-			"decision": "批准",
-			"effective": true,
-			"procedure_errors": [],
-			"performance": 8,
-			"fine": 0,
-			"political_credit": 1,
-		}
+	(
+		state
+		. records
+		. append(
+			{
+				"code": "R-12/住房用途变更申请",
+				"applicant": "周砚",
+				"decision": "批准",
+				"effective": true,
+				"procedure_errors": [],
+				"performance": 8,
+				"fine": 0,
+				"political_credit": 1,
+			}
+		)
 	)
-	state.records.append(
-		{
-			"code": "T-04/私人终端购置申请",
-			"applicant": "许冬",
-			"decision": "驳回",
-			"effective": false,
-			"procedure_errors": ["遗漏材料"],
-			"performance": -4,
-			"fine": 12,
-			"political_credit": -1,
-		}
+	(
+		state
+		. records
+		. append(
+			{
+				"code": "T-04/私人终端购置申请",
+				"applicant": "许冬",
+				"decision": "驳回",
+				"effective": false,
+				"procedure_errors": ["遗漏材料"],
+				"performance": -4,
+				"fine": 12,
+				"political_credit": -1,
+			}
+		)
 	)
 	var error := change_scene_to_file("res://scenes/daily_report.tscn")
 	assert(error == OK)
@@ -50,7 +58,7 @@ func run() -> void:
 	var image := root.get_viewport().get_texture().get_image()
 	assert(image.save_png(REPORT_OUTPUT) == OK)
 
-	state.begin_evening()
+	state.manager.begin_evening()
 	error = change_scene_to_file("res://scenes/evening_map.tscn")
 	assert(error == OK)
 	await process_frame

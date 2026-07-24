@@ -36,17 +36,14 @@ func play_opening() -> void:
 
 
 # 以淡出方式停止开场音乐，fade_seconds 控制淡出时长。
-func stop_opening(fade_seconds := 1.0) -> void:
+func stop_opening(fade_seconds: float = 1.0) -> void:
 	if not player.playing:
 		return
 	if fade_tween != null and fade_tween.is_valid():
 		fade_tween.kill()
 	fade_tween = create_tween()
 	fade_tween.tween_property(player, "volume_db", -40.0, fade_seconds)
-	fade_tween.finished.connect(func():
-		player.stop()
-		apply_volume()
-	)
+	fade_tween.finished.connect(_finish_fade_out)
 
 
 # 设置音量百分比（0-100）并保存设置。
@@ -78,10 +75,20 @@ func save_audio_settings() -> bool:
 	var file := FileAccess.open(settings_path, FileAccess.WRITE)
 	if file == null:
 		return false
-	file.store_string(JSON.stringify({
-		"volume_percent": volume_percent,
-		"muted": muted,
-	}))
+	(
+		file
+		. store_string(
+			(
+				JSON
+				. stringify(
+					{
+						"volume_percent": volume_percent,
+						"muted": muted,
+					}
+				)
+			)
+		)
+	)
 	return true
 
 
@@ -92,10 +99,18 @@ func load_audio_settings() -> bool:
 	var file := FileAccess.open(settings_path, FileAccess.READ)
 	if file == null:
 		return false
-	var parsed = JSON.parse_string(file.get_as_text())
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	if not parsed is Dictionary:
 		return false
-	volume_percent = clampf(float(parsed.get("volume_percent", 80.0)), 0.0, 100.0)
-	muted = bool(parsed.get("muted", false))
+	@warning_ignore("unsafe_cast")
+	var settings: Dictionary = parsed
+	volume_percent = clampf(WorkdayContext.read_float(settings, "volume_percent", 80.0), 0.0, 100.0)
+	muted = WorkdayContext.read_bool(settings, "muted")
 	apply_volume()
 	return true
+
+
+# 淡出结束后停止播放器并恢复配置音量。
+func _finish_fade_out() -> void:
+	player.stop()
+	apply_volume()

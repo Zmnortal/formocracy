@@ -14,13 +14,8 @@ func run() -> void:
 	state.reset_for_tests()
 	state.player_name = "测试审批员"
 	for i in 3:
-		state.record_case({
-			"department": "测试部门",
-			"code": "T-%02d/测试事项" % i,
-			"applicant": "测试申请人 %02d" % i,
-			"request": "测试请求"
-		}, "批准" if i < 2 else "驳回")
-	assert(state.should_show_report(), "three records must finish a workday")
+		state.manager.record_case_result({"department": "测试部门", "code": "T-%02d/测试事项" % i, "applicant": "测试申请人 %02d" % i, "request": "测试请求"}, "批准" if i < 2 else "驳回")
+	assert(state.manager.should_show_report(), "three records must finish a workday")
 	var packed: PackedScene = load("res://scenes/daily_report.tscn")
 	assert(packed != null, "daily report scene must load")
 	var report := packed.instantiate()
@@ -35,7 +30,7 @@ func run() -> void:
 	assert(report.cases_label.text.contains("T-00/测试事项"), "report must list daily cases")
 	report.declaration.button_pressed = true
 	assert(not report.confirm_button.disabled, "confirmation must unlock after declaration")
-	state.begin_next_day()
+	state.manager.begin_next_day()
 	assert(state.day_number == 2, "next day must increment")
 	assert(state.records.is_empty(), "next day must clear records")
 	print("FORMOCRACY_DAILY_REPORT_TEST_OK")

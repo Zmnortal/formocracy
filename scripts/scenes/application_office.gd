@@ -15,6 +15,7 @@ var submit_button: Button
 var blank_forms: Array[Dictionary] = []
 
 
+# 场景就绪时构建界面、刷新空白表单库存并监听视口变化以自适应缩放。
 func _ready() -> void:
 	build_scene()
 	refresh_inventory()
@@ -22,6 +23,7 @@ func _ready() -> void:
 	fit_to_window()
 
 
+# 以代码构建受理局界面：背景、表单选择器、纸面填写区、受理机面板与返回按钮。
 func build_scene() -> void:
 	custom_minimum_size = DESIGN_SIZE
 	var background := ColorRect.new()
@@ -134,8 +136,9 @@ func build_scene() -> void:
 	frame.add_child(back_button)
 
 
+# 从 WorkdayState 读取空白表单库存并重建选择器；无表单时禁用填写区，否则加载第一张表单。
 func refresh_inventory() -> void:
-	blank_forms = WorkdayState.get_blank_personal_forms()
+	blank_forms = WorkdayState.manager.get_blank_personal_forms()
 	selector.clear()
 	for item in blank_forms:
 		var form := ConfigDatabase.get_ontology("personal_forms", String(item.get("form_type_id", "")))
@@ -151,17 +154,21 @@ func refresh_inventory() -> void:
 	load_selected_form()
 
 
+# 将选中的空白表单信息填入纸面标题与编号，并重置申请人字段与状态提示。
 func load_selected_form() -> void:
 	if blank_forms.is_empty() or selector.selected < 0:
 		return
 	var item := blank_forms[selector.selected]
 	var form := ConfigDatabase.get_ontology("personal_forms", String(item.get("form_type_id", "")))
 	form_title.text = String(form.get("name", "未登记表单"))
-	form_code.text = "表单 %s · 版本 %s · %s" % [
-		form.get("form_code", ""),
-		form.get("version", ""),
-		item.get("inventory_id", ""),
-	]
+	form_code.text = (
+		"表单 %s · 版本 %s · %s"
+		% [
+			form.get("form_code", ""),
+			form.get("version", ""),
+			item.get("inventory_id", ""),
+		]
+	)
 	applicant_input.text = WorkdayState.player_name
 	residence_input.text = "第十二区 · 职员宿舍 12-C"
 	reason_input.text = ""
@@ -169,6 +176,7 @@ func load_selected_form() -> void:
 	status_label.text = "等待申请人填写并送交。"
 
 
+# 收集填写字段并提交选中的表单；未确认真实性或提交失败时提示错误，成功后刷新库存。
 func submit_selected_form() -> void:
 	if blank_forms.is_empty() or selector.selected < 0:
 		return
@@ -180,7 +188,7 @@ func submit_selected_form() -> void:
 		"request_reason": reason_input.text.strip_edges(),
 		"truth_declared": truth_check.button_pressed,
 	}
-	if not truth_check.button_pressed or not WorkdayState.submit_personal_form(form_type_id, fields):
+	if not truth_check.button_pressed or not WorkdayState.manager.submit_personal_form(form_type_id, fields):
 		status_label.text = "受理失败：请填写全部字段并确认真实性声明。"
 		Sfx.play("ui_switch")
 		return
@@ -189,6 +197,7 @@ func submit_selected_form() -> void:
 	refresh_inventory()
 
 
+# 统一启用或禁用表单填写相关的全部控件。
 func set_form_enabled(enabled: bool) -> void:
 	selector.disabled = not enabled
 	applicant_input.editable = enabled
@@ -198,6 +207,7 @@ func set_form_enabled(enabled: bool) -> void:
 	submit_button.disabled = not enabled
 
 
+# 创建使用像素字体的指定文本、字号与颜色的 Label。
 func make_label(text_value: String, font_size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.text = text_value
@@ -207,6 +217,7 @@ func make_label(text_value: String, font_size: int, color: Color) -> Label:
 	return label
 
 
+# 创建使用像素字体并带占位提示的单行输入框。
 func make_input(placeholder: String) -> LineEdit:
 	var input := LineEdit.new()
 	input.placeholder_text = placeholder
@@ -215,6 +226,7 @@ func make_input(placeholder: String) -> LineEdit:
 	return input
 
 
+# 创建指定背景色、边框色与边框宽度的 Panel。
 func make_panel(background: Color, border: Color, width: int) -> Panel:
 	var panel := Panel.new()
 	var style := StyleBoxFlat.new()
@@ -225,6 +237,7 @@ func make_panel(background: Color, border: Color, width: int) -> Panel:
 	return panel
 
 
+# 以 1280x720 为设计分辨率，按实际视口大小横纵独立缩放整个界面并将位置归零。
 func fit_to_window() -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:

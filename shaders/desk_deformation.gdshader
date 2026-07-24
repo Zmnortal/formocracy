@@ -1,5 +1,7 @@
 shader_type canvas_item;
 
+// 这里接收的是扩大后绘制矩形内的边缘留白比例。DeskGeometry 中允许使用
+// 负像素 inset，并负责把它换算成该矩形内的非负比例。
 uniform float top_inset : hint_range(0.0, 0.49) = 0.0;
 uniform float bottom_inset : hint_range(0.0, 0.49) = 0.0;
 uniform float vertical_bend : hint_range(-0.15, 0.15) = 0.0;

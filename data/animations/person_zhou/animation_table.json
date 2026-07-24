@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-ZHOU",
+  "default_animation": "idle",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+  "action_contract": {
+    "required": [
+      "idle",
+      "deliver",
+      "happy_react",
+      "happy_idle",
+      "angry_react",
+      "angry_idle",
+      "walk_out_happy",
+      "walk_out_angry"
+    ],
+    "optional": [
+      "queue_idle",
+      "blink",
+      "nervous"
+    ],
+    "max_unique_pngs": 20
+  },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "receding_hairline",
+      "hip_length_work_jacket",
+      "straight_trousers",
+      "low_shoes"
+    ],
+    "note": "所有帧完整保留头顶与双脚；无帽、无长大衣、无高筒靴。"
+  },
+  "emotion_fallbacks": {
+    "happy": "happy_idle",
+    "angry": "angry_idle"
+  },
+  "micro_expressions": [
+    {
+      "action": "blink",
+      "weight": 65
+    },
+    {
+      "action": "nervous",
+      "weight": 35
+    }
+  ],
+  "micro_expression_cooldown": [
+    2.5,
+    5.0
+  ],
+  "actions": [
+    {
+      "action": "queue_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/01_queue_idle_neutral_fullbody.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "blink",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/03_blink_eyes_closed_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "nervous",
+      "fps": 3,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/04_nervous_hand_to_chest_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/05_nervous_hands_clasped_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "deliver",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/06_deliver_prepare_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/07_deliver_offer_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/08_deliver_present_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_react",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/09_approve_surprised_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/10_approve_relief_eyes_closed_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/11_approve_smile_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/12_approve_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/12_approve_idle_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/11_approve_smile_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_react",
+      "fps": 4,
+      "playback": "HOLD",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/13_reject_hurt_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/14_reject_tense_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/15_reject_angry_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/16_reject_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/16_reject_idle_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/15_reject_angry_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_happy",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/17_exit_approved_step_a_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/18_exit_approved_step_b_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/17_exit_approved_step_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_angry",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/19_exit_rejected_step_a_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/20_exit_rejected_step_b_fullbody.png",
+        "../../../assets/characters/applicants/person_zhou/fullbody_frames_20/19_exit_rejected_step_a_fullbody.png"
+      ]
+    }
+  ]
+}

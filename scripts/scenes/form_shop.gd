@@ -18,6 +18,7 @@ var dossier_label: Label
 var card_buttons: Dictionary = {}
 
 
+# 场景就绪时构建商店界面、刷新货架状态并监听视口变化以自适应缩放。
 func _ready() -> void:
 	build_scene()
 	refresh_store()
@@ -25,6 +26,7 @@ func _ready() -> void:
 	fit_to_window()
 
 
+# 以代码构建供销社界面：背景、店主立绘、对话面板、表单卡片与返回按钮。
 func build_scene() -> void:
 	custom_minimum_size = DESIGN_SIZE
 	var background := ColorRect.new()
@@ -113,6 +115,7 @@ func build_scene() -> void:
 	add_child(back_button)
 
 
+# 根据本体配置构建一张表单售卖卡片，含发行机关、名称、编号、说明、工本费与购买按钮。
 func build_form_card(form_id: String) -> Panel:
 	var form := ConfigDatabase.get_ontology("personal_forms", form_id)
 	var card := make_panel(Color("c6b883"), Color("51472d"), 3)
@@ -154,8 +157,9 @@ func build_form_card(form_id: String) -> Panel:
 	return card
 
 
+# 购买指定表单：余额不足时显示周姨的拒绝台词，成功后播放盖章音效并刷新货架。
 func purchase_form(form_id: String) -> void:
-	if not WorkdayState.purchase_personal_form(form_id):
+	if not WorkdayState.manager.purchase_personal_form(form_id):
 		dialogue_label.text = "周姨：配给券不够。空白件也要入账，我没法替你垫这个。"
 		Sfx.play("ui_switch")
 		refresh_store()
@@ -166,9 +170,10 @@ func purchase_form(form_id: String) -> void:
 	refresh_store()
 
 
+# 刷新余额、档案袋空白表单计数与问候语，并按余额启用或禁用各卡片的购买按钮。
 func refresh_store() -> void:
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
-	var blank_count := WorkdayState.get_blank_personal_forms().size()
+	var blank_count := WorkdayState.manager.get_blank_personal_forms().size()
 	dossier_label.text = "个人档案袋：空白表单 × %d　前往中央表单部提交申请" % blank_count
 	if dialogue_label.text.is_empty():
 		dialogue_label.text = build_greeting()
@@ -178,10 +183,11 @@ func refresh_store() -> void:
 		button.disabled = WorkdayState.balance < int(form.get("fee", 0))
 
 
+# 根据玩家持有表单数与余额从店主本体配置中挑选问候语，并替换玩家名占位符。
 func build_greeting() -> String:
 	var proprietor := ConfigDatabase.get_ontology("proprietors", "PROPRIETOR-ZHOU")
 	var greetings: Dictionary = proprietor.get("greetings", {})
-	var owned := WorkdayState.get_blank_personal_forms().size()
+	var owned := WorkdayState.manager.get_blank_personal_forms().size()
 	var greeting := ""
 	if owned > 0:
 		greeting = String(greetings.get("has_blank_forms", "档案袋里还有没交的表。"))
@@ -193,10 +199,12 @@ func build_greeting() -> String:
 	return "周姨：" + greeting.replace("{player_name}", player_name)
 
 
+# 返回夜间地图场景。
 func return_to_map() -> void:
 	get_tree().change_scene_to_file("res://scenes/evening_map.tscn")
 
 
+# 创建使用像素字体的指定文本、字号与颜色的 Label。
 func make_label(text_value: String, font_size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.text = text_value
@@ -206,6 +214,7 @@ func make_label(text_value: String, font_size: int, color: Color) -> Label:
 	return label
 
 
+# 创建指定背景色、边框色与边框宽度的 Panel。
 func make_panel(background: Color, border: Color, width: int) -> Panel:
 	var panel := Panel.new()
 	var style := StyleBoxFlat.new()
@@ -216,6 +225,7 @@ func make_panel(background: Color, border: Color, width: int) -> Panel:
 	return panel
 
 
+# 创建使用像素字体的标准按钮。
 func make_button(text_value: String) -> Button:
 	var button := Button.new()
 	button.text = text_value
@@ -224,6 +234,7 @@ func make_button(text_value: String) -> Button:
 	return button
 
 
+# 以 1280x720 为设计分辨率，按实际视口大小横纵独立缩放整个界面并将位置归零。
 func fit_to_window() -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:

@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FORMOCRACY · 第 1 日审批演练</title>
+  <!--
+    ASSUMPTIONS
+    - 这是内容与判断节奏验证器，不复刻 Godot 的物理拖拽。
+    - 采用正式配置中的第 1 日政策与 5 宗确定性案件。
+    - 林默是 NPC；玩家姓名由进入演练时输入。
+    - 所有数据内嵌，因此可以直接通过 file:// 双击打开。
+
+    NARRATIVE ROLE: 一天工作流程的可点击 vertical slice。
+    VIEWING DISTANCE: 笔记本 1m。
+    VISUAL TEMPERATURE: 暗、克制、带纸张与行政印章的压力。
+  -->
+  <style>
+    :root {
+      --ink: #191713;
+      --muted: #766f61;
+      --paper: #d8ceb8;
+      --paper-deep: #bcb097;
+      --desk: #20221e;
+      --desk-2: #171916;
+      --line: rgba(49, 43, 33, .25);
+      --red: #8e3e37;
+      --green: #3f6553;
+      --blue: #3f5fa8;
+      --amber: #b47b2d;
+      --white: #eee9db;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .42);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(176, 153, 102, .10), transparent 40%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 1px, transparent 1px 7px),
+        var(--desk-2);
+      color: var(--white);
+      font-family: "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(226, 213, 182, .16);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      background: rgba(14, 16, 14, .78);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 260px;
+    }
+
+    .seal {
+      width: 46px;
+      height: 46px;
+      border: 2px solid #b85b50;
+      color: #cf766b;
+      display: grid;
+      place-items: center;
+      font-family: "STKaiti", "KaiTi", serif;
+      font-weight: 700;
+      line-height: 1;
+      transform: rotate(-2deg);
+      box-shadow: inset 0 0 0 3px #171916, inset 0 0 0 4px #b85b50;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 15px;
+      letter-spacing: .08em;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 3px;
+      color: #938c7d;
+      font: 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .16em;
+    }
+
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .progress-dot {
+      width: 30px;
+      height: 6px;
+      border: 0;
+      padding: 0;
+      background: #454940;
+      transition: background .2s, transform .2s;
+    }
+
+    .progress-dot.current { background: #c2a15e; transform: scaleY(1.6); }
+    .progress-dot.done { background: #58745e; }
+
+    .officer {
+      min-width: 210px;
+      text-align: right;
+      color: #a9a293;
+      font-size: 12px;
+    }
+
+    .officer b { color: var(--white); font-weight: 600; }
+
+    main {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: enter .28s ease-out both; }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .briefing {
+      width: min(830px, 100%);
+      min-height: 670px;
+      margin: 18px auto;
+      padding: 52px 62px;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(108, 92, 66, .045), rgba(108, 92, 66, .045)),
+        var(--paper);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .briefing::after {
+      content: "第十二区行政指导手册";
+      position: absolute;
+      top: 26px;
+      right: -66px;
+      padding: 7px 78px;
+      border: 1px solid rgba(142, 62, 55, .5);
+      color: rgba(142, 62, 55, .72);
+      font: 11px/1 ui-monospace, monospace;
+      letter-spacing: .15em;
+      transform: rotate(37deg);
+    }
+
+    .kicker {
+      color: var(--red);
+      font: 700 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    .briefing h1 {
+      margin: 26px 0 12px;
+      max-width: 620px;
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: -.04em;
+    }
+
+    .lead {
+      max-width: 650px;
+      color: #5f584c;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .policy-block {
+      margin: 38px 0 30px;
+      border-top: 2px solid var(--ink);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .policy {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 16px;
+      padding: 19px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .policy:last-child { border-bottom: 0; }
+
+    .policy-no {
+      color: var(--red);
+      font: 700 12px/1 ui-monospace, monospace;
+    }
+
+    .policy p {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .name-row {
+      margin-top: 28px;
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: block;
+      color: #675f52;
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    input {
+      width: 260px;
+      margin-top: 7px;
+      padding: 10px 2px 8px;
+      border: 0;
+      border-bottom: 1px solid #4f4a40;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .primary {
+      min-height: 43px;
+      padding: 10px 22px;
+      border: 0;
+      background: var(--ink);
+      color: var(--white);
+      letter-spacing: .08em;
+    }
+
+    .primary:hover { background: #343027; }
+
+    .shortcut {
+      margin-left: auto;
+      color: #71695b;
+      font: 10px/1.4 ui-monospace, monospace;
+      letter-spacing: .08em;
+    }
+
+    .case-layout {
+      min-height: calc(100vh - 150px);
+      display: grid;
+      grid-template-columns: 250px minmax(420px, 1fr) minmax(290px, 390px);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .manual, .visitor, .document-zone {
+      border: 1px solid rgba(225, 213, 184, .14);
+      background: #242721;
+      box-shadow: 0 15px 46px rgba(0,0,0,.22);
+    }
+
+    .panel-label {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(225, 213, 184, .12);
+      color: #8f897c;
+      font: 10px/1.2 ui-monospace, monospace;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .manual { display: flex; flex-direction: column; }
+
+    .manual-content {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .manual h2 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .chapter {
+      color: #aaa291;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .manual-rule {
+      padding: 16px 0;
+      border-top: 1px solid rgba(225, 213, 184, .11);
+      color: #dad2c1;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .manual-rule:first-of-type { margin-top: 22px; }
+
+    .rule-tag {
+      display: block;
+      margin-bottom: 5px;
+      color: #ba9250;
+      font: 10px/1 ui-monospace, monospace;
+    }
+
+    .manual-note {
+      margin-top: auto;
+      padding: 15px;
+      border-top: 1px dashed rgba(225, 213, 184, .18);
+      color: #8f897c;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .document-zone {
+      min-width: 0;
+      padding-bottom: 18px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(220, 199, 150, .09), transparent 40%),
+        #1f211d;
+    }
+
+    .case-meta {
+      min-height: 54px;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(225, 213, 184, .12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .case-meta strong {
+      font: 12px/1.2 ui-monospace, monospace;
+      letter-spacing: .08em;
+    }
+
+    .kind {
+      padding: 4px 7px;
+      border: 1px solid #697066;
+      color: #a8afa4;
+      font: 9px/1 ui-monospace, monospace;
+      letter-spacing: .1em;
+    }
+
+    .kind.story { border-color: #aa685f; color: #d18b82; }
+
+    .doc-tabs {
+      min-height: 55px;
+      padding: 10px 18px 0;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      overflow-x: auto;
+    }
+
+    .doc-tab {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid #6b6659;
+      border-bottom: 0;
+      background: #393a32;
+      color: #bbb4a5;
+      font-size: 11px;
+    }
+
+    .doc-tab.active {
+      padding-top: 11px;
+      background: var(--paper);
+      color: var(--ink);
+      transform: translateY(1px);
+    }
+
+    .document {
+      width: min(580px, calc(100% - 38px));
+      min-height: 515px;
+      margin: 0 auto;
+      padding: 30px 34px 92px;
+      color: var(--ink);
+      background:
+        linear-gradient(94deg, transparent 0 48%, rgba(90,70,40,.04) 49%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(75,63,42,.06) 27px 28px),
+        var(--paper);
+      box-shadow: 0 18px 35px rgba(0, 0, 0, .34);
+      position: relative;
+    }
+
+    .doc-head {
+      padding-bottom: 17px;
+      border-bottom: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .doc-head h2 {
+      margin: 0;
+      font-size: clamp(21px, 2.4vw, 30px);
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .doc-code {
+      flex: 0 0 auto;
+      color: var(--red);
+      font: 10px/1.3 ui-monospace, monospace;
+      text-align: right;
+    }
+
+    .field-list { margin-top: 18px; }
+
+    .field {
+      min-height: 48px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 18px;
+    }
+
+    .field dt {
+      color: #706758;
+      font-size: 11px;
+      letter-spacing: .05em;
+    }
+
+    .field dd {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .document-stamp {
+      position: absolute;
+      right: 36px;
+      bottom: 29px;
+      width: 92px;
+      height: 92px;
+      border: 4px double rgba(142, 62, 55, .45);
+      border-radius: 50%;
+      color: rgba(142, 62, 55, .58);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font: 700 13px/1.35 "STKaiti", "KaiTi", serif;
+      letter-spacing: .1em;
+      transform: rotate(-10deg);
+    }
+
+    .visitor {
+      display: grid;
+      grid-template-rows: auto minmax(250px, 1fr) auto;
+      overflow: hidden;
+    }
+
+    .portrait {
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(to top, #242721 3%, transparent 55%),
+        radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--person-color) 42%, transparent), transparent 56%),
+        #151713;
+    }
+
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      image-rendering: auto;
+      filter: saturate(.88) contrast(1.04);
+    }
+
+    .portrait-fallback {
+      width: 150px;
+      height: 210px;
+      margin: 50px auto 0;
+      border-radius: 48% 48% 15% 15%;
+      background: color-mix(in srgb, var(--person-color) 75%, #252723);
+      display: none;
+    }
+
+    .visitor-copy {
+      padding: 0 20px 20px;
+    }
+
+    .visitor-name {
+      margin-bottom: 2px;
+      font-size: 28px;
+      font-weight: 500;
+    }
+
+    .visitor-detail {
+      color: #918b7e;
+      font: 10px/1.5 ui-monospace, monospace;
+      letter-spacing: .06em;
+    }
+
+    .dialogue {
+      margin: 19px 0 0;
+      padding: 15px 0 0;
+      border-top: 1px solid rgba(225, 213, 184, .13);
+      color: #ddd5c4;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .dialogue::before {
+      content: "“";
+      color: var(--person-color);
+      font-size: 32px;
+      line-height: 0;
+      vertical-align: -8px;
+      margin-right: 2px;
+    }
+
+    .actions {
+      padding: 16px 20px 20px;
+      border-top: 1px solid rgba(225, 213, 184, .12);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .decision {
+      min-height: 52px;
+      border: 1px solid;
+      background: transparent;
+      color: var(--white);
+      letter-spacing: .08em;
+      transition: background .16s, color .16s, transform .16s;
+    }
+
+    .decision:hover { transform: translateY(-2px); }
+    .decision.approve { border-color: #60846f; color: #a7c6b4; }
+    .decision.approve:hover { background: #3f6553; color: white; }
+    .decision.reject { border-color: #9c564e; color: #d99c95; }
+    .decision.reject:hover { background: #8e3e37; color: white; }
+    .decision:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      padding: 20px;
+      display: none;
+      place-items: center;
+      background: rgba(8, 9, 8, .78);
+      backdrop-filter: blur(7px);
+    }
+
+    .result-overlay.open { display: grid; animation: enter .18s ease-out both; }
+
+    .result-card {
+      width: min(620px, 100%);
+      padding: 36px 40px;
+      border-top: 5px solid var(--result-color);
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .result-mark {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      width: 92px;
+      height: 92px;
+      border: 4px double var(--result-color);
+      border-radius: 50%;
+      color: var(--result-color);
+      display: grid;
+      place-items: center;
+      font: 700 19px/1 "STKaiti", "KaiTi", serif;
+      transform: rotate(-8deg);
+      opacity: .78;
+    }
+
+    .result-card h2 {
+      width: calc(100% - 115px);
+      margin: 12px 0 18px;
+      font-size: 31px;
+      font-weight: 500;
+    }
+
+    .result-card p {
+      color: #514b40;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .applicant-response {
+      margin: 20px 0;
+      padding: 15px 18px;
+      border-left: 3px solid var(--result-color);
+      background: rgba(57, 50, 37, .06);
+      color: #353129;
+    }
+
+    .result-footer {
+      margin-top: 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .result-footer small {
+      color: #766f61;
+      font: 10px/1.5 ui-monospace, monospace;
+    }
+
+    .summary {
+      width: min(920px, 100%);
+      margin: 18px auto;
+      padding: 42px 46px;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-head {
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      gap: 25px;
+      align-items: flex-start;
+    }
+
+    .summary h1 {
+      margin: 12px 0 0;
+      font-size: 46px;
+      font-weight: 500;
+    }
+
+    .score {
+      min-width: 150px;
+      text-align: right;
+    }
+
+    .score strong {
+      display: block;
+      color: var(--green);
+      font: 700 48px/1 ui-monospace, monospace;
+    }
+
+    .score span {
+      color: #71695b;
+      font-size: 11px;
+    }
+
+    .ledger { margin: 22px 0 30px; }
+
+    .ledger-row {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 38px minmax(130px, .7fr) 1.4fr 75px 80px 112px;
+      gap: 13px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .ledger-row b { font-weight: 600; }
+    .ledger-code { color: #71695b; font: 9px/1.3 ui-monospace, monospace; }
+    .ledger-decision { font-weight: 700; }
+    .ledger-result { color: var(--green); }
+    .ledger-result.wrong { color: var(--red); }
+
+    .summary-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .secondary {
+      min-height: 42px;
+      padding: 9px 18px;
+      border: 1px solid #494337;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .secondary:hover { background: rgba(0,0,0,.06); }
+
+    .footer {
+      min-height: 42px;
+      padding: 10px 24px;
+      border-top: 1px solid rgba(226, 213, 182, .12);
+      display: flex;
+      justify-content: space-between;
+      color: #696a63;
+      font: 9px/1.4 ui-monospace, monospace;
+      letter-spacing: .08em;
+    }
+
+    @media (max-width: 1040px) {
+      .case-layout { grid-template-columns: 210px 1fr; }
+      .visitor { grid-column: 1 / -1; grid-template-columns: 220px 1fr; grid-template-rows: auto auto; }
+      .visitor .panel-label { grid-column: 1 / -1; }
+      .portrait { min-height: 260px; }
+      .visitor-copy { padding-top: 20px; }
+      .actions { align-content: end; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 10px 14px; }
+      .brand { min-width: auto; }
+      .brand-copy, .officer { display: none; }
+      main { padding: 12px; }
+      .briefing { padding: 42px 24px; }
+      .case-layout { grid-template-columns: 1fr; }
+      .manual { order: 1; }
+      .document-zone { order: 2; }
+      .visitor { order: 3; grid-column: auto; display: block; }
+      .portrait { height: 330px; }
+      .document { min-height: 460px; padding: 24px 22px 90px; }
+      .field { grid-template-columns: 85px 1fr; gap: 10px; }
+      .summary { padding: 30px 22px; }
+      .summary-head { display: block; }
+      .score { margin-top: 20px; text-align: left; }
+      .ledger-row { grid-template-columns: 28px 1fr 65px 65px; }
+      .ledger-row .ledger-code { display: none; }
+      .result-card { padding: 30px 24px; }
+      .result-mark { width: 72px; height: 72px; font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="seal">12区</div>
+        <div class="brand-copy">
+          <strong>FORMOCRACY · 行政工作台</strong>
+          <small>CONFIG WALKTHROUGH / DAY 01</small>
+        </div>
+      </div>
+      <div class="progress" id="progress" aria-label="案件进度"></div>
+      <div class="officer">值班行政员：<b id="officerName">未登记</b><br>第 1 日 · 五宗待办</div>
+    </header>
+
+    <main>
+      <section class="screen active" id="briefingScreen">
+        <article class="briefing">
+          <div class="kicker">Morning circular · Workday 001</div>
+          <h1>第一章：<br>申请表本身</h1>
+          <p class="lead">这是一个简化的首日玩法演练。请按今天生效的政策检查材料；不要根据人物是否可怜来猜答案，也不要检查手册尚未要求的事项。</p>
+
+          <div class="policy-block">
+            <div class="policy">
+              <span class="policy-no">01</span>
+              <p>简单事项只核验当日有效申请表。</p>
+            </div>
+            <div class="policy">
+              <span class="policy-no">02</span>
+              <p>跨区共同居住必须追加迁入转送材料。</p>
+            </div>
+          </div>
+
+          <p class="lead">今日共 5 宗：4 宗日常业务与 1 宗特殊故事案件。正确决定会保留在日终回执中。</p>
+
+          <div class="name-row">
+            <label>行政员姓名
+              <input id="nameInput" value="玩家" maxlength="12" aria-label="行政员姓名">
+            </label>
+            <button class="primary" id="startButton" type="button">鸣铃，开始叫号</button>
+            <span class="shortcut">操作：A 批准 / R 驳回<br>← → 翻阅材料</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="caseScreen">
+        <div class="case-layout">
+          <aside class="manual">
+            <div class="panel-label">Administrative manual / active chapter</div>
+            <div class="manual-content">
+              <div class="kicker">DAY 01 · CHAPTER 01</div>
+              <h2>今日行政指导</h2>
+              <p class="chapter">只依据本页政策和申请人提交的材料作出决定。</p>
+              <div class="manual-rule">
+                <span class="rule-tag">§ 01 / SIMPLE MATTERS</span>
+                简单事项只核验一张已经签署的当日申请表。
+              </div>
+              <div class="manual-rule">
+                <span class="rule-tag">§ 02 / COHABITATION</span>
+                跨区共同居住申请除申请表、身份、住所、声明外，还须有原区迁入转送材料。
+              </div>
+            </div>
+            <div class="manual-note">判断原则：材料齐全且字段符合今日手册 → 批准；缺件、漏签或无效 → 驳回。</div>
+          </aside>
+
+          <section class="document-zone">
+            <div class="case-meta">
+              <strong id="caseCode">CASE</strong>
+              <span class="kind" id="caseKind">GENERAL</span>
+            </div>
+            <div class="doc-tabs" id="docTabs" aria-label="提交材料"></div>
+            <article class="document" id="document"></article>
+          </section>
+
+          <aside class="visitor">
+            <div class="panel-label">Applicant / window 12-04</div>
+            <div class="portrait" id="portrait">
+              <img id="portraitImage" alt="">
+              <div class="portrait-fallback" id="portraitFallback"></div>
+            </div>
+            <div>
+              <div class="visitor-copy">
+                <h2 class="visitor-name" id="visitorName">申请人</h2>
+                <div class="visitor-detail" id="visitorDetail"></div>
+                <p class="dialogue" id="dialogue"></p>
+              </div>
+              <div class="actions">
+                <button class="decision approve" id="approveButton" type="button">批准 · A</button>
+                <button class="decision reject" id="rejectButton" type="button">驳回 · R</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="summaryScreen">
+        <article class="summary">
+          <header class="summary-head">
+            <div>
+              <div class="kicker">End-of-day receipt / Workday 001</div>
+              <h1>第 1 日处理回执</h1>
+            </div>
+            <div class="score">
+              <strong id="scoreNumber">0/5</strong>
+              <span>与今日行政手册一致</span>
+            </div>
+          </header>
+          <div class="ledger" id="ledger"></div>
+          <div class="summary-actions">
+            <p class="lead" id="summaryCopy"></p>
+            <button class="secondary" id="restartButton" type="button">重新演练</button>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>CONTENT SOURCE · data/narrative/demo_cases.json + demo_workdays.json</span>
+      <span>LOCAL PROTOTYPE · NO SERVER REQUIRED</span>
+    </footer>
+  </div>
+
+  <div class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <article class="result-card" id="resultCard">
+      <div class="result-mark" id="resultMark"></div>
+      <div class="kicker" id="resultKicker"></div>
+      <h2 id="resultTitle"></h2>
+      <p id="resultReason"></p>
+      <div class="applicant-response" id="applicantResponse"></div>
+      <div class="result-footer">
+        <small id="resultMeta"></small>
+        <button class="primary" id="continueButton" type="button">下一位申请人</button>
+      </div>
+    </article>
+  </div>
+
+  <script>
+    const PEOPLE = {
+      lin: {
+        name: "林默",
+        age: 28,
+        job: "市政信号维护员",
+        color: "#3f5fa8",
+        image: "../../assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      },
+      zhou: {
+        name: "周循",
+        age: 44,
+        job: "锅炉与管线维修工",
+        color: "#c78238",
+        image: "../../assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      },
+      xu: {
+        name: "许桥",
+        age: 25,
+        job: "区域文件递送员",
+        color: "#d35245",
+        image: "../../assets/characters/applicants/person_xu/fullbody_frames_20/02_idle_neutral_a_fullbody.png"
+      },
+      tang: {
+        name: "唐霁",
+        age: 19,
+        job: "见习公文投递员",
+        color: "#3474d4",
+        image: "../../assets/characters/dossier/person_tang/concept.png"
+      },
+      he: {
+        name: "老赫",
+        age: 64,
+        job: "旧照相馆经营者",
+        color: "#932d3e",
+        image: "../../assets/characters/dossier/person_old_he/concept.png"
+      }
+    };
+
+    const CASES = [
+      {
+        id: "CASE-001",
+        formCode: "R-12/共同居住配额变更申请",
+        kind: "story",
+        person: "lin",
+        purpose: "共同居住与跨区迁入",
+        department: "第十二区居住配置处",
+        greeting: "您好。我来办理共同居住配额。沈青禾的转送单还没下来。",
+        approved: "谢谢。我们会等正式通知。",
+        rejected: "我明白。我会把她的材料补齐。",
+        expected: "reject",
+        reason: "跨区共同居住必须提交原区迁入转送材料。现有申请表、林默的身份证明、居住证明和双方声明均有效，但缺少沈青禾的原区转送单。",
+        missing: "缺失：原区转送单",
+        documents: [
+          { type: "事项申请表", title: "共同居住配额变更申请表", id: "S1-APP", fields: {
+            "申请事项": "将单人居住配额变更为林默与沈青禾二人共同配额",
+            "事项地址": "第十二区 17-4",
+            "申请签署": "已签署",
+            "补充说明": "共同居住开始日期有多次涂改"
+          }},
+          { type: "身份证明", title: "林默本市身份证明", id: "S1-ID", fields: {
+            "登记地址": "第十二区 17-4",
+            "签发机关": "第十二区人口登记所",
+            "有效状态": "有效"
+          }},
+          { type: "居住证明", title: "林默第十二区居住证明", id: "S1-RES", fields: {
+            "实际住址": "第十二区 17-4",
+            "签发机关": "第十二区街区办",
+            "有效状态": "有效"
+          }},
+          { type: "知情声明", title: "双方共同居住知情声明", id: "S1-DEC", fields: {
+            "声明事项": "林默与沈青禾同意共同承担住所与家庭配额",
+            "关系": "伴侣",
+            "声明人": "沈青禾",
+            "签署状态": "已签署"
+          }}
+        ]
+      },
+      {
+        id: "CASE-002",
+        formCode: "W-04/净水领取时段登记",
+        kind: "general",
+        person: "zhou",
+        purpose: "净水与基础供给调整",
+        department: "公共供给连续性办公室",
+        greeting: "我来登记下周的领水时段。就这一张，没有别的附件。",
+        approved: "这样就能接上了。",
+        rejected: "我明天再换一个时段。",
+        expected: "approve",
+        reason: "净水时段登记属于今日简单事项，只需一张已经签署的有效申请表。本表签署完整，也没有增加个人净水额度。",
+        missing: "材料完整",
+        documents: [
+          { type: "事项申请表", title: "净水领取时段登记表", id: "D1G03-APP", fields: {
+            "申请事项": "登记每周二 06:10 领取净水",
+            "申请签署": "已签署",
+            "补充说明": "不增加个人额度"
+          }}
+        ]
+      },
+      {
+        id: "CASE-003",
+        formCode: "T-02/文件递送路线登记",
+        kind: "general",
+        person: "xu",
+        purpose: "夜间交通与通行时段",
+        department: "区域交通秩序处",
+        greeting: "我来登记明早的文件递送路线。我可能忘了签名。",
+        approved: "我会照这条路线走。",
+        rejected: "我现在补签还来得及吗？",
+        expected: "reject",
+        reason: "文件递送路线登记属于简单事项，但申请表必须签署。申请人签名栏为空，应退回补签。",
+        missing: "错误：申请人未签名",
+        documents: [
+          { type: "事项申请表", title: "文件递送路线登记表", id: "D1G04-APP", fields: {
+            "申请事项": "登记第五区至第十二区晨间递送路线",
+            "申请签署": "空白",
+            "补充说明": "第一班车前需要完成登记"
+          }}
+        ]
+      },
+      {
+        id: "CASE-G-D1-01",
+        formCode: "Q-03/候办序号更正申请",
+        kind: "general",
+        person: "tang",
+        purpose: "身份记录与证明副本",
+        department: "第十二区人口登记所",
+        greeting: "我的候办序号印错了一位。只需要这张更正表，对吧？",
+        approved: "谢谢，我能赶上这一班。",
+        rejected: "我再去领一张新表。",
+        expected: "approve",
+        reason: "候办序号更正属于简单事项。申请表已经签署，原票据注明附在背面，申请内容明确。",
+        missing: "材料完整",
+        documents: [
+          { type: "事项申请表", title: "候办序号更正申请表", id: "D1G01-APP", fields: {
+            "申请事项": "将候办序号 B20 更正为 B02",
+            "申请签署": "已签署",
+            "补充说明": "原票据附在背面"
+          }}
+        ]
+      },
+      {
+        id: "CASE-G-D1-02",
+        formCode: "C-11/旧档案目录抄录申请",
+        kind: "general",
+        person: "he",
+        purpose: "身份记录与证明副本",
+        department: "第十二区人口登记所",
+        greeting: "我想抄一份旧照相馆的目录。表在这儿，字可能有点淡。",
+        approved: "至少还有一份能看见。",
+        rejected: "没签名？我这手早不听使唤了。",
+        expected: "reject",
+        reason: "旧档案目录抄录属于简单事项，但申请表只按了指印，没有完成今日要求的申请人签署，应退回补签或转入代签程序。",
+        missing: "错误：仅有指印，未签名",
+        documents: [
+          { type: "事项申请表", title: "旧档案目录抄录申请表", id: "D1G02-APP", fields: {
+            "申请事项": "抄录旧第二区照相登记目录",
+            "申请签署": "未签名",
+            "补充说明": "申请人仅按指印"
+          }}
+        ]
+      }
+    ];
+
+    const state = {
+      index: 0,
+      docIndex: 0,
+      officer: "玩家",
+      decisions: []
+    };
+
+    const el = id => document.getElementById(id);
+    const briefingScreen = el("briefingScreen");
+    const caseScreen = el("caseScreen");
+    const summaryScreen = el("summaryScreen");
+    const overlay = el("resultOverlay");
+
+    function showScreen(screen) {
+      [briefingScreen, caseScreen, summaryScreen].forEach(item => item.classList.toggle("active", item === screen));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function renderProgress() {
+      el("progress").innerHTML = CASES.map((_, index) => {
+        const status = index < state.index ? "done" : index === state.index && caseScreen.classList.contains("active") ? "current" : "";
+        return `<span class="progress-dot ${status}" aria-label="案件 ${index + 1}"></span>`;
+      }).join("");
+    }
+
+    function start() {
+      state.officer = el("nameInput").value.trim() || "玩家";
+      el("officerName").textContent = state.officer;
+      showScreen(caseScreen);
+      renderCase();
+    }
+
+    function renderCase() {
+      const item = CASES[state.index];
+      const person = PEOPLE[item.person];
+      state.docIndex = Math.min(state.docIndex, item.documents.length - 1);
+
+      el("caseCode").textContent = `${item.id} · ${item.formCode}`;
+      el("caseKind").textContent = item.kind === "story" ? "STORY CASE" : "GENERAL";
+      el("caseKind").className = `kind ${item.kind}`;
+      el("visitorName").textContent = person.name;
+      el("visitorDetail").innerHTML = `${person.age} 岁 · ${person.job}<br>${item.department}`;
+      el("dialogue").textContent = item.greeting;
+      el("portrait").style.setProperty("--person-color", person.color);
+      el("portraitImage").src = person.image;
+      el("portraitImage").alt = `${person.name}人物素材`;
+      el("portraitImage").style.display = "block";
+      el("portraitFallback").style.display = "none";
+      el("approveButton").disabled = false;
+      el("rejectButton").disabled = false;
+
+      el("docTabs").innerHTML = item.documents.map((doc, index) =>
+        `<button class="doc-tab ${index === state.docIndex ? "active" : ""}" type="button" data-doc-index="${index}">${index + 1}. ${doc.type}</button>`
+      ).join("");
+
+      el("docTabs").querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+          state.docIndex = Number(button.dataset.docIndex);
+          renderDocument();
+        });
+      });
+
+      renderDocument();
+      renderProgress();
+    }
+
+    function renderDocument() {
+      const item = CASES[state.index];
+      const doc = item.documents[state.docIndex];
+      el("docTabs").querySelectorAll("button").forEach((button, index) => button.classList.toggle("active", index === state.docIndex));
+
+      const fields = Object.entries(doc.fields).map(([label, value]) =>
+        `<div class="field"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`
+      ).join("");
+
+      el("document").innerHTML = `
+        <header class="doc-head">
+          <h2>${escapeHtml(doc.title)}</h2>
+          <div class="doc-code">${escapeHtml(doc.id)}<br>${escapeHtml(doc.type)}</div>
+        </header>
+        <dl class="field-list">${fields}</dl>
+        <div class="document-stamp">第十二区<br>收件核验</div>
+      `;
+    }
+
+    function decide(choice) {
+      const item = CASES[state.index];
+      const person = PEOPLE[item.person];
+      const correct = choice === item.expected;
+      const choiceLabel = choice === "approve" ? "批准" : "驳回";
+
+      state.decisions.push({
+        id: item.id,
+        person: person.name,
+        purpose: item.purpose,
+        choice,
+        correct
+      });
+
+      el("approveButton").disabled = true;
+      el("rejectButton").disabled = true;
+
+      const color = correct ? "#3f6553" : "#8e3e37";
+      el("resultCard").style.setProperty("--result-color", color);
+      el("resultKicker").textContent = `${item.id} / ${choiceLabel.toUpperCase()}`;
+      el("resultMark").textContent = correct ? "判断一致" : "程序偏差";
+      el("resultTitle").textContent = correct ? `${choiceLabel}：符合今日手册` : `${choiceLabel}：与手册不符`;
+      el("resultReason").textContent = item.reason;
+      el("applicantResponse").textContent = `${person.name}：“${choice === "approve" ? item.approved : item.rejected}”`;
+      el("resultMeta").textContent = `${item.missing} · 正确处理：${item.expected === "approve" ? "批准" : "驳回"}`;
+      el("continueButton").textContent = state.index === CASES.length - 1 ? "生成日终回执" : "下一位申请人";
+      overlay.classList.add("open");
+      el("continueButton").focus();
+    }
+
+    function continueFlow() {
+      overlay.classList.remove("open");
+      if (state.index < CASES.length - 1) {
+        state.index += 1;
+        state.docIndex = 0;
+        renderCase();
+        return;
+      }
+      state.index = CASES.length;
+      renderSummary();
+      showScreen(summaryScreen);
+      renderProgress();
+    }
+
+    function renderSummary() {
+      const correctCount = state.decisions.filter(item => item.correct).length;
+      el("scoreNumber").textContent = `${correctCount}/${CASES.length}`;
+      el("ledger").innerHTML = state.decisions.map((item, index) => `
+        <div class="ledger-row">
+          <span>${String(index + 1).padStart(2, "0")}</span>
+          <b>${escapeHtml(item.person)}</b>
+          <span>${escapeHtml(item.purpose)}</span>
+          <span class="ledger-decision">${item.choice === "approve" ? "批准" : "驳回"}</span>
+          <span class="ledger-result ${item.correct ? "" : "wrong"}">${item.correct ? "一致" : "偏差"}</span>
+          <span class="ledger-code">${escapeHtml(item.id)}</span>
+        </div>
+      `).join("");
+
+      const copy = correctCount === 5
+        ? "首日判断全部与行政指导手册一致。第 2 日将加入身份证明与有效期核验。"
+        : correctCount >= 3
+          ? "你完成了首日大部分核验。注意：人物对白是线索，正式决定仍必须落到材料与当天政策。"
+          : "首日出现较多程序偏差。建议重新演练，并逐项对照申请签署与共同居住的追加材料。";
+      el("summaryCopy").textContent = copy;
+    }
+
+    function restart() {
+      state.index = 0;
+      state.docIndex = 0;
+      state.decisions = [];
+      overlay.classList.remove("open");
+      showScreen(briefingScreen);
+      renderProgress();
+    }
+
+    function moveDocument(direction) {
+      if (!caseScreen.classList.contains("active") || overlay.classList.contains("open")) return;
+      const max = CASES[state.index].documents.length - 1;
+      state.docIndex = Math.max(0, Math.min(max, state.docIndex + direction));
+      renderDocument();
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
+    }
+
+    el("portraitImage").addEventListener("error", () => {
+      el("portraitImage").style.display = "none";
+      el("portraitFallback").style.display = "block";
+    });
+    el("startButton").addEventListener("click", start);
+    el("approveButton").addEventListener("click", () => decide("approve"));
+    el("rejectButton").addEventListener("click", () => decide("reject"));
+    el("continueButton").addEventListener("click", continueFlow);
+    el("restartButton").addEventListener("click", restart);
+    el("nameInput").addEventListener("keydown", event => {
+      if (event.key === "Enter") start();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (overlay.classList.contains("open")) {
+        if (event.key === "Enter") continueFlow();
+        return;
+      }
+      if (!caseScreen.classList.contains("active")) return;
+      if (event.key.toLowerCase() === "a") decide("approve");
+      if (event.key.toLowerCase() === "r") decide("reject");
+      if (event.key === "ArrowLeft") moveDocument(-1);
+      if (event.key === "ArrowRight") moveDocument(1);
+    });
+
+    renderProgress();
+  </script>
+</body>
+</html>

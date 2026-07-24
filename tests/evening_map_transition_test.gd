@@ -11,13 +11,19 @@ func run() -> void:
 	state.reset_for_tests()
 	state.day_number = 3
 	state.player_name = "测试职员"
-	state.records.append({
-		"code": "TEST-01",
-		"applicant": "测试申请人",
-		"decision": "批准",
-		"effective": false,
-		"procedure_errors": [],
-	})
+	(
+		state
+		. records
+		. append(
+			{
+				"code": "TEST-01",
+				"applicant": "测试申请人",
+				"decision": "批准",
+				"effective": false,
+				"procedure_errors": [],
+			}
+		)
+	)
 	var error := change_scene_to_file("res://scenes/daily_report.tscn")
 	assert(error == OK, "daily report must open")
 	await process_frame

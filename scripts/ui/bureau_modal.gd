@@ -30,12 +30,7 @@ func _init() -> void:
 
 
 # 配置弹窗内容：标题、正文、面板尺寸、动作按钮纵向/横向排列。
-func configure(
-		title: String,
-		message: String,
-		panel_size := Vector2(620, 330),
-		vertical_actions := false
-) -> void:
+func configure(title: String, message: String, panel_size: Vector2 = Vector2(620, 330), vertical_actions: bool = false) -> void:
 	for child in get_children():
 		child.queue_free()
 
@@ -91,14 +86,14 @@ func configure(
 
 
 # 添加一个动作按钮并返回引用；primary 按钮会被记录为默认焦点按钮。
-func add_action(action_id: String, text: String, primary := false, danger := false) -> Button:
+func add_action(action_id: String, text: String, primary: bool = false, danger: bool = false) -> Button:
 	var button := Button.new()
 	button.name = "%sButton" % action_id.to_pascal_case()
 	button.text = text
 	button.custom_minimum_size = action_button_size
 	UI.style_button(button, 18, danger)
 	button.pressed.connect(_on_action.bind(action_id))
-	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
+	button.mouse_entered.connect(_play_hover)
 	action_row.add_child(button)
 	if primary or default_button == null:
 		default_button = button
@@ -125,7 +120,10 @@ func close() -> void:
 
 # 弹窗可见时按 ESC 触发取消或关闭。
 func _gui_input(event: InputEvent) -> void:
-	if visible and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+	if not visible or not event is InputEventKey:
+		return
+	var key_event: InputEventKey = event
+	if key_event.pressed and not key_event.echo and key_event.keycode == KEY_ESCAPE:
 		if cancel_action.is_empty():
 			close()
 			dismissed.emit()
@@ -140,21 +138,25 @@ func _on_action(action_id: String) -> void:
 	action_pressed.emit(action_id)
 
 
+# 播放模态动作按钮悬停音效。
+func _play_hover() -> void:
+	Sfx.play("ui_hover")
+
+
+# 控件尺寸变化时重新缩放并居中面板。
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and panel != null:
 		_fit_to_viewport()
 
 
+# 按 1280x720 基准计算 UI 缩放（限制在 1~2 倍），缩放面板并使其在视口居中。
 func _fit_to_viewport() -> void:
 	if panel == null or base_panel_size == Vector2.ZERO:
 		return
 	var viewport_size := size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		viewport_size = get_viewport_rect().size
-	var ui_scale: float = minf(
-		viewport_size.x / REFERENCE_VIEWPORT.x,
-		viewport_size.y / REFERENCE_VIEWPORT.y
-	)
+	var ui_scale: float = minf(viewport_size.x / REFERENCE_VIEWPORT.x, viewport_size.y / REFERENCE_VIEWPORT.y)
 	ui_scale = clampf(ui_scale, 1.0, 2.0)
 	panel.scale = Vector2.ONE * ui_scale
 	panel.position = (viewport_size - base_panel_size * ui_scale) / 2.0

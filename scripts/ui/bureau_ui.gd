@@ -18,12 +18,7 @@ const COLOR_DANGER := Color("b85d50")
 
 
 # 创建统一风格的 StyleBoxFlat（背景、边框、圆角、边距）。
-static func make_box(
-		color: Color = COLOR_PANEL,
-		border_color: Color = COLOR_BORDER,
-		border: int = 3,
-		radius: int = 5
-) -> StyleBoxFlat:
+static func make_box(color: Color = COLOR_PANEL, border_color: Color = COLOR_BORDER, border: int = 3, radius: int = 5) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = color
 	box.border_color = border_color

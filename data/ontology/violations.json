@@ -1,5 +1,12 @@
 [
   {"id":"VIOLATION-MISSING-DOCUMENT","name":"必需材料缺失","severity":"procedural"},
   {"id":"VIOLATION-ADDRESS-MISMATCH","name":"地址记录不一致","severity":"substantive"},
-  {"id":"VIOLATION-EXPIRED","name":"证明已过有效期","severity":"substantive"}
+  {"id":"VIOLATION-EXPIRED","name":"证明已过有效期","severity":"substantive"},
+  {"id":"VIOLATION-UNSIGNED","name":"申请或声明未签署","severity":"procedural"},
+  {"id":"VIOLATION-INVALID-RESIDENCE","name":"居住证明无效","severity":"substantive"},
+  {"id":"VIOLATION-INVALID-TRANSFER","name":"原区转送或单位担保无效","severity":"substantive"},
+  {"id":"VIOLATION-UNCERTIFIED-TRANSLATION","name":"译文未经认证","severity":"procedural"},
+  {"id":"VIOLATION-INVALID-PERMIT","name":"居留或许可无效","severity":"substantive"},
+  {"id":"VIOLATION-MISSING-SEAL","name":"签发机关印章缺失","severity":"procedural"},
+  {"id":"VIOLATION-DATE-CONFLICT","name":"关键日期与正式记录冲突","severity":"substantive"}
 ]

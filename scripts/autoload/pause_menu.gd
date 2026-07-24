@@ -26,26 +26,44 @@ var fullscreen_button: Button
 var exit_button: Button
 var music_slider: HSlider
 var mute_button: Button
-var menu_confirmation
-var exit_confirmation
+var menu_confirmation: BureauModal
+var exit_confirmation: BureauModal
 
 
 # 初始化暂停菜单层级、处理模式并构建 UI。
 func _ready() -> void:
 	layer = 900
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	build_ui()
-	get_viewport().size_changed.connect(fit_to_window)
-	fit_to_window()
+	_build_ui()
+	get_viewport().size_changed.connect(_fit_to_window)
+	_fit_to_window()
+	# 游戏产品要求启动时必须真正全屏。project.godot 是第一道配置，
+	# 这里再做运行时兜底，避免编辑器或平台窗口状态覆盖启动配置。
+	call_deferred("_enforce_startup_fullscreen")
+
+
+# 只在 Autoload 启动时执行一次；之后玩家仍可通过 ESC 菜单主动切换窗口模式。
+func _enforce_startup_fullscreen() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	var mode := DisplayServer.window_get_mode()
+	if (
+		mode
+		not in [
+			DisplayServer.WINDOW_MODE_FULLSCREEN,
+			DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN,
+		]
+	):
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 # 创建统一的带边框面板风格。
-func make_box(color: Color, border_color: Color) -> StyleBoxFlat:
+func _make_box(color: Color, border_color: Color) -> StyleBoxFlat:
 	return UI.make_box(color, border_color)
 
 
 # 构建暂停菜单的完整 UI：遮罩、面板、按钮、音乐控制与确认弹窗。
-func build_ui() -> void:
+func _build_ui() -> void:
 	root_control = Control.new()
 	root_control.name = "PauseRoot"
 	root_control.size = Vector2(1280, 720)
@@ -67,9 +85,9 @@ func build_ui() -> void:
 	UI.style_panel(panel)
 	overlay.add_child(panel)
 
-	var heading := create_label("工作暂时中止", 25, Vector2(30, 28), Vector2(360, 42))
+	var heading := _create_label("工作暂时中止", 25, Vector2(30, 28), Vector2(360, 42))
 	panel.add_child(heading)
-	var subheading := create_label("中央现实管理局 · 操作菜单", 14, Vector2(30, 74), Vector2(360, 28))
+	var subheading := _create_label("中央现实管理局 · 操作菜单", 14, Vector2(30, 74), Vector2(360, 28))
 	subheading.add_theme_color_override("font_color", Color("7f9160"))
 	panel.add_child(subheading)
 
@@ -78,44 +96,36 @@ func build_ui() -> void:
 	buttons.size = Vector2(280, 300)
 	buttons.add_theme_constant_override("separation", 14)
 	panel.add_child(buttons)
-	resume_button = create_menu_button("继续游戏")
+	resume_button = _create_menu_button("继续游戏")
 	resume_button.pressed.connect(close_menu)
 	buttons.add_child(resume_button)
-	fullscreen_button = create_menu_button("")
+	fullscreen_button = _create_menu_button("")
 	fullscreen_button.pressed.connect(toggle_fullscreen)
 	buttons.add_child(fullscreen_button)
-	var menu_button := create_menu_button("返回主菜单")
+	var menu_button := _create_menu_button("返回主菜单")
 	menu_button.pressed.connect(confirm_return_to_menu)
 	buttons.add_child(menu_button)
-	exit_button = create_menu_button("退出游戏")
+	exit_button = _create_menu_button("退出游戏")
 	exit_button.pressed.connect(confirm_exit_game)
 	buttons.add_child(exit_button)
 
-	build_music_controls(panel)
+	_build_music_controls(panel)
 
-	var hint := create_label("ESC  继续", 13, Vector2(30, 535), Vector2(360, 24))
+	var hint := _create_label("ESC  继续", 13, Vector2(30, 535), Vector2(360, 24))
 	hint.add_theme_color_override("font_color", Color("778166"))
 	panel.add_child(hint)
 
-	menu_confirmation = create_confirmation(
-		"返回主菜单",
-		"当前未提交的表单操作将被终止。\n是否返回中央现实管理局入口？",
-		"return_menu"
-	)
+	menu_confirmation = _create_confirmation("返回主菜单", "当前未提交的表单操作将被终止。\n是否返回中央现实管理局入口？", "return_menu")
 	menu_confirmation.action_pressed.connect(_on_confirmation_action)
 	root_control.add_child(menu_confirmation)
-	exit_confirmation = create_confirmation(
-		"终止工作程序",
-		"确认退出 FORMOCRACY？\n尚未封存的操作不会被保留。",
-		"exit_game"
-	)
+	exit_confirmation = _create_confirmation("终止工作程序", "确认退出 FORMOCRACY？\n尚未封存的操作不会被保留。", "exit_game")
 	exit_confirmation.action_pressed.connect(_on_confirmation_action)
 	root_control.add_child(exit_confirmation)
-	refresh_fullscreen_label()
+	_refresh_fullscreen_label()
 
 
 # 创建居中对齐的文本标签。
-func create_label(text: String, size: int, at: Vector2, dimensions: Vector2) -> Label:
+func _create_label(text: String, size: int, at: Vector2, dimensions: Vector2) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.position = at
@@ -126,24 +136,24 @@ func create_label(text: String, size: int, at: Vector2, dimensions: Vector2) -> 
 
 
 # 创建暂停菜单按钮。
-func create_menu_button(text: String) -> Button:
+func _create_menu_button(text: String) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(280, 54)
 	UI.style_button(button, 18)
-	button.pressed.connect(func(): Sfx.play("ui_click"))
-	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
+	button.pressed.connect(_play_menu_click)
+	button.mouse_entered.connect(_play_menu_hover)
 	return button
 
 
 # 构建背景音乐音量滑块与静音按钮。
-func build_music_controls(panel: Panel) -> void:
+func _build_music_controls(panel: Panel) -> void:
 	var separator := HSeparator.new()
 	separator.position = Vector2(35, 398)
 	separator.size = Vector2(350, 8)
 	panel.add_child(separator)
 
-	var label := create_label("背景音乐", 17, Vector2(35, 420), Vector2(92, 48))
+	var label := _create_label("背景音乐", 17, Vector2(35, 420), Vector2(92, 48))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	panel.add_child(label)
@@ -156,7 +166,7 @@ func build_music_controls(panel: Panel) -> void:
 	music_slider.max_value = 100.0
 	music_slider.step = 5.0
 	music_slider.value = OpeningMusic.volume_percent
-	music_slider.value_changed.connect(on_music_volume_changed)
+	music_slider.value_changed.connect(_on_music_volume_changed)
 	UI.style_range(music_slider)
 	panel.add_child(music_slider)
 
@@ -165,31 +175,31 @@ func build_music_controls(panel: Panel) -> void:
 	mute_button.position = Vector2(298, 416)
 	mute_button.size = Vector2(88, 54)
 	UI.style_button(mute_button, 16)
-	mute_button.pressed.connect(toggle_music_mute)
+	mute_button.pressed.connect(_toggle_music_mute)
 	panel.add_child(mute_button)
-	refresh_music_controls()
+	_refresh_music_controls()
 
 
 # 音乐音量变化时同步到 OpeningMusic。
-func on_music_volume_changed(value: float) -> void:
+func _on_music_volume_changed(value: float) -> void:
 	OpeningMusic.set_volume_percent(value)
 
 
 # 切换静音状态并刷新控件显示。
-func toggle_music_mute() -> void:
+func _toggle_music_mute() -> void:
 	OpeningMusic.set_muted(not OpeningMusic.muted)
-	refresh_music_controls()
+	_refresh_music_controls()
 
 
 # 刷新音量滑块与静音按钮文字。
-func refresh_music_controls() -> void:
+func _refresh_music_controls() -> void:
 	music_slider.value = OpeningMusic.volume_percent
 	mute_button.text = "恢复" if OpeningMusic.muted else "静音"
 
 
 # 创建 BureauModal 确认弹窗，绑定动作回调。
-func create_confirmation(title: String, message: String, confirm_action: String):
-	var dialog = BureauModalScene.new()
+func _create_confirmation(title: String, message: String, confirm_action: String) -> BureauModal:
+	var dialog: BureauModal = BureauModalScene.new()
 	dialog.configure(title, message, Vector2(620, 330))
 	dialog.add_action("cancel", "取消", true)
 	dialog.add_action(confirm_action, "确认", false, true)
@@ -212,10 +222,13 @@ func _on_confirmation_action(action_id: String) -> void:
 
 # 全局键盘输入监听：ESC 打开/关闭菜单，开发控制台打开时优先关闭控制台。
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event.pressed or event.echo or event.keycode != KEY_ESCAPE:
+	if not event is InputEventKey:
 		return
-	var developer_console = get_tree().root.get_node_or_null("DeveloperConsole")
-	if developer_console != null and bool(developer_console.is_open):
+	var key_event: InputEventKey = event
+	if not key_event.pressed or key_event.echo or key_event.keycode != KEY_ESCAPE:
+		return
+	var developer_console := get_tree().root.get_node_or_null("DeveloperConsole")
+	if developer_console != null and WorkdayContext.to_bool(developer_console.get("is_open")):
 		return
 	if is_open:
 		if menu_confirmation.visible or exit_confirmation.visible:
@@ -238,8 +251,8 @@ func open_menu() -> void:
 	Sfx.play("ui_switch")
 	overlay.visible = true
 	get_tree().paused = true
-	refresh_fullscreen_label()
-	refresh_music_controls()
+	_refresh_fullscreen_label()
+	_refresh_music_controls()
 	resume_button.grab_focus()
 
 
@@ -259,11 +272,11 @@ func toggle_fullscreen() -> void:
 	var mode := DisplayServer.window_get_mode()
 	var fullscreen := mode in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
-	call_deferred("refresh_fullscreen_label")
+	call_deferred("_refresh_fullscreen_label")
 
 
 # 刷新全屏按钮文字。
-func refresh_fullscreen_label() -> void:
+func _refresh_fullscreen_label() -> void:
 	var mode := DisplayServer.window_get_mode()
 	var fullscreen := mode in [DisplayServer.WINDOW_MODE_FULLSCREEN, DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
 	fullscreen_button.text = "全屏：开" if fullscreen else "全屏：关"
@@ -308,7 +321,7 @@ func is_scene_allowed_path(path: String) -> bool:
 
 
 # 根据视口大小等比例缩放暂停菜单根节点。
-func fit_to_window() -> void:
+func _fit_to_window() -> void:
 	var viewport_size := get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
@@ -319,3 +332,13 @@ func fit_to_window() -> void:
 func _process(_delta: float) -> void:
 	if is_open and not is_current_scene_allowed():
 		close_menu()
+
+
+# 播放暂停菜单按钮点击音效。
+func _play_menu_click() -> void:
+	Sfx.play("ui_click")
+
+
+# 播放暂停菜单按钮悬停音效。
+func _play_menu_hover() -> void:
+	Sfx.play("ui_hover")

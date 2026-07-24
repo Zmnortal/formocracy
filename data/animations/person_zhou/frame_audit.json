@@ -1,0 +1,41 @@
+{
+  "audit_date": "2026-07-25",
+  "character_id": "PERSON-ZHOU",
+  "source_reference_backup": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_zhou_original_and_sources_2026-07-25/reference/fullbody.png",
+  "generated_source_strips": 4,
+  "active_png_count": 20,
+  "active_canvas": [
+    512,
+    768
+  ],
+  "active_directory": "res://assets/characters/applicants/person_zhou/fullbody_frames_20",
+  "policy": {
+    "required_coverage": "full_body",
+    "required_filename_suffix": "_fullbody.png",
+    "runtime_texture_crop_allowed": false,
+    "runtime_clip_allowed": false,
+    "max_fps": 4
+  },
+  "identity": {
+    "silhouette": "高瘦长腿，及臀短工作夹克，直筒长裤，低帮鞋",
+    "head": "无帽，深色短发，后退发际线与中央尖形发际",
+    "face": "长窄疲惫脸，浓眉与深眼窝",
+    "forbidden": [
+      "星徽帽",
+      "过膝大衣",
+      "高筒靴",
+      "少年脸"
+    ]
+  },
+  "emotion_direction": {
+    "approved": "克制的释然与安静微笑",
+    "rejected": "难以置信、辩解与压住的怒意"
+  },
+  "frame_groups": {
+    "neutral_and_nervous": [1, 2, 3, 4, 5],
+    "delivery_and_relief": [6, 7, 8, 9, 10],
+    "approval_and_rejection": [11, 12, 13, 14, 15],
+    "rejection_and_exit": [16, 17, 18, 19, 20]
+  },
+  "backup": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_zhou_original_and_sources_2026-07-25"
+}

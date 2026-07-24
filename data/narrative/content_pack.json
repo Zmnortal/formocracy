@@ -1,0 +1,20 @@
+{
+  "id": "FORMOCRACY-DEMO-7D",
+  "schema_version": 1,
+  "default_workday_id": "WORKDAY-001",
+  "last_workday_id": "WORKDAY-007",
+  "files": {
+    "people": "res://data/ontology/people.json",
+    "purposes": "res://data/ontology/purposes.json",
+    "document_types": "res://data/ontology/document_types.json",
+    "rules": "res://data/ontology/rules.json",
+    "violations": "res://data/ontology/violations.json",
+    "consequences": "res://data/ontology/consequences.json",
+    "locations": "res://data/ontology/locations.json",
+    "personal_forms": "res://data/ontology/personal_forms.json",
+    "proprietors": "res://data/ontology/proprietors.json",
+    "cases_v2": "res://data/narrative/demo_cases.json",
+    "workdays": "res://data/narrative/demo_workdays.json",
+    "storylines": "res://data/narrative/storylines.json"
+  }
+}

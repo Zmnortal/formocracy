@@ -89,6 +89,7 @@ func _ready() -> void:
 	add_child(voice_player)
 
 
+# 创建并配置一个循环播放的音频播放器。
 func _make_looping_player(player_name: String, stream: AudioStreamMP3, volume_db: float) -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
 	player.name = player_name
@@ -100,32 +101,36 @@ func _make_looping_player(player_name: String, stream: AudioStreamMP3, volume_db
 	return player
 
 
+# 查询 OpeningMusic 的静音状态，决定音效是否播放。
 func _is_muted() -> bool:
-	var music = get_node_or_null("/root/OpeningMusic")
-	return music != null and bool(music.muted)
+	var music := get_node_or_null("/root/OpeningMusic")
+	return music != null and WorkdayContext.to_bool(music.get("muted"))
 
 
 # 播放一次性音效；name 为 STREAMS 中的键。
-func play(sound_name: String, volume_offset_db := 0.0, pitch := 1.0) -> void:
+func play(sound_name: String, volume_offset_db: float = 0.0, pitch: float = 1.0) -> void:
 	if _is_muted() or not STREAMS.has(sound_name):
 		return
 	for player in one_shot_players:
 		if player.playing:
 			continue
 		player.stream = STREAMS[sound_name]
-		player.volume_db = float(DEFAULT_VOLUME_DB.get(sound_name, 0.0)) + volume_offset_db
+		player.volume_db = (WorkdayContext.to_float(DEFAULT_VOLUME_DB.get(sound_name), 0.0) + volume_offset_db)
 		player.pitch_scale = pitch
 		player.play()
 		return
 
 
 # 播放一次短促人物拟声；配置路径无效时按人物 ID 或备用声线降级。
-func play_voice(person_id: String, configured_path := "") -> void:
+func play_voice(person_id: String, configured_path: String = "") -> void:
 	if _is_muted():
 		return
 	var stream: AudioStream
 	if not configured_path.is_empty() and ResourceLoader.exists(configured_path):
-		stream = load(configured_path)
+		var resource := ResourceLoader.load(configured_path)
+		if resource is AudioStream:
+			@warning_ignore("unsafe_cast")
+			stream = resource
 	if stream == null:
 		stream = VOICE_STREAMS.get(person_id)
 	if stream == null:
@@ -138,6 +143,7 @@ func play_voice(person_id: String, configured_path := "") -> void:
 	voice_player.play()
 
 
+# 停止当前 NPC 语音播放。
 func stop_voice() -> void:
 	if is_instance_valid(voice_player):
 		voice_player.stop()
@@ -149,6 +155,7 @@ func start_ambience() -> void:
 		ambience_player.play()
 
 
+# 停止办公室环境底噪。
 func stop_ambience() -> void:
 	ambience_player.stop()
 
@@ -159,6 +166,7 @@ func start_walking() -> void:
 		walk_player.play()
 
 
+# 停止脚步声循环。
 func stop_walking() -> void:
 	walk_player.stop()
 
@@ -169,6 +177,7 @@ func start_conveyor() -> void:
 		conveyor_player.play()
 
 
+# 停止传送带音效。
 func stop_conveyor() -> void:
 	conveyor_player.stop()
 
@@ -183,6 +192,7 @@ func typewriter_tick() -> void:
 		typewriter_player.play(randf_range(0.0, maxf(length - 1.0, 0.0)))
 
 
+# 超过 linger 时间后自动停止打字机音效。
 func _process(_delta: float) -> void:
 	if typewriter_player.playing and Time.get_ticks_msec() / 1000.0 > typewriter_deadline:
 		typewriter_player.stop()

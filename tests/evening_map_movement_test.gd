@@ -11,7 +11,7 @@ func run() -> void:
 	bridge.last_emitted_event.clear()
 	state.reset_for_tests()
 	state.day_number = 2
-	state.begin_evening()
+	state.manager.begin_evening()
 	var error := change_scene_to_file("res://scenes/evening_map.tscn")
 	assert(error == OK, "evening map must open")
 	await process_frame
@@ -42,7 +42,7 @@ func run() -> void:
 	assert(state.evening_location_id == map.LOCATION_OFFICE, "advancing the day must reset the evening location")
 	state.configure_workday({"id": "WORKDAY-001", "day_number": 1, "case_ids": []})
 	assert(state.day_number == 3, "reloading a base workday config must not roll back the progressed day")
-	state.begin_evening()
+	state.manager.begin_evening()
 	assert(state.evening_actions_remaining == 2, "a new workday must restore two evening actions")
 	assert(state.evening_location_id == map.LOCATION_OFFICE, "a new evening must start at the office")
 	state.day_number = 4
@@ -52,7 +52,7 @@ func run() -> void:
 	state.settled_day_number = 4
 	state.target_case_count = 1
 	state.records.assign([{"case_id": "LEGACY-COMPLETE"}])
-	assert(state.repair_legacy_exhausted_evening(5), "legacy exhausted saves must be repaired")
+	assert(state.save_system.repair_legacy_exhausted_evening(5), "legacy exhausted saves must be repaired")
 	assert(state.day_number == 5, "legacy repair must advance to the next day")
 	assert(state.evening_actions_remaining == 2, "legacy repair must restore two actions")
 	assert(state.evening_location_id == map.LOCATION_OFFICE, "legacy repair must return to the office")

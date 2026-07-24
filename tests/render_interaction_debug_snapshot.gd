@@ -24,4 +24,3 @@ func run() -> void:
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "interaction debug snapshot must save")
 	print("FORMOCRACY_INTERACTION_DEBUG_RENDER_OK %s" % SNAPSHOT_PATH)
 	quit(0)
-

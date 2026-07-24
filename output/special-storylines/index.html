@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FORMOCRACY · 七日 Demo 特殊故事线</title>
+  <!--
+    已确认假设：
+    - 这是供叙事、关卡和美术共同阅读的浏览器档案，不是营销网站。
+    - 视觉延续人物档案与行政手册：暖白旧纸、档案绿、人物主色、真实项目素材。
+    - 总览页负责显示 7 日、11 宗剧情表单、4 条故事线及其证据汇合。
+    - 林默是 NPC；玩家姓名由开局输入。
+  -->
+  <link rel="stylesheet" href="storylines.css">
+</head>
+<body data-page="overview">
+  <svg class="icon-defs" aria-hidden="true">
+    <defs>
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6h5v6"/></symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></symbol>
+      <symbol id="icon-water" viewBox="0 0 24 24"><path d="M12 3s6 6.4 6 11a6 6 0 1 1-12 0c0-4.6 6-11 6-11Z"/><path d="M9 15.5c.8 1.3 1.8 1.8 3.3 1.8"/></symbol>
+      <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4 5h16v4H4z"/><path d="M6 9v11h12V9"/><path d="M9 13h6"/></symbol>
+      <symbol id="icon-seal" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="m9 13-2 8 5-2 5 2-2-8"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand-block" href="index.html">
+        <span class="brand-seal">12区</span>
+        <span class="brand-copy"><strong>特殊故事线档案</strong><span>7 DAYS / 11 CASES</span></span>
+      </a>
+      <nav class="nav" aria-label="故事线导航">
+        <a href="index.html" data-nav="overview">七日总览</a>
+        <a href="story-01-cohabitation.html" data-nav="story-01">01 共同居住</a>
+        <a href="story-02-time-resources.html" data-nav="story-02">02 时间与资源</a>
+        <a href="story-03-pollution-archive.html" data-nav="story-03">03 污染与封档</a>
+        <a href="story-04-final-stamp.html" data-nav="story-04">04 最后盖章</a>
+        <a href="case-template.html" data-nav="template">案件模板</a>
+      </nav>
+      <div class="top-status">INTERNAL<br>NARRATIVE</div>
+    </header>
+
+    <main class="paper">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">FORMOCRACY / DISTRICT 12 / SPECIAL STORYLINES</div>
+          <h1>七天里，十一张表单如何变成同一件事</h1>
+          <p class="lead">玩家每天处理五宗行政需求。大多数只是城市的普通生活，少数表单却会反复带回同一批人、同一组异常日期，以及一场被推迟承认的事故。</p>
+          <div class="ratio-bar" aria-label="案件比例">
+            <div class="ratio-general">24 GENERAL · 68.6%</div>
+            <div class="ratio-story">11 STORY · 31.4%</div>
+          </div>
+          <div class="hero-meta">
+            <span>4 条交叉故事线</span>
+            <span>7 个工作日</span>
+            <span>35 宗总案件</span>
+            <span>人物回访而非一次性任务</span>
+          </div>
+        </div>
+        <figure class="hero-visual" data-caption="回访核心人物 / 制度灰底 × 人格主色">
+          <img src="../../assets/characters/dossier/source/existing-seven-color-lineup.png" alt="七名核心人物像素立绘总览">
+        </figure>
+      </section>
+
+      <section class="section" id="story-index">
+        <header class="section-head">
+          <div class="section-no">01</div>
+          <h2 class="section-title">不是十一段小故事，而是四条互相作证的线</h2>
+          <p class="section-note">每一条线都可以独立理解，但只有把人物、表单和机器记录连接起来，玩家才会看见完整问题。</p>
+        </header>
+        <div class="story-index">
+          <a class="story-tab" style="--accent:#3f5fa8" href="story-01-cohabitation.html">
+            <span class="tab-no">01</span>
+            <div><h2>共同居住与失踪的三个月</h2><p>林默与沈青禾想住在一起，却不得不证明林默在行政记录里“消失”的三个月。</p></div>
+            <span class="tab-link">D1 → D3 → D6 / 查看故事线</span>
+          </a>
+          <a class="story-tab" style="--accent:#b8683d" href="story-02-time-resources.html">
+            <span class="tab-no">02</span>
+            <div><h2>被改动的时间与生存资源</h2><p>许桥的迟到、宋铎的维护记录和杜春梅的资源顺位，都由同一套机器决定。</p></div>
+            <span class="tab-link">D2 → D3 → D4 → D5 / 查看故事线</span>
+          </a>
+          <a class="story-tab" style="--accent:#d6a126" href="story-03-pollution-archive.html">
+            <span class="tab-no">03</span>
+            <div><h2>提前发生的污染与被封存的人</h2><p>孟秋兰的检测太早，还是官方的事故日期太晚？答案被装在一个续封文件袋里。</p></div>
+            <span class="tab-link">D5 → D6 → D7 / 查看故事线</span>
+          </a>
+          <a class="story-tab" style="--accent:#a3443d" href="story-04-final-stamp.html">
+            <span class="tab-no">04</span>
+            <div><h2>合法特权与最后一次盖章</h2><p>最后一宗案件没有任何材料错误。兑付它，却会让另一个人失去当天唯一的医疗资源。</p></div>
+            <span class="tab-link">D7 / 查看最终汇合</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" id="seven-days">
+        <header class="section-head">
+          <div class="section-no">02</div>
+          <h2 class="section-title">十一宗剧情表单在七天里露头</h2>
+          <p class="section-note">剧情位置刻意错开。只有第一天把钩子放在第五单；之后剧情可以出现在一天的中段、开头或结尾。</p>
+        </header>
+        <div class="day-board">
+          <article class="day-column">
+            <div class="day-label"><b>01</b><span>4G / 1P</span></div>
+            <div class="case-pill" style="--accent:#3f5fa8"><span class="case-icon"><svg><use href="#icon-home"/></svg></span><div><strong>R-12</strong><span>林默申请共同居住，沈青禾的跨区身份成为钩子。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>02</b><span>4G / 1P</span></div>
+            <div class="case-pill" style="--accent:#d35245"><span class="case-icon"><svg><use href="#icon-clock"/></svg></span><div><strong>M-31</strong><span>许桥的医院时间与验收回执相差二十三分钟。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>03</b><span>3G / 2P</span></div>
+            <div class="case-pill" style="--accent:#945b82"><span class="case-icon"><svg><use href="#icon-seal"/></svg></span><div><strong>R-09</strong><span>杜春梅写下系统不存在的人名。</span></div></div>
+            <div class="case-pill" style="--accent:#69ac8a"><span class="case-icon"><svg><use href="#icon-home"/></svg></span><div><strong>X-14</strong><span>沈青禾补件，暴露林默三个月住所空白。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>04</b><span>4G / 1P</span></div>
+            <div class="case-pill" style="--accent:#b8683d"><span class="case-icon"><svg><use href="#icon-clock"/></svg></span><div><strong>F-09</strong><span>宋铎的居住延续附件里出现人工校时记录。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>05</b><span>3G / 2P</span></div>
+            <div class="case-pill" style="--accent:#d6a126"><span class="case-icon"><svg><use href="#icon-water"/></svg></span><div><strong>P-44</strong><span>孟秋兰提交早于官方事故日期的污染检测。</span></div></div>
+            <div class="case-pill" style="--accent:#945b82"><span class="case-icon"><svg><use href="#icon-seal"/></svg></span><div><strong>M-52</strong><span>杜春梅进入最后一个医疗资源位的争夺。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>06</b><span>3G / 2P</span></div>
+            <div class="case-pill" style="--accent:#3f5fa8"><span class="case-icon"><svg><use href="#icon-home"/></svg></span><div><strong>R-12</strong><span>完整补件把林默连接到事故地点。</span></div></div>
+            <div class="case-pill" style="--accent:#d6a126"><span class="case-icon"><svg><use href="#icon-archive"/></svg></span><div><strong>A-73</strong><span>孟秋兰要求解封儿子的事故记录。</span></div></div>
+          </article>
+          <article class="day-column">
+            <div class="day-label"><b>07</b><span>3G / 2P</span></div>
+            <div class="case-pill" style="--accent:#637080"><span class="case-icon"><svg><use href="#icon-archive"/></svg></span><div><strong>S-18</strong><span>工厂申请继续封存事故名单。</span></div></div>
+            <div class="case-pill" style="--accent:#a3443d"><span class="case-icon"><svg><use href="#icon-seal"/></svg></span><div><strong>V-01</strong><span>完全合法的保障券夺取最后一个资源位。</span></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="evidence">
+        <header class="section-head">
+          <div class="section-no">03</div>
+          <h2 class="section-title">一场事故，被拆成六种互不承认的记录</h2>
+          <p class="section-note">任何单一文件都不足以揭露真相。玩家只能通过不同人物携带的材料建立交叉印证。</p>
+        </header>
+        <div class="evidence-frame" role="img" aria-label="四条故事线的证据网络图">
+          <svg viewBox="0 0 1200 580">
+            <path class="edge" d="M200 145 C355 145 360 250 510 250"/>
+            <path class="edge" d="M200 430 C360 430 360 320 510 320"/>
+            <path class="edge dashed" d="M600 95 C600 170 600 180 600 250"/>
+            <path class="edge" d="M690 285 C810 285 830 145 990 145"/>
+            <path class="edge" d="M690 305 C835 305 835 425 990 425"/>
+            <g class="node" style="--node-color:#3f5fa8"><rect x="60" y="95" width="220" height="100"/><text x="82" y="130">林默的三个月空白</text><text class="small" x="82" y="160">住所 / 夜间线路</text></g>
+            <g class="node" style="--node-color:#d35245"><rect x="60" y="380" width="220" height="100"/><text x="82" y="415">许桥的迟到回执</text><text class="small" x="82" y="445">医疗 / 二十三分钟</text></g>
+            <g class="node" style="--node-color:#b8683d"><rect x="490" y="45" width="220" height="100"/><text x="512" y="80">宋铎的人工校时</text><text class="small" x="512" y="110">机器 / 日终同步</text></g>
+            <g class="node" style="--node-color:#344a3e"><circle cx="600" cy="285" r="98"/><text x="540" y="278">被推迟承认的</text><text x="558" y="305">污染事故</text><text class="small" x="548" y="333">DISTRICT 12</text></g>
+            <g class="node" style="--node-color:#d6a126"><rect x="920" y="95" width="220" height="100"/><text x="942" y="130">孟秋兰的早期检测</text><text class="small" x="942" y="160">污染 / 失踪工人</text></g>
+            <g class="node" style="--node-color:#a3443d"><rect x="920" y="375" width="220" height="100"/><text x="942" y="410">续封与保障券</text><text class="small" x="942" y="440">档案 / 合法特权</text></g>
+          </svg>
+        </div>
+      </section>
+
+      <section class="section" id="sources">
+        <header class="section-head">
+          <div class="section-no">04</div>
+          <h2 class="section-title">视觉与规则都来自现有游戏资产</h2>
+          <p class="section-note">人物不是示意头像，文件也不是抽象方块。页面直接使用项目里的立绘、表单与手册。</p>
+        </header>
+        <div class="document-wall">
+          <article class="document-card"><img src="../../assets/day1_8bit/interactive/water_regulation_handbook.png" alt="行政指导手册"><div class="doc-code">MANUAL / REV.07</div><h3>行政指导手册</h3></article>
+          <article class="document-card"><img src="../../assets/documents/templates/application_form.png" alt="申请表模板"><div class="doc-code">FORM / APPLICATION</div><h3>具体业务申请表</h3></article>
+          <article class="document-card"><img src="../../assets/documents/templates/medical_receipt.png" alt="医疗回执模板"><div class="doc-code">PROOF / MEDICAL</div><h3>医疗急件与时间证据</h3></article>
+          <article class="document-card"><img src="../../assets/day1_8bit/interactive/validation_machine.png" alt="验收机"><div class="doc-code">MACHINE / END-OF-DAY</div><h3>让文件取得现实效力的机器</h3></article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>FORMOCRACY · DISTRICT 12 SPECIAL STORYLINES</span>
+      <span>24 GENERAL / 11 NARRATIVE / 4 INTERLOCKED ARCS</span>
+    </footer>
+  </div>
+  <script src="storylines.js"></script>
+</body>
+</html>

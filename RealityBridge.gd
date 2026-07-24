@@ -4,39 +4,44 @@
 # 换热点时可通过 GLASS_WS_HOST / GLASS_WS_PORT 环境变量覆盖默认连接地址。
 extends Node
 
+signal glass_connected
+signal glass_disconnected
+signal reality_event_emitted(type: String, data: Dictionary)
+
 const DEFAULT_HOST := "172.20.10.3"
 const DEFAULT_PORT := 8777
 const RECONNECT_INTERVAL := 2.0
 
-signal glass_connected
-signal glass_disconnected
-signal reality_event_emitted(type: String, data: Dictionary)
+var last_emitted_event: Dictionary = {}
 
 var _host: String
 var _port: int
 var _ws := WebSocketPeer.new()
 var _connected := false
-var _pending: Array = []
+var _pending: Array[String] = []
 var _reconnect_left := 0.0
-var last_emitted_event: Dictionary = {}
 
 
+# 初始化主机、端口并建立 WebSocket 连接。
 func _ready() -> void:
 	_host = _resolve_host()
 	_port = _resolve_port()
 	_connect()
 
 
+# 从环境变量读取 GLASS_WS_HOST，否则返回默认主机。
 func _resolve_host() -> String:
 	var env := OS.get_environment("GLASS_WS_HOST")
 	return env if env != "" else DEFAULT_HOST
 
 
+# 从环境变量读取 GLASS_WS_PORT，否则返回默认端口。
 func _resolve_port() -> int:
 	var env := OS.get_environment("GLASS_WS_PORT")
 	return int(env) if env.is_valid_int() else DEFAULT_PORT
 
 
+# 尝试连接 GLASS WebSocket 服务；失败时启动重连计时。
 func _connect() -> void:
 	var url := "ws://%s:%d" % [_host, _port]
 	print("[RealityBridge] 连接 %s ..." % url)
@@ -46,6 +51,7 @@ func _connect() -> void:
 		_reconnect_left = RECONNECT_INTERVAL
 
 
+# 每帧轮询 WebSocket 状态，处理重连与事件发送。
 func _process(delta: float) -> void:
 	if _reconnect_left > 0.0:
 		_reconnect_left -= delta
@@ -61,7 +67,7 @@ func _process(delta: float) -> void:
 				_connected = true
 				print("[RealityBridge] 已连接 %s:%d" % [_host, _port])
 				glass_connected.emit()
-				for event in _pending:
+				for event: String in _pending:
 					_ws.send_text(event)
 				_pending.clear()
 		WebSocketPeer.STATE_CLOSED:
@@ -72,10 +78,12 @@ func _process(delta: float) -> void:
 			_reconnect_left = RECONNECT_INTERVAL
 
 
+# 返回当前是否已连接到 GLASS 服务。
 func is_connected_to_glass() -> bool:
 	return _connected
 
 
+# 组装并发送现实事件到本地信号与 GLASS WebSocket；离线时缓存。
 func emit_reality_event(type: String, data: Dictionary = {}) -> void:
 	var payload := data.duplicate()
 	payload["type"] = type
@@ -88,22 +96,28 @@ func emit_reality_event(type: String, data: Dictionary = {}) -> void:
 		_pending.append(text)
 
 
-func morning_briefing(day: int, lines: Array, title := "") -> void:
-	emit_reality_event("morning_briefing", {
-		"day": day,
-		"title": title if title != "" else "晨间指令 · Day %d" % day,
-		"lines": lines,
-	})
+# 发送晨间简报事件到 GLASS。
+func morning_briefing(day: int, lines: Array, title: String = "") -> void:
+	emit_reality_event(
+		"morning_briefing",
+		{
+			"day": day,
+			"title": title if title != "" else "晨间指令 · Day %d" % day,
+			"lines": lines,
+		}
+	)
 
 
-func day_report(lines: Array, day := 0, title := "每日结算") -> void:
+# 发送每日结算报告事件到 GLASS。
+func day_report(lines: Array, day: int = 0, title: String = "每日结算") -> void:
 	var data := {"title": title, "lines": lines}
 	if day > 0:
 		data["day"] = day
 	emit_reality_event("day_report", data)
 
 
-func secretary_react(phase: String, parcel_no: int, weight: int, dest: String, due: float, applied := -1.0) -> void:
+# 发送秘书对包裹申请的反应事件到 GLASS。
+func secretary_react(phase: String, parcel_no: int, weight: int, dest: String, due: float, applied: float = -1.0) -> void:
 	var data := {
 		"phase": phase,
 		"parcelNo": parcel_no,
@@ -116,11 +130,13 @@ func secretary_react(phase: String, parcel_no: int, weight: int, dest: String, d
 	emit_reality_event("secretary_react", data)
 
 
+# 发送秘书台词事件到 GLASS。
 func secretary_line(text: String) -> void:
 	emit_reality_event("secretary_line", {"text": text})
 
 
-func npc_line(name: String, text: String, gender := "", age := "", portrait := "") -> void:
+# 发送 NPC 台词事件到 GLASS，可附带性别、年龄与头像信息。
+func npc_line(name: String, text: String, gender: String = "", age: String = "", portrait: String = "") -> void:
 	var data := {"title": name, "text": text}
 	if gender != "":
 		data["gender"] = gender
@@ -131,7 +147,8 @@ func npc_line(name: String, text: String, gender := "", age := "", portrait := "
 	emit_reality_event("npc_line", data)
 
 
-func reality_receipt(title: String, body: String, severity := "normal", day := 0, form_id := "", outcome := "") -> void:
+# 发送现实收据/通知事件到 GLASS。
+func reality_receipt(title: String, body: String, severity: String = "normal", day: int = 0, form_id: String = "", outcome: String = "") -> void:
 	var data := {"title": title, "body": body, "severity": severity}
 	if day > 0:
 		data["day"] = day
@@ -142,9 +159,11 @@ func reality_receipt(title: String, body: String, severity := "normal", day := 0
 	emit_reality_event("reality_receipt", data)
 
 
-func consequence(title: String, body: String, severity := "warning") -> void:
+# 发送后果/警告事件到 GLASS。
+func consequence(title: String, body: String, severity: String = "warning") -> void:
 	emit_reality_event("consequence", {"title": title, "body": body, "severity": severity})
 
 
+# 发送一条连接测试收据到 GLASS。
 func send_test() -> void:
 	reality_receipt("连接测试", "Godot ↔ 眼镜 链路已打通", "normal")

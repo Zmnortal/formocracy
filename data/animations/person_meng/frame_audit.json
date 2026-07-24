@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-MENG",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_meng_original_and_sources_2026-07-25/reference/fullbody.png",
+  "source_strips": [
+    "strip_01_neutral_nervous.png",
+    "strip_02_deliver_approve.png",
+    "strip_03_approve_reject.png",
+    "strip_04_reject_exit.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 48,
+    "role": "公共食堂配餐员",
+    "palette": "姜黄与深褐",
+    "markers": [
+      "浅色十字花纹棕紫头巾",
+      "姜黄针织开衫",
+      "深褐过膝裙",
+      "深色长袜",
+      "棕色系带鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "长期疲惫但仍守住每一张回执，微表情以眨眼、换重心和护住纸张为主。",
+    "approved": "短暂不敢相信后克制地松一口气，像终于得到继续追索儿子记录的入口。",
+    "rejected": "先受伤、再尝试恳求，最后沉默护住退件，带着没有结束追索的决心离开。"
+  }
+}

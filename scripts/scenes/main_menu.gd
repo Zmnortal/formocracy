@@ -7,25 +7,166 @@ const DOCUMENT_VISUAL_SCALE := 1.5
 const TYPOGRAPHY_SCALE := 1.5
 
 const DOCUMENTS: Array[Dictionary] = [
-	{"path": "res://assets/menu/document_collage/final/02_approval_register.png", "corner": "top_left", "offset": Vector2(130, 55), "size": Vector2(315, 205), "rotation": -11.0, "z": 1, "delay": 0.02, "phase": 0.3},
-	{"path": "res://assets/menu/document_collage/final/10_staff_transfer.png", "corner": "top_left", "offset": Vector2(190, 115), "size": Vector2(330, 238), "rotation": 8.0, "z": 2, "delay": 0.07, "phase": 1.2},
-	{"path": "res://assets/menu/document_collage/final/14_staff_id.png", "corner": "top_left", "offset": Vector2(84, 240), "size": Vector2(235, 160), "rotation": -16.0, "z": 3, "delay": 0.12, "phase": 2.1},
-	{"path": "res://assets/menu/document_collage/final/01_workday_report.png", "corner": "top_left", "offset": Vector2(235, 190), "size": Vector2(270, 375), "rotation": -3.5, "z": 4, "delay": 0.18, "phase": 2.8},
-
-	{"path": "res://assets/menu/document_collage/final/12_archive_access.png", "corner": "top_right", "offset": Vector2(-135, 65), "size": Vector2(320, 258), "rotation": 12.0, "z": 1, "delay": 0.04, "phase": 0.8},
-	{"path": "res://assets/menu/document_collage/final/16_stamps_sheet.png", "corner": "top_right", "offset": Vector2(-275, 92), "size": Vector2(215, 141), "rotation": -9.0, "z": 3, "delay": 0.10, "phase": 1.7},
-	{"path": "res://assets/menu/document_collage/final/13_application_receipt.png", "corner": "top_right", "offset": Vector2(-75, 245), "size": Vector2(220, 180), "rotation": 14.0, "z": 2, "delay": 0.14, "phase": 2.4},
-	{"path": "res://assets/menu/document_collage/final/09_government_report.png", "corner": "top_right", "offset": Vector2(-185, 205), "size": Vector2(238, 352), "rotation": 3.0, "z": 4, "delay": 0.20, "phase": 3.2},
-
-	{"path": "res://assets/menu/document_collage/final/07_passage_permit.png", "corner": "bottom_left", "offset": Vector2(95, -72), "size": Vector2(330, 264), "rotation": 10.0, "z": 1, "delay": 0.05, "phase": 0.5},
-	{"path": "res://assets/menu/document_collage/final/06_water_quota.png", "corner": "bottom_left", "offset": Vector2(70, -220), "size": Vector2(238, 348), "rotation": -13.0, "z": 2, "delay": 0.11, "phase": 1.4},
-	{"path": "res://assets/menu/document_collage/final/08_lost_property.png", "corner": "bottom_left", "offset": Vector2(265, -125), "size": Vector2(220, 338), "rotation": 15.0, "z": 3, "delay": 0.16, "phase": 2.0},
-	{"path": "res://assets/menu/document_collage/final/05_housing_change.png", "corner": "bottom_left", "offset": Vector2(190, -175), "size": Vector2(255, 365), "rotation": -2.5, "z": 4, "delay": 0.22, "phase": 2.9},
-
-	{"path": "res://assets/menu/document_collage/final/11_confidential_circulation.png", "corner": "bottom_right", "offset": Vector2(-90, -188), "size": Vector2(245, 348), "rotation": -13.0, "z": 1, "delay": 0.06, "phase": 0.1},
-	{"path": "res://assets/menu/document_collage/final/04_penalty_notice.png", "corner": "bottom_right", "offset": Vector2(-270, -100), "size": Vector2(224, 360), "rotation": 12.0, "z": 2, "delay": 0.12, "phase": 1.1},
-	{"path": "res://assets/menu/document_collage/final/15_reality_seal.png", "corner": "bottom_right", "offset": Vector2(-310, -280), "size": Vector2(170, 178), "rotation": -18.0, "z": 4, "delay": 0.17, "phase": 2.2},
-	{"path": "res://assets/menu/document_collage/final/03_reality_validation.png", "corner": "bottom_right", "offset": Vector2(-170, -185), "size": Vector2(255, 344), "rotation": 3.5, "z": 3, "delay": 0.23, "phase": 3.0},
+	{
+		"path": "res://assets/menu/document_collage/final/02_approval_register.png",
+		"corner": "top_left",
+		"offset": Vector2(130, 55),
+		"size": Vector2(315, 205),
+		"rotation": -11.0,
+		"z": 1,
+		"delay": 0.02,
+		"phase": 0.3
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/10_staff_transfer.png",
+		"corner": "top_left",
+		"offset": Vector2(190, 115),
+		"size": Vector2(330, 238),
+		"rotation": 8.0,
+		"z": 2,
+		"delay": 0.07,
+		"phase": 1.2
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/14_staff_id.png",
+		"corner": "top_left",
+		"offset": Vector2(84, 240),
+		"size": Vector2(235, 160),
+		"rotation": -16.0,
+		"z": 3,
+		"delay": 0.12,
+		"phase": 2.1
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/01_workday_report.png",
+		"corner": "top_left",
+		"offset": Vector2(235, 190),
+		"size": Vector2(270, 375),
+		"rotation": -3.5,
+		"z": 4,
+		"delay": 0.18,
+		"phase": 2.8
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/12_archive_access.png",
+		"corner": "top_right",
+		"offset": Vector2(-135, 65),
+		"size": Vector2(320, 258),
+		"rotation": 12.0,
+		"z": 1,
+		"delay": 0.04,
+		"phase": 0.8
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/16_stamps_sheet.png",
+		"corner": "top_right",
+		"offset": Vector2(-275, 92),
+		"size": Vector2(215, 141),
+		"rotation": -9.0,
+		"z": 3,
+		"delay": 0.10,
+		"phase": 1.7
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/13_application_receipt.png",
+		"corner": "top_right",
+		"offset": Vector2(-75, 245),
+		"size": Vector2(220, 180),
+		"rotation": 14.0,
+		"z": 2,
+		"delay": 0.14,
+		"phase": 2.4
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/09_government_report.png",
+		"corner": "top_right",
+		"offset": Vector2(-185, 205),
+		"size": Vector2(238, 352),
+		"rotation": 3.0,
+		"z": 4,
+		"delay": 0.20,
+		"phase": 3.2
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/07_passage_permit.png",
+		"corner": "bottom_left",
+		"offset": Vector2(95, -72),
+		"size": Vector2(330, 264),
+		"rotation": 10.0,
+		"z": 1,
+		"delay": 0.05,
+		"phase": 0.5
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/06_water_quota.png",
+		"corner": "bottom_left",
+		"offset": Vector2(70, -220),
+		"size": Vector2(238, 348),
+		"rotation": -13.0,
+		"z": 2,
+		"delay": 0.11,
+		"phase": 1.4
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/08_lost_property.png",
+		"corner": "bottom_left",
+		"offset": Vector2(265, -125),
+		"size": Vector2(220, 338),
+		"rotation": 15.0,
+		"z": 3,
+		"delay": 0.16,
+		"phase": 2.0
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/05_housing_change.png",
+		"corner": "bottom_left",
+		"offset": Vector2(190, -175),
+		"size": Vector2(255, 365),
+		"rotation": -2.5,
+		"z": 4,
+		"delay": 0.22,
+		"phase": 2.9
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/11_confidential_circulation.png",
+		"corner": "bottom_right",
+		"offset": Vector2(-90, -188),
+		"size": Vector2(245, 348),
+		"rotation": -13.0,
+		"z": 1,
+		"delay": 0.06,
+		"phase": 0.1
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/04_penalty_notice.png",
+		"corner": "bottom_right",
+		"offset": Vector2(-270, -100),
+		"size": Vector2(224, 360),
+		"rotation": 12.0,
+		"z": 2,
+		"delay": 0.12,
+		"phase": 1.1
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/15_reality_seal.png",
+		"corner": "bottom_right",
+		"offset": Vector2(-310, -280),
+		"size": Vector2(170, 178),
+		"rotation": -18.0,
+		"z": 4,
+		"delay": 0.17,
+		"phase": 2.2
+	},
+	{
+		"path": "res://assets/menu/document_collage/final/03_reality_validation.png",
+		"corner": "bottom_right",
+		"offset": Vector2(-170, -185),
+		"size": Vector2(255, 344),
+		"rotation": 3.5,
+		"z": 3,
+		"delay": 0.23,
+		"phase": 3.0
+	},
 ]
 
 var start_button: Button
@@ -40,6 +181,7 @@ var entrance_complete := false
 var transitioning := false
 
 
+# 主菜单就绪时播放开场音乐、构建界面、布局文件拼贴并播放入场动画。
 func _ready() -> void:
 	OpeningMusic.play_opening()
 	build_scene()
@@ -50,6 +192,7 @@ func _ready() -> void:
 	start_button.grab_focus()
 
 
+# 入场完成后每帧驱动文件的漂浮、鼠标靠近角落时的展开偏移与旋转晃动。
 func _process(delta: float) -> void:
 	if not entrance_complete or transitioning:
 		return
@@ -57,23 +200,22 @@ func _process(delta: float) -> void:
 	var viewport_size := get_viewport_rect().size
 	var mouse_position := get_viewport().get_mouse_position()
 	for i in document_nodes.size():
-		var paper := document_nodes[i]
-		var config := DOCUMENTS[i]
-		var base_position: Vector2 = paper.get_meta("base_position", paper.position)
-		var corner_point := get_corner_point(String(config.corner), viewport_size)
+		var paper: TextureRect = document_nodes[i]
+		var config: Dictionary = DOCUMENTS[i]
+		var base_position := _meta_vector(paper, "base_position", paper.position)
+		var corner_point := get_corner_point(WorkdayContext.read_string(config, "corner"), viewport_size)
 		var hover_distance := mouse_position.distance_to(corner_point)
 		var hover_amount := clampf(1.0 - hover_distance / (330.0 * collage_scale), 0.0, 1.0)
 		var unfold_direction := (paper.position + paper.size * 0.5 - corner_point).normalized()
-		var drift := Vector2(
-			sin(animation_time * 0.42 + float(config.phase)) * 1.2,
-			cos(animation_time * 0.36 + float(config.phase)) * 1.6
-		) * collage_scale
+		var phase := WorkdayContext.read_float(config, "phase")
+		var drift := Vector2(sin(animation_time * 0.42 + phase) * 1.2, cos(animation_time * 0.36 + phase) * 1.6) * collage_scale
 		var target_position := base_position + drift + unfold_direction * hover_amount * 7.0 * collage_scale
 		paper.position = paper.position.lerp(target_position, minf(delta * 5.0, 1.0))
-		var rotation_wobble := sin(animation_time * 0.28 + float(config.phase)) * 0.22
-		paper.rotation = lerp_angle(paper.rotation, deg_to_rad(float(config.rotation) + rotation_wobble), minf(delta * 3.0, 1.0))
+		var rotation_wobble := sin(animation_time * 0.28 + phase) * 0.22
+		paper.rotation = lerp_angle(paper.rotation, deg_to_rad(WorkdayContext.read_float(config, "rotation") + rotation_wobble), minf(delta * 3.0, 1.0))
 
 
+# 以代码构建主菜单：背景、兼容占位图、文件拼贴层、中央面板、标题与按钮。
 func build_scene() -> void:
 	var backdrop := ColorRect.new()
 	backdrop.name = "Backdrop"
@@ -155,22 +297,25 @@ func build_scene() -> void:
 	center_column.add_child(exit_button)
 
 
+# 按 DOCUMENTS 配置创建全部文件贴图节点并加入拼贴层，初始透明。
 func build_documents() -> void:
-	for config in DOCUMENTS:
+	for config: Dictionary in DOCUMENTS:
 		var paper := TextureRect.new()
-		paper.name = String(config.path).get_file().get_basename().to_pascal_case()
-		paper.texture = load(String(config.path))
+		var texture_path := WorkdayContext.read_string(config, "path")
+		paper.name = texture_path.get_file().get_basename().to_pascal_case()
+		paper.texture = load(texture_path) as Texture2D
 		paper.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		paper.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		paper.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		paper.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		paper.z_index = int(config.z)
-		paper.rotation = deg_to_rad(float(config.rotation))
+		paper.z_index = WorkdayContext.read_int(config, "z")
+		paper.rotation = deg_to_rad(WorkdayContext.read_float(config, "rotation"))
 		paper.modulate.a = 0.0
 		collage_layer.add_child(paper)
 		document_nodes.append(paper)
 
 
+# 按视口尺寸计算拼贴缩放，同步中央面板缩放并重算每张文件的基准位置。
 func layout_documents() -> void:
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
@@ -188,44 +333,48 @@ func layout_documents() -> void:
 	if document_nodes.is_empty():
 		return
 	for i in document_nodes.size():
-		var paper := document_nodes[i]
-		var config := DOCUMENTS[i]
-		paper.size = Vector2(config.size) * collage_scale * DOCUMENT_VISUAL_SCALE
+		var paper: TextureRect = document_nodes[i]
+		var config: Dictionary = DOCUMENTS[i]
+		paper.size = _config_vector(config, "size") * collage_scale * DOCUMENT_VISUAL_SCALE
 		paper.pivot_offset = paper.size * 0.5
-		var center := get_corner_point(String(config.corner), viewport_size) + Vector2(config.offset) * collage_scale
+		var center := get_corner_point(WorkdayContext.read_string(config, "corner"), viewport_size) + _config_vector(config, "offset") * collage_scale
 		var base_position := center - paper.size * 0.5
 		paper.set_meta("base_position", base_position)
 		if entrance_complete:
 			paper.position = base_position
 
 
+# 播放文件入场动画：从屏幕中心向外的偏移位滑回基准位并淡入。
 func animate_documents_in() -> void:
 	entrance_complete = true
 	var viewport_center := get_viewport_rect().size * 0.5
 	for i in document_nodes.size():
-		var paper := document_nodes[i]
-		var config := DOCUMENTS[i]
-		var base_position: Vector2 = paper.get_meta("base_position")
+		var paper: TextureRect = document_nodes[i]
+		var config: Dictionary = DOCUMENTS[i]
+		var base_position := _meta_vector(paper, "base_position", paper.position)
 		var paper_center := base_position + paper.size * 0.5
 		var outward := (paper_center - viewport_center).normalized()
 		paper.position = base_position + outward * 85.0 * collage_scale
 		var tween := create_tween()
 		tween.set_parallel(true)
-		tween.tween_property(paper, "position", base_position, 0.62).set_delay(float(config.delay)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_property(paper, "modulate:a", 1.0, 0.34).set_delay(float(config.delay))
+		var delay := WorkdayContext.read_float(config, "delay")
+		tween.tween_property(paper, "position", base_position, 0.62).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(paper, "modulate:a", 1.0, 0.34).set_delay(delay)
 
 
+# 快照辅助：跳过动画，将全部文件直接摆到基准位置、基准角度并完全不透明。
 func settle_collage_for_snapshot() -> void:
 	entrance_complete = true
 	layout_documents()
 	for i in document_nodes.size():
-		var paper := document_nodes[i]
-		var config := DOCUMENTS[i]
-		paper.position = paper.get_meta("base_position", paper.position)
-		paper.rotation = deg_to_rad(float(config.rotation))
+		var paper: TextureRect = document_nodes[i]
+		var config: Dictionary = DOCUMENTS[i]
+		paper.position = _meta_vector(paper, "base_position", paper.position)
+		paper.rotation = deg_to_rad(WorkdayContext.read_float(config, "rotation"))
 		paper.modulate.a = 1.0
 
 
+# 返回指定角落名称对应的视口坐标点，默认为左上角。
 func get_corner_point(corner: String, viewport_size: Vector2) -> Vector2:
 	match corner:
 		"top_right":
@@ -238,6 +387,7 @@ func get_corner_point(corner: String, viewport_size: Vector2) -> Vector2:
 			return Vector2.ZERO
 
 
+# 创建居中对齐、按排版比例放大字号的像素字体 Label。
 func make_label(label_text: String, font_size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.text = label_text
@@ -249,6 +399,7 @@ func make_label(label_text: String, font_size: int, color: Color) -> Label:
 	return label
 
 
+# 创建带悬停/按下样式与音效的主菜单像素风按钮。
 func make_button(label_text: String) -> Button:
 	var button := Button.new()
 	button.text = label_text
@@ -263,11 +414,12 @@ func make_button(label_text: String) -> Button:
 	button.add_theme_stylebox_override("hover", make_button_style(Color(0.09, 0.12, 0.095, 0.98), Color("#c2b36f"), 3))
 	button.add_theme_stylebox_override("pressed", make_button_style(Color("#b7a66d"), Color("#e9daa1"), 3))
 	button.add_theme_stylebox_override("focus", make_button_style(Color(0.06, 0.09, 0.075, 0.98), Color("#d7c578"), 3))
-	button.pressed.connect(func(): Sfx.play("ui_click"))
-	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
+	button.pressed.connect(func() -> void: Sfx.play("ui_click"))
+	button.mouse_entered.connect(func() -> void: Sfx.play("ui_hover"))
 	return button
 
 
+# 创建指定背景色、边框色与边框宽度的圆角按钮样式盒。
 func make_button_style(background: Color, border: Color, width: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = background
@@ -282,6 +434,7 @@ func make_button_style(background: Color, border: Color, width: int) -> StyleBox
 	return style
 
 
+# 点击开始后禁用按钮，播放文件向外飞散并淡出的过场，再切换到工作日选择场景。
 func on_start_pressed() -> void:
 	if transitioning:
 		return
@@ -289,8 +442,8 @@ func on_start_pressed() -> void:
 	start_button.disabled = true
 	exit_button.disabled = true
 	var viewport_center := get_viewport_rect().size * 0.5
-	for paper in document_nodes:
-		var base_position: Vector2 = paper.get_meta("base_position", paper.position)
+	for paper: TextureRect in document_nodes:
+		var base_position := _meta_vector(paper, "base_position", paper.position)
 		var outward := (base_position + paper.size * 0.5 - viewport_center).normalized()
 		var tween := create_tween().set_parallel(true)
 		tween.tween_property(paper, "position", base_position + outward * 95.0 * collage_scale, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
@@ -299,6 +452,7 @@ func on_start_pressed() -> void:
 	change_scene(WORKDAY_SELECTOR_SCENE)
 
 
+# 点击退出：Web 平台提示关闭浏览器页面，其余平台直接退出游戏。
 func on_exit_pressed() -> void:
 	if OS.has_feature("web"):
 		exit_button.text = "请关闭浏览器页面"
@@ -307,12 +461,34 @@ func on_exit_pressed() -> void:
 		get_tree().quit()
 
 
+# 切换到指定场景，失败时输出错误日志。
 func change_scene(path: String) -> void:
 	var error := get_tree().change_scene_to_file(path)
 	if error != OK:
 		push_error("场景切换失败：%s / %s" % [path, error_string(error)])
 
 
+# 按下 ESC 键时等同点击退出按钮。
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		on_exit_pressed()
+	if event is InputEventKey:
+		var key_event: InputEventKey = event
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_ESCAPE:
+			on_exit_pressed()
+
+
+# 从文件拼贴配置安全读取 Vector2，阻止动态 Dictionary 值扩散到布局逻辑。
+func _config_vector(config: Dictionary, key: String, fallback := Vector2.ZERO) -> Vector2:
+	var value: Variant = config.get(key, fallback)
+	if value is Vector2:
+		@warning_ignore("unsafe_cast")
+		return value
+	return fallback
+
+
+# 从节点元数据安全读取 Vector2，避免拖动/动画边界依赖无类型 Variant。
+func _meta_vector(control: Control, key: String, fallback: Vector2) -> Vector2:
+	var value: Variant = control.get_meta(key, fallback)
+	if value is Vector2:
+		@warning_ignore("unsafe_cast")
+		return value
+	return fallback

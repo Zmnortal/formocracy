@@ -1,0 +1,9 @@
+line_length: 200
+safety_checks: null
+use_spaces: null
+
+excluded_directories: !!set
+  .git: null
+  .godot: null
+  output: null
+  tmp: null

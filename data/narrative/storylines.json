@@ -1,0 +1,38 @@
+[
+  {
+    "id": "STORY-COHABITATION",
+    "title": "共同居住与消失的三个月",
+    "color": "3f5fa8",
+    "character_ids": ["PERSON-LIN", "PERSON-SHEN"],
+    "case_ids": ["CASE-001", "CASE-S-X14-D3", "CASE-S-R12-D6"],
+    "variables": ["lin_cohabitation_status", "lin_absence_exposed", "night_line_evidence", "lin_trust", "shen_trust"],
+    "premise": "一份共同居住申请逐渐暴露林默曾有三个月在住所、劳动和配给记录中同时消失。"
+  },
+  {
+    "id": "STORY-TIME-RESOURCES",
+    "title": "被改动的时间与生存资源",
+    "color": "b8683d",
+    "character_ids": ["PERSON-XU", "PERSON-DU", "PERSON-ZHOU", "PERSON-SONG"],
+    "case_ids": ["CASE-S-M31-D2", "CASE-S-R09-D3", "CASE-S-F09-D4", "CASE-S-M52-D5"],
+    "variables": ["xu_health_state", "clock_anomaly_level", "song_cooperation", "du_priority_status", "du_resource_reserved"],
+    "premise": "医院时间、验收机时间和资源优先级都曾被人工调整，而合法程序持续伤害同一批人。"
+  },
+  {
+    "id": "STORY-POLLUTION-ARCHIVE",
+    "title": "提前发生的污染与被封存的人",
+    "color": "d6a126",
+    "character_ids": ["PERSON-MENG", "PERSON-GU", "PERSON-LUO", "PERSON-LI", "PERSON-WEI"],
+    "case_ids": ["CASE-S-P44-D5", "CASE-S-A73-D6", "CASE-S-S18-D7"],
+    "variables": ["pollution_date_doubt", "sealed_worker_index", "meng_access_status", "factory_seal_status"],
+    "premise": "一份早于官方事故日期的污染检测，把应急供水、失踪工人和被续封的事故档案连在一起。"
+  },
+  {
+    "id": "STORY-FINAL-STAMP",
+    "title": "合法特权与最后一枚章",
+    "color": "a5423a",
+    "character_ids": ["PERSON-DU", "PERSON-WEI", "PERSON-JIANG"],
+    "case_ids": ["CASE-S-V01-D7"],
+    "variables": ["final_resource_decision", "public_harm", "procedural_exposure"],
+    "premise": "一张材料完全合法的主管保障券，与玩家已经见过的公共急件争夺最后一个生存资源位置。"
+  }
+]

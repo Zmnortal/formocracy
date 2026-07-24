@@ -42,7 +42,7 @@ var status_elapsed := 0.0
 func _ready() -> void:
 	layer = 1000
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	enabled = bool(ProjectSettings.get_setting("debug/developer_console_enabled", true))
+	enabled = WorkdayContext.to_bool(ProjectSettings.get_setting("debug/developer_console_enabled", true), true)
 	if not enabled:
 		return
 	build_ui()
@@ -180,7 +180,7 @@ func build_ui() -> void:
 	preset_selector = OptionButton.new()
 	preset_selector.position = Vector2(28, 254)
 	preset_selector.size = Vector2(250, 40)
-	for item in ["空日报", "全部批准", "全部驳回", "批准与驳回混合"]:
+	for item: String in ["空日报", "全部批准", "全部驳回", "批准与驳回混合"]:
 		preset_selector.add_item(item)
 	console_panel.add_child(preset_selector)
 	var apply_preset := create_button("应用并打开日报", Vector2(292, 254), Vector2(188, 40))
@@ -189,24 +189,25 @@ func build_ui() -> void:
 	glass_event_selector.name = "GlassEventSelector"
 	glass_event_selector.position = Vector2(492, 254)
 	glass_event_selector.size = Vector2(220, 40)
-	for event in [
-		["连接测试", "test"],
-		["晨间指令", "briefing"],
-		["NPC 台词", "npc"],
-		["现实验收回执", "receipt"],
-		["每日结算", "report"],
-		["后果回流", "consequence"],
-		["内部广播", "broadcast"],
-	]:
-		glass_event_selector.add_item(event[0])
-		glass_event_selector.set_item_metadata(glass_event_selector.item_count - 1, event[1])
+	var glass_events: Array[Dictionary] = [
+		{"label": "连接测试", "id": "test"},
+		{"label": "晨间指令", "id": "briefing"},
+		{"label": "NPC 台词", "id": "npc"},
+		{"label": "现实验收回执", "id": "receipt"},
+		{"label": "每日结算", "id": "report"},
+		{"label": "后果回流", "id": "consequence"},
+		{"label": "内部广播", "id": "broadcast"},
+	]
+	for event_data: Dictionary in glass_events:
+		glass_event_selector.add_item(WorkdayContext.read_string(event_data, "label"))
+		glass_event_selector.set_item_metadata(glass_event_selector.item_count - 1, WorkdayContext.read_string(event_data, "id"))
 	console_panel.add_child(glass_event_selector)
 	glass_test_button = create_button("发送眼镜事件", Vector2(724, 254), Vector2(248, 40))
 	glass_test_button.name = "GlassTestButton"
 	glass_test_button.pressed.connect(send_selected_glass_event)
 
 	var fill_button := create_button("填充三件测试申请", Vector2(28, 310), Vector2(210, 40))
-	fill_button.pressed.connect(func(): fill_test_records("mixed"))
+	fill_button.pressed.connect(_fill_mixed_test_records)
 	var clear_button := create_button("清空当日记录", Vector2(250, 310), Vector2(172, 40))
 	clear_button.pressed.connect(clear_records)
 	var next_button := create_button("进入下一工作日", Vector2(434, 310), Vector2(184, 40))
@@ -272,6 +273,7 @@ func toggle_collision_debug() -> void:
 	append_output("游戏交互框：%s" % ("显示" if enabled_now else "关闭"))
 
 
+# 刷新碰撞调试按钮文字，显示当前交互框可见状态。
 func refresh_collision_button() -> void:
 	if collision_button == null:
 		return
@@ -280,33 +282,33 @@ func refresh_collision_button() -> void:
 
 # 发送选择器中当前选中的眼镜联调事件。
 func send_selected_glass_event() -> void:
-	var event_id := String(glass_event_selector.get_item_metadata(glass_event_selector.selected))
+	var event_id := WorkdayContext.stringify_value(glass_event_selector.get_item_metadata(glass_event_selector.selected))
 	send_glass_event(event_id)
 
 
+# 根据事件 ID 向 RealityBridge 发送对应的眼镜联调事件。
 func send_glass_event(event_id: String) -> void:
-	var bridge := get_node_or_null("/root/RealityBridge")
-	if bridge == null:
+	if not is_instance_valid(RealityBridge):
 		append_output("眼镜桥接器未加载。")
 		return
-	if not bridge.is_connected_to_glass():
+	if not RealityBridge.is_connected_to_glass():
 		append_output("眼镜尚未连接；请确认手机 App 的游戏连接服务已启动。")
 		return
 	match event_id:
 		"test":
-			bridge.send_test()
+			RealityBridge.send_test()
 		"briefing":
-			bridge.morning_briefing(WorkdayState.day_number, ["今日配额：3 件", "重点核验：身份与现居地址", "程序错误将进入日终问责"], "第十二区 · 晨间指令")
+			RealityBridge.morning_briefing(WorkdayState.day_number, ["今日配额：3 件", "重点核验：身份与现居地址", "程序错误将进入日终问责"], "第十二区 · 晨间指令")
 		"npc":
-			bridge.npc_line("林默", "您好。我来办理共同居住配额。", "male", "young")
+			RealityBridge.npc_line("林默", "您好。我来办理共同居住配额。", "male", "young")
 		"receipt":
-			bridge.reality_receipt("林默 · 现实验收回执", "处理决定：批准\n程序记录：完整\n档案已取得现实效力", "normal", WorkdayState.day_number, "CASE-001", "approved")
+			RealityBridge.reality_receipt("林默 · 现实验收回执", "处理决定：批准\n程序记录：完整\n档案已取得现实效力", "normal", WorkdayState.day_number, "CASE-001", "approved")
 		"report":
-			bridge.day_report(["形式审查：3　批准：2　驳回：1", "程序错误：0　现实生效：2", "日薪：+120　罚款：-0", "本日结余：+90"], WorkdayState.day_number, "工作日处理回执")
+			RealityBridge.day_report(["形式审查：3　批准：2　驳回：1", "程序错误：0　现实生效：2", "日薪：+120　罚款：-0", "本日结余：+90"], WorkdayState.day_number, "工作日处理回执")
 		"consequence":
-			bridge.consequence("昨日工作后果", "行政罚款：-80\n政治信用：-2\n系统评价：受到关注", "warning")
+			RealityBridge.consequence("昨日工作后果", "行政罚款：-80\n政治信用：-2\n系统评价：受到关注", "warning")
 		"broadcast":
-			bridge.secretary_line("下一位。")
+			RealityBridge.secretary_line("下一位。")
 		_:
 			append_output("未知眼镜事件：%s" % event_id)
 			return
@@ -319,10 +321,13 @@ func send_glass_event(event_id: String) -> void:
 func _input(event: InputEvent) -> void:
 	if not enabled:
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.unicode == 96:
+	if not event is InputEventKey:
+		return
+	var key_event: InputEventKey = event
+	if key_event.pressed and not key_event.echo and key_event.unicode == 96:
 		toggle_console()
 		get_viewport().set_input_as_handled()
-	elif is_open and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	elif is_open and key_event.pressed and key_event.keycode == KEY_ESCAPE:
 		toggle_console()
 		get_viewport().set_input_as_handled()
 
@@ -373,18 +378,23 @@ func refresh_status() -> void:
 	var current := "无场景"
 	if get_tree().current_scene != null:
 		current = get_tree().current_scene.name
-	status_label.text = "场景：%s  关卡：%s\n工作日：%d  记录：%d / %d\n日报：%s" % [
-		current, WorkdayState.current_level_id,
-		WorkdayState.day_number, WorkdayState.records.size(),
-		WorkdayState.target_case_count,
-		"可生成" if WorkdayState.should_show_report() else "未满足触发条件"
-	]
+	status_label.text = (
+		"场景：%s  关卡：%s\n工作日：%d  记录：%d / %d\n日报：%s"
+		% [
+			current,
+			WorkdayState.current_level_id,
+			WorkdayState.day_number,
+			WorkdayState.records.size(),
+			WorkdayState.target_case_count,
+			"可生成" if WorkdayState.manager.should_show_report() else "未满足触发条件"
+		]
+	)
 
 
 # 场景选择器回调。
 # 读取当前选中项的 metadata（场景文件路径），并调用 switch_scene() 执行切换。
 func _on_switch_scene() -> void:
-	var path := String(scene_selector.get_item_metadata(scene_selector.selected))
+	var path := WorkdayContext.stringify_value(scene_selector.get_item_metadata(scene_selector.selected))
 	switch_scene(path)
 
 
@@ -408,11 +418,12 @@ func _on_set_day() -> void:
 	refresh_status()
 
 
+# 启动选中的关卡，成功后切换到主工作台场景。
 func _on_start_level() -> void:
 	if level_selector.item_count == 0:
 		append_output("没有可用关卡。")
 		return
-	var level_id := String(level_selector.get_item_metadata(level_selector.selected))
+	var level_id := WorkdayContext.stringify_value(level_selector.get_item_metadata(level_selector.selected))
 	var seed := int(seed_selector.value)
 	if LevelDirector.start_level(level_id, seed):
 		append_output("已启动关卡：%s / 种子 %d" % [level_id, seed])
@@ -421,6 +432,7 @@ func _on_start_level() -> void:
 		append_output("关卡启动失败：" + "；".join(LevelDirector.runtime_errors))
 
 
+# 重载 CSV 配置并刷新关卡选择器与状态显示。
 func _on_reload_config() -> void:
 	if LevelDirector.reload_configs():
 		append_output("CSV 配置已重载。")
@@ -449,7 +461,7 @@ func _on_apply_preset() -> void:
 # 填充前会先清空现有记录，完成后向输出区打印填充模式并刷新状态。
 func fill_test_records(mode: String = "mixed") -> void:
 	WorkdayState.records.clear()
-	var samples := [
+	var samples: Array[Dictionary] = [
 		{"department": "第十二区居住配置处", "code": "R-12/住房用途变更申请", "applicant": "林默，公民序号 74-119-02", "request": "共同居住配额"},
 		{"department": "公共供给连续性办公室", "code": "W-08/饮水额度临时调整", "applicant": "周循，公民序号 20-441-88", "request": "净水领取额度"},
 		{"department": "中央医疗秩序协调科", "code": "M-31/非计划医疗通行申请", "applicant": "许桥，公民序号 51-004-63", "request": "限制时段医疗通行"}
@@ -458,7 +470,7 @@ func fill_test_records(mode: String = "mixed") -> void:
 		var decision := "批准"
 		if mode == "rejected" or (mode == "mixed" and i == 1):
 			decision = "驳回"
-		WorkdayState.record_case(samples[i], decision)
+			WorkdayState.manager.record_case_result(samples[i], decision)
 	append_output("已填充测试数据：%s" % mode)
 	refresh_status()
 
@@ -472,9 +484,9 @@ func clear_records() -> void:
 
 
 # 手动进入下一工作日。
-# 调用 WorkdayState.begin_next_day() 推进工作日，同步更新工作日选择器的显示值，向输出区打印新工作日并刷新状态。
+# 调用 WorkdayManager 推进工作日，同步更新工作日选择器的显示值，向输出区打印新工作日并刷新状态。
 func next_day() -> void:
-	WorkdayState.begin_next_day()
+	WorkdayState.manager.begin_next_day()
 	day_selector.value = WorkdayState.day_number
 	append_output("已进入工作日 %d" % WorkdayState.day_number)
 	refresh_status()
@@ -509,15 +521,24 @@ func execute_command(command: String) -> void:
 				append_output("用法：scene menu|days|opening|main|report|map|validation|reload")
 			else:
 				match parts[1].to_lower():
-					"menu": switch_scene(MENU_SCENE)
-					"days": switch_scene(WORKDAY_SELECTOR_SCENE)
-					"opening": switch_scene(OPENING_SCENE)
-					"main": switch_scene(MAIN_SCENE)
-					"report": switch_scene(REPORT_SCENE)
-					"map": switch_scene(EVENING_MAP_SCENE)
-					"validation": switch_scene(VALIDATION_SCENE)
-					"reload": reload_scene()
-					_: append_output("未知场景：" + parts[1])
+					"menu":
+						switch_scene(MENU_SCENE)
+					"days":
+						switch_scene(WORKDAY_SELECTOR_SCENE)
+					"opening":
+						switch_scene(OPENING_SCENE)
+					"main":
+						switch_scene(MAIN_SCENE)
+					"report":
+						switch_scene(REPORT_SCENE)
+					"map":
+						switch_scene(EVENING_MAP_SCENE)
+					"validation":
+						switch_scene(VALIDATION_SCENE)
+					"reload":
+						reload_scene()
+					_:
+						append_output("未知场景：" + parts[1])
 		"report":
 			if parts.size() > 1 and parts[1].to_lower() == "fill":
 				fill_test_records("mixed")
@@ -546,7 +567,11 @@ func execute_command(command: String) -> void:
 			append_output(JSON.stringify(LevelDirector.get_state_summary()))
 		"npc":
 			var scene := get_tree().current_scene
-			var performance = scene.get("npc_performance") if scene != null else null
+			var manager_value: Variant = scene.get("manager") if scene != null else null
+			var performance: WorkbenchNpcPerformanceModule
+			if manager_value is WorkbenchManager:
+				var manager: WorkbenchManager = manager_value
+				performance = manager.npc_performance
 			if performance == null:
 				append_output("当前场景没有 NPC 演出控制器。")
 			elif parts.size() > 1 and parts[1].to_lower() == "skip":
@@ -561,9 +586,13 @@ func execute_command(command: String) -> void:
 				send_glass_event(parts[1].to_lower())
 			else:
 				append_output("用法：glass test|briefing|npc|receipt|report|consequence|broadcast")
-		"state": refresh_status(); append_output(status_label.text.replace("\n", " | "))
-		"clear": output.clear()
-		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])
+		"state":
+			refresh_status()
+			append_output(status_label.text.replace("\n", " | "))
+		"clear":
+			output.clear()
+		_:
+			append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])
 
 
 # 向命令输出区追加一行文本。
@@ -579,13 +608,21 @@ func append_output(text: String) -> void:
 # 按上键（KEY_UP）浏览更早的历史命令；按下键（KEY_DOWN）浏览更新的历史命令，到达末尾时清空输入框；
 # 每次切换历史后都将 caret_column 移到文本末尾，方便连续编辑或执行。
 func _on_command_input_gui(event: InputEvent) -> void:
-	if not (event is InputEventKey and event.pressed):
+	if not event is InputEventKey:
 		return
-	if event.keycode == KEY_UP and not command_history.is_empty():
+	var key_event: InputEventKey = event
+	if not key_event.pressed:
+		return
+	if key_event.keycode == KEY_UP and not command_history.is_empty():
 		history_index = maxi(0, history_index - 1)
 		command_input.text = command_history[history_index]
 		command_input.caret_column = command_input.text.length()
-	elif event.keycode == KEY_DOWN and not command_history.is_empty():
+	elif key_event.keycode == KEY_DOWN and not command_history.is_empty():
 		history_index = mini(command_history.size(), history_index + 1)
 		command_input.text = "" if history_index == command_history.size() else command_history[history_index]
 		command_input.caret_column = command_input.text.length()
+
+
+# 填充混合裁决的开发测试记录。
+func _fill_mixed_test_records() -> void:
+	fill_test_records("mixed")
