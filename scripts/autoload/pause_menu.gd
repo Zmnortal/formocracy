@@ -12,6 +12,8 @@ const ALLOWED_SCENES := [
 	"res://main.tscn",
 	"res://scenes/daily_report.tscn",
 	"res://scenes/evening_map.tscn",
+	"res://scenes/form_shop.tscn",
+	"res://scenes/application_office.tscn",
 	"res://scenes/validation_preview.tscn",
 ]
 

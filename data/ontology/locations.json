@@ -22,5 +22,16 @@
     "name": "职员宿舍 12-C",
     "first_open_day": 1,
     "sells_form_ids": []
+  },
+  {
+    "id": "LOCATION-FORM-SHOP",
+    "name": "第十二区合作供销社",
+    "first_open_day": 1,
+    "proprietor_id": "PROPRIETOR-ZHOU",
+    "sells_form_ids": [
+      "PERSONAL-FORM-LOST-PROPERTY-C01",
+      "PERSONAL-FORM-ARCHIVE-EXTRACT-A02",
+      "PERSONAL-FORM-COMM-TERMINAL-T04"
+    ]
   }
 ]

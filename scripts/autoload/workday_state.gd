@@ -5,6 +5,7 @@ extends Node
 
 const CASES_PER_DAY := 3
 const DEFAULT_SAVE_PATH := "user://formocracy-save.json"
+const SAVE_TREE_VERSION := 7
 
 # 当前工作日的核心数据
 var day_number := 1
@@ -30,6 +31,9 @@ var balance := 0
 var political_credit := 0
 var delayed_consequences: Array[Dictionary] = []
 var settled_day_number := 0
+var machine_capacity := 2
+var archived_cases: Array[Dictionary] = []
+var next_archive_serial := 1
 
 # 夜间地图状态
 var evening_day_number := 0
@@ -40,6 +44,9 @@ var next_inventory_serial := 1
 var water_covered_until_day := 1
 var water_deprived := false
 var last_personal_review_results: Array[Dictionary] = []
+
+# 当前临时进度所基于的不可变检查点。完成下一天时，新节点会挂在它下面。
+var active_checkpoint_id := ""
 
 
 # 使用 CSV 关卡配置初始化工作日状态。
@@ -61,6 +68,7 @@ func configure_workday(workday: Dictionary) -> void:
 	target_case_count = workday.get("case_ids", []).size()
 	report_title = String(workday.get("report_title", "工作日处理回执"))
 	workday_duration = float(workday.get("duration_seconds", 180))
+	machine_capacity = maxi(1, int(workday.get("machine_capacity", 2)))
 	seconds_remaining = workday_duration
 	base_salary = int(workday.get("base_salary", 0))
 	living_expenses = workday.get("living_expenses", {}).duplicate(true)
@@ -104,6 +112,22 @@ func record_case_result(case_data: Dictionary, stamp_type: String, procedure_err
 		"submitted": true,
 		"effective": false
 	})
+	var recorded: Dictionary = records[-1]
+	archived_cases.append({
+		"archive_id": "ARCHIVE-%05d" % next_archive_serial,
+		"case_id": recorded.case_id,
+		"character_id": recorded.character_id,
+		"applicant": recorded.applicant,
+		"request": recorded.request,
+		"decision": recorded.decision,
+		"procedure_errors": recorded.procedure_errors.duplicate(),
+		"archived_day": day_number,
+		"waiting_days": 0,
+		"status": "ARCHIVED",
+		"loaded": false,
+		"effective_day": 0,
+	})
+	next_archive_serial += 1
 	var delay_days := int(consequence.get("delay_days", 0))
 	if delay_days > 0:
 		delayed_consequences.append({"due_day": day_number + delay_days, "case_id": case_data.get("case_id", ""), "consequence_id": consequence_id})
@@ -157,6 +181,37 @@ func get_case_decision(case_id: String) -> String:
 	return String(decision_by_case_id.get(case_id, ""))
 
 
+func get_pending_archives() -> Array[Dictionary]:
+	var pending: Array[Dictionary] = []
+	for archive in archived_cases:
+		if String(archive.get("status", "ARCHIVED")) != "EFFECTIVE":
+			pending.append(archive)
+	return pending
+
+
+func validate_archive_batch(archive_ids: Array) -> bool:
+	if archive_ids.is_empty() or archive_ids.size() > machine_capacity:
+		return false
+	var selected := {}
+	for archive_id in archive_ids:
+		selected[archive_id] = true
+	for archive in archived_cases:
+		if selected.has(String(archive.get("archive_id", ""))) and String(archive.get("status", "ARCHIVED")) == "EFFECTIVE":
+			return false
+	for archive in archived_cases:
+		if not selected.has(String(archive.get("archive_id", ""))):
+			continue
+		archive.status = "EFFECTIVE"
+		archive.loaded = false
+		archive.effective_day = day_number
+		for record in records:
+			if String(record.get("case_id", "")) == String(archive.get("case_id", "")):
+				record.effective = true
+	if persistence_enabled:
+		save_progress()
+	return true
+
+
 # 遍历当日记录并生成统计摘要。
 # 统计字段包括 reviewed（已审查数）、submitted（已送交数）、approved（批准数）、rejected（驳回数）、returned（退回补正数，当前固定 0）、
 # effective（已取得现实效力数）与 pending（等待设施处理数）。返回的字典供日报界面使用。
@@ -189,7 +244,11 @@ func get_summary() -> Dictionary:
 # 将 day_number 加 1，并清空 records 数组，准备接收新一天的案件。
 # 进入下一工作日：更新余额并清空当日记录。
 func begin_next_day() -> void:
+	var completed_day := day_number
 	settle_current_day()
+	for archive in archived_cases:
+		if String(archive.get("status", "ARCHIVED")) != "EFFECTIVE":
+			archive.waiting_days = int(archive.get("waiting_days", 0)) + 1
 	day_number += 1
 	records.clear()
 	# 跨日时立即建立新一天的夜间额度，避免主场景或存档恢复期间短暂携带昨日的 0 次行动。
@@ -199,7 +258,7 @@ func begin_next_day() -> void:
 	process_due_personal_forms()
 	prepare_new_workday()
 	if persistence_enabled:
-		save_progress()
+		create_checkpoint(completed_day)
 
 
 # 初始化当前工作日的夜间地图状态。重复进入同一天地图时保留行动次数与当前位置。
@@ -252,27 +311,40 @@ func get_personal_form_count(form_type_id: String, status := "") -> int:
 	return count
 
 
-# 将档案袋中的第一份指定空白表单填写并送交。每个夜晚最多提交一份个人表单。
+# 将档案袋中的第一份指定空白表单填写并送交。
 func submit_personal_form(form_type_id: String, fields: Dictionary) -> bool:
-	for existing in personal_form_inventory:
-		if int(existing.get("submitted_day", -1)) == day_number:
-			return false
-	var required_fields := ["applicant_name", "residence", "request_reason"]
+	var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+	if form.is_empty():
+		return false
+	var required_fields: Array = form.get(
+		"required_fields",
+		["applicant_name", "residence", "request_reason"]
+	)
 	for field in required_fields:
 		if String(fields.get(field, "")).strip_edges().is_empty():
 			return false
 	for item in personal_form_inventory:
 		if String(item.get("form_type_id", "")) != form_type_id or String(item.get("status", "")) != "blank":
 			continue
-		var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
 		item.status = "pending"
 		item.fields = fields.duplicate(true)
 		item.submitted_day = day_number
 		item.effective_day = day_number + int(form.get("effective_delay_days", 1))
+		item.fulfillment_id = String(form.get("fulfillment_id", ""))
+		item.memory_clue_id = String(form.get("memory_clue_id", ""))
 		if persistence_enabled:
 			save_progress()
 		return true
 	return false
+
+
+# 返回档案袋中的空白表单条目，供申请局生成可提交目录。
+func get_blank_personal_forms() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for item in personal_form_inventory:
+		if String(item.get("status", "")) == "blank":
+			result.append(item)
+	return result
 
 
 # 审核到期的个人表单。饮水表字段与登记身份一致时核发，否则退回补正。
@@ -283,19 +355,21 @@ func process_due_personal_forms() -> void:
 			continue
 		var form_type_id := String(item.get("form_type_id", ""))
 		var fields: Dictionary = item.get("fields", {})
-		var approved := (
-			form_type_id == "PERSONAL-FORM-WATER-R01"
-			and not String(fields.get("applicant_name", "")).is_empty()
-			and (player_name.is_empty() or String(fields.get("applicant_name", "")) == player_name)
-			and String(fields.get("residence", "")).contains("12-C")
-			and not String(fields.get("request_reason", "")).is_empty()
-			and bool(fields.get("truth_declared", false))
-		)
+		var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+		var required_fields: Array = form.get("required_fields", [])
+		var approved := bool(fields.get("truth_declared", false))
+		for field in required_fields:
+			approved = approved and not String(fields.get(field, "")).strip_edges().is_empty()
+		if form_type_id == "PERSONAL-FORM-WATER-R01":
+			approved = (
+				approved
+				and (player_name.is_empty() or String(fields.get("applicant_name", "")) == player_name)
+				and String(fields.get("residence", "")).contains("12-C")
+			)
 		item.status = "effective" if approved else "returned"
 		item.processed_day = day_number
 		item.review_result = "批准" if approved else "退回补正"
-		if approved:
-			var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+		if approved and form_type_id == "PERSONAL-FORM-WATER-R01":
 			water_covered_until_day = maxi(water_covered_until_day, day_number + int(form.get("valid_for_days", 1)) - 1)
 		else:
 			item.review_reason = "申请人身份、登记住所、申请事由或真实性声明不符合记录"
@@ -347,31 +421,134 @@ func has_save() -> bool:
 	return FileAccess.file_exists(save_path)
 
 
-# 读取存档选择页所需的只读摘要，不改变当前运行状态。
+# 返回全部不可变时间线节点。旧版单存档会在此处自动迁移。
+func get_checkpoint_nodes() -> Array[Dictionary]:
+	var document := _read_or_migrate_document()
+	var result: Array[Dictionary] = []
+	for node in document.get("nodes", []):
+		if node is Dictionary:
+			result.append(node.duplicate(true))
+	return result
+
+
+# 读取存档选择页所需的当前临时进度摘要，不改变运行状态。
 func get_save_summary() -> Dictionary:
-	if not has_save():
+	var document := _read_or_migrate_document()
+	if document.is_empty():
 		return {}
-	var file := FileAccess.open(save_path, FileAccess.READ)
-	if file == null:
-		return {}
-	var parsed = JSON.parse_string(file.get_as_text())
-	if not parsed is Dictionary:
-		return {}
-	var modified := FileAccess.get_modified_time(save_path)
+	var state: Dictionary = document.get("working_state", {})
+	var modified := int(document.get("updated_at", FileAccess.get_modified_time(save_path)))
 	var datetime := Time.get_datetime_dict_from_unix_time(modified)
 	return {
-		"day_number": maxi(1, int(parsed.get("day_number", 1))),
-		"player_name": String(parsed.get("player_name", "")),
+		"day_number": maxi(1, int(state.get("day_number", 1))),
+		"player_name": String(state.get("player_name", "")),
 		"date": "%02d/%02d" % [datetime.month, datetime.day],
 		"time": "%02d:%02d" % [datetime.hour, datetime.minute],
 	}
 
 
-# 删除当前工作档案；供工作日选择页的销毁操作使用。
+# 删除整棵工作档案树。
 func delete_save() -> bool:
 	if not has_save():
 		return true
 	return DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path)) == OK
+
+
+# 创建 Opening 完成后的“一开始”根节点。
+func create_initial_checkpoint() -> bool:
+	var document := {
+		"version": SAVE_TREE_VERSION,
+		"nodes": [],
+		"active_checkpoint_id": "",
+		"working_state": _capture_state(),
+		"updated_at": int(Time.get_unix_time_from_system()),
+	}
+	var root_id := _new_checkpoint_id(0)
+	document.nodes.append(_make_checkpoint(root_id, "", 0, 0))
+	document.active_checkpoint_id = root_id
+	active_checkpoint_id = root_id
+	return _write_document_atomic(document)
+
+
+# 将刚完成的一天保存为当前节点的新子节点。已有同日子节点不会被覆盖。
+func create_checkpoint(completed_day: int) -> bool:
+	var document := _read_or_migrate_document()
+	if document.is_empty():
+		document = {
+			"version": SAVE_TREE_VERSION,
+			"nodes": [],
+			"active_checkpoint_id": "",
+			"working_state": {},
+		}
+	var parent_id := active_checkpoint_id
+	if parent_id.is_empty():
+		parent_id = String(document.get("active_checkpoint_id", ""))
+	var sibling_count := 0
+	for node in document.get("nodes", []):
+		if String(node.get("parent_id", "")) == parent_id:
+			sibling_count += 1
+	var node_id := _new_checkpoint_id(completed_day)
+	document.nodes.append(_make_checkpoint(node_id, parent_id, completed_day, sibling_count))
+	document.active_checkpoint_id = node_id
+	document.working_state = _capture_state()
+	document.updated_at = int(Time.get_unix_time_from_system())
+	active_checkpoint_id = node_id
+	return _write_document_atomic(document)
+
+
+# 从指定历史节点恢复，并将其设为后续新分支的父节点。
+func load_checkpoint(node_id: String) -> bool:
+	var document := _read_or_migrate_document()
+	for node in document.get("nodes", []):
+		if String(node.get("node_id", "")) != node_id:
+			continue
+		var state = node.get("state", {})
+		if not state is Dictionary or state.is_empty():
+			return false
+		_apply_state(state)
+		active_checkpoint_id = node_id
+		document.active_checkpoint_id = node_id
+		document.working_state = _capture_state()
+		document.updated_at = int(Time.get_unix_time_from_system())
+		persistence_enabled = true
+		return _write_document_atomic(document)
+	return false
+
+
+# 删除选中节点及全部后代；“一开始”根节点不可删除。
+func delete_checkpoint(node_id: String) -> bool:
+	var document := _read_or_migrate_document()
+	var target: Dictionary = {}
+	for node in document.get("nodes", []):
+		if String(node.get("node_id", "")) == node_id:
+			target = node
+			break
+	if target.is_empty() or int(target.get("completed_day", 0)) == 0:
+		return false
+	var deleting := {node_id: true}
+	var changed := true
+	while changed:
+		changed = false
+		for node in document.get("nodes", []):
+			var id := String(node.get("node_id", ""))
+			if not deleting.has(id) and deleting.has(String(node.get("parent_id", ""))):
+				deleting[id] = true
+				changed = true
+	var kept: Array = []
+	for node in document.get("nodes", []):
+		if not deleting.has(String(node.get("node_id", ""))):
+			kept.append(node)
+	document.nodes = kept
+	if deleting.has(String(document.get("active_checkpoint_id", ""))):
+		var parent_id := String(target.get("parent_id", ""))
+		document.active_checkpoint_id = parent_id
+		active_checkpoint_id = parent_id
+		for node in kept:
+			if String(node.get("node_id", "")) == parent_id:
+				document.working_state = node.get("state", {}).duplicate(true)
+				break
+	document.updated_at = int(Time.get_unix_time_from_system())
+	return _write_document_atomic(document)
 
 
 # 开始新游戏：重置所有状态并删除旧存档。
@@ -389,6 +566,9 @@ func start_new_game() -> void:
 	political_credit = 0
 	delayed_consequences.clear()
 	settled_day_number = 0
+	machine_capacity = 2
+	archived_cases.clear()
+	next_archive_serial = 1
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"
@@ -397,19 +577,15 @@ func start_new_game() -> void:
 	water_covered_until_day = 1
 	water_deprived = false
 	last_personal_review_results.clear()
+	active_checkpoint_id = ""
 	persistence_enabled = true
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
 
 
-# 将当前进度写入存档文件。
-func save_progress() -> bool:
-	var file := FileAccess.open(save_path, FileAccess.WRITE)
-	if file == null:
-		push_error("无法写入存档：%s" % FileAccess.get_open_error())
-		return false
-	file.store_string(JSON.stringify({
-		"version": 6,
+# 将当前状态捕获为可独立恢复的完整快照。
+func _capture_state() -> Dictionary:
+	return {
 		"day_number": day_number,
 		"records": records,
 		"current_level_id": current_level_id,
@@ -423,6 +599,9 @@ func save_progress() -> bool:
 		"political_credit": political_credit,
 		"delayed_consequences": delayed_consequences,
 		"settled_day_number": settled_day_number,
+		"machine_capacity": machine_capacity,
+		"archived_cases": archived_cases,
+		"next_archive_serial": next_archive_serial,
 		"evening_day_number": evening_day_number,
 		"evening_actions_remaining": evening_actions_remaining,
 		"evening_location_id": evening_location_id,
@@ -431,50 +610,170 @@ func save_progress() -> bool:
 		"water_covered_until_day": water_covered_until_day,
 		"water_deprived": water_deprived,
 		"last_personal_review_results": last_personal_review_results,
-	}))
-	return true
+	}
 
 
-# 从存档文件读取进度并恢复状态。
+func save_progress() -> bool:
+	var document := _read_or_migrate_document()
+	if document.is_empty():
+		document = {
+			"version": SAVE_TREE_VERSION,
+			"nodes": [],
+			"active_checkpoint_id": active_checkpoint_id,
+		}
+	document.version = SAVE_TREE_VERSION
+	document.active_checkpoint_id = active_checkpoint_id
+	document.working_state = _capture_state()
+	document.updated_at = int(Time.get_unix_time_from_system())
+	return _write_document_atomic(document)
+
+
+# 载入最近一次临时进度。
 func load_progress() -> bool:
-	if not has_save():
+	var document := _read_or_migrate_document()
+	if document.is_empty():
 		return false
-	var file := FileAccess.open(save_path, FileAccess.READ)
-	if file == null:
+	var state = document.get("working_state", {})
+	if not state is Dictionary or state.is_empty():
 		return false
-	var parsed = JSON.parse_string(file.get_as_text())
-	if not parsed is Dictionary:
-		return false
-	day_number = maxi(1, int(parsed.get("day_number", 1)))
-	records.assign(parsed.get("records", []))
-	current_level_id = String(parsed.get("current_level_id", "day_1"))
-	target_case_count = maxi(1, int(parsed.get("target_case_count", CASES_PER_DAY)))
-	report_title = String(parsed.get("report_title", "工作日处理回执"))
-	player_name = String(parsed.get("player_name", ""))
-	reinstatement_date = String(parsed.get("reinstatement_date", ""))
-	player_signature = parsed.get("player_signature", []).duplicate(true)
-	decision_by_case_id = parsed.get("decision_by_case_id", {}).duplicate()
-	balance = int(parsed.get("balance", 0))
-	political_credit = int(parsed.get("political_credit", 0))
-	delayed_consequences.assign(parsed.get("delayed_consequences", []))
-	settled_day_number = int(parsed.get("settled_day_number", 0))
-	evening_day_number = int(parsed.get("evening_day_number", 0))
-	evening_actions_remaining = clampi(int(parsed.get("evening_actions_remaining", 2)), 0, 2)
-	evening_location_id = String(parsed.get("evening_location_id", "LOCATION-OFFICE"))
-	personal_form_inventory.assign(parsed.get("personal_form_inventory", []))
-	next_inventory_serial = maxi(1, int(parsed.get("next_inventory_serial", personal_form_inventory.size() + 1)))
-	water_covered_until_day = int(parsed.get("water_covered_until_day", 1))
-	water_deprived = bool(parsed.get("water_deprived", false))
-	last_personal_review_results.assign(parsed.get("last_personal_review_results", []))
+	_apply_state(state)
+	active_checkpoint_id = String(document.get("active_checkpoint_id", ""))
 	if decision_by_case_id.is_empty():
 		for record in records:
 			var saved_case_id := String(record.get("case_id", ""))
 			if not saved_case_id.is_empty():
 				decision_by_case_id[saved_case_id] = String(record.get("decision", ""))
-	var repaired_legacy_evening := repair_legacy_exhausted_evening(int(parsed.get("version", 1)))
 	persistence_enabled = true
-	if repaired_legacy_evening:
-		save_progress()
+	return true
+
+
+func _apply_state(state: Dictionary) -> void:
+	day_number = maxi(1, int(state.get("day_number", 1)))
+	records.assign(state.get("records", []))
+	current_level_id = String(state.get("current_level_id", "day_1"))
+	target_case_count = maxi(1, int(state.get("target_case_count", CASES_PER_DAY)))
+	report_title = String(state.get("report_title", "工作日处理回执"))
+	player_name = String(state.get("player_name", ""))
+	reinstatement_date = String(state.get("reinstatement_date", ""))
+	player_signature = state.get("player_signature", []).duplicate(true)
+	decision_by_case_id = state.get("decision_by_case_id", {}).duplicate()
+	balance = int(state.get("balance", 0))
+	political_credit = int(state.get("political_credit", 0))
+	delayed_consequences.assign(state.get("delayed_consequences", []))
+	settled_day_number = int(state.get("settled_day_number", 0))
+	machine_capacity = maxi(1, int(state.get("machine_capacity", 2)))
+	archived_cases.assign(state.get("archived_cases", []))
+	next_archive_serial = maxi(1, int(state.get("next_archive_serial", archived_cases.size() + 1)))
+	evening_day_number = int(state.get("evening_day_number", 0))
+	evening_actions_remaining = clampi(int(state.get("evening_actions_remaining", 2)), 0, 2)
+	evening_location_id = String(state.get("evening_location_id", "LOCATION-OFFICE"))
+	personal_form_inventory.assign(state.get("personal_form_inventory", []))
+	next_inventory_serial = maxi(1, int(state.get("next_inventory_serial", personal_form_inventory.size() + 1)))
+	water_covered_until_day = int(state.get("water_covered_until_day", 1))
+	water_deprived = bool(state.get("water_deprived", false))
+	last_personal_review_results.assign(state.get("last_personal_review_results", []))
+
+
+func _make_checkpoint(node_id: String, parent_id: String, completed_day: int, branch_order: int) -> Dictionary:
+	return {
+		"node_id": node_id,
+		"parent_id": parent_id,
+		"completed_day": completed_day,
+		"branch_order": branch_order,
+		"created_at": int(Time.get_unix_time_from_system()),
+		"player_name": player_name,
+		"state": _capture_state(),
+	}
+
+
+func _new_checkpoint_id(completed_day: int) -> String:
+	return "day-%02d-%d" % [completed_day, Time.get_ticks_usec()]
+
+
+func _read_or_migrate_document() -> Dictionary:
+	if not has_save():
+		return {}
+	var file := FileAccess.open(save_path, FileAccess.READ)
+	if file == null:
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return {}
+	if int(parsed.get("version", 1)) >= SAVE_TREE_VERSION and parsed.has("nodes"):
+		if active_checkpoint_id.is_empty():
+			active_checkpoint_id = String(parsed.get("active_checkpoint_id", ""))
+		return parsed
+	return _migrate_legacy_document(parsed)
+
+
+func _migrate_legacy_document(legacy: Dictionary) -> Dictionary:
+	var legacy_day := maxi(1, int(legacy.get("day_number", 1)))
+	var completed_day := maxi(0, legacy_day - 1)
+	var root_state := legacy.duplicate(true)
+	root_state.day_number = 1
+	root_state.records = []
+	root_state.settled_day_number = 0
+	root_state.evening_day_number = 0
+	root_state.evening_actions_remaining = 2
+	var root_id := _new_checkpoint_id(0)
+	var root_node := {
+		"node_id": root_id,
+		"parent_id": "",
+		"completed_day": 0,
+		"branch_order": 0,
+		"created_at": int(FileAccess.get_modified_time(save_path)),
+		"player_name": String(legacy.get("player_name", "")),
+		"state": root_state,
+	}
+	var nodes: Array = [root_node]
+	var active_id := root_id
+	if completed_day > 0:
+		active_id = _new_checkpoint_id(completed_day)
+		nodes.append({
+			"node_id": active_id,
+			"parent_id": root_id,
+			"completed_day": completed_day,
+			"branch_order": 0,
+			"created_at": int(FileAccess.get_modified_time(save_path)),
+			"player_name": String(legacy.get("player_name", "")),
+			"state": legacy.duplicate(true),
+		})
+	var document := {
+		"version": SAVE_TREE_VERSION,
+		"nodes": nodes,
+		"active_checkpoint_id": active_id,
+		"working_state": legacy.duplicate(true),
+		"updated_at": int(Time.get_unix_time_from_system()),
+	}
+	active_checkpoint_id = active_id
+	_write_document_atomic(document)
+	return document
+
+
+func _write_document_atomic(document: Dictionary) -> bool:
+	var absolute := ProjectSettings.globalize_path(save_path)
+	var temporary := absolute + ".tmp"
+	var backup := absolute + ".bak"
+	var file := FileAccess.open(temporary, FileAccess.WRITE)
+	if file == null:
+		push_error("无法写入临时存档：%s" % FileAccess.get_open_error())
+		return false
+	file.store_string(JSON.stringify(document))
+	file.close()
+	var verify := FileAccess.open(temporary, FileAccess.READ)
+	if verify == null or not JSON.parse_string(verify.get_as_text()) is Dictionary:
+		DirAccess.remove_absolute(temporary)
+		return false
+	if FileAccess.file_exists(backup):
+		DirAccess.remove_absolute(backup)
+	if FileAccess.file_exists(absolute):
+		if DirAccess.rename_absolute(absolute, backup) != OK:
+			DirAccess.remove_absolute(temporary)
+			return false
+	if DirAccess.rename_absolute(temporary, absolute) != OK:
+		if FileAccess.file_exists(backup):
+			DirAccess.rename_absolute(backup, absolute)
+		return false
 	return true
 
 
@@ -519,6 +818,9 @@ func reset_for_tests() -> void:
 	political_credit = 0
 	delayed_consequences.clear()
 	settled_day_number = 0
+	machine_capacity = 2
+	archived_cases.clear()
+	next_archive_serial = 1
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"

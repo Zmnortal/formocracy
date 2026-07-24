@@ -9,6 +9,50 @@
     "effective_delay_days": 1,
     "valid_for_days": 2,
     "status_on_purchase": "blank",
-    "description": "用于申请下一周期的居民净水领取额度。"
+    "description": "用于申请下一周期的居民净水领取额度。",
+    "required_fields": ["applicant_name", "residence", "request_reason"],
+    "fulfillment_id": "FULFILLMENT-WATER-RATION"
+  },
+  {
+    "id": "PERSONAL-FORM-LOST-PROPERTY-C01",
+    "name": "旧物认领申请",
+    "form_code": "C-17/CLAIM",
+    "version": "03",
+    "issuer_location_id": "LOCATION-FORM-SHOP",
+    "fee": 4,
+    "effective_delay_days": 1,
+    "status_on_purchase": "blank",
+    "description": "用于认领中央失物仓中无人领取的个人物品。",
+    "required_fields": ["applicant_name", "residence", "request_reason"],
+    "fulfillment_id": "FULFILLMENT-OLD-TOOLBOX",
+    "memory_clue_id": "MEMORY-ALIAS-TOOLBOX"
+  },
+  {
+    "id": "PERSONAL-FORM-ARCHIVE-EXTRACT-A02",
+    "name": "个人档案节录申请",
+    "form_code": "A-02/EXTRACT",
+    "version": "07",
+    "issuer_location_id": "LOCATION-FORM-SHOP",
+    "fee": 6,
+    "effective_delay_days": 1,
+    "status_on_purchase": "blank",
+    "description": "用于申请个人档案中允许公开的节录副本。",
+    "required_fields": ["applicant_name", "residence", "request_reason"],
+    "fulfillment_id": "FULFILLMENT-REDACTED-EXTRACT",
+    "memory_clue_id": "MEMORY-SPLIT-ARCHIVE"
+  },
+  {
+    "id": "PERSONAL-FORM-COMM-TERMINAL-T04",
+    "name": "私人通信终端购置申请",
+    "form_code": "T-04/COMMS",
+    "version": "02",
+    "issuer_location_id": "LOCATION-FORM-SHOP",
+    "fee": 8,
+    "effective_delay_days": 1,
+    "status_on_purchase": "blank",
+    "description": "用于申请一台登记到住所的私人通信终端。",
+    "required_fields": ["applicant_name", "residence", "request_reason"],
+    "fulfillment_id": "FULFILLMENT-COMM-TERMINAL",
+    "memory_clue_id": "MEMORY-OLD-CONTACT"
   }
 ]

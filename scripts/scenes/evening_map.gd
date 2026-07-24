@@ -9,6 +9,7 @@ const LOCATION_OFFICE := "LOCATION-OFFICE"
 const LOCATION_FORMS := "LOCATION-FORMS"
 const LOCATION_RATION := "LOCATION-RATION"
 const LOCATION_HOME := "LOCATION-HOME"
+const LOCATION_FORM_SHOP := "LOCATION-FORM-SHOP"
 const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
 
 const LOCATION_POSITIONS := {
@@ -16,11 +17,13 @@ const LOCATION_POSITIONS := {
 	LOCATION_FORMS: Vector2(320, 220),
 	LOCATION_RATION: Vector2(640, 350),
 	LOCATION_HOME: Vector2(920, 540),
+	LOCATION_FORM_SHOP: Vector2(270, 420),
 }
 const LOCATION_NAMES := {
 	LOCATION_FORMS: "中央表单部",
 	LOCATION_RATION: "公共配给站",
 	LOCATION_HOME: "职员宿舍 12-C",
+	LOCATION_FORM_SHOP: "第十二区合作供销社",
 }
 
 @onready var day_label: Label = $Header/Day
@@ -33,6 +36,7 @@ const LOCATION_NAMES := {
 @onready var forms_button: Button = $FormsButton
 @onready var ration_button: Button = $RationButton
 @onready var home_button: Button = $HomeButton
+@onready var shop_button: Button = $ShopButton
 @onready var arrival_card: Panel = $ArrivalCard
 @onready var arrival_title: Label = $ArrivalCard/Title
 @onready var arrival_body: Label = $ArrivalCard/Body
@@ -74,6 +78,7 @@ var end_dialogue_index := -1
 var end_sequence_step_duration := 1.8
 var end_sequence_fade_duration := 0.65
 var auto_transition_after_end_sequence := true
+var auto_open_location_scenes := true
 var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
 var end_dialogue_lines: Array[Dictionary] = [
@@ -91,6 +96,7 @@ func _ready() -> void:
 	connect_location_button(forms_button, LOCATION_FORMS)
 	connect_location_button(ration_button, LOCATION_RATION)
 	connect_location_button(home_button, LOCATION_HOME)
+	connect_location_button(shop_button, LOCATION_FORM_SHOP)
 	buy_button.pressed.connect(purchase_water_form)
 	close_ration_button.pressed.connect(func(): ration_window.visible = false)
 	dossier_button.pressed.connect(toggle_dossier)
@@ -119,6 +125,8 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(fit_to_window)
 	fit_to_window()
 	queue_redraw()
+	if WorkdayState.evening_actions_remaining <= 0 and WorkdayState.evening_location_id != LOCATION_HOME:
+		call_deferred("start_end_of_night_sequence")
 
 
 func connect_location_button(button: Button, location_id: String) -> void:
@@ -171,6 +179,12 @@ func select_location(location_id: String) -> void:
 	moving = false
 	show_arrival_card(location_id)
 	refresh_map_state()
+	if auto_open_location_scenes and location_id == LOCATION_FORM_SHOP:
+		get_tree().change_scene_to_file("res://scenes/form_shop.tscn")
+		return
+	if auto_open_location_scenes and location_id == LOCATION_FORMS:
+		get_tree().change_scene_to_file("res://scenes/application_office.tscn")
+		return
 	if WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
 		start_end_of_night_sequence()
 
@@ -227,6 +241,8 @@ func show_arrival_card(location_id: String) -> void:
 		LOCATION_HOME:
 			arrival_body.text = "住宅门禁已确认身份。\n可以从个人档案袋取出一张空白表单。"
 			open_home_window()
+		LOCATION_FORM_SHOP:
+			arrival_body.text = "周姨仍在窗口后整理表单。\n今晚目录已经摆上柜台。"
 		_:
 			arrival_body.text = "特殊窗口仅在收到行政通知时办理。\n当前没有可办理事项。"
 	arrival_card.visible = true
@@ -445,6 +461,7 @@ func set_location_buttons_enabled(enabled: bool) -> void:
 	forms_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
 	ration_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
 	home_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0 or WorkdayState.evening_location_id == LOCATION_HOME
+	shop_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
 
 
 func get_current_location_name() -> String:

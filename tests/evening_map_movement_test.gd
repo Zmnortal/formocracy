@@ -18,6 +18,7 @@ func run() -> void:
 	map.end_sequence_fade_duration = 0.01
 	map.end_sequence_step_duration = 0.01
 	map.auto_transition_after_end_sequence = false
+	map.auto_open_location_scenes = false
 	var start_position: Vector2 = map.player_token.position
 	map.select_location(map.LOCATION_RATION)
 	await create_timer(1.0).timeout

@@ -316,6 +316,22 @@ texture = ExtResource("7_locked")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="ShopButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 380.0
+offset_right = 374.0
+offset_bottom = 460.0
+theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
+text = "合作供销社\n周姨的表单窗口"
+
 [node name="HomeButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 826.0

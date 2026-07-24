@@ -17,6 +17,7 @@ const ONTOLOGY_FILES := {
 	"consequences": "res://data/ontology/consequences.json",
 	"locations": "res://data/ontology/locations.json",
 	"personal_forms": "res://data/ontology/personal_forms.json",
+	"proprietors": "res://data/ontology/proprietors.json",
 	"cases_v2": "res://data/cases/day_01_cases.json",
 	"workdays": "res://data/levels/day_01.json",
 }
