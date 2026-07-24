@@ -30,6 +30,11 @@ var balance := 0
 var political_credit := 0
 var delayed_consequences: Array[Dictionary] = []
 
+# 夜间地图状态
+var evening_day_number := 0
+var evening_actions_remaining := 2
+var evening_location_id := "LOCATION-OFFICE"
+
 
 # 使用 CSV 关卡配置初始化工作日状态。
 func configure_level(level_id: String, configured_day: int, case_count: int, configured_report_title: String) -> void:
@@ -182,6 +187,25 @@ func begin_next_day() -> void:
 		save_progress()
 
 
+# 初始化当前工作日的夜间地图状态。重复进入同一天地图时保留行动次数与当前位置。
+func begin_evening() -> void:
+	if evening_day_number != day_number:
+		evening_day_number = day_number
+		evening_actions_remaining = 2
+		evening_location_id = "LOCATION-OFFICE"
+	if persistence_enabled:
+		save_progress()
+
+
+# 在抵达地点后登记一次夜间行动。回家始终可达，行动数不会低于零。
+func arrive_at_evening_location(location_id: String) -> void:
+	evening_location_id = location_id
+	if evening_actions_remaining > 0:
+		evening_actions_remaining -= 1
+	if persistence_enabled:
+		save_progress()
+
+
 # 判断是否存在可加载的存档文件。
 func has_save() -> bool:
 	return FileAccess.file_exists(save_path)
@@ -201,6 +225,9 @@ func start_new_game() -> void:
 	balance = 0
 	political_credit = 0
 	delayed_consequences.clear()
+	evening_day_number = 0
+	evening_actions_remaining = 2
+	evening_location_id = "LOCATION-OFFICE"
 	persistence_enabled = true
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
@@ -213,7 +240,7 @@ func save_progress() -> bool:
 		push_error("无法写入存档：%s" % FileAccess.get_open_error())
 		return false
 	file.store_string(JSON.stringify({
-		"version": 2,
+		"version": 3,
 		"day_number": day_number,
 		"records": records,
 		"current_level_id": current_level_id,
@@ -226,6 +253,9 @@ func save_progress() -> bool:
 		"balance": balance,
 		"political_credit": political_credit,
 		"delayed_consequences": delayed_consequences,
+		"evening_day_number": evening_day_number,
+		"evening_actions_remaining": evening_actions_remaining,
+		"evening_location_id": evening_location_id,
 	}))
 	return true
 
@@ -252,6 +282,9 @@ func load_progress() -> bool:
 	balance = int(parsed.get("balance", 0))
 	political_credit = int(parsed.get("political_credit", 0))
 	delayed_consequences.assign(parsed.get("delayed_consequences", []))
+	evening_day_number = int(parsed.get("evening_day_number", 0))
+	evening_actions_remaining = clampi(int(parsed.get("evening_actions_remaining", 2)), 0, 2)
+	evening_location_id = String(parsed.get("evening_location_id", "LOCATION-OFFICE"))
 	if decision_by_case_id.is_empty():
 		for record in records:
 			var saved_case_id := String(record.get("case_id", ""))
@@ -280,4 +313,7 @@ func reset_for_tests() -> void:
 	balance = 0
 	political_credit = 0
 	delayed_consequences.clear()
+	evening_day_number = 0
+	evening_actions_remaining = 2
+	evening_location_id = "LOCATION-OFFICE"
 	persistence_enabled = false

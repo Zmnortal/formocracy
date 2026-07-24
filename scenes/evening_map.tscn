@@ -46,6 +46,24 @@ corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
+[sub_resource type="StyleBoxFlat" id="LocationHover"]
+bg_color = Color(0.09, 0.12, 0.075, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.83, 0.70, 0.32, 1)
+shadow_color = Color(0.08, 0.07, 0.04, 0.72)
+shadow_size = 7
+
+[sub_resource type="StyleBoxFlat" id="LocationDisabled"]
+bg_color = Color(0.045, 0.05, 0.042, 0.86)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.29, 0.22, 1)
+
 [node name="EveningMap" type="Control"]
 layout_mode = 3
 offset_right = 1280.0
@@ -101,50 +119,36 @@ theme_override_font_sizes/font_size = 16
 text = "剩余行动  2 / 2"
 horizontal_alignment = 2
 
-[node name="Archive" type="Panel" parent="."]
+[node name="FormsButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 80.0
 offset_top = 128.0
 offset_right = 294.0
 offset_bottom = 208.0
-theme_override_styles/panel = SubResource("LocationPanel")
+theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
+text = "中央表单部\n特殊窗口"
 
-[node name="Label" type="Label" parent="Archive"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = -14.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
-theme_override_font_sizes/font_size = 16
-text = "中央档案局\n已关闭"
-
-[node name="RationDepot" type="Panel" parent="."]
+[node name="RationButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 500.0
 offset_top = 188.0
 offset_right = 714.0
 offset_bottom = 270.0
-theme_override_styles/panel = SubResource("LocationPanel")
-
-[node name="Label" type="Label" parent="RationDepot"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = -14.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
 theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
 text = "公共配给站\n可办理"
 
 [node name="Clinic" type="Panel" parent="."]
@@ -193,27 +197,20 @@ theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
 theme_override_font_sizes/font_size = 16
 text = "交通许可处\n已关闭"
 
-[node name="Home" type="Panel" parent="."]
+[node name="HomeButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 916.0
 offset_top = 380.0
 offset_right = 1130.0
 offset_bottom = 460.0
-theme_override_styles/panel = SubResource("LocationPanel")
-
-[node name="Label" type="Label" parent="Home"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = -14.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
 theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
 text = "职员宿舍 12-C\n回家"
 
 [node name="PlayerToken" type="Panel" parent="."]
@@ -256,6 +253,35 @@ theme_override_font_sizes/font_size = 16
 text = "日报已封存。选择一个地点，安排今晚的事务。"
 horizontal_alignment = 1
 
+[node name="ArrivalCard" type="Panel" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 398.0
+offset_top = 116.0
+offset_right = 882.0
+offset_bottom = 226.0
+theme_override_styles/panel = SubResource("HeaderPanel")
+
+[node name="Title" type="Label" parent="ArrivalCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 14.0
+offset_right = 464.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.84, 0.73, 0.39, 1)
+theme_override_font_sizes/font_size = 18
+text = "已抵达"
+
+[node name="Body" type="Label" parent="ArrivalCard"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 48.0
+offset_right = 464.0
+offset_bottom = 96.0
+theme_override_colors/font_color = Color(0.60, 0.65, 0.47, 1)
+theme_override_font_sizes/font_size = 14
+text = "机构信息"
+
 [node name="StageLabel" type="Label" parent="."]
 layout_mode = 0
 offset_left = 72.0
@@ -264,5 +290,5 @@ offset_right = 1208.0
 offset_bottom = 696.0
 theme_override_colors/font_color = Color(0.36, 0.41, 0.31, 1)
 theme_override_font_sizes/font_size = 13
-text = "地图档案 M-12 / 地点选择将在下一开发阶段启用"
+text = "地图档案 M-12 / 点击地点卡片安排夜间行动"
 horizontal_alignment = 1

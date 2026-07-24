@@ -68,6 +68,7 @@ func _on_confirm_pressed() -> void:
 	confirming = true
 	confirm_button.disabled = true
 	status_line.text = "记录状态：正在封存"
+	WorkdayState.begin_evening()
 	var error: Error = get_tree().change_scene_to_file(EVENING_MAP_SCENE)
 	if error != OK:
 		confirming = false
