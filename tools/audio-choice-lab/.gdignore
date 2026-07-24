@@ -1,0 +1,3 @@
+# This directory is a standalone browser-based voice casting tool.
+# Its source audio includes formats Godot does not import, and none of these
+# files are runtime game resources. Keep the editor from scanning this tree.

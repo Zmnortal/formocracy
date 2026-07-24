@@ -30,24 +30,20 @@ RealityBridge="*res://RealityBridge.gd"
 
 [debug]
 
-developer_console_enabled=true
-gdscript/warnings/unsafe_call_argument=1
-gdscript/warnings/unsafe_cast=1
-gdscript/warnings/unsafe_method_access=1
-gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unsafe_property_access=1
+gdscript/warnings/unsafe_method_access=1
+gdscript/warnings/unsafe_cast=1
+gdscript/warnings/unsafe_call_argument=1
+developer_console_enabled=true
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-# IMPORTANT: 游戏必须以真正的全屏模式启动；不要改成最大化（2）或窗口模式（0）。
-# 玩家启动后仍可通过 ESC 暂停菜单主动切换为窗口模式。
-window/size/mode=3
-# IMPORTANT: 全屏窗口内的 1280×720 游戏画布也必须铺满整个屏幕。
-# canvas_items + ignore 会横纵独立缩放；不要改成 disabled/keep，否则会重新出现黑边。
-window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
+"#IMPORTANT:æ¸¸æå¿é¡»ä»¥çæ­£çå¨å±æ¨¡å¼å¯å¨ï¼ä¸è¦æ¹ææå¤§åï¼2ï¼æçªå£æ¨¡å¼ï¼0ï¼ã#ç©å®¶å¯å¨åä»å¯éè¿ESCæåèåä¸»å¨åæ¢ä¸ºçªå£æ¨¡å¼ãwindow/size/mode"=3
+"#IMPORTANT:å¨å±çªå£åç1280Ã720æ¸¸æç»å¸ä¹å¿é¡»éºæ»¡æ´ä¸ªå±å¹ã#canvas_items+ignoreä¼æ¨ªçºµç¬ç«ç¼©æ¾ï¼ä¸è¦æ¹ædisabled/keepï¼å¦åä¼éæ°åºç°é»è¾¹ãwindow/stretch/mode"="canvas_items"
 
 [gui]
 
@@ -59,9 +55,7 @@ theme/custom="res://themes/pixel_theme.tres"
 
 [rendering]
 
-# 场景切换可能出现一帧没有任何 CanvasItem 的清屏间隙。
-# 默认清屏色必须固定为纯黑，否则主菜单进入记录页时会产生单帧白/灰闪。
-environment/defaults/default_clear_color=Color(0, 0, 0, 1)
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+"#åºæ¯åæ¢å¯è½åºç°ä¸å¸§æ²¡æä»»ä½CanvasItemçæ¸å±é´éã#é»è®¤æ¸å±è²å¿é¡»åºå®ä¸ºçº¯é»ï¼å¦åä¸»èåè¿å¥è®°å½é¡µæ¶ä¼äº§çåå¸§ç½/ç°éªãenvironment/defaults/default_clear_color"=Color(0, 0, 0, 1)

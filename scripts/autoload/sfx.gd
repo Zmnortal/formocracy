@@ -14,6 +14,7 @@ const STREAMS := {
 	"start": preload("res://assets/audio/sfx/special_start.wav"),
 	"call_bell": preload("res://assets/audio/sfx/external/call_bell_cc0.wav"),
 	"call_intercom": preload("res://assets/audio/sfx/external/call_intercom_noise.wav"),
+	"dialogue_tick": preload("res://assets/audio/sfx/dialogue_type_tick.wav"),
 }
 
 # 各音效的默认音量（分贝），未列出的按 0 dB 播放。
@@ -27,6 +28,7 @@ const DEFAULT_VOLUME_DB := {
 	"start": -6.0,
 	"call_bell": -7.0,
 	"call_intercom": -12.0,
+	"dialogue_tick": -15.0,
 }
 
 const VOICE_STREAMS := {
@@ -190,6 +192,11 @@ func typewriter_tick() -> void:
 	if not typewriter_player.playing:
 		var length: float = typewriter_player.stream.get_length()
 		typewriter_player.play(randf_range(0.0, maxf(length - 1.0, 0.0)))
+
+
+# 对话框每吐出一个字符播放一次短促机械击键，轻微变调避免连续重复过于僵硬。
+func dialogue_tick() -> void:
+	play("dialogue_tick", 0.0, randf_range(0.94, 1.07))
 
 
 # 超过 linger 时间后自动停止打字机音效。

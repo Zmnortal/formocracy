@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-TANG",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_tang_official_sources_2026-07-25/concept_official.png",
+  "delivery_prop_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_tang_official_sources_2026-07-25/document_bag_reference.png",
+  "source_strips": [
+    "01_idle_5.png",
+    "02_deliver_3.png",
+    "03_approve_4.png",
+    "04_reject_4.png",
+    "05_exit_4.png",
+    "exit_passing_2_selected.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 19,
+    "role": "见习公文投递员",
+    "palette": "电光蓝、炭灰与旧银",
+    "markers": [
+      "短黑发与灰蓝投递员帽",
+      "电光蓝帽带和斜挎肩带",
+      "炭灰四扣见习制服",
+      "右侧蓝色个人投递包",
+      "宽松灰裤、缠腿与深色工作靴"
+    ]
+  },
+  "delivery_prop": {
+    "name": "新文档袋",
+    "markers": [
+      "金黄牛皮竖向厚袋",
+      "宽梯形封舌与斜切下角",
+      "上下两颗红芯圆扣",
+      "浅色交叉 8 字绑绳",
+      "底部两角折线加固"
+    ],
+    "consistency_rule": "金黄文档袋只在 06–08 三张 deliver 帧出现；呈上后所有权转到玩家工作台，01–05 与 09–20 不得再出现。蓝色斜挎投递包属于唐霁本人，不受此规则影响。"
+  },
+  "performance_direction": {
+    "neutral": "站姿认真而略显僵硬，反复核对候办票和更正表，表现他相信程序同时害怕错过下一趟投递。",
+    "approved": "短暂惊讶后快速松气，用触碰见习工号牌代替夸张庆祝；他把审批视作自己仍能正确完成工作的证明。",
+    "rejected": "先愣住，再检查候办票并触碰肩带准备返工；他不会发火，而是把错误先归到自己身上，带着疑问离开。"
+  }
+}

@@ -16,16 +16,26 @@ const FRAME_PATHS: Array[String] = [
 	"res://assets/characters/idle_breathing/frame-05.png",
 ]
 const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animation_table.json"
-const FRONT_POSITION := Vector2(640, 338)
-const EXIT_POSITION := Vector2(470, 352)
-const MAX_VISIBLE_QUEUE := 3
-const QUEUE_POSITIONS: Array[Vector2] = [
-	Vector2(614, 330),
-	Vector2(590, 323),
-	Vector2(568, 317),
+const FRONT_ACTOR_SCALE_MULTIPLIER := 1.3
+# 设计画布会按当前窗口约 3 倍放大；70 个设计单位约等于实机截图中的 200 px。
+const FRONT_ACTOR_VERTICAL_OFFSET := 70.0
+const FRONT_POSITION := Vector2(620, 338 + FRONT_ACTOR_VERTICAL_OFFSET)
+const DELIVERY_POSITION := Vector2(634, 348 + FRONT_ACTOR_VERTICAL_OFFSET)
+const EXIT_POSITION := Vector2(450, 352 + FRONT_ACTOR_VERTICAL_OFFSET)
+const QUEUE_CENTER := Vector2(570, 330 + FRONT_ACTOR_VERTICAL_OFFSET)
+const QUEUE_ROW_CAPACITY := 4
+const QUEUE_X_OFFSETS: Array[float] = [
+	-20.0,
+	-75.0,
+	-130.0,
+	-185.0,
 ]
-const QUEUE_SCALE_FACTORS: Array[float] = [0.92, 0.84, 0.76]
-const QUEUE_DARKNESS: Array[float] = [0.60, 0.75, 0.75]
+const QUEUE_NEAR_SCALE_FACTOR := 0.78
+const QUEUE_SCALE_STEP := 0.05
+const QUEUE_MIN_SCALE_FACTOR := 0.50
+const QUEUE_NEAR_DARKNESS := 0.42
+const QUEUE_DARKNESS_STEP := 0.10
+const QUEUE_MAX_DARKNESS := 0.88
 
 var root: Node2D
 var actor_layer: Node2D
@@ -35,8 +45,7 @@ var animation_player: NpcAnimationPlayer
 var queue_actors: Array[AnimatedSprite2D] = []
 var queue_case_ids: Array[String] = []
 var staged_case_id := ""
-var speech_bubble: Panel
-var speech_label: Label
+var speech_bubble: NpcSpeechBubble
 var state := "IDLE"
 var current_case: Dictionary = {}
 var performance_token := 0
@@ -47,29 +56,20 @@ var departure_in_progress := false
 var promote_after_departure := true
 
 
-# 初始化 NPC 演出控制器并创建演员层与对话框。
+# 初始化 NPC 演出控制器并创建人物附近的自动气泡。
 func _init(owner_root: Node2D) -> void:
 	root = owner_root
 	_build_layer()
 
 
-# 创建 NPC 演出层与对话框面板。
+# 创建 NPC 演出层与位于人物附近的高层气泡。
 func _build_layer() -> void:
 	actor_layer = Node2D.new()
 	actor_layer.name = "NpcPerformanceLayer"
 	actor_layer.z_index = 2
 	root.add_child(actor_layer)
-
-	speech_bubble = Panel.new()
-	speech_bubble.name = "NpcSpeechBubble"
-	speech_bubble.position = Vector2(730, 112)
-	speech_bubble.size = Vector2(330, 104)
-	speech_bubble.z_index = 34
-	speech_bubble.visible = false
-	speech_bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	speech_bubble.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color(0.035, 0.04, 0.032, 0.96), 5, Color("a78a52"), 2))
+	speech_bubble = NpcSpeechBubble.new()
 	root.add_child(speech_bubble)
-	speech_label = WorkbenchUI.add_text(speech_bubble, "", 16, Color("e1d5b6"), Vector2(18, 14), Vector2(294, 76))
 
 
 # 开始一个案件的入场演出：问候、递件并进入等待状态。
@@ -106,7 +106,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	state = "DELIVERING"
 	_play_action("deliver")
 	var deliver := root.create_tween().set_parallel(true)
-	deliver.tween_property(current_actor, "position", Vector2(654, 348), 0.18)
+	deliver.tween_property(current_actor, "position", DELIVERY_POSITION, 0.18)
 	deliver.tween_property(current_actor, "rotation", -0.035, 0.18)
 	await deliver.finished
 	if token != performance_token:
@@ -181,7 +181,7 @@ func react_and_leave(decision: String, promote_next := true) -> void:
 	performance_token += 1
 	var token := performance_token
 	state = "REACTING"
-	speech_bubble.visible = false
+	speech_bubble.close()
 	GameStateSync.speaker_stopped("npc_reacting")
 	if not is_instance_valid(current_actor):
 		departure_finished.emit()
@@ -226,7 +226,7 @@ func skip_current_performance() -> void:
 	if departure_in_progress or state == "QUEUE_ADVANCING":
 		return
 	skip_requested = true
-	speech_bubble.visible = false
+	speech_bubble.close()
 	GameStateSync.speaker_stopped("npc_performance_skipped")
 	_stop_audio()
 	if state in ["GREETING", "DELIVERING"]:
@@ -246,18 +246,17 @@ func skip_current_performance() -> void:
 # 停止所有演出与音频，用于场景退出时的清理。
 func shutdown() -> void:
 	performance_token += 1
-	speech_bubble.visible = false
+	speech_bubble.close()
 	GameStateSync.speaker_stopped("scene_exiting")
 	_stop_audio()
 	if is_instance_valid(animation_player):
 		animation_player.shutdown()
 
 
-# 显示并自动隐藏一句对话气泡，同步播报与语音。
+# 在人物附近气泡逐字显示一句台词，并在约五秒后自动淡出。
 func _say(text: String, token: int) -> void:
 	if text.strip_edges().is_empty() or skip_requested:
 		return
-	speech_label.text = text
 	var person := WorkdayContext.read_dictionary(current_case, "person")
 	_send_line_to_glass(person, text)
 	(
@@ -274,22 +273,12 @@ func _say(text: String, token: int) -> void:
 			}
 		)
 	)
-	speech_bubble.modulate.a = 0.0
-	speech_bubble.visible = true
 	_play_voice()
-	var show := root.create_tween()
-	show.tween_property(speech_bubble, "modulate:a", 1.0, 0.12)
-	await show.finished
-	var duration := clampf(1.35 + text.length() * 0.055, 1.8, 3.8)
-	await root.get_tree().create_timer(duration).timeout
+	var speaker_name := WorkdayContext.read_string(person, "display_name", WorkdayContext.read_string(current_case, "applicant", "身份受限"))
+	await speech_bubble.play_line(speaker_name, text)
 	if token != performance_token:
 		return
-	var hide := root.create_tween()
-	hide.tween_property(speech_bubble, "modulate:a", 0.0, 0.14)
-	await hide.finished
-	if token == performance_token:
-		speech_bubble.visible = false
-		GameStateSync.speaker_stopped(state.to_lower())
+	GameStateSync.speaker_stopped(state.to_lower())
 
 
 # 从人物资源名推断性别与年龄后将台词转发给 RealityBridge。
@@ -318,7 +307,7 @@ func _send_line_to_glass(person: Dictionary, text: String) -> void:
 
 # 为队列中的案件创建后排演员并摆放到对应槽位。
 func _build_queue(case_ids: Array[String]) -> void:
-	for i in mini(case_ids.size(), MAX_VISIBLE_QUEUE):
+	for i in case_ids.size():
 		var case_id := case_ids[i]
 		var sprite := _make_queue_actor(case_id)
 		actor_layer.add_child(sprite)
@@ -330,8 +319,8 @@ func _build_queue(case_ids: Array[String]) -> void:
 # 复用现有演员将后排队列同步到目标案件列表。
 func _sync_queue(case_ids: Array[String]) -> void:
 	var desired_ids: Array[String] = []
-	for i in mini(case_ids.size(), MAX_VISIBLE_QUEUE):
-		desired_ids.append(case_ids[i])
+	for case_id in case_ids:
+		desired_ids.append(case_id)
 	if queue_actors.is_empty():
 		_build_queue(desired_ids)
 		return
@@ -366,7 +355,7 @@ func _finish_departure(token: int) -> void:
 	departure_in_progress = true
 	state = "QUEUE_ADVANCING"
 	_stop_audio()
-	speech_bubble.visible = false
+	speech_bubble.close()
 	_dispose_animation_player()
 	if is_instance_valid(current_actor):
 		current_actor.queue_free()
@@ -398,7 +387,7 @@ func _promote_queue(token: int) -> void:
 	current_actor = promoted
 	var promoted_person := _person_for_case(staged_case_id)
 	var promoted_tint := _actor_tint(promoted_person)
-	var promoted_scale := WorkdayContext.read_float(promoted_person, "actor_scale", 0.34)
+	var promoted_scale := WorkdayContext.read_float(promoted_person, "actor_scale", 0.34) * FRONT_ACTOR_SCALE_MULTIPLIER
 	current_actor.z_index = 0
 	var tween := root.create_tween().set_parallel(true)
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -408,11 +397,16 @@ func _promote_queue(token: int) -> void:
 	for i in queue_actors.size():
 		var actor := queue_actors[i]
 		var person := _person_for_case(queue_case_ids[i])
-		var target_tint := _actor_tint(person).darkened(QUEUE_DARKNESS[i])
+		var target_tint := _actor_tint(person).darkened(_queue_darkness(i))
 		target_tint.a = 1.0
 		actor.z_index = -i - 1
-		tween.tween_property(actor, "position", QUEUE_POSITIONS[i], 0.34)
-		tween.tween_property(actor, "scale", Vector2.ONE * WorkdayContext.read_float(person, "actor_scale", 0.34) * QUEUE_SCALE_FACTORS[i], 0.34)
+		tween.tween_property(actor, "position", _queue_position(i), 0.34)
+		tween.tween_property(
+			actor,
+			"scale",
+			Vector2.ONE * WorkdayContext.read_float(person, "actor_scale", 0.34) * FRONT_ACTOR_SCALE_MULTIPLIER * _queue_scale_factor(i),
+			0.34,
+		)
 		tween.tween_property(actor, "modulate", target_tint, 0.34)
 	await tween.finished
 	if token != performance_token:
@@ -449,12 +443,37 @@ func _configure_queue_actor(sprite: AnimatedSprite2D, person: Dictionary) -> voi
 # 按队列深度设置演员的位置、缩放、遮暗与层级。
 func _apply_queue_slot(actor: AnimatedSprite2D, case_id: String, depth: int) -> void:
 	var person := _person_for_case(case_id)
-	var tint := _actor_tint(person).darkened(QUEUE_DARKNESS[depth])
+	var tint := _actor_tint(person).darkened(_queue_darkness(depth))
 	tint.a = 1.0
-	actor.position = QUEUE_POSITIONS[depth]
-	actor.scale = (Vector2.ONE * WorkdayContext.read_float(person, "actor_scale", 0.34) * QUEUE_SCALE_FACTORS[depth])
+	actor.position = _queue_position(depth)
+	actor.scale = (
+		Vector2.ONE
+		* WorkdayContext.read_float(person, "actor_scale", 0.34)
+		* FRONT_ACTOR_SCALE_MULTIPLIER
+		* _queue_scale_factor(depth)
+	)
 	actor.modulate = tint
 	actor.z_index = -depth - 1
+
+
+# 将任意数量的候办人按四人一排向门廊左侧展开，避免任何一位拥挤在前排人物背后。
+func _queue_position(depth: int) -> Vector2:
+	var row := floori(float(depth) / float(QUEUE_ROW_CAPACITY))
+	var slot := posmod(depth, QUEUE_ROW_CAPACITY)
+	return QUEUE_CENTER + Vector2(
+		QUEUE_X_OFFSETS[slot],
+		-float(row) * 18.0 - float(slot) * 2.5,
+	)
+
+
+# 后排继承整体人物倍率，但从第一位起就明显小于前排，并随纵深继续缩小。
+func _queue_scale_factor(depth: int) -> float:
+	return maxf(QUEUE_MIN_SCALE_FACTOR, QUEUE_NEAR_SCALE_FACTOR - float(depth) * QUEUE_SCALE_STEP)
+
+
+# 队列越深越接近黑色，但始终保持不透明的人形轮廓。
+func _queue_darkness(depth: int) -> float:
+	return minf(QUEUE_MAX_DARKNESS, QUEUE_NEAR_DARKNESS + float(depth) * QUEUE_DARKNESS_STEP)
 
 
 # 创建并配置一个前排主演员精灵。
@@ -500,7 +519,7 @@ func _configure_current_actor(sprite: AnimatedSprite2D, person: Dictionary) -> v
 				fallback_frames.add_frame("idle", texture)
 		sprite.sprite_frames = fallback_frames
 	sprite.centered = true
-	var configured_scale := WorkdayContext.read_float(person, "actor_scale", 0.34)
+	var configured_scale := WorkdayContext.read_float(person, "actor_scale", 0.34) * FRONT_ACTOR_SCALE_MULTIPLIER
 	sprite.scale = Vector2.ONE * configured_scale
 	sprite.modulate = _actor_tint(person)
 	sprite.position = FRONT_POSITION
@@ -519,7 +538,7 @@ func _actor_tint(person: Dictionary) -> Color:
 # 清除前排演员与整个队列，重置演出相关状态。
 func _clear_actors() -> void:
 	_stop_audio()
-	speech_bubble.visible = false
+	speech_bubble.close()
 	_dispose_animation_player()
 	animation_library = null
 	if is_instance_valid(current_actor):

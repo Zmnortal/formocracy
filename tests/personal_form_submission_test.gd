@@ -39,8 +39,14 @@ func run() -> void:
 	assert(map.submit_form_button.text.contains("等待次日处理"), "form desk must show submission receipt")
 	map.end_night()
 	await create_timer(0.1).timeout
-	assert(state.day_number == 2, "ending the night must advance the workday")
 	assert(map.end_overlay.visible, "ending the night must play the blackout dialogue")
+	assert(map.dialogue_box.visible and map.dialogue_box.z_index >= 4000, "blackout dialogue must use the frontmost shared bottom box")
+	assert(state.day_number == 1, "night dialogue must never advance the workday on a timer")
+	for line_index in map.end_dialogue_lines.size():
+		map.dialogue_box.reveal_current_line()
+		map.dialogue_box._handle_manual_advance()
+		await process_frame
+	assert(state.day_number == 2, "manual confirmation of every night line must advance the workday")
 	assert(map.end_dialogue_label.text.contains("批准"), "valid submitted form must be approved during the transition")
 	assert(not state.water_deprived, "approved form must preserve normal next-day status")
 	print("FORMOCRACY_PERSONAL_FORM_SUBMISSION_TEST_OK")

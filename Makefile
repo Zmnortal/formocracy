@@ -7,6 +7,7 @@ TEST_SCRIPTS := \
 	tests/save_module_boundary_test.gd \
 	tests/core_gameplay_test.gd \
 	tests/smoke_test.gd \
+	tests/desk_item_physics_test.gd \
 	tests/config_level_test.gd \
 	tests/archive_backlog_test.gd \
 	tests/save_backup_recovery_test.gd \

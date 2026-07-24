@@ -46,11 +46,31 @@ func run() -> void:
 			}
 		)
 	)
+	for index in 3:
+		(
+			state
+			. records
+			. append(
+				{
+					"code": "X-%02d/境外专业人员临时居住与夜间设施维护联合申请" % index,
+					"applicant": "超长姓名压力测试申请人第 %02d 号" % index,
+					"decision": "批准" if index != 1 else "驳回",
+					"effective": index == 0,
+					"procedure_errors": ["译文认证逾期", "居住证明地址不一致"] if index == 1 else [],
+					"performance": index - 1,
+					"fine": 24 if index == 1 else 0,
+					"political_credit": -1 if index == 1 else 0,
+				}
+			)
+		)
 	var error := change_scene_to_file("res://scenes/daily_report.tscn")
 	assert(error == OK)
 	await process_frame
 	await process_frame
 	await process_frame
+	current_scene.reveal_all_blocks()
+	await process_frame
+	await RenderingServer.frame_post_draw
 	if DisplayServer.get_name() == "headless":
 		print("FORMOCRACY_DOCUMENT_BACKGROUNDS_SNAPSHOT_OK (skipped on headless display)")
 		quit(0)

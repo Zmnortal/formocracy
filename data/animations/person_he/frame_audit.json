@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-HE",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_he_official_and_sources_2026-07-25/reference/official_dossier_concept.png",
+  "source_strips": [
+    "strip_01_neutral_nervous.png",
+    "strip_02_deliver_approve.png",
+    "strip_03_approve_reject.png",
+    "strip_04_reject_exit.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 34,
+    "role": "第七码头夜校教师",
+    "palette": "青绿色与暗藕褐",
+    "markers": [
+      "深棕短发与侧分刘海",
+      "青绿色翻领针织开衫",
+      "暗藕褐纹样过膝裙",
+      "深色长袜",
+      "棕色系带鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "克制地核对夜校点名册，焦虑集中在被划掉的姓名与护住名册的动作上。",
+    "approved": "先短暂愣住，再露出压低声音般的教师式微笑，像学生终于可以继续来上课。",
+    "rejected": "先受伤，继而翻开名册指向证据，最后收回情绪，以平静但坚定的姿态离开。"
+  }
+}

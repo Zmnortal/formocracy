@@ -24,14 +24,30 @@ func run() -> void:
 	assert(is_instance_valid(main.manager.npc_performance.current_actor), "current NPC actor must be visible")
 	_assert_actor_fps_cap(main.manager.npc_performance.current_actor)
 	assert(main.manager.npc_performance.animation_player.get_current_action() == &"idle", "the counter greeting must use the breathing idle row")
-	var expected_visible_queue := mini(state.target_case_count - 1, main.manager.npc_performance.MAX_VISIBLE_QUEUE)
-	assert(main.manager.npc_performance.queue_actors.size() == expected_visible_queue, "visible depth queue must fill its configured slots")
-	for queue_actor in main.manager.npc_performance.queue_actors:
+	var expected_visible_queue: int = state.target_case_count - 1
+	assert(main.manager.npc_performance.queue_actors.size() == expected_visible_queue, "every remaining applicant for the day must appear in the visible crowd")
+	for queue_index in main.manager.npc_performance.queue_actors.size():
+		var queue_actor = main.manager.npc_performance.queue_actors[queue_index]
 		assert(
 			queue_actor.animation == &"queue_idle" and queue_actor.is_playing() and queue_actor.sprite_frames.get_frame_count(&"queue_idle") == 3,
 			"every queued NPC with the standard table must run the optional queue_idle loop"
 		)
 		assert(queue_actor.sprite_frames.get_animation_speed(&"queue_idle") <= 4.0, "queued playback must obey the global four FPS limit")
+		assert(
+			queue_actor.position.is_equal_approx(main.manager.npc_performance._queue_position(queue_index)),
+			"every queued NPC must occupy its procedural porch crowd slot",
+		)
+		var queue_person: Dictionary = main.manager.npc_performance._person_for_case(main.manager.npc_performance.queue_case_ids[queue_index])
+		var queue_configured_scale := WorkdayContext.read_float(queue_person, "actor_scale", 0.34)
+		assert(
+			queue_actor.scale.is_equal_approx(
+				Vector2.ONE
+				* queue_configured_scale
+				* main.manager.npc_performance.FRONT_ACTOR_SCALE_MULTIPLIER
+				* main.manager.npc_performance._queue_scale_factor(queue_index)
+			),
+			"every queued NPC must inherit the 1.3 crowd enlargement before perspective scaling",
+		)
 	var static_queue_fallback := AnimatedSprite2D.new()
 	(
 		main
@@ -59,17 +75,32 @@ func run() -> void:
 	assert(main.manager.npc_performance.actor_layer.get_parent() == main, "the renderer must keep the full-body actor uncut and rely on foreground assets")
 	assert(main.manager.npc_performance.queue_case_ids.slice(0, 2) == ["CASE-002", "CASE-003"], "queue actors must retain the fixed day-one gameplay identities")
 	assert(main.manager.npc_performance.current_actor.position.is_equal_approx(main.manager.npc_performance.FRONT_POSITION), "the active NPC must already occupy the counter position")
+	var configured_scale := WorkdayContext.read_float(main.manager.current_case.person, "actor_scale", 0.34)
+	assert(
+		main.manager.npc_performance.current_actor.scale.is_equal_approx(Vector2.ONE * configured_scale * main.manager.npc_performance.FRONT_ACTOR_SCALE_MULTIPLIER),
+		"the active NPC must use the enlarged foreground scale",
+	)
+	assert(
+		main.manager.npc_performance._queue_scale_factor(0) <= 0.8,
+		"even the nearest queued NPC must remain clearly smaller than the active foreground NPC",
+	)
+	assert(
+		main.manager.npc_performance._queue_position(0).x < main.manager.npc_performance.FRONT_POSITION.x
+		and main.manager.npc_performance._queue_position(2).x < main.manager.npc_performance._queue_position(0).x,
+		"the queue must fan out toward the left instead of stacking behind the foreground NPC",
+	)
 	assert(
 		is_equal_approx(main.manager.npc_performance.queue_actors[0].modulate.a, 1.0) and is_equal_approx(main.manager.npc_performance.queue_actors[1].modulate.a, 1.0),
 		"depth must be expressed through blackness rather than transparency"
 	)
 	assert(
 		_brightness(main.manager.npc_performance.queue_actors[0].modulate) > _brightness(main.manager.npc_performance.queue_actors[1].modulate),
-		"the 60-percent dark first queue slot must remain brighter than the 75-percent slot"
+		"each deeper applicant must render darker than the person before them"
 	)
 	assert(
-		is_equal_approx(_brightness(main.manager.npc_performance.queue_actors[0].modulate), 0.4) and is_equal_approx(_brightness(main.manager.npc_performance.queue_actors[1].modulate), 0.25),
-		"queue slots must apply the configured 60-percent and 75-percent blackness"
+		_brightness(main.manager.npc_performance.queue_actors[1].modulate) > _brightness(main.manager.npc_performance.queue_actors[2].modulate)
+		and _brightness(main.manager.npc_performance.queue_actors[2].modulate) > _brightness(main.manager.npc_performance.queue_actors[3].modulate),
+		"the entire visible crowd must become progressively darker with depth"
 	)
 	assert(main.manager.npc_performance.queue_actors[0].z_index > main.manager.npc_performance.queue_actors[1].z_index, "deeper applicants must render behind nearer applicants")
 	assert(not main.manager.presenter.envelope.visible, "envelope must remain locked until the delivery performance")
@@ -78,6 +109,10 @@ func run() -> void:
 	var before_time: float = state.seconds_remaining
 	await create_timer(0.2).timeout
 	assert(state.seconds_remaining < before_time, "NPC performance must continue consuming workday time")
+	assert(main.manager.npc_performance.speech_bubble.visible, "NPC dialogue must stay in a character speech bubble")
+	assert(main.manager.npc_performance.speech_bubble.position.y < DialogueBox.PANEL_POSITION.y, "NPC speech must not use the bottom form dialogue layout")
+	assert(main.manager.npc_performance.speech_bubble.z_index >= 4000, "NPC speech bubble must remain above workbench documents")
+	assert(main.manager.npc_performance.speech_bubble.dialogue_label.visible_characters > 0, "NPC speech must reveal with the typewriter effect")
 	var glass_wait_started := Time.get_ticks_msec()
 	while String(bridge.last_emitted_event.get("type", "")) != "npc_line" and Time.get_ticks_msec() - glass_wait_started < 2500:
 		await process_frame
@@ -105,7 +140,7 @@ func run() -> void:
 		await _wait_until(func() -> bool: return main.manager.npc_performance.animation_player.get_current_action() == &"happy_idle", 2.0),
 		"approval reaction must persist as happy idle during the result line"
 	)
-	assert(await _wait_until(func() -> bool: return main.manager.call_bell.available, 5.0), "approved NPC must finish leaving and unlock the call bell")
+	assert(await _wait_until(func() -> bool: return main.manager.call_bell.available, 7.0), "approved NPC bubble must auto-hide after about five seconds and unlock the call bell")
 	assert(main.manager.call_bell.available, "NPC departure must unlock the call bell")
 	assert(main.manager.npc_performance.state == "FRONT_STAGED", "the next queued NPC must remain staged at the front")
 	assert(main.manager.npc_performance.staged_case_id == "CASE-002", "the first queued identity must be promoted")
@@ -122,6 +157,8 @@ func run() -> void:
 	assert("周循" in main.manager.desk.applicant_card_label.text and "等待传唤" in main.manager.desk.applicant_card_label.text, "staged applicant UI must no longer show the departed person's dossier")
 	var staged_actor = main.manager.npc_performance.current_actor
 	main.manager.call_bell.trigger(true)
+	main.manager.dialogue_box.reveal_current_line()
+	main.manager.dialogue_box._handle_manual_advance()
 	await process_frame
 	assert(main.manager.case_index == 1, "NPC departure must advance the queue to the next case")
 	assert(main.manager.npc_performance.current_actor == staged_actor, "the next case must reuse the staged actor instead of replacing it")
@@ -150,6 +187,8 @@ func run() -> void:
 	assert(main.manager.npc_performance.staged_case_id == "CASE-003", "second departure must promote the final queued identity")
 	var final_staged_actor = main.manager.npc_performance.current_actor
 	main.manager.call_bell.trigger(true)
+	main.manager.dialogue_box.reveal_current_line()
+	main.manager.dialogue_box._handle_manual_advance()
 	await process_frame
 	assert(main.manager.npc_performance.current_actor == final_staged_actor, "the final staged identity must also be reused without a visual rebuild")
 	var xu_idle_path := String(main.manager.npc_performance.current_actor.sprite_frames.get_frame_texture(&"idle", 0).resource_path)

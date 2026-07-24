@@ -10,10 +10,13 @@ const DESK_RIGHT := DeskGeometry.BOUNDS_RIGHT
 const DESK_FLOOR_Y := DeskGeometry.BOUNDS_FLOOR
 const RESTING_LAYER_BASE := 8
 const HELD_LAYER := 80
+const LANDING_DEPTH_RANDOMNESS := 0.68
+const IN_PLACE_SETTLE_DURATION := 0.12
 
 var root: Node2D
 var items: Dictionary = {}
 var next_resting_layer := RESTING_LAYER_BASE
+var drop_sequence := 0
 
 
 # 初始化桌面物品控制器。
@@ -22,7 +25,9 @@ func _init(owner_root: Node2D) -> void:
 
 
 # 注册一个可点击、拖拽的桌面实体，恢复其保存的位置与层级。
-func register_item(item: Control, item_id: String, on_click: Callable = Callable(), on_drag_motion: Callable = Callable(), on_settled: Callable = Callable()) -> void:
+func register_item(
+	item: Control, item_id: String, on_click: Callable = Callable(), on_drag_motion: Callable = Callable(), on_settled: Callable = Callable(), on_drop_prepare: Callable = Callable()
+) -> void:
 	if not is_instance_valid(item) or item_id.is_empty():
 		return
 	item.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -38,6 +43,7 @@ func register_item(item: Control, item_id: String, on_click: Callable = Callable
 	item.set_meta("desk_on_click", on_click)
 	item.set_meta("desk_on_drag_motion", on_drag_motion)
 	item.set_meta("desk_on_settled", on_settled)
+	item.set_meta("desk_on_drop_prepare", on_drop_prepare)
 	items[item_id] = item
 
 	var saved: Dictionary = _manager().get_desk_item_layout(item_id)
@@ -86,6 +92,8 @@ func _begin_press(item: Control, local_position: Vector2) -> void:
 
 # 移动被拖拽物品，应用响应倍率、缩放倾斜与拖动回调。
 func _move_pressed_item(item: Control, event: InputEventMouseMotion) -> void:
+	if _read_meta_bool(item, "desk_drag_locked"):
+		return
 	var dragging := _read_meta_bool(item, "desk_dragging")
 	var press_position := _read_meta_vector(item, "desk_press_position", Vector2.ZERO)
 	if not dragging and event.position.distance_to(press_position) < DRAG_THRESHOLD:
@@ -114,6 +122,12 @@ func _end_press(item: Control) -> void:
 	if _read_meta_bool(item, "desk_dragging"):
 		item.set_meta("desk_dragging", false)
 		_cursor().call("end_drag")
+		var prepare_callback: Callable = item.get_meta("desk_on_drop_prepare", Callable())
+		if prepare_callback.is_valid():
+			prepare_callback.call(item)
+		if _read_meta_bool(item, "desk_skip_drop_once"):
+			item.set_meta("desk_skip_drop_once", false)
+			return
 		_drop_to_desk(item)
 		return
 	var callback: Callable = item.get_meta("desk_on_click", Callable())
@@ -121,13 +135,19 @@ func _end_press(item: Control) -> void:
 		callback.call()
 
 
-# 释放拖拽后让物品落到桌面边界内，并保存布局。
+# 释放拖拽后按物体是否完整位于桌面内，选择原地放下或伪重力坠落。
 func _drop_to_desk(item: Control) -> void:
 	var base_scale := _read_meta_vector(item, "desk_base_scale", Vector2.ONE)
 	var visual_size := item.size * base_scale.abs()
+	if _is_fully_inside_desk(item.position, visual_size):
+		await _settle_in_place(item, base_scale)
+		_finalize_settle(item)
+		return
+
 	var last_motion := _read_meta_vector(item, "desk_last_motion", Vector2.ZERO)
-	var target_x := clampf(item.position.x + last_motion.x * 2.4, DeskGeometry.bounds_left_at(1.0), DeskGeometry.bounds_right_at(1.0) - visual_size.x)
-	var target_y := DeskGeometry.BOUNDS_FLOOR - visual_size.y
+	var target_y := _choose_landing_y(item, visual_size)
+	var horizontal_limits := _horizontal_limits(target_y, visual_size)
+	var target_x := clampf(item.position.x + last_motion.x * 2.4, horizontal_limits.x, horizontal_limits.y)
 	var fall_distance := maxf(0.0, target_y - item.position.y)
 	var duration := clampf(0.18 + sqrt(fall_distance) * 0.012, 0.22, 0.62)
 	var target := Vector2(target_x, target_y)
@@ -148,6 +168,61 @@ func _drop_to_desk(item: Control) -> void:
 	bounce.tween_property(item, "scale", base_scale, 0.12)
 	await bounce.finished
 
+	_finalize_settle(item)
+
+
+# 判断物件完整视觉矩形是否已经处于桌面可放置区域内。
+func _is_fully_inside_desk(position: Vector2, visual_size: Vector2) -> bool:
+	var top_y := position.y
+	var bottom_y := position.y + visual_size.y
+	if top_y < DeskGeometry.BOUNDS_TOP or bottom_y > DeskGeometry.BOUNDS_FLOOR:
+		return false
+	var horizontal_limits := _horizontal_limits(top_y, visual_size)
+	return position.x >= horizontal_limits.x and position.x <= horizontal_limits.y
+
+
+# 桌面内释放只回正旋转与缩放，不改变玩家选择的位置。
+func _settle_in_place(item: Control, base_scale: Vector2) -> void:
+	var settle := root.create_tween()
+	item.set_meta("desk_motion_tween", settle)
+	settle.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	settle.tween_property(item, "rotation", 0.0, IN_PLACE_SETTLE_DURATION)
+	settle.parallel().tween_property(item, "scale", base_scale, IN_PLACE_SETTLE_DURATION)
+	await settle.finished
+
+
+# 为高处或越界释放的物件选择桌面纵深落点。
+# 随机值由物件、释放位置和本局坠落序号共同决定，既有变化又可稳定复现。
+func _choose_landing_y(item: Control, visual_size: Vector2) -> float:
+	var minimum_y := DeskGeometry.BOUNDS_TOP
+	var maximum_y := maxf(minimum_y, DeskGeometry.BOUNDS_FLOOR - visual_size.y)
+	if is_equal_approx(minimum_y, maximum_y):
+		return minimum_y
+
+	drop_sequence += 1
+	var item_id := WorkdayContext.stringify_value(item.get_meta("desk_item_id", "desk_item"))
+	var seed_source := "%s:%d:%d:%d" % [item_id, roundi(item.position.x), roundi(item.position.y), drop_sequence]
+	var random := RandomNumberGenerator.new()
+	random.seed = hash(seed_source)
+	var random_y := random.randf_range(minimum_y, maximum_y)
+	var projected_y := clampf(item.position.y, minimum_y, maximum_y)
+	return lerpf(projected_y, random_y, LANDING_DEPTH_RANDOMNESS)
+
+
+# 计算物件在指定桌面纵深处完整落入梯形边界时，左上角 X 的合法区间。
+func _horizontal_limits(target_y: float, visual_size: Vector2) -> Vector2:
+	var top_normalized := inverse_lerp(DeskGeometry.BOUNDS_TOP, DeskGeometry.BOUNDS_FLOOR, target_y)
+	var bottom_normalized := inverse_lerp(DeskGeometry.BOUNDS_TOP, DeskGeometry.BOUNDS_FLOOR, target_y + visual_size.y)
+	var minimum_x := maxf(DeskGeometry.bounds_left_at(top_normalized), DeskGeometry.bounds_left_at(bottom_normalized))
+	var maximum_x := minf(DeskGeometry.bounds_right_at(top_normalized), DeskGeometry.bounds_right_at(bottom_normalized)) - visual_size.x
+	if maximum_x < minimum_x:
+		var center_x := (minimum_x + maximum_x) * 0.5
+		return Vector2(center_x, center_x)
+	return Vector2(minimum_x, maximum_x)
+
+
+# 完成一次落桌：更新层级、保存布局、播放反馈并触发物件回调。
+func _finalize_settle(item: Control) -> void:
 	item.z_index = next_resting_layer
 	next_resting_layer += 1
 	var item_id := WorkdayContext.stringify_value(item.get_meta("desk_item_id", ""))

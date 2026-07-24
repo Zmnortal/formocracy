@@ -51,6 +51,7 @@ func get_summary() -> Dictionary:
 	var rejected := 0
 	var effective := 0
 	var procedure_errors := 0
+	var abnormal_records := 0
 	for record in state.records:
 		if record.decision == "批准":
 			approved += 1
@@ -58,14 +59,18 @@ func get_summary() -> Dictionary:
 			rejected += 1
 		if record.effective:
 			effective += 1
-		procedure_errors += WorkdayContext.read_array(record, "procedure_errors").size()
+		var record_errors := WorkdayContext.read_array(record, "procedure_errors")
+		procedure_errors += record_errors.size()
+		if not record_errors.is_empty():
+			abnormal_records += 1
 	return {
 		"reviewed": state.records.size(),
-		"submitted": state.records.size(),
+		"submitted": effective,
 		"approved": approved,
 		"rejected": rejected,
 		"returned": 0,
 		"effective": effective,
 		"pending": state.records.size() - effective,
 		"procedure_errors": procedure_errors,
+		"abnormal_records": abnormal_records,
 	}

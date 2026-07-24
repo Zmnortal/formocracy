@@ -22,6 +22,9 @@ func run() -> void:
 	await process_frame
 	var shop = current_scene
 	assert(shop.dialogue_label.text.contains("测试职员"), "proprietor must address the entered player name")
+	assert(shop.dialogue_box.visible, "shop greeting must use the shared bottom dialogue box")
+	assert(shop.dialogue_box.z_index >= 4000, "shop dialogue must render in front of all form cards")
+	assert(shop.dialogue_label.visible_characters >= 0, "shop greeting must begin with typewriter reveal")
 	shop.purchase_form(CLAIM_FORM)
 	shop.purchase_form(ARCHIVE_FORM)
 	assert(state.manager.get_personal_form_count(CLAIM_FORM, "blank") == 1, "shop must issue the selected claim form")

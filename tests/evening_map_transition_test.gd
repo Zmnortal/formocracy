@@ -30,6 +30,7 @@ func run() -> void:
 	await process_frame
 	var report = current_scene
 	assert(report != null and report.name == "DailyReport", "report must be current scene")
+	report.reveal_all_blocks()
 	report.declaration.button_pressed = true
 	report.confirm_button.pressed.emit()
 	await process_frame

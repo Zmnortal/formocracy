@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/scenes/daily_report.gd" id="1_script"]
 [ext_resource type="Script" path="res://scripts/ui/document_background.gd" id="2_document"]
 
 [sub_resource type="StyleBoxFlat" id="TerminalPanel"]
-bg_color = Color(0.035, 0.055, 0.045, 0.98)
+bg_color = Color(0.027, 0.041, 0.033, 0.98)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -15,37 +15,57 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id="ReceiptPanel"]
-bg_color = Color(0.82, 0.78, 0.62, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.32, 0.31, 0.24, 1)
-
-[sub_resource type="StyleBoxFlat" id="StatPanel"]
-bg_color = Color(0.69, 0.67, 0.53, 0.72)
+[sub_resource type="StyleBoxFlat" id="ThinBlock"]
+bg_color = Color(0.46, 0.44, 0.34, 0.12)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.39, 0.39, 0.29, 1)
+border_color = Color(0.39, 0.37, 0.28, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="StatsBlock"]
+bg_color = Color(0.49, 0.46, 0.34, 0.18)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.36, 0.34, 0.25, 0.85)
+
+[sub_resource type="StyleBoxFlat" id="FinanceBlock"]
+bg_color = Color(0.67, 0.61, 0.43, 0.08)
+border_width_left = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.39, 0.37, 0.28, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="BalanceBlock"]
+bg_color = Color(0.42, 0.39, 0.28, 0.17)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.31, 0.3, 0.22, 0.88)
+
+[sub_resource type="StyleBoxFlat" id="DeclarationBlock"]
+bg_color = Color(0.62, 0.56, 0.4, 0.1)
+border_width_top = 1
+border_color = Color(0.38, 0.35, 0.25, 0.72)
 
 [sub_resource type="StyleBoxFlat" id="ButtonNormal"]
-bg_color = Color(0.12, 0.19, 0.13, 1)
+bg_color = Color(0.16, 0.19, 0.13, 0.9)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.42, 0.56, 0.29, 1)
+border_color = Color(0.35, 0.39, 0.25, 1)
 
 [sub_resource type="StyleBoxFlat" id="ButtonHover"]
-bg_color = Color(0.2, 0.31, 0.18, 1)
+bg_color = Color(0.24, 0.28, 0.17, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.66, 0.78, 0.43, 1)
+border_color = Color(0.55, 0.59, 0.33, 1)
 
 [node name="DailyReport" type="Control"]
 layout_mode = 3
@@ -61,149 +81,477 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.012, 0.018, 0.015, 1)
+color = Color(0.008, 0.013, 0.011, 1)
 mouse_filter = 2
 
 [node name="Terminal" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 70.0
-offset_top = 34.0
-offset_right = 1210.0
-offset_bottom = 694.0
+offset_left = 52.0
+offset_top = 20.0
+offset_right = 1228.0
+offset_bottom = 700.0
 theme_override_styles/panel = SubResource("TerminalPanel")
 
 [node name="Header" type="Label" parent="Terminal"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 20.0
-offset_right = 1106.0
-offset_bottom = 56.0
+offset_left = 26.0
+offset_top = 14.0
+offset_right = 560.0
+offset_bottom = 42.0
 theme_override_colors/font_color = Color(0.55, 0.7, 0.37, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 18
 text = "FORMOCRACY // 内部记录终端"
 
 [node name="StatusLine" type="Label" parent="Terminal"]
 layout_mode = 0
-offset_left = 760.0
-offset_top = 22.0
-offset_right = 1104.0
-offset_bottom = 52.0
+offset_left = 762.0
+offset_top = 15.0
+offset_right = 1148.0
+offset_bottom = 42.0
 theme_override_colors/font_color = Color(0.74, 0.53, 0.25, 1)
-text = "记录状态：等待人员确认"
+theme_override_font_sizes/font_size = 15
+text = "记录状态：正在生成 00 / 09"
 horizontal_alignment = 2
 
 [node name="Receipt" type="TextureRect" parent="Terminal"]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 70.0
-offset_right = 950.0
-offset_bottom = 640.0
+offset_left = 108.0
+offset_top = 48.0
+offset_right = 1068.0
+offset_bottom = 658.0
 mouse_filter = 2
 script = ExtResource("2_document")
 
 [node name="Agency" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 54.0
-offset_top = 42.0
-offset_right = 706.0
-offset_bottom = 68.0
-theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+offset_left = 62.0
+offset_top = 28.0
+offset_right = 898.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.24, 0.23, 0.17, 1)
+theme_override_font_sizes/font_size = 14
 text = "中央现实管理局 · 第十二区行政记录处"
+horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 54.0
-offset_top = 76.0
-offset_right = 706.0
-offset_bottom = 116.0
-theme_override_colors/font_color = Color(0.1, 0.12, 0.09, 1)
-theme_override_font_sizes/font_size = 30
-text = "工作日处理回执 / 内部日报"
+offset_left = 56.0
+offset_top = 53.0
+offset_right = 904.0
+offset_bottom = 94.0
+theme_override_colors/font_color = Color(0.09, 0.1, 0.075, 1)
+theme_override_font_sizes/font_size = 29
+text = "工作日处理回执 / 第 01 天"
 horizontal_alignment = 1
 
-[node name="Metadata" type="Label" parent="Terminal/Receipt"]
+[node name="MetadataBlock" type="Panel" parent="Terminal/Receipt"]
 layout_mode = 0
 offset_left = 58.0
-offset_top = 124.0
-offset_right = 702.0
-offset_bottom = 152.0
-theme_override_colors/font_color = Color(0.28, 0.29, 0.22, 1)
-text = "工作日：01    回执：D12-0001    生成时间：当日终止后"
+offset_top = 102.0
+offset_right = 902.0
+offset_bottom = 141.0
+theme_override_styles/panel = SubResource("ThinBlock")
 
-[node name="Stats" type="Panel" parent="Terminal/Receipt"]
-layout_mode = 0
-offset_left = 54.0
-offset_top = 164.0
-offset_right = 706.0
-offset_bottom = 254.0
-theme_override_styles/panel = SubResource("StatPanel")
-
-[node name="StatsText" type="Label" parent="Terminal/Receipt/Stats"]
+[node name="Metadata" type="Label" parent="Terminal/Receipt/MetadataBlock"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 18.0
-offset_top = 12.0
 offset_right = -18.0
-offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.13, 0.15, 0.1, 1)
-theme_override_font_sizes/font_size = 18
-text = "形式审查 00    送交验收 00    批准 00    驳回 00\n取得现实效力 00    等待设施处理 00"
+theme_override_colors/font_color = Color(0.21, 0.21, 0.16, 1)
+theme_override_font_sizes/font_size = 16
+text = "编号：D12-0001        经办员：未登记职员        工作日：01"
+vertical_alignment = 1
 
-[node name="CasesTitle" type="Label" parent="Terminal/Receipt"]
+[node name="StatsBlock" type="Panel" parent="Terminal/Receipt"]
 layout_mode = 0
 offset_left = 58.0
-offset_top = 270.0
-offset_right = 420.0
-offset_bottom = 296.0
-theme_override_colors/font_color = Color(0.22, 0.23, 0.17, 1)
-text = "当日事项记录"
+offset_top = 149.0
+offset_right = 902.0
+offset_bottom = 239.0
+theme_override_styles/panel = SubResource("StatsBlock")
 
-[node name="CasesText" type="Label" parent="Terminal/Receipt"]
+[node name="Line1" type="ColorRect" parent="Terminal/Receipt/StatsBlock"]
 layout_mode = 0
-offset_left = 58.0
-offset_top = 302.0
-offset_right = 702.0
-offset_bottom = 384.0
-theme_override_colors/font_color = Color(0.12, 0.14, 0.1, 1)
+offset_top = 40.0
+offset_right = 844.0
+offset_bottom = 42.0
+color = Color(0.35, 0.33, 0.24, 0.72)
+mouse_filter = 2
+
+[node name="Line2" type="ColorRect" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 168.0
+offset_right = 170.0
+offset_bottom = 90.0
+color = Color(0.35, 0.33, 0.24, 0.72)
+mouse_filter = 2
+
+[node name="Line3" type="ColorRect" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 337.0
+offset_right = 339.0
+offset_bottom = 90.0
+color = Color(0.35, 0.33, 0.24, 0.72)
+mouse_filter = 2
+
+[node name="Line4" type="ColorRect" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 506.0
+offset_right = 508.0
+offset_bottom = 90.0
+color = Color(0.35, 0.33, 0.24, 0.72)
+mouse_filter = 2
+
+[node name="Line5" type="ColorRect" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 675.0
+offset_right = 677.0
+offset_bottom = 90.0
+color = Color(0.35, 0.33, 0.24, 0.72)
+mouse_filter = 2
+
+[node name="ReviewedHeader" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_right = 168.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.18, 0.18, 0.14, 1)
 theme_override_font_sizes/font_size = 15
-text = "01 / 尚无事项记录"
-autowrap_mode = 2
+text = "形式审查"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="Notice" type="Label" parent="Terminal/Receipt"]
+[node name="SubmittedHeader" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 170.0
+offset_right = 337.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.18, 0.18, 0.14, 1)
+theme_override_font_sizes/font_size = 15
+text = "送交验收"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ApprovedHeader" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 339.0
+offset_right = 506.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.18, 0.18, 0.14, 1)
+theme_override_font_sizes/font_size = 15
+text = "批准"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RejectedHeader" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 508.0
+offset_right = 675.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.18, 0.18, 0.14, 1)
+theme_override_font_sizes/font_size = 15
+text = "驳回"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProcedureHeader" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 677.0
+offset_right = 844.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.18, 0.18, 0.14, 1)
+theme_override_font_sizes/font_size = 15
+text = "程序错误"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ReviewedValue" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_top = 42.0
+offset_right = 168.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.11, 0.12, 0.09, 1)
+theme_override_font_sizes/font_size = 25
+text = "00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubmittedValue" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 170.0
+offset_top = 42.0
+offset_right = 337.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.11, 0.12, 0.09, 1)
+theme_override_font_sizes/font_size = 25
+text = "00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ApprovedValue" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 339.0
+offset_top = 42.0
+offset_right = 506.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.11, 0.12, 0.09, 1)
+theme_override_font_sizes/font_size = 25
+text = "00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RejectedValue" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 508.0
+offset_top = 42.0
+offset_right = 675.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.11, 0.12, 0.09, 1)
+theme_override_font_sizes/font_size = 25
+text = "00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProcedureValue" type="Label" parent="Terminal/Receipt/StatsBlock"]
+layout_mode = 0
+offset_left = 677.0
+offset_top = 42.0
+offset_right = 844.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.32, 0.18, 0.11, 1)
+theme_override_font_sizes/font_size = 25
+text = "00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EffectBlock" type="Panel" parent="Terminal/Receipt"]
 layout_mode = 0
 offset_left = 58.0
-offset_top = 398.0
-offset_right = 702.0
-offset_bottom = 444.0
-theme_override_colors/font_color = Color(0.38, 0.24, 0.14, 1)
-text = "设施通告：已获批准但尚未验收之事项，不构成任何权利、事实、时限或行政承诺。"
-autowrap_mode = 2
+offset_top = 247.0
+offset_right = 902.0
+offset_bottom = 284.0
+theme_override_styles/panel = SubResource("ThinBlock")
 
-[node name="Declaration" type="CheckBox" parent="Terminal/Receipt"]
+[node name="EffectSummary" type="Label" parent="Terminal/Receipt/EffectBlock"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_right = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.22, 0.21, 0.15, 1)
+theme_override_font_sizes/font_size = 15
+text = "现实生效  00        等待设施处理  00        异常档案  00"
+vertical_alignment = 1
+
+[node name="SalaryRow" type="Panel" parent="Terminal/Receipt"]
 layout_mode = 0
 offset_left = 58.0
-offset_top = 462.0
-offset_right = 476.0
-offset_bottom = 510.0
-theme_override_colors/font_color = Color(0.13, 0.15, 0.1, 1)
-theme_override_colors/font_pressed_color = Color(0.13, 0.15, 0.1, 1)
+offset_top = 296.0
+offset_right = 902.0
+offset_bottom = 329.0
+theme_override_styles/panel = SubResource("FinanceBlock")
+
+[node name="Label" type="Label" parent="Terminal/Receipt/SalaryRow"]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 304.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+theme_override_font_sizes/font_size = 16
+text = "日薪"
+vertical_alignment = 1
+
+[node name="Amount" type="Label" parent="Terminal/Receipt/SalaryRow"]
+layout_mode = 0
+offset_left = 650.0
+offset_right = 816.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.12, 0.13, 0.09, 1)
+theme_override_font_sizes/font_size = 17
+text = "+0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PerformanceRow" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 329.0
+offset_right = 902.0
+offset_bottom = 362.0
+theme_override_styles/panel = SubResource("FinanceBlock")
+
+[node name="Label" type="Label" parent="Terminal/Receipt/PerformanceRow"]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 304.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+theme_override_font_sizes/font_size = 16
+text = "绩效"
+vertical_alignment = 1
+
+[node name="Amount" type="Label" parent="Terminal/Receipt/PerformanceRow"]
+layout_mode = 0
+offset_left = 650.0
+offset_right = 816.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.12, 0.13, 0.09, 1)
+theme_override_font_sizes/font_size = 17
+text = "+0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FinesRow" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 362.0
+offset_right = 902.0
+offset_bottom = 395.0
+theme_override_styles/panel = SubResource("FinanceBlock")
+
+[node name="Label" type="Label" parent="Terminal/Receipt/FinesRow"]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 304.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+theme_override_font_sizes/font_size = 16
+text = "罚款"
+vertical_alignment = 1
+
+[node name="Amount" type="Label" parent="Terminal/Receipt/FinesRow"]
+layout_mode = 0
+offset_left = 650.0
+offset_right = 816.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.37, 0.16, 0.1, 1)
+theme_override_font_sizes/font_size = 17
+text = "-0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ExpensesRow" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 395.0
+offset_right = 902.0
+offset_bottom = 428.0
+theme_override_styles/panel = SubResource("FinanceBlock")
+
+[node name="Label" type="Label" parent="Terminal/Receipt/ExpensesRow"]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 304.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
+theme_override_font_sizes/font_size = 16
+text = "生活支出"
+vertical_alignment = 1
+
+[node name="Amount" type="Label" parent="Terminal/Receipt/ExpensesRow"]
+layout_mode = 0
+offset_left = 650.0
+offset_right = 816.0
+offset_bottom = 33.0
+theme_override_colors/font_color = Color(0.28, 0.16, 0.1, 1)
+theme_override_font_sizes/font_size = 17
+text = "-0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="BalanceBlock" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 440.0
+offset_right = 902.0
+offset_bottom = 491.0
+theme_override_styles/panel = SubResource("BalanceBlock")
+
+[node name="Title" type="Label" parent="Terminal/Receipt/BalanceBlock"]
+layout_mode = 0
+offset_left = 22.0
+offset_right = 260.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.1, 0.11, 0.08, 1)
+theme_override_font_sizes/font_size = 20
+text = "本日结余"
+vertical_alignment = 1
+
+[node name="Evaluation" type="Label" parent="Terminal/Receipt/BalanceBlock"]
+layout_mode = 0
+offset_left = 260.0
+offset_right = 630.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.27, 0.24, 0.16, 1)
+theme_override_font_sizes/font_size = 14
+text = "内部评价：评价稳定"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Amount" type="Label" parent="Terminal/Receipt/BalanceBlock"]
+layout_mode = 0
+offset_left = 650.0
+offset_right = 816.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.1, 0.11, 0.08, 1)
+theme_override_font_sizes/font_size = 22
+text = "+0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="DeclarationBlock" type="Panel" parent="Terminal/Receipt"]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 506.0
+offset_right = 902.0
+offset_bottom = 558.0
+theme_override_styles/panel = SubResource("DeclarationBlock")
+
+[node name="Declaration" type="CheckBox" parent="Terminal/Receipt/DeclarationBlock"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 5.0
+offset_right = 548.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0.13, 0.14, 0.1, 1)
+theme_override_colors/font_pressed_color = Color(0.13, 0.14, 0.1, 1)
+theme_override_colors/font_disabled_color = Color(0.27, 0.25, 0.18, 0.72)
+theme_override_font_sizes/font_size = 14
 text = "本人确认以上记录完整，且未形成额外行政承诺。"
 
-[node name="ConfirmButton" type="Button" parent="Terminal/Receipt"]
+[node name="ConfirmButton" type="Button" parent="Terminal/Receipt/DeclarationBlock"]
 layout_mode = 0
-offset_left = 478.0
-offset_top = 458.0
-offset_right = 702.0
-offset_bottom = 510.0
-theme_override_colors/font_color = Color(0.72, 0.84, 0.49, 1)
-theme_override_colors/font_hover_color = Color(0.9, 0.96, 0.67, 1)
-theme_override_font_sizes/font_size = 18
+offset_left = 594.0
+offset_top = 6.0
+offset_right = 828.0
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.79, 0.81, 0.59, 1)
+theme_override_colors/font_hover_color = Color(0.94, 0.93, 0.72, 1)
+theme_override_colors/font_disabled_color = Color(0.54, 0.52, 0.4, 0.62)
+theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
 text = "确认并结束工作日"
 disabled = true
+
+[node name="Stats" type="Control" parent="Terminal/Receipt"]
+visible = false
+layout_mode = 0
+
+[node name="StatsText" type="Label" parent="Terminal/Receipt/Stats"]
+layout_mode = 0
+offset_right = 1.0
+offset_bottom = 1.0
+
+[node name="CasesText" type="Label" parent="Terminal/Receipt"]
+visible = false
+layout_mode = 0
+offset_right = 1.0
+offset_bottom = 1.0

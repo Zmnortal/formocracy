@@ -24,6 +24,7 @@ var submission: WorkbenchSubmissionModule
 var sequence: WorkbenchCaseSequence
 var npc_performance: WorkbenchNpcPerformanceModule
 var briefing: WorkbenchBriefingModule
+var dialogue_box: DialogueBox
 var call_bell: WorkbenchCallBellModule
 var batch_validation: WorkbenchBatchValidationModule
 var desk_items: DeskItemController
@@ -51,8 +52,10 @@ func start() -> void:
 	input = InputModule.new(root, desk, desk_items)
 	submission = SubmissionModule.new(root, desk)
 	sequence = CaseSequenceModule.new()
+	dialogue_box = DialogueBox.new()
+	root.add_child(dialogue_box)
 	npc_performance = NpcPerformanceModule.new(root)
-	briefing = BriefingModule.new(root)
+	briefing = BriefingModule.new(root, dialogue_box)
 	call_bell = CallBellModule.new(root)
 	batch_validation = BatchValidationModule.new(root)
 	desk_items.register_item(desk.number_machine, "number_machine")
@@ -113,6 +116,8 @@ func shutdown() -> void:
 		npc_performance.shutdown()
 	if briefing != null:
 		briefing.shutdown()
+	if is_instance_valid(dialogue_box):
+		dialogue_box.queue_free()
 	Sfx.stop_ambience()
 	Sfx.stop_conveyor()
 	if root.get_viewport().size_changed.is_connected(fit_to_window):
@@ -124,6 +129,7 @@ func shutdown() -> void:
 	sequence = null
 	npc_performance = null
 	briefing = null
+	dialogue_box = null
 	call_bell = null
 	batch_validation = null
 	desk_items = null
@@ -135,6 +141,8 @@ func shutdown() -> void:
 func start_first_case_for_tests() -> void:
 	briefing.skip()
 	call_bell.trigger(true)
+	dialogue_box.reveal_current_line()
+	dialogue_box._handle_manual_advance()
 
 
 # 将 1280×720 设计画布适配到当前窗口。
@@ -189,15 +197,16 @@ func _on_case_started(case_data: Dictionary) -> void:
 func _on_npc_delivery_finished() -> void:
 	if not is_instance_valid(presenter.envelope):
 		return
-	presenter.envelope.position = Vector2(610, 420)
+	presenter.envelope.position = WorkbenchCasePresenter.ENVELOPE_DELIVERY_POSITION
 	presenter.envelope.visible = true
 	presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var delivery := root.create_tween()
 	delivery.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	delivery.tween_property(presenter.envelope, "position", Vector2(250, 505), 0.32)
+	delivery.tween_property(presenter.envelope, "position", WorkbenchCasePresenter.ENVELOPE_DESK_POSITION, 0.32)
 	await delivery.finished
 	if is_instance_valid(presenter.envelope):
 		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_STOP
+		presenter.set_envelope_on_desk(true)
 	if is_instance_valid(desk.queue_label):
 		var person := WorkdayContext.read_dictionary(current_case, "person")
 		var display_name := WorkdayContext.read_string(person, "display_name", "身份受限")
@@ -256,7 +265,7 @@ func _on_briefing_finished() -> void:
 	desk.status_label.text = "简报结束。请按召唤铃传唤第一位申请人。"
 
 
-# 按铃后同步广播状态并推进案件序列。
+# 按铃后先用共享底部对话框显示广播；玩家确认后才传唤下一位。
 func _on_call_bell() -> void:
 	if not workday_started:
 		workday_started = true
@@ -266,6 +275,11 @@ func _on_call_bell() -> void:
 		bridge.call("secretary_line", "下一位。")
 	GameStateSync.speaker_started("INTERNAL-BROADCAST", "内部广播", "system", "下一位。", "calling", {"day": WorkdayState.day_number})
 	desk.status_label.text = "内部广播：下一位。"
+	await dialogue_box.play_line("内部广播", "下一位。", "broadcast")
+	dialogue_box.close()
+	GameStateSync.speaker_stopped("calling")
+	if flow_state != "CALLING":
+		return
 	sequence.advance(accepting_new_cases)
 
 

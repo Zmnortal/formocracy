@@ -194,6 +194,194 @@ func run() -> void:
 	for action_name: StringName in meng_animation.sprite_frames.get_animation_names():
 		assert(meng_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Meng Qiulan animation may exceed the global four FPS style limit")
 
+	var he_animation = library_script.new()
+	assert(he_animation.load_animation_table("res://data/animations/person_he/animation_table.json"), "He Yun's production animation table must load")
+	assert(he_animation.error_messages.is_empty() and he_animation.warning_messages.is_empty(), "He Yun's production animation table must resolve every generated frame")
+	assert(he_animation.character_id == "PERSON-HE" and not he_animation.substitute_frames_with_static_actor, "He Yun must use her own generated frames instead of the retired placeholder")
+	assert(
+		he_animation.required_actions == library.required_actions and he_animation.optional_actions == library.optional_actions and he_animation.max_unique_pngs == 20,
+		"He Yun must implement the formal eight-core plus three-optional contract"
+	)
+	var he_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(he_animation.sprite_frames.get_frame_count(action_name) == expected_count, "He Yun action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = he_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_he/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every He Yun action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "He Yun production frame must import as Texture2D: %s" % frame_path)
+			he_unique_frame_paths[frame_path] = true
+	assert(he_unique_frame_paths.size() == 20, "He Yun's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_he_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_he/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_he_pngs.append(filename)
+	assert(active_he_pngs.size() == 20, "He Yun's active animation directory must contain exactly twenty PNG files")
+	for filename in active_he_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active He Yun filename must declare full-body coverage")
+	assert(not he_animation.has_action("walk_in") and not he_animation.has_action("arrive") and not he_animation.has_action("look_aside"), "He Yun must not reintroduce retired animation actions")
+	for action_name: StringName in he_animation.sprite_frames.get_animation_names():
+		assert(he_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no He Yun animation may exceed the global four FPS style limit")
+
+	var du_animation = library_script.new()
+	assert(du_animation.load_animation_table("res://data/animations/person_du/animation_table.json"), "Du Chunmei's production animation table must load")
+	assert(du_animation.error_messages.is_empty() and du_animation.warning_messages.is_empty(), "Du Chunmei's production animation table must resolve every generated frame")
+	assert(du_animation.character_id == "PERSON-DU" and not du_animation.substitute_frames_with_static_actor, "Du Chunmei must use her own generated frames instead of the static placeholder")
+	assert(
+		du_animation.required_actions == library.required_actions and du_animation.optional_actions == library.optional_actions and du_animation.max_unique_pngs == 20,
+		"Du Chunmei must implement the formal eight-core plus three-optional contract"
+	)
+	var du_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(du_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Du Chunmei action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = du_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_du/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Du Chunmei action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Du Chunmei production frame must import as Texture2D: %s" % frame_path)
+			du_unique_frame_paths[frame_path] = true
+	assert(du_unique_frame_paths.size() == 20, "Du Chunmei's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_du_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_du/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_du_pngs.append(filename)
+	assert(active_du_pngs.size() == 20, "Du Chunmei's active animation directory must contain exactly twenty PNG files")
+	for filename in active_du_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Du Chunmei filename must declare full-body coverage")
+	assert(
+		not du_animation.has_action("walk_in") and not du_animation.has_action("arrive") and not du_animation.has_action("look_aside"),
+		"Du Chunmei must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in du_animation.sprite_frames.get_animation_names():
+		assert(du_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Du Chunmei animation may exceed the global four FPS style limit")
+
+	var gu_animation = library_script.new()
+	assert(gu_animation.load_animation_table("res://data/animations/person_gu/animation_table.json"), "Gu Yuan's production animation table must load")
+	assert(gu_animation.error_messages.is_empty() and gu_animation.warning_messages.is_empty(), "Gu Yuan's production animation table must resolve every generated frame")
+	assert(gu_animation.character_id == "PERSON-GU" and not gu_animation.substitute_frames_with_static_actor, "Gu Yuan must use his own generated frames instead of the static placeholder")
+	assert(
+		gu_animation.required_actions == library.required_actions and gu_animation.optional_actions == library.optional_actions and gu_animation.max_unique_pngs == 20,
+		"Gu Yuan must implement the formal eight-core plus three-optional contract"
+	)
+	var gu_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(gu_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Gu Yuan action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = gu_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_gu/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Gu Yuan action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Gu Yuan production frame must import as Texture2D: %s" % frame_path)
+			gu_unique_frame_paths[frame_path] = true
+	assert(gu_unique_frame_paths.size() == 20, "Gu Yuan's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_gu_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_gu/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_gu_pngs.append(filename)
+	assert(active_gu_pngs.size() == 20, "Gu Yuan's active animation directory must contain exactly twenty PNG files")
+	for filename in active_gu_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Gu Yuan filename must declare full-body coverage")
+	assert(
+		not gu_animation.has_action("walk_in") and not gu_animation.has_action("arrive") and not gu_animation.has_action("look_aside"),
+		"Gu Yuan must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in gu_animation.sprite_frames.get_animation_names():
+		assert(gu_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Gu Yuan animation may exceed the global four FPS style limit")
+
+	var shen_animation = library_script.new()
+	assert(shen_animation.load_animation_table("res://data/animations/person_shen/animation_table.json"), "Shen Qinghe's production animation table must load")
+	assert(shen_animation.error_messages.is_empty() and shen_animation.warning_messages.is_empty(), "Shen Qinghe's production animation table must resolve every generated frame")
+	assert(shen_animation.character_id == "PERSON-SHEN" and not shen_animation.substitute_frames_with_static_actor, "Shen Qinghe must use her own generated frames instead of the static placeholder")
+	assert(
+		shen_animation.required_actions == library.required_actions and shen_animation.optional_actions == library.optional_actions and shen_animation.max_unique_pngs == 20,
+		"Shen Qinghe must implement the formal eight-core plus three-optional contract"
+	)
+	var shen_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(shen_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Shen Qinghe action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = shen_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_shen/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Shen Qinghe action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Shen Qinghe production frame must import as Texture2D: %s" % frame_path)
+			shen_unique_frame_paths[frame_path] = true
+	assert(shen_unique_frame_paths.size() == 20, "Shen Qinghe's eleven actions must collectively use exactly twenty unique PNG files")
+	var shen_deliver_paths: PackedStringArray = shen_animation.get_action_metadata("deliver").get("frame_paths", PackedStringArray())
+	assert(shen_deliver_paths.size() == 3, "Shen Qinghe's delivery action must use exactly three frames")
+	for deliver_path: String in shen_deliver_paths:
+		assert(
+			"_document_bag_fullbody.png" in deliver_path,
+			"Shen Qinghe's delivery action must use only frames explicitly audited against the new document bag"
+		)
+	var active_shen_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_shen/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_shen_pngs.append(filename)
+	assert(active_shen_pngs.size() == 20, "Shen Qinghe's active animation directory must contain exactly twenty PNG files")
+	for filename in active_shen_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Shen Qinghe filename must declare full-body coverage")
+	assert(
+		not shen_animation.has_action("walk_in") and not shen_animation.has_action("arrive") and not shen_animation.has_action("look_aside"),
+		"Shen Qinghe must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in shen_animation.sprite_frames.get_animation_names():
+		assert(shen_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Shen Qinghe animation may exceed the global four FPS style limit")
+
+	var tang_animation = library_script.new()
+	assert(tang_animation.load_animation_table("res://data/animations/person_tang/animation_table.json"), "Tang Ji's production animation table must load")
+	assert(tang_animation.error_messages.is_empty() and tang_animation.warning_messages.is_empty(), "Tang Ji's production animation table must resolve every generated frame")
+	assert(tang_animation.character_id == "PERSON-TANG" and not tang_animation.substitute_frames_with_static_actor, "Tang Ji must use his own generated frames instead of the static placeholder")
+	assert(
+		tang_animation.required_actions == library.required_actions and tang_animation.optional_actions == library.optional_actions and tang_animation.max_unique_pngs == 20,
+		"Tang Ji must implement the formal eight-core plus three-optional contract"
+	)
+	var tang_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(tang_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Tang Ji action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = tang_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_tang/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Tang Ji action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Tang Ji production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Tang Ji's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Tang Ji must leave the golden document bag on the player's desk after delivery")
+			tang_unique_frame_paths[frame_path] = true
+	assert(tang_unique_frame_paths.size() == 20, "Tang Ji's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_tang_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_tang/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_tang_pngs.append(filename)
+	assert(active_tang_pngs.size() == 20, "Tang Ji's active animation directory must contain exactly twenty PNG files")
+	for filename in active_tang_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Tang Ji filename must declare full-body coverage")
+	assert(
+		not tang_animation.has_action("walk_in") and not tang_animation.has_action("arrive") and not tang_animation.has_action("look_aside"),
+		"Tang Ji must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in tang_animation.sprite_frames.get_animation_names():
+		assert(tang_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Tang Ji animation may exceed the global four FPS style limit")
+
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(exact.get("kind") == "animation" and exact.get("action") == "blink", "an available requested action must resolve to itself")
 	var emotional: Dictionary = library.resolve_action("unmade_happy_departure")

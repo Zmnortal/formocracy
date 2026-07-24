@@ -56,23 +56,91 @@ func run() -> void:
 	var presenter: Variant = manager.presenter
 	assert(not presenter.envelope_opened, "delivered envelope must start sealed")
 	presenter.set_envelope_on_desk(true)
-	presenter.open_envelope()
-	assert(presenter.thumbnail_tray.visible, "opening must reveal the documents as envelope thumbnails")
+	assert(presenter.envelope.size == Vector2(180, 126), "NPC delivery must preserve the compact side-flat envelope asset ratio")
+	assert(presenter.envelope_image.texture.resource_path.ends_with("bureau_envelope_desk_side.png"), "NPC delivery must render the portrait envelope lying away from the player")
+	manager.desk_items._begin_press(presenter.envelope, Vector2(10, 10))
+	manager.desk_items._end_press(presenter.envelope)
+	await create_timer(0.3).timeout
+	assert(presenter.envelope_billboard_expanded, "clicking the desk envelope must expand the billboard inspection layer")
+	assert(presenter.envelope.size == Vector2(500, 620), "billboard envelope must occupy the configured large inspection area")
+	assert(presenter.envelope.z_index > manager.npc_performance.actor_layer.z_index, "billboard envelope must cover the NPC layer")
+	assert(presenter.envelope_flap.visible and presenter.envelope_flap.position.y < 40, "the only opening hit area must cover the upper ring and flap")
+	assert(presenter.envelope_flap.text.is_empty(), "the envelope must not use a bottom open button")
+	presenter.envelope_flap.emit_signal("button_down")
+	assert(presenter.envelope_image.texture.resource_path.ends_with("bureau_envelope_unstrung.png"), "opening must begin with the original unstrung frame")
+	await create_timer(0.3).timeout
+	assert(presenter.thumbnail_tray.visible, "opening must reveal the real case documents inside the pocket")
+	assert(presenter.envelope_image.texture.resource_path.ends_with("bureau_envelope_open_empty.png"), "opening must use the empty source frame instead of baked fake documents")
+	var pocket_style := presenter.thumbnail_tray.get_theme_stylebox("panel") as StyleBoxFlat
+	assert(pocket_style.bg_color.a == 0.0, "the document pocket must not draw a black thumbnail background")
 	for document: DocumentView in presenter.all_document_views:
 		assert(not document.visible, "opening the envelope must not spread every document automatically")
-	presenter.open_document(presenter.primary_document_id)
+	var primary_preview := presenter.thumbnail_by_id[presenter.primary_document_id] as Button
+	primary_preview.emit_signal("pressed")
 	var supporting_document := presenter.document_panels[0] as DocumentView
-	presenter.open_document(WorkdayContext.stringify_value(supporting_document.get_meta("document_id")))
+	var supporting_preview := presenter.thumbnail_by_id[supporting_document.document_id] as Button
+	supporting_preview.emit_signal("pressed")
+	await create_timer(0.3).timeout
 	assert(presenter.form.visible and supporting_document.visible, "thumbnail selection must allow multiple documents to stay expanded")
+	assert(not primary_preview.visible, "extracting a real document must remove its pocket preview")
+	assert(presenter.inspection_dismiss_layer.visible, "expanded envelope must expose a dismiss layer below inspection items")
+	var outside_click := InputEventMouseButton.new()
+	outside_click.button_index = MOUSE_BUTTON_LEFT
+	outside_click.pressed = true
+	presenter._on_inspection_dismiss_input(outside_click)
+	await create_timer(0.3).timeout
+	assert(not presenter.envelope_billboard_expanded, "clicking outside the envelope must collapse it to the desk")
+	assert(presenter.form.visible and supporting_document.visible, "collapsing the envelope must leave extracted documents available")
+	manager.desk_items._begin_press(presenter.envelope, Vector2(10, 10))
+	manager.desk_items._end_press(presenter.envelope)
+	await create_timer(0.3).timeout
+	assert(presenter.envelope_billboard_expanded and presenter.thumbnail_tray.visible, "an opened envelope must be expandable again without losing its contents")
+
+	manager.desk_items._begin_press(presenter.form, Vector2(10, 10))
+	var downward_drag := InputEventMouseMotion.new()
+	downward_drag.position = Vector2(10, 390)
+	downward_drag.relative = Vector2(0, 320)
+	manager.desk_items._move_pressed_item(presenter.form, downward_drag)
+	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "DESK", "dragging an inspection document down must convert it into a desk paper")
+	assert(_meta_vector(presenter.form, "desk_base_scale") == presenter.DOCUMENT_DESK_SCALE, "desk paper must use the compact foreshortened scale")
+	manager.desk_items._end_press(presenter.form)
+	await create_timer(0.7).timeout
+	assert(presenter.form.position.y >= DeskGeometry.BOUNDS_TOP, "released desk paper must land within the desk vertical bounds")
+	assert(presenter.form.position.y + presenter.form.size.y * presenter.form.scale.y <= DeskGeometry.BOUNDS_FLOOR + 0.01, "desk paper must fit entirely above the desk floor")
+	assert(not presenter.packed_document_ids.has(presenter.primary_document_id), "placing a document below the bag must not be mistaken for repacking")
+	var desk_home: Vector2 = presenter.form.position
+	presenter.collapse_envelope_billboard()
+	await create_timer(0.3).timeout
+	manager.desk_items._begin_press(presenter.form, Vector2(10, 10))
+	manager.desk_items._end_press(presenter.form)
+	await create_timer(0.25).timeout
+	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "INSPECTION", "clicking a desk paper must raise it into the inspection layer")
+	assert(presenter.form.scale == presenter.DOCUMENT_INSPECTION_SCALE, "raised desk paper must recover its readable inspection scale")
+	presenter._on_inspection_dismiss_input(outside_click)
+	await create_timer(0.25).timeout
+	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "DESK", "clicking outside a raised desk paper must lay it down again")
+	assert(presenter.form.position == desk_home, "lowering a raised paper must preserve its previous desk position")
+	manager.desk_items._begin_press(presenter.envelope, Vector2(10, 10))
+	manager.desk_items._end_press(presenter.envelope)
+	await create_timer(0.3).timeout
+
+	var tray_center_global: Vector2 = presenter.thumbnail_tray.get_global_transform() * (presenter.thumbnail_tray.size * 0.5)
+	var tray_center := desk.to_local(tray_center_global)
+	supporting_document.position = tray_center - supporting_document.size * 0.5
+	manager.input._prepare_document_drop(supporting_document, presenter)
+	assert(presenter.packed_document_ids.has(supporting_document.document_id), "only a document centered inside the bag opening may be repacked")
+
 	presenter.bring_document_to_front(presenter.primary_document_id)
 	assert(presenter.form.z_index > supporting_document.z_index, "selecting a document must bring it above overlapping documents")
 	assert(presenter.envelope.visible, "opened envelope must remain visible as the repacking target")
-	assert(presenter.envelope_flap.text.contains("逐份展开"), "opened envelope must explain the thumbnail workflow")
+	assert(not presenter.envelope_flap.visible, "the upper opening hit area must disappear after the envelope is open")
 	presenter.apply_stamp("批准", Vector2(350, 360))
 	assert(presenter.form.stamp_records.size() == 1, "the primary document must retain its own stamp records")
 	presenter.pack_all_documents()
+	await create_timer(0.3).timeout
 	var current_case := manager.current_case as Dictionary
 	assert(presenter.packed_document_ids.size() == WorkdayContext.read_array(current_case, "documents").size(), "all materials must return to the original envelope")
+	assert(not presenter.envelope_billboard_expanded and presenter.envelope.size == Vector2(180, 126), "repacked envelope must collapse back to its compact side-flat state")
 	manager.input._set_machine_preview(presenter, true)
 	await create_timer(0.16).timeout
 	assert(presenter.envelope.scale.y < 0.7, "machine hover must tilt the envelope with pseudo-3D compression")
@@ -112,3 +180,9 @@ func run() -> void:
 	@warning_ignore_restore("unsafe_method_access")
 	print("FORMOCRACY_CORE_GAMEPLAY_TEST_OK")
 	quit(0)
+
+
+# 从测试节点元数据读取 Vector2。
+func _meta_vector(item: Control, key: String) -> Vector2:
+	var value: Variant = item.get_meta(key, Vector2.ZERO)
+	return value if value is Vector2 else Vector2.ZERO

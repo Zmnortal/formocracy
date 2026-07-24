@@ -30,6 +30,7 @@ var moving := false
 var purchasing := false
 var ending_night := false
 var end_dialogue_index := -1
+# 保留供旧测试与调试脚本写入，但对话不再读取此计时值自动推进。
 var end_sequence_step_duration := 1.8
 var end_sequence_fade_duration := 0.65
 var auto_transition_after_end_sequence := true
@@ -82,10 +83,10 @@ var end_dialogue_lines: Array[Dictionary] = [
 @onready var next_day_effect_label: Label = $NextDayReceipt/Effect
 @onready var enter_workday_button: Button = $NextDayReceipt/EnterWorkdayButton
 @onready var end_overlay: Control = $EndOfNightOverlay
-@onready var end_speaker_label: Label = $EndOfNightOverlay/DialoguePanel/Speaker
-@onready var end_dialogue_label: Label = $EndOfNightOverlay/DialoguePanel/Dialogue
-@onready var end_continue_label: Label = $EndOfNightOverlay/DialoguePanel/ContinueHint
-@onready var end_advance_button: Button = $EndOfNightOverlay/AdvanceButton
+var dialogue_box: DialogueBox
+var end_speaker_label: Label
+var end_dialogue_label: Label
+var end_continue_label: Label
 
 
 # 初始化傍晚地图场景：绑定按钮、刷新状态并适配窗口。
@@ -126,7 +127,7 @@ func _ready() -> void:
 	)
 	end_night_button.pressed.connect(end_night)
 	enter_workday_button.pressed.connect(_enter_next_workday)
-	end_advance_button.pressed.connect(_advance_end_dialogue)
+	_build_end_dialogue_box()
 	_populate_water_catalog()
 	_attach_button_sounds(self)
 	player_token.position = LOCATION_POSITIONS.get(WorkdayState.evening_location_id, LOCATION_POSITIONS[LOCATION_OFFICE]) - player_token.size * 0.5
@@ -136,6 +137,18 @@ func _ready() -> void:
 	queue_redraw()
 	if WorkdayState.evening_actions_remaining <= 0 and WorkdayState.evening_location_id != LOCATION_HOME:
 		call_deferred("_start_end_of_night_sequence")
+
+
+# 用全局统一的最前层底部对话框替换旧过场专用控件。
+func _build_end_dialogue_box() -> void:
+	$EndOfNightOverlay/DialoguePanel.visible = false
+	$EndOfNightOverlay/AdvanceButton.visible = false
+	dialogue_box = DialogueBox.new()
+	end_overlay.add_child(dialogue_box)
+	end_speaker_label = dialogue_box.speaker_label
+	end_dialogue_label = dialogue_box.dialogue_label
+	end_continue_label = dialogue_box.advance_arrow
+	dialogue_box.advance_requested.connect(_advance_end_dialogue)
 
 
 # 为地点按钮绑定点击移动与悬停缩放动画。
@@ -346,7 +359,7 @@ func _start_end_of_night_sequence() -> void:
 	end_dialogue_index = -1
 	end_speaker_label.text = ""
 	end_dialogue_label.text = ""
-	end_continue_label.text = ""
+	end_continue_label.visible = false
 	end_overlay.visible = true
 	end_overlay.modulate.a = 0.0
 	var tween := create_tween()
@@ -354,30 +367,28 @@ func _start_end_of_night_sequence() -> void:
 	tween.finished.connect(func(): _show_end_dialogue_line(0))
 
 
-# 显示指定索引的结尾对话行并安排定时自动推进。
+# 显示指定索引的结尾对话行；下一句只能由玩家在箭头出现后手动推进。
 func _show_end_dialogue_line(index: int) -> void:
 	if not ending_night or index < 0 or index >= end_dialogue_lines.size():
 		return
 	end_dialogue_index = index
 	var line := end_dialogue_lines[index]
 	var speaker := _resolve_dialogue_speaker(String(line.speaker))
-	end_speaker_label.text = speaker
-	end_dialogue_label.text = String(line.text)
+	var speaker_kind := "broadcast" if speaker.contains("广播") else ("player" if speaker == WorkdayState.player_name else "npc")
+	dialogue_box.show_line(speaker, String(line.text), speaker_kind)
 	_send_end_dialogue_to_glass(speaker, String(line.text))
-	end_continue_label.text = "点击继续  ·  %d / %d" % [index + 1, end_dialogue_lines.size()]
-	var expected_index := index
-	get_tree().create_timer(end_sequence_step_duration).timeout.connect(
-		func():
-			if ending_night and end_dialogue_index == expected_index:
-				_advance_end_dialogue()
-	)
 
 
-# 推进到下一句结尾对话，播完后收束夜晚演出。
+# 玩家确认后推进到下一句；处理回执本身也是最后一条必须手动确认的台词。
 func _advance_end_dialogue() -> void:
 	if not ending_night or end_dialogue_index < 0:
 		return
-	Sfx.play("ui_click")
+	if end_dialogue_index >= end_dialogue_lines.size():
+		dialogue_box.close()
+		end_sequence_finished.emit()
+		if auto_transition_after_end_sequence:
+			_enter_next_workday()
+		return
 	var next_index := end_dialogue_index + 1
 	if next_index < end_dialogue_lines.size():
 		_show_end_dialogue_line(next_index)
@@ -390,19 +401,9 @@ func _finish_end_of_night_sequence() -> void:
 	end_dialogue_index = end_dialogue_lines.size()
 	WorkdayState.manager.begin_next_day()
 	var summary := WorkdayState.manager.get_personal_review_summary()
-	end_speaker_label.text = "中央现实管理局"
-	end_dialogue_label.text = "第 %02d 工作日\n个人申请处理：%s" % [WorkdayState.day_number, summary.result]
-	_send_end_dialogue_to_glass(end_speaker_label.text, end_dialogue_label.text)
-	end_continue_label.text = ""
-	var completed_day := WorkdayState.day_number
-	get_tree().create_timer(end_sequence_step_duration * 0.75).timeout.connect(
-		func():
-			if WorkdayState.day_number != completed_day:
-				return
-			end_sequence_finished.emit()
-			if auto_transition_after_end_sequence:
-				_enter_next_workday()
-	)
+	var summary_text := "第 %02d 工作日\n个人申请处理：%s" % [WorkdayState.day_number, summary.result]
+	dialogue_box.show_line("中央现实管理局", summary_text, "system")
+	_send_end_dialogue_to_glass("中央现实管理局", summary_text)
 
 
 # 将结尾对话按说话人类型转发给 RealityBridge。

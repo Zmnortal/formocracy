@@ -19,6 +19,7 @@ func run() -> void:
 	var packed: PackedScene = load("res://scenes/daily_report.tscn")
 	assert(packed != null, "daily report scene must load")
 	var report := packed.instantiate()
+	report.reveal_interval_seconds = 0.01
 	root.add_child(report)
 	await process_frame
 	var bridge := root.get_node("RealityBridge")
@@ -28,6 +29,21 @@ func run() -> void:
 	assert(report.stats_label.text.contains("批准 02"), "report must aggregate approvals")
 	assert(report.stats_label.text.contains("驳回 01"), "report must aggregate rejections")
 	assert(report.cases_label.text.contains("T-00/测试事项"), "report must list daily cases")
+	assert(is_equal_approx(report.reveal_interval_seconds, 0.01), "test reveal cadence must be configurable without changing production timing")
+	assert(report.reveal_blocks.size() == 9, "daily settlement must reveal nine whole information blocks")
+	var receipt := report.get_node("Terminal/Receipt") as TextureRect
+	for block: Control in report.reveal_blocks:
+		assert(
+			Rect2(Vector2.ZERO, receipt.size).encloses(Rect2(block.position - Vector2(0.0, 7.0), block.size)),
+			"every report block must remain inside the fixed receipt",
+		)
+	assert(not report.reveal_sequence_finished, "report fields must not all appear in the first frame")
+	var reveal_deadline := Time.get_ticks_msec() + 1500
+	while not report.reveal_sequence_finished and Time.get_ticks_msec() < reveal_deadline:
+		await process_frame
+	assert(report.reveal_sequence_finished, "report fields must finish revealing as whole blocks")
+	assert(report.revealed_block_count == 9, "all nine report blocks must be revealed")
+	assert(report.cases_label.visible == false, "daily case details must not grow the visible report")
 	report.declaration.button_pressed = true
 	assert(not report.confirm_button.disabled, "confirmation must unlock after declaration")
 	state.manager.begin_next_day()

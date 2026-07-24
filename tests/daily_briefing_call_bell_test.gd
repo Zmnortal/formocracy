@@ -8,8 +8,8 @@ func _init() -> void:
 func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.reset_for_tests()
-	var director := WorkbenchBriefingDirector.new(state)
-	var lines := director.build_lines()
+	var director = load("res://scripts/managers/workbench_manager/workbench_briefing_director.gd").new(state)
+	var lines: Array[String] = director.build_lines()
 	assert(lines.size() >= 4, "day briefing must include the fixed daily flow")
 	assert(lines[-1].contains("召唤铃"), "briefing must end with the first-call instruction")
 
@@ -21,10 +21,22 @@ func run() -> void:
 	assert(main.manager.briefing.playing, "secretary briefing must play automatically")
 	assert(not main.manager.call_bell.available, "call bell must remain locked during the briefing")
 	assert(main.manager.case_index == -1, "no applicant may enter before the first bell")
+	assert(main.manager.dialogue_box.visible, "briefing must use the shared bottom dialogue box")
+	assert(main.manager.dialogue_box.z_index >= 4000, "form dialogue must render above every workbench item")
+	var briefing_line_id: int = main.manager.dialogue_box.line_id
+	await create_timer(0.12).timeout
+	assert(main.manager.dialogue_box.line_id == briefing_line_id, "briefing must never advance to another line on a timer")
 
-	main.manager.briefing.skip()
+	while main.manager.briefing.playing:
+		main.manager.dialogue_box.reveal_current_line()
+		main.manager.dialogue_box._handle_manual_advance()
+		await process_frame
 	assert(main.manager.call_bell.available, "briefing completion must unlock the call bell")
 	main.manager.call_bell.trigger(true)
+	await process_frame
+	assert(main.manager.case_index == -1, "call broadcast must wait for player confirmation before summoning an applicant")
+	main.manager.dialogue_box.reveal_current_line()
+	main.manager.dialogue_box._handle_manual_advance()
 	await process_frame
 	assert(main.manager.case_index == 0, "first bell must summon exactly one applicant")
 	assert(main.manager.call_bell.call_count == 1, "first bell must be recorded once")

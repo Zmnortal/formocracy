@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-DU",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_du_official_and_sources_2026-07-25/reference/official_fullbody.png",
+  "source_strips": [
+    "strip_01_neutral_nervous.png",
+    "strip_02_deliver_approve.png",
+    "strip_03_approve_reject.png",
+    "strip_04_reject_exit.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 69,
+    "role": "退休电话接线员",
+    "palette": "李子紫与深褐",
+    "markers": [
+      "深李子褐包头巾",
+      "李子紫绗缝及膝长外套",
+      "深褐过膝百褶裙",
+      "深色长袜",
+      "棕色系带鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "年龄与药物造成的记忆迟滞通过轻触太阳穴和护住配给、医疗材料表现，不把她演成失去主体性的病人。",
+    "approved": "先不敢相信，再露出很轻的感激和释然；高优先级位置仍可能被收回，所以喜悦保持克制。",
+    "rejected": "先安静受伤，再举起慢性病凭证作为证据，最后收回争辩，以沉重但有尊严的姿态离开。"
+  }
+}

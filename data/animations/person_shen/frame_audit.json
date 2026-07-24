@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-SHEN",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_shen_official_bag_and_sources_2026-07-25/concept_official.png",
+  "delivery_prop_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_shen_official_bag_and_sources_2026-07-25/document_bag_reference.png",
+  "source_strips": [
+    "strip_1.png",
+    "strip_2.png",
+    "strip_3.png",
+    "strip_4.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 27,
+    "role": "印刷合作社校对员",
+    "palette": "青瓷绿、石墨灰与旧棕",
+    "markers": [
+      "短深棕侧分发",
+      "青瓷绿翻领短工作外套",
+      "胸袋红色校对铅笔",
+      "深灰扣衫与方扣腰带",
+      "灰色过膝褶裙",
+      "棕色长袜与深棕工作鞋"
+    ]
+  },
+  "delivery_prop": {
+    "name": "新文档袋",
+    "markers": [
+      "金黄牛皮竖向厚袋",
+      "宽梯形封舌与斜切下角",
+      "上下两颗红芯圆扣",
+      "浅色交叉 8 字绑绳",
+      "底部两角折线加固"
+    ],
+    "consistency_rule": "文档袋只在 06–08 三张 deliver 帧出现并保持同一结构；呈上后所有权转到玩家工作台，05、09–20 不得再出现文档袋。"
+  },
+  "performance_direction": {
+    "neutral": "通过校对日期、握住红笔和护住未修改副本表现她掌握的信息与主动性，不把她写成只负责解释林默经历的伴侣。",
+    "approved": "先短暂惊讶，再安静释然；‘地址终于会留下来’带来希望，但她仍知道证据可能再次被改写。",
+    "rejected": "先受伤和难以置信，再指出校对页上的日期矛盾，最后收回争辩并坚定离开；她接受补编号，不接受日期被抹掉。"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-GU",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_gu_official_and_sources_2026-07-25/fullbody_official.png",
+  "source_strips": [
+    "strip_1.png",
+    "strip_2.png",
+    "strip_3.png",
+    "strip_4.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 62,
+    "role": "夜间装配线领班",
+    "palette": "松针绿与旧棕",
+    "markers": [
+      "深松针绿棉工作帽",
+      "深松针绿厚工作外套",
+      "浅灰米色衬衫与窄领带",
+      "旧棕翻边工作裤",
+      "深色系带工作靴"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "疲惫与防备通过眨眼、重心变化、检查并护住事故夜名单表现；他知道名单有问题，也知道名单保护过具体的人。",
+    "approved": "先短暂惊讶，再安静松一口气；感激中仍保留对第一次涂改的愧疚，因此不使用夸张笑容。",
+    "rejected": "先受伤，再打开名单指向划除和改写痕迹据理力争，最后收回争辩，以沉重但不失尊严的姿态离开。"
+  }
+}

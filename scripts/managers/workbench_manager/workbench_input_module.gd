@@ -36,7 +36,12 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 		document.set_meta("debug_zone_label", "主表单" if document.document_id == presenter.primary_document_id else "证明材料")
 		if desk_items != null:
 			desk_items.register_item(
-				document, "case_document_%s" % document.document_id, presenter.bring_document_to_front.bind(document.document_id), Callable(), _on_document_settled.bind(presenter)
+				document,
+				"case_document_%s" % document.document_id,
+				presenter.open_document.bind(document.document_id),
+				_on_document_drag_motion.bind(presenter),
+				_on_document_settled.bind(presenter),
+				_prepare_document_drop.bind(presenter)
 			)
 		else:
 			if document.document_id == presenter.primary_document_id:
@@ -46,11 +51,11 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 			else:
 				document.gui_input.connect(_on_document_input.bind(document, presenter))
 	if is_instance_valid(presenter.envelope):
-		CursorManager.watch(presenter.envelope, CursorManager.Cursor.GRAB)
+		CursorManager.watch(presenter.envelope, CursorManager.Cursor.OPEN_ENVELOPE)
 		presenter.envelope.add_to_group("debug_interaction_zone")
-		presenter.envelope.set_meta("debug_zone_label", "文件袋")
+		presenter.envelope.set_meta("debug_zone_label", "文件袋：点击进入查验层")
 		if desk_items != null:
-			desk_items.register_item(presenter.envelope, "case_envelope", Callable(), _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter))
+			desk_items.register_item(presenter.envelope, "case_envelope", presenter.expand_envelope_billboard, _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter))
 		else:
 			presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
 
@@ -65,6 +70,25 @@ func _on_form_settled(item: Control, presenter: WorkbenchCasePresenter) -> void:
 func _on_document_settled(item: Control, presenter: WorkbenchCasePresenter) -> void:
 	if _is_over_open_envelope(item, presenter):
 		presenter.pack_document(WorkdayContext.stringify_value(item.get_meta("document_id")))
+
+
+# 文件向下进入桌面区域时立即切换为较小的平躺纸张比例。
+func _on_document_drag_motion(item: Control, presenter: WorkbenchCasePresenter) -> void:
+	if WorkdayContext.stringify_value(item.get_meta("document_state", "BAG")) != "INSPECTION":
+		return
+	var visual_center_y := item.position.y + item.size.y * absf(item.scale.y) * 0.5
+	if visual_center_y >= DeskGeometry.BOUNDS_TOP:
+		presenter.place_document_on_desk(WorkdayContext.stringify_value(item.get_meta("document_id")))
+
+
+# 释放文件前先确定语义：进入袋口则装袋，否则转换为桌面纸张再执行落桌物理。
+func _prepare_document_drop(item: Control, presenter: WorkbenchCasePresenter) -> void:
+	var document_id := WorkdayContext.stringify_value(item.get_meta("document_id"))
+	if _is_over_open_envelope(item, presenter):
+		item.set_meta("desk_skip_drop_once", true)
+		presenter.pack_document(document_id)
+		return
+	presenter.place_document_on_desk(document_id)
 
 
 # 拖动文件袋时检测是否进入归档区并切换预览状态。
@@ -93,7 +117,7 @@ func _on_envelope_settled(item: Control, presenter: WorkbenchCasePresenter) -> v
 	if not presenter.envelope_on_desk:
 		presenter.set_envelope_on_desk(true)
 		if is_instance_valid(desk.status_label):
-			desk.status_label.text = "文件袋已置于工作台，点击封口拆开。"
+			desk.status_label.text = "文件袋已置于工作台，点击后再按上部圆环或封盖拆开。"
 
 
 # 表单悬停时的缩放反馈。
@@ -166,7 +190,7 @@ func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) ->
 			if not presenter.envelope_on_desk:
 				presenter.set_envelope_on_desk(presenter.envelope.position.x > 300)
 				if presenter.envelope_on_desk and is_instance_valid(desk.status_label):
-					desk.status_label.text = "文件袋已置于工作台，点击封口拆开。"
+					desk.status_label.text = "文件袋已置于工作台，点击后再按上部圆环或封盖拆开。"
 	elif event is InputEventMouseMotion and envelope_dragging:
 		var mouse_motion: InputEventMouseMotion = event
 		presenter.envelope.position += mouse_motion.relative * drag_response_multiplier
@@ -223,7 +247,14 @@ func _on_document_input(event: InputEvent, document: Panel, presenter: Workbench
 
 # 判断物件是否覆盖在已打开且可见的文件袋上。
 func _is_over_open_envelope(item: Control, presenter: WorkbenchCasePresenter) -> bool:
-	return presenter.envelope_opened and is_instance_valid(presenter.envelope) and presenter.envelope.visible and item.get_global_rect().intersects(presenter.envelope.get_global_rect())
+	if not presenter.envelope_opened or not presenter.envelope_billboard_expanded:
+		return false
+	if not is_instance_valid(presenter.thumbnail_tray) or not presenter.thumbnail_tray.visible:
+		return false
+	var item_center := item.get_global_transform() * (item.size * 0.5)
+	var tray_center := presenter.thumbnail_tray.get_global_transform() * (presenter.thumbnail_tray.size * 0.5)
+	var tray_half_size := presenter.thumbnail_tray.size * presenter.thumbnail_tray.get_global_transform().get_scale().abs() * 0.5
+	return Rect2(tray_center - tray_half_size, tray_half_size * 2.0).has_point(item_center)
 
 
 # 从物品元数据安全读取 Vector2。

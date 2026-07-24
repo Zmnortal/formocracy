@@ -14,8 +14,10 @@ const FORM_IDS := [
 
 var balance_label: Label
 var dialogue_label: Label
+var dialogue_box: DialogueBox
 var dossier_label: Label
 var card_buttons: Dictionary = {}
+var greeting_shown := false
 
 
 # 场景就绪时构建商店界面、刷新货架状态并监听视口变化以自适应缩放。
@@ -81,11 +83,10 @@ func build_scene() -> void:
 	proprietor.size = Vector2(130, 34)
 	proprietor_panel.add_child(proprietor)
 
-	dialogue_label = make_label("", 17, Color("b8bd98"))
-	dialogue_label.position = Vector2(24, 58)
-	dialogue_label.size = Vector2(794, 62)
-	dialogue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	proprietor_panel.add_child(dialogue_label)
+	var proprietor_note := make_label("熟人柜台 / 仅发行空白表单 / 所有申请仍需另行送审", 15, Color("8f9875"))
+	proprietor_note.position = Vector2(24, 62)
+	proprietor_note.size = Vector2(794, 40)
+	proprietor_panel.add_child(proprietor_note)
 
 	var tray := TextureRect.new()
 	tray.texture = TRANSACTION_TRAY
@@ -113,6 +114,11 @@ func build_scene() -> void:
 	back_button.size = Vector2(290, 42)
 	back_button.pressed.connect(return_to_map)
 	add_child(back_button)
+
+	dialogue_box = DialogueBox.new()
+	add_child(dialogue_box)
+	dialogue_label = dialogue_box.dialogue_label
+	dialogue_box.advance_requested.connect(dialogue_box.close)
 
 
 # 根据本体配置构建一张表单售卖卡片，含发行机关、名称、编号、说明、工本费与购买按钮。
@@ -160,12 +166,12 @@ func build_form_card(form_id: String) -> Panel:
 # 购买指定表单：余额不足时显示周姨的拒绝台词，成功后播放盖章音效并刷新货架。
 func purchase_form(form_id: String) -> void:
 	if not WorkdayState.manager.purchase_personal_form(form_id):
-		dialogue_label.text = "周姨：配给券不够。空白件也要入账，我没法替你垫这个。"
+		_show_shop_dialogue("配给券不够。空白件也要入账，我没法替你垫这个。")
 		Sfx.play("ui_switch")
 		refresh_store()
 		return
 	var form := ConfigDatabase.get_ontology("personal_forms", form_id)
-	dialogue_label.text = "周姨：%s。收好，买到表不等于申请会批。" % String(form.get("name", "这张表"))
+	_show_shop_dialogue("%s。收好，买到表不等于申请会批。" % String(form.get("name", "这张表")))
 	Sfx.play("stamp")
 	refresh_store()
 
@@ -175,8 +181,9 @@ func refresh_store() -> void:
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
 	var blank_count := WorkdayState.manager.get_blank_personal_forms().size()
 	dossier_label.text = "个人档案袋：空白表单 × %d　前往中央表单部提交申请" % blank_count
-	if dialogue_label.text.is_empty():
-		dialogue_label.text = build_greeting()
+	if not greeting_shown:
+		greeting_shown = true
+		_show_shop_dialogue(build_greeting())
 	for form_id in FORM_IDS:
 		var form := ConfigDatabase.get_ontology("personal_forms", form_id)
 		var button: Button = card_buttons[form_id]
@@ -196,7 +203,12 @@ func build_greeting() -> String:
 	else:
 		greeting = String(greetings.get("default", "表我可以发，能不能拿到东西要看你自己怎么填。"))
 	var player_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
-	return "周姨：" + greeting.replace("{player_name}", player_name)
+	return greeting.replace("{player_name}", player_name)
+
+
+# 在最前层底部对话框显示周姨台词；完成后由玩家再次点击或按空格收起。
+func _show_shop_dialogue(text: String) -> void:
+	dialogue_box.show_line("周姨", text, "npc")
 
 
 # 返回夜间地图场景。

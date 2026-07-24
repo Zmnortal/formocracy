@@ -40,6 +40,8 @@ func run() -> void:
 	assert(manager.case_index == 0, "first case must be active")
 	assert(presenter.is_stamped() == false, "new form must be unstamped")
 	presenter.set_envelope_on_desk(true)
+	presenter.expand_envelope_billboard()
+	await create_timer(0.3).timeout
 	presenter.open_envelope()
 	presenter.open_document(presenter.primary_document_id)
 	assert(presenter.form.get_meta("context_cursor") == CursorManager.Cursor.GRAB, "form must advertise contextual grab interaction")
@@ -51,6 +53,7 @@ func run() -> void:
 	assert(presenter.stamp_type() == "批准", "stamp type must be recorded")
 	assert(presenter.form.stamp_records.size() == 1, "stamp must remain attached to the form")
 	presenter.pack_all_documents()
+	await create_timer(0.3).timeout
 
 	manager.npc_performance.skip_requested = true
 	manager.submission.submit(presenter, manager.current_case)
@@ -62,6 +65,10 @@ func run() -> void:
 	await create_timer(3.1).timeout
 	assert(manager.call_bell.available, "next case must wait for the player to ring the call bell")
 	manager.call_bell.trigger(true)
+	await process_frame
+	assert(manager.dialogue_box.visible, "ringing the call bell must show the foreground confirmation dialogue")
+	manager.dialogue_box.reveal_current_line()
+	manager.dialogue_box._handle_manual_advance()
 	await process_frame
 	assert(manager.case_index == 1, "accepted form must advance to next case")
 	assert(presenter.is_stamped() == false, "next case must reset stamp state")
