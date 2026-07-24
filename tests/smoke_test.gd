@@ -30,7 +30,10 @@ func run() -> void:
 	assert(main.get_node("ClerkDeskConcept").size == Vector2(1280, 720), "background control must retain design-canvas size")
 	assert(main.case_index == 0, "first case must be active")
 	assert(main.presenter.is_stamped() == false, "new form must be unstamped")
-	assert(main.presenter.form.mouse_default_cursor_shape == Control.CURSOR_MOVE, "form must advertise drag interaction")
+	assert(
+		main.presenter.form.get_meta("context_cursor") == CursorManager.Cursor.GRAB,
+		"form must advertise contextual grab interaction"
+	)
 	assert(main.stamp_mgr.stamp_tools.all(func(tool): return tool.size == Vector2(140, 132)), "stamp hit areas must match their visible textures")
 
 	main.presenter.apply_stamp("批准", Vector2(360, 365))

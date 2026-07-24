@@ -26,13 +26,16 @@ func bind_case(presenter: CasePresenter) -> void:
 	envelope_dragging = false
 	envelope_in_machine_zone = false
 	if is_instance_valid(presenter.form):
+		CursorManager.watch(presenter.form, CursorManager.Cursor.GRAB)
 		presenter.form.gui_input.connect(_on_form_input.bind(presenter))
 		presenter.form.mouse_entered.connect(_on_form_hover.bind(presenter, true))
 		presenter.form.mouse_exited.connect(_on_form_hover.bind(presenter, false))
 	if is_instance_valid(presenter.envelope):
+		CursorManager.watch(presenter.envelope, CursorManager.Cursor.GRAB)
 		presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
 	for document in presenter.document_panels:
 		if is_instance_valid(document):
+			CursorManager.watch(document, CursorManager.Cursor.GRAB)
 			document.gui_input.connect(_on_document_input.bind(document, presenter))
 
 
@@ -52,12 +55,14 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			form_dragging = true
+			CursorManager.begin_drag(presenter.form)
 			presenter.form.z_index = 10
 			var tween := root.create_tween().set_parallel(true)
 			tween.tween_property(presenter.form, "scale", desk.form_base_scale * 1.035, 0.1)
 			tween.tween_property(presenter.form, "rotation", -0.012, 0.1)
 		else:
 			form_dragging = false
+			CursorManager.end_drag()
 			presenter.form.z_index = 5
 			var tween := root.create_tween().set_parallel(true)
 			tween.tween_property(presenter.form, "scale", desk.form_base_scale, 0.12)
@@ -66,6 +71,11 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 				presenter.pack_document(presenter.primary_document_id)
 	elif event is InputEventMouseMotion and form_dragging:
 		presenter.form.position += event.relative * drag_response_multiplier
+		CursorManager.set_drag_cursor(
+			CursorManager.Cursor.DROP_VALID
+			if _is_over_open_envelope(presenter.form, presenter)
+			else CursorManager.Cursor.GRABBING
+		)
 
 
 # 文件袋的拖拽、放置到工作台与送交验收槽处理。
@@ -77,9 +87,11 @@ func _on_envelope_input(event: InputEvent, presenter: CasePresenter) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			envelope_dragging = true
+			CursorManager.begin_drag(presenter.envelope)
 			presenter.envelope.z_index = 30
 		else:
 			envelope_dragging = false
+			CursorManager.end_drag()
 			if envelope_in_machine_zone and presenter.envelope_on_desk:
 				if is_instance_valid(envelope_preview_tween):
 					envelope_preview_tween.kill()
@@ -101,6 +113,9 @@ func _on_envelope_input(event: InputEvent, presenter: CasePresenter) -> void:
 		)
 		if entered != envelope_in_machine_zone:
 			_set_machine_preview(presenter, entered)
+		CursorManager.set_drag_cursor(
+			CursorManager.Cursor.DROP_VALID if entered else CursorManager.Cursor.GRABBING
+		)
 
 
 func _set_machine_preview(presenter: CasePresenter, active: bool) -> void:
@@ -138,12 +153,19 @@ func _on_document_input(event: InputEvent, document: Panel, presenter: CasePrese
 		document.set_meta("dragging", event.pressed)
 		if event.pressed:
 			document.z_index = 25
+			CursorManager.begin_drag(document)
 		else:
 			document.z_index = 8
+			CursorManager.end_drag()
 			if _is_over_open_envelope(document, presenter):
 				presenter.pack_document(String(document.get_meta("document_id")))
 	elif event is InputEventMouseMotion and bool(document.get_meta("dragging")):
 		document.position += event.relative * drag_response_multiplier
+		CursorManager.set_drag_cursor(
+			CursorManager.Cursor.DROP_VALID
+			if _is_over_open_envelope(document, presenter)
+			else CursorManager.Cursor.GRABBING
+		)
 
 
 func _is_over_open_envelope(item: Control, presenter: CasePresenter) -> bool:

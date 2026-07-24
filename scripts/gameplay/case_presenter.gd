@@ -91,7 +91,7 @@ func _create_form() -> void:
 		"panel",
 		WorkbenchUI.style_box(WorkbenchUI.COLORS.paper, 2, Color("786f58"), 2)
 	)
-	form.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	form.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	form.visible = false
 	form.z_index = 5
 	root.add_child(form)
@@ -157,7 +157,7 @@ func _create_envelope() -> void:
 	envelope.position = Vector2(94, 470)
 	envelope.size = Vector2(285, 155)
 	envelope.z_index = 12
-	envelope.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	envelope.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	envelope.add_theme_stylebox_override(
 		"panel",
 		WorkbenchUI.style_box(Color("ad9162"), 4, Color("6e5534"), 3)
@@ -183,6 +183,7 @@ func _create_envelope() -> void:
 	envelope_flap.size = Vector2(248, 28)
 	envelope_flap.disabled = true
 	envelope.add_child(envelope_flap)
+	CursorManager.watch(envelope_flap, CursorManager.Cursor.OPEN_ENVELOPE)
 	envelope_flap.button_down.connect(_on_flap_pressed)
 
 	var delivery := root.create_tween()
@@ -216,7 +217,7 @@ func _create_documents(raw_documents: Array) -> void:
 			"panel",
 			WorkbenchUI.style_box(Color("d8cba7"), 2, Color("746a52"), 2)
 		)
-		document.mouse_default_cursor_shape = Control.CURSOR_MOVE
+		document.mouse_default_cursor_shape = Control.CURSOR_ARROW
 		root.add_child(document)
 
 		WorkbenchUI.add_text(

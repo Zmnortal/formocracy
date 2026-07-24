@@ -137,6 +137,7 @@ func _on_day_finished() -> void:
 
 # 离开工作台场景时停止办公室环境音。
 func _exit_tree() -> void:
+	CursorManager.reset()
 	if npc_performance != null:
 		npc_performance.shutdown()
 	if secretary_briefing != null:

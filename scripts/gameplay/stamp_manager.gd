@@ -31,10 +31,11 @@ func _create_stamp_tool(kind: String, color: Color, at: Vector2) -> void:
 	tool.set_meta("home", visual_position)
 	tool.set_meta("kind", kind)
 	tool.set_meta("dragging", false)
-	tool.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	tool.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	tool.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color(0, 0, 0, 0), 0))
 	root.add_child(tool)
 	stamp_tools.append(tool)
+	CursorManager.watch(tool, CursorManager.Cursor.STAMP)
 
 	var stamp_image := TextureRect.new()
 	stamp_image.texture = APPROVE_STAMP_TEXTURE if kind == "批准" else RETURN_STAMP_TEXTURE
@@ -65,12 +66,14 @@ func _on_stamp_input(event: InputEvent, tool: Panel) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			tool.set_meta("dragging", true)
+			CursorManager.begin_drag(tool, CursorManager.Cursor.STAMP)
 			tool.set_meta("offset", event.position)
 			tool.z_index = 20
 			var tween := root.create_tween()
 			tween.tween_property(tool, "scale", Vector2(1.08, 1.08), 0.08)
 		else:
 			tool.set_meta("dragging", false)
+			CursorManager.end_drag()
 			_try_apply_stamp(tool)
 			_return_stamp(tool)
 	elif event is InputEventMouseMotion and tool.get_meta("dragging"):
