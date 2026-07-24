@@ -60,7 +60,7 @@ const LOCATION_NAMES := {
 @onready var close_home_button: Button = $HomeWindow/CloseButton
 @onready var home_form_status: Label = $HomeWindow/FormStatus
 @onready var end_night_button: Button = $HomeWindow/EndNightButton
-@onready var next_day_receipt: Panel = $NextDayReceipt
+@onready var next_day_receipt: DocumentBackground = $NextDayReceipt
 @onready var review_result_label: Label = $NextDayReceipt/ReviewResult
 @onready var review_detail_label: Label = $NextDayReceipt/ReviewDetail
 @onready var next_day_effect_label: Label = $NextDayReceipt/Effect
@@ -83,7 +83,7 @@ var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
 var end_dialogue_lines: Array[Dictionary] = [
 	{"speaker": "邻室职员", "text": "还不走？这一层的灯马上就要熄了。"},
-	{"speaker": "林默", "text": "今天的行动许可已经用完。剩下的事，只能留到明天。"},
+	{"speaker": "PLAYER", "text": "今天的行动许可已经用完。剩下的事，只能留到明天。"},
 	{"speaker": "走廊广播", "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"},
 ]
 
@@ -338,9 +338,10 @@ func show_end_dialogue_line(index: int) -> void:
 		return
 	end_dialogue_index = index
 	var line := end_dialogue_lines[index]
-	end_speaker_label.text = String(line.speaker)
+	var speaker := _resolve_dialogue_speaker(String(line.speaker))
+	end_speaker_label.text = speaker
 	end_dialogue_label.text = String(line.text)
-	_send_end_dialogue_to_glass(String(line.speaker), String(line.text))
+	_send_end_dialogue_to_glass(speaker, String(line.text))
 	end_continue_label.text = "点击继续  ·  %d / %d" % [index + 1, end_dialogue_lines.size()]
 	var expected_index := index
 	get_tree().create_timer(end_sequence_step_duration).timeout.connect(func():
@@ -384,10 +385,16 @@ func _send_end_dialogue_to_glass(speaker: String, text: String) -> void:
 		return
 	if speaker.contains("广播") or speaker.contains("管理局"):
 		bridge.secretary_line(text)
-	elif speaker == WorkdayState.player_name or speaker == "林默":
+	elif speaker == WorkdayState.player_name:
 		bridge.npc_line(speaker, text, "male", "young")
 	else:
 		bridge.npc_line(speaker, text)
+
+
+func _resolve_dialogue_speaker(speaker: String) -> String:
+	if speaker == "PLAYER":
+		return WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "未登记职员"
+	return speaker
 
 
 func enter_next_workday() -> void:

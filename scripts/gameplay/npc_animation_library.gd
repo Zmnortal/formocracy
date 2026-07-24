@@ -8,6 +8,7 @@ const PLAYBACK_LOOP := "LOOP"
 const PLAYBACK_ONCE := "ONCE"
 const PLAYBACK_HOLD := "HOLD"
 const VALID_PLAYBACK_MODES := [PLAYBACK_LOOP, PLAYBACK_ONCE, PLAYBACK_HOLD]
+const MAX_ACTION_FPS := 4.0
 
 var table_path := ""
 var character_id := ""
@@ -234,6 +235,12 @@ func _add_action(action: Dictionary) -> void:
 	if fps <= 0.0:
 		_warn("Action '%s' has invalid FPS; using 1 FPS." % action_name)
 		fps = 1.0
+	elif fps > MAX_ACTION_FPS:
+		_warn(
+			"Action '%s' exceeds the %.0f FPS style limit; using %.0f FPS."
+			% [action_name, MAX_ACTION_FPS, MAX_ACTION_FPS]
+		)
+		fps = MAX_ACTION_FPS
 
 	var playback := String(action.get("playback", action.get("mode", PLAYBACK_LOOP))).to_upper()
 	if playback not in VALID_PLAYBACK_MODES:

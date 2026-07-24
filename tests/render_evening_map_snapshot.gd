@@ -12,7 +12,7 @@ func run() -> void:
 	state.reset_for_tests()
 	state.day_number = 1
 	state.balance = 42
-	state.player_name = "林默"
+	state.player_name = "测试职员"
 	var error := change_scene_to_file("res://scenes/evening_map.tscn")
 	assert(error == OK, "evening map must open")
 	await process_frame

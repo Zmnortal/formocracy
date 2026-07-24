@@ -28,9 +28,15 @@ func run() -> void:
 		"all five configured walk frames must be built"
 	)
 	assert(
-		is_equal_approx(library.get_action_fps("walk_in"), 7.0),
-		"each action must preserve its own FPS"
+		is_equal_approx(library.get_action_fps("walk_in"), 4.0),
+		"configured actions must respect the four FPS style limit"
 	)
+	for action_name: StringName in library.sprite_frames.get_animation_names():
+		assert(
+			library.sprite_frames.get_animation_speed(action_name)
+			<= library_script.MAX_ACTION_FPS,
+			"no default animation may exceed the global four FPS style limit"
+		)
 	assert(
 		library.sprite_frames.get_animation_loop("walk_in"),
 		"LOOP actions must loop in SpriteFrames"
@@ -52,15 +58,116 @@ func run() -> void:
 	assert(
 		actor_override.load_animation_table(
 			"res://data/animations/default_applicant/animation_table.json",
-			"res://assets/characters/applicants/npc_female_young.png"
+			"res://assets/characters/applicants/person_xu/fullbody.png"
 		),
 		"default table must accept a per-character full-body texture override"
 	)
 	assert(
 		actor_override.sprite_frames.get_frame_texture("walk_in", 0).resource_path
-		== "res://assets/characters/applicants/npc_female_young.png",
+		== "res://assets/characters/applicants/person_xu/fullbody.png",
 		"placeholder frame rows must keep each NPC's configured full-body identity"
 	)
+
+	var lin_animation = library_script.new()
+	assert(
+		lin_animation.load_animation_table(
+			"res://data/animations/person_lin/animation_table.json"
+		),
+		"Lin Mo's production animation table must load"
+	)
+	assert(
+		lin_animation.error_messages.is_empty()
+		and lin_animation.warning_messages.is_empty(),
+		"Lin Mo's production animation table must resolve every real frame"
+	)
+	assert(
+		lin_animation.character_id == "PERSON-LIN"
+		and not lin_animation.substitute_frames_with_static_actor,
+		"Lin Mo must use his own generated frames instead of the static placeholder"
+	)
+	var lin_idle_texture: Texture2D = (
+		lin_animation.sprite_frames.get_frame_texture("idle", 0)
+	)
+	assert(
+		lin_idle_texture.resource_path
+		== (
+			"res://assets/characters/applicants/person_lin/fullbody_frames_20/"
+			+ "02_idle_neutral_a_fullbody.png"
+		),
+		"Lin Mo's idle must resolve to a filename explicitly marked as full-body"
+	)
+	assert(
+		lin_idle_texture.get_size() == Vector2(512, 768),
+		"production animation frames must share the normalized canvas"
+	)
+	var expected_lin_frame_counts := {
+		"queue_idle": 3,
+		"idle": 2,
+		"blink": 3,
+		"nervous": 3,
+		"deliver": 3,
+		"happy_react": 4,
+		"happy_idle": 2,
+		"angry_react": 4,
+		"angry_idle": 2,
+		"walk_out_happy": 3,
+		"walk_out_angry": 3,
+	}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(
+			lin_animation.sprite_frames.get_frame_count(action_name) == expected_count,
+			"Lin Mo action '%s' must use the approved %d-frame budget"
+			% [action_name, expected_count]
+		)
+		var metadata: Dictionary = lin_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		assert(
+			frame_paths.size() == expected_count,
+			"Lin Mo action '%s' metadata must match its SpriteFrames count" % action_name
+		)
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with(
+					"res://assets/characters/applicants/person_lin/fullbody_frames_20/"
+				),
+				"Lin Mo action '%s' must resolve only from the curated 20-frame folder"
+				% action_name
+			)
+			assert(
+				frame_path.ends_with("_fullbody.png"),
+				"every active Lin Mo frame filename must declare full-body coverage"
+			)
+			assert(
+				ResourceLoader.exists(frame_path, "Texture2D"),
+				"Lin Mo production frame must exist as an imported Texture2D: %s" % frame_path
+			)
+	assert(
+		not lin_animation.has_action("walk_in")
+		and not lin_animation.has_action("arrive")
+		and not lin_animation.has_action("look_aside"),
+		"unused entry actions and the partial-body look-aside row must not remain active"
+	)
+	var active_fullbody_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at(
+		"res://assets/characters/applicants/person_lin/fullbody_frames_20"
+	):
+		if filename.ends_with(".png"):
+			active_fullbody_pngs.append(filename)
+	assert(
+		active_fullbody_pngs.size() == 20,
+		"Lin Mo's active animation asset budget must be exactly 20 PNG files"
+	)
+	for filename in active_fullbody_pngs:
+		assert(
+			filename.ends_with("_fullbody.png"),
+			"the 20-file budget must contain only explicitly marked full-body images"
+		)
+	for action_name: StringName in lin_animation.sprite_frames.get_animation_names():
+		assert(
+			lin_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS,
+			"no production animation may exceed the global four FPS style limit"
+		)
 
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(
@@ -88,6 +195,13 @@ func run() -> void:
 	assert(
 		partial.sprite_frames.get_frame_count("partial_once") == 2,
 		"missing frames must be skipped without discarding valid frames"
+	)
+	assert(
+		is_equal_approx(
+			partial.get_action_fps("partial_once"),
+			library_script.MAX_ACTION_FPS
+		),
+		"the loader must cap an out-of-policy configuration at four FPS"
 	)
 	assert(
 		not partial.has_action("empty_action"),

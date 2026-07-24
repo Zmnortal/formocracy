@@ -39,11 +39,21 @@ func run() -> void:
 	await create_timer(0.4).timeout
 	current_scene.presenter.set_envelope_on_desk(true)
 	current_scene.presenter.open_envelope()
+	current_scene.presenter.open_document(current_scene.presenter.primary_document_id)
+	if not current_scene.presenter.document_panels.is_empty():
+		var supporting = current_scene.presenter.document_panels[0]
+		current_scene.presenter.open_document(String(supporting.get_meta("document_id")))
+		current_scene.presenter.apply_stamp(
+			"驳回",
+			String(supporting.get_meta("document_id")),
+			Vector2(310, 238)
+		)
+	current_scene.presenter.apply_stamp("批准", Vector2(430, 350))
+	await process_frame
 	await process_frame
 	var image := root.get_viewport().get_texture().get_image()
 	assert(not image.is_empty(), "rendered viewport must produce an image")
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "render verification screenshot must be saved")
-	current_scene.presenter.apply_stamp("批准", Vector2(350, 360))
 	current_scene.presenter.pack_all_documents()
 	current_scene.submission_mgr.submit(current_scene.presenter, current_scene.current_case)
 	await create_timer(0.75).timeout

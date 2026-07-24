@@ -7,6 +7,7 @@ signal envelope_submitted
 
 var root: Node2D
 var desk: DeskNodes
+var desk_items: DeskItemController
 
 var form_dragging := false
 var envelope_dragging := false
@@ -15,9 +16,14 @@ var envelope_preview_tween: Tween
 var drag_response_multiplier := 1.0
 
 
-func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
+func _init(
+	owner_root: Node2D,
+	owner_desk: DeskNodes,
+	item_controller: DeskItemController = null
+) -> void:
 	root = owner_root
 	desk = owner_desk
+	desk_items = item_controller
 	drag_response_multiplier = WorkdayState.get_drag_response_multiplier()
 
 
@@ -25,31 +31,96 @@ func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
 func bind_case(presenter: CasePresenter) -> void:
 	envelope_dragging = false
 	envelope_in_machine_zone = false
-	if is_instance_valid(presenter.form):
-		CursorManager.watch(presenter.form, CursorManager.Cursor.GRAB)
-		presenter.form.add_to_group("debug_interaction_zone")
-		presenter.form.set_meta("debug_zone_label", "主表单")
-		presenter.form.gui_input.connect(_on_form_input.bind(presenter))
-		presenter.form.mouse_entered.connect(_on_form_hover.bind(presenter, true))
-		presenter.form.mouse_exited.connect(_on_form_hover.bind(presenter, false))
+	for document in presenter.all_document_views:
+		if not is_instance_valid(document):
+			continue
+		CursorManager.watch(document, CursorManager.Cursor.GRAB)
+		document.add_to_group("debug_interaction_zone")
+		document.set_meta(
+			"debug_zone_label",
+			"主表单" if document.document_id == presenter.primary_document_id else "证明材料"
+		)
+		if desk_items != null:
+			desk_items.register_item(
+				document,
+				"case_document_%s" % document.document_id,
+				presenter.bring_document_to_front.bind(document.document_id),
+				Callable(),
+				_on_document_settled.bind(presenter)
+			)
+		else:
+			if document.document_id == presenter.primary_document_id:
+				document.gui_input.connect(_on_form_input.bind(presenter))
+				document.mouse_entered.connect(_on_form_hover.bind(presenter, true))
+				document.mouse_exited.connect(_on_form_hover.bind(presenter, false))
+			else:
+				document.gui_input.connect(_on_document_input.bind(document, presenter))
 	if is_instance_valid(presenter.envelope):
 		CursorManager.watch(presenter.envelope, CursorManager.Cursor.GRAB)
 		presenter.envelope.add_to_group("debug_interaction_zone")
 		presenter.envelope.set_meta("debug_zone_label", "文件袋")
-		presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
-	for document in presenter.document_panels:
-		if is_instance_valid(document):
-			CursorManager.watch(document, CursorManager.Cursor.GRAB)
-			document.add_to_group("debug_interaction_zone")
-			document.set_meta("debug_zone_label", "证明材料")
-			document.gui_input.connect(_on_document_input.bind(document, presenter))
+		if desk_items != null:
+			desk_items.register_item(
+				presenter.envelope,
+				"case_envelope",
+				Callable(),
+				_on_envelope_drag_motion.bind(presenter),
+				_on_envelope_settled.bind(presenter)
+			)
+		else:
+			presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
+
+
+func _on_form_settled(item: Control, presenter: CasePresenter) -> void:
+	if _is_over_open_envelope(item, presenter):
+		presenter.pack_document(presenter.primary_document_id)
+
+
+func _on_document_settled(item: Control, presenter: CasePresenter) -> void:
+	if _is_over_open_envelope(item, presenter):
+		presenter.pack_document(String(item.get_meta("document_id")))
+
+
+func _on_envelope_drag_motion(item: Control, presenter: CasePresenter) -> void:
+	var entered := (
+		presenter.envelope_on_desk
+		and presenter.all_documents_packed()
+		and is_instance_valid(desk.archive_drop_zone)
+		and item.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
+	)
+	if entered != envelope_in_machine_zone:
+		_set_machine_preview(presenter, entered)
+
+
+func _on_envelope_settled(item: Control, presenter: CasePresenter) -> void:
+	if presenter.envelope_opened and not presenter.all_documents_packed():
+		_set_machine_preview(presenter, false)
+		if is_instance_valid(desk.status_label):
+			desk.status_label.text = "文件袋尚未收齐全部文件，不能送验。"
+		return
+	var entered := (
+		presenter.envelope_on_desk
+		and is_instance_valid(desk.archive_drop_zone)
+		and item.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
+	)
+	if entered:
+		if is_instance_valid(envelope_preview_tween):
+			envelope_preview_tween.kill()
+		envelope_submitted.emit()
+		return
+	_set_machine_preview(presenter, false)
+	if not presenter.envelope_on_desk:
+		presenter.set_envelope_on_desk(true)
+		if is_instance_valid(desk.status_label):
+			desk.status_label.text = "文件袋已置于工作台，点击封口拆开。"
 
 
 # 表单悬停时的缩放反馈。
 func _on_form_hover(presenter: CasePresenter, entered: bool) -> void:
 	if form_dragging or not is_instance_valid(presenter.form):
 		return
-	var target_scale := desk.form_base_scale * (1.012 if entered else 1.0)
+	var base_scale: Vector2 = presenter.form.get_meta("desk_base_scale", presenter.form.scale)
+	var target_scale := base_scale * (1.012 if entered else 1.0)
 	var tween := root.create_tween()
 	tween.tween_property(presenter.form, "scale", target_scale, 0.08)
 
@@ -63,15 +134,21 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 			form_dragging = true
 			CursorManager.begin_drag(presenter.form)
 			presenter.form.z_index = 10
+			var base_scale: Vector2 = presenter.form.get_meta(
+				"desk_base_scale", presenter.form.scale
+			)
 			var tween := root.create_tween().set_parallel(true)
-			tween.tween_property(presenter.form, "scale", desk.form_base_scale * 1.035, 0.1)
+			tween.tween_property(presenter.form, "scale", base_scale * 1.035, 0.1)
 			tween.tween_property(presenter.form, "rotation", -0.012, 0.1)
 		else:
 			form_dragging = false
 			CursorManager.end_drag()
 			presenter.form.z_index = 5
+			var base_scale: Vector2 = presenter.form.get_meta(
+				"desk_base_scale", presenter.form.scale
+			)
 			var tween := root.create_tween().set_parallel(true)
-			tween.tween_property(presenter.form, "scale", desk.form_base_scale, 0.12)
+			tween.tween_property(presenter.form, "scale", base_scale, 0.12)
 			tween.tween_property(presenter.form, "rotation", 0.0, 0.12)
 			if _is_over_open_envelope(presenter.form, presenter):
 				presenter.pack_document(presenter.primary_document_id)

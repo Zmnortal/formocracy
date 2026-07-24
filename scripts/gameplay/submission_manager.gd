@@ -25,8 +25,11 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	var procedure_errors: Array[String] = []
 	if not presenter.is_stamped():
 		procedure_errors.append("漏盖章")
+	if presenter.has_stamp_conflict():
+		procedure_errors.append("裁决冲突")
 	if not presenter.all_documents_packed():
 		procedure_errors.append("遗漏材料")
+		procedure_errors.append("未重新装袋")
 	if not presenter.envelope_opened:
 		procedure_errors.append("未拆封归档")
 
@@ -79,7 +82,8 @@ func _record_submission(
 		presenter.stamp_type(),
 		procedure_errors,
 		Time.get_ticks_msec() / 1000.0 - presenter.case_started_at,
-		presenter.packed_document_ids.duplicate()
+		presenter.packed_document_ids.duplicate(),
+		presenter.get_stamp_records()
 	)
 	desk.refresh_archive_stack(true)
 	if is_instance_valid(desk.status_label):

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMOCRACY — 第十二区人物档案</title>
+  <!--
+    已确认的设计假设：
+    - 这是一份给创作、叙事与美术团队共同使用的 18 人角色档案册。
+    - 玩家主角姓名由开局输入，林默仅为 NPC。
+    - 视觉沿用用户提供的 A4 IP 平台原型：编辑出版感、大留白、细分隔线、章节编号。
+    - 世界保持制度灰与旧纸张气质，每个角色只使用一组强绑定的人格色。
+    - 本页不依赖远程字体或网络资源，可直接通过 file:// 打开并打印为 PDF。
+  -->
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("../../assets/fonts/fusion_pixel/fusion-pixel-12px-proportional-zh_hans.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      --paper: #f2eee4;
+      --paper-deep: #e8e0d0;
+      --ink: #24231f;
+      --body: #504d46;
+      --quiet: #918b81;
+      --hairline: #cfc7b8;
+      --screen: #312f2a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--screen);
+    }
+
+    body {
+      color: var(--ink);
+      font-family: "Hiragino Sans GB", "Heiti SC", "Noto Sans CJK SC", sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      margin: 12mm auto;
+      padding: 16mm 18mm 15mm;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(36, 35, 31, 0.018) 1px, transparent 1px),
+        var(--paper);
+      background-size: 100% 8px;
+      page-break-after: always;
+      break-after: page;
+      box-shadow: 0 8px 42px rgba(0, 0, 0, 0.26);
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .page::after {
+      content: "";
+      position: absolute;
+      inset: 8mm;
+      border: 0.35mm solid color-mix(in srgb, var(--accent, var(--hairline)) 28%, transparent);
+      pointer-events: none;
+    }
+
+    .folio {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 8mm;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 2.5mm;
+      border-top: 0.25mm solid var(--hairline);
+      color: var(--quiet);
+      font: 7.5pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow {
+      color: var(--quiet);
+      font: 7.5pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .cover {
+      --accent: #3f5fa8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      top: 16mm;
+      width: 12mm;
+      height: 0.7mm;
+      background: var(--ink);
+    }
+
+    .cover h1 {
+      margin: 10mm 0 4mm;
+      font-family: "Songti SC", "Noto Serif CJK SC", serif;
+      font-size: 29pt;
+      line-height: 1.28;
+      letter-spacing: 0.08em;
+    }
+
+    .cover .subtitle {
+      color: var(--quiet);
+      font-size: 9pt;
+      letter-spacing: 0.14em;
+    }
+
+    .cover .statement {
+      max-width: 120mm;
+      margin-top: 18mm;
+      padding: 6mm 0;
+      border-top: 0.25mm solid var(--hairline);
+      border-bottom: 0.25mm solid var(--hairline);
+      color: var(--body);
+      font-family: "Songti SC", "Noto Serif CJK SC", serif;
+      font-size: 10.5pt;
+      line-height: 1.9;
+    }
+
+    .spectrum {
+      width: 148mm;
+      height: 4mm;
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      margin-top: 16mm;
+      border: 0.25mm solid rgba(36, 35, 31, 0.2);
+    }
+
+    .spectrum span {
+      background: var(--swatch);
+    }
+
+    .cover .meta {
+      position: absolute;
+      bottom: 16mm;
+      left: 18mm;
+      right: 18mm;
+      display: flex;
+      justify-content: space-between;
+      color: var(--quiet);
+      font: 7pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.08em;
+    }
+
+    .index-page {
+      --accent: #6c665d;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 4mm;
+      border-bottom: 0.45mm solid var(--ink);
+    }
+
+    .page-header h2 {
+      margin-top: 2mm;
+      font-family: "Songti SC", "Noto Serif CJK SC", serif;
+      font-size: 21pt;
+      letter-spacing: 0.04em;
+    }
+
+    .classification {
+      min-width: 34mm;
+      padding: 2.2mm 3mm;
+      border: 0.4mm solid var(--accent);
+      color: var(--accent);
+      text-align: center;
+      font: 7.5pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.16em;
+      transform: rotate(-1.5deg);
+    }
+
+    .index-intro {
+      max-width: 130mm;
+      margin: 5mm 0 7mm;
+      color: var(--body);
+      font-size: 9.5pt;
+      line-height: 1.8;
+    }
+
+    .cast-groups {
+      display: grid;
+      grid-template-columns: 1fr 0.78fr;
+      gap: 7mm;
+    }
+
+    .group-title {
+      display: flex;
+      align-items: baseline;
+      gap: 3mm;
+      margin-bottom: 3mm;
+      font-family: "Songti SC", serif;
+      font-size: 12pt;
+    }
+
+    .group-title b {
+      color: var(--quiet);
+      font: 7pt/1 "Fusion Pixel", monospace;
+    }
+
+    .cast-list {
+      border-top: 0.25mm solid var(--hairline);
+    }
+
+    .cast-row {
+      display: grid;
+      grid-template-columns: 4mm 20mm 1fr;
+      gap: 2.5mm;
+      align-items: center;
+      min-height: 11mm;
+      border-bottom: 0.25mm solid var(--hairline);
+      font-size: 8.3pt;
+    }
+
+    .cast-dot {
+      width: 3mm;
+      height: 3mm;
+      background: var(--row-accent);
+      border-radius: 50%;
+    }
+
+    .cast-row strong {
+      font-family: "Songti SC", serif;
+      font-size: 9.5pt;
+    }
+
+    .cast-row span:last-child {
+      color: var(--body);
+    }
+
+    .relation-box {
+      margin-top: 7mm;
+      padding: 4.5mm 5mm;
+      border: 0.25mm solid var(--hairline);
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .relation-box h3 {
+      margin-bottom: 2.5mm;
+      font-family: "Songti SC", serif;
+      font-size: 11pt;
+    }
+
+    .relation-box ol {
+      padding-left: 4mm;
+    }
+
+    .relation-box li {
+      margin-bottom: 1.6mm;
+      color: var(--body);
+      font-size: 8.1pt;
+      line-height: 1.55;
+    }
+
+    .character-page {
+      --accent: #3f5fa8;
+    }
+
+    .character-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      padding-bottom: 4.5mm;
+      border-bottom: 0.55mm solid var(--accent);
+    }
+
+    .character-head h2 {
+      margin-top: 1.5mm;
+      font-family: "Songti SC", "Noto Serif CJK SC", serif;
+      font-size: 28pt;
+      line-height: 1.1;
+      letter-spacing: 0.08em;
+    }
+
+    .character-head .latin {
+      margin-top: 1mm;
+      color: var(--quiet);
+      font: 7.5pt/1 "Fusion Pixel", monospace;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .age-badge {
+      min-width: 25mm;
+      padding: 2.8mm;
+      border: 0.4mm solid var(--accent);
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .age-badge strong {
+      display: block;
+      font-family: "Songti SC", serif;
+      font-size: 20pt;
+      line-height: 1;
+    }
+
+    .age-badge span {
+      font: 7pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.12em;
+    }
+
+    .character-body {
+      display: grid;
+      grid-template-columns: 70mm 1fr;
+      gap: 8mm;
+      height: 222mm;
+      padding-top: 6mm;
+    }
+
+    .portrait-column {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .portrait-frame {
+      height: 166mm;
+      position: relative;
+      overflow: hidden;
+      border: 0.25mm solid color-mix(in srgb, var(--accent) 35%, var(--hairline));
+      background: var(--paper-deep);
+    }
+
+    .portrait-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-top: 5mm solid var(--accent);
+      opacity: 0.11;
+      pointer-events: none;
+    }
+
+    .portrait-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .id-strip {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 3mm;
+      margin-top: 3mm;
+      padding: 3mm 0;
+      border-top: 0.25mm solid var(--hairline);
+      border-bottom: 0.25mm solid var(--hairline);
+    }
+
+    .id-strip p {
+      color: var(--body);
+      font-size: 8pt;
+    }
+
+    .id-strip b {
+      display: block;
+      color: var(--quiet);
+      font: 6.8pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.08em;
+    }
+
+    .role-stamp {
+      align-self: center;
+      padding: 1.7mm 2.3mm;
+      border: 0.35mm solid var(--accent);
+      color: var(--accent);
+      font: 7pt/1 "Fusion Pixel", monospace;
+      letter-spacing: 0.08em;
+      transform: rotate(-1.2deg);
+    }
+
+    .palette {
+      margin-top: 4mm;
+    }
+
+    .palette h3 {
+      margin-bottom: 2mm;
+      color: var(--quiet);
+      font: 7pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.13em;
+    }
+
+    .swatch-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2mm;
+    }
+
+    .swatch {
+      height: 15mm;
+      padding: 2mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border: 0.25mm solid rgba(36, 35, 31, 0.18);
+      color: var(--swatch-text, #fff);
+      background: var(--swatch);
+      font: 6pt/1.2 "Fusion Pixel", monospace;
+      letter-spacing: 0.04em;
+    }
+
+    .copy-column {
+      min-height: 0;
+    }
+
+    .section-block {
+      margin-bottom: 5mm;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 2.5mm;
+      margin-bottom: 1.8mm;
+    }
+
+    .section-label b {
+      color: var(--accent);
+      font: 7pt/1 "Fusion Pixel", monospace;
+    }
+
+    .section-label h3 {
+      font-family: "Songti SC", serif;
+      font-size: 11.5pt;
+      letter-spacing: 0.04em;
+    }
+
+    .identity-line {
+      padding: 3.5mm 4mm;
+      border-left: 1.1mm solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      font-family: "Songti SC", serif;
+      font-size: 11pt;
+      line-height: 1.75;
+    }
+
+    .story {
+      color: var(--body);
+      font-size: 9.1pt;
+      line-height: 1.78;
+      text-align: justify;
+      text-wrap: pretty;
+    }
+
+    .visits {
+      display: grid;
+      grid-template-columns: 9mm 1fr;
+      border-top: 0.25mm solid var(--hairline);
+    }
+
+    .visit {
+      display: contents;
+    }
+
+    .visit b,
+    .visit p {
+      padding: 2.3mm 0;
+      border-bottom: 0.25mm solid var(--hairline);
+    }
+
+    .visit b {
+      color: var(--accent);
+      font: 7pt/1.5 "Fusion Pixel", monospace;
+    }
+
+    .visit p {
+      color: var(--body);
+      font-size: 8.3pt;
+      line-height: 1.5;
+    }
+
+    .quote {
+      margin-top: 5mm;
+      padding: 4mm 0 0 5mm;
+      position: relative;
+      border-top: 0.25mm solid var(--hairline);
+      color: var(--ink);
+      font-family: "Songti SC", serif;
+      font-size: 10.5pt;
+      line-height: 1.75;
+    }
+
+    .quote::before {
+      content: "“";
+      position: absolute;
+      left: -1mm;
+      top: 1mm;
+      color: var(--accent);
+      font-size: 24pt;
+      line-height: 1;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      html,
+      body {
+        background: transparent;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="dossier"></main>
+  <script>
+    const characters = [
+      {
+        id: "PERSON-LIN", file: "12-D/C01", name: "林默", latin: "LIN MO", age: 28,
+        role: "回访核心", occupation: "市政信号维护员", citizen: "74-119-02",
+        color: "#3F5FA8", colorName: "冷靛蓝", secondary: "#8797B9", forbidden: "#D9A441",
+        image: "../../assets/characters/dossier/person_lin/concept.png",
+        who: "一个习惯把情绪收进制服口袋里的年轻维修员；他申请与恋人共同生活，却拒绝解释自己曾经消失的三个月。",
+        story: "林默在第十二区维护老旧信号灯和楼宇警报，工作记录稳定得近乎没有瑕疵。三个月前，他在一次夜间抢修后失踪，回来时只说自己被临时征调，系统中却找不到对应命令。沈青禾仍愿意与他共同生活，但两人递交的时间线存在细小差异。林默并非不知道真相；他害怕说出那段经历后，沈青禾会被一起写进需要“校正”的名单。",
+        visits: ["提交共同居住配额变更，材料完整，态度克制。", "审批结果改变两人的住址记录，沈青禾开始单独来询问。", "承认失踪期间进入过日终验收机房，并见过玩家旧身份的编号。"],
+        quote: "住址没有变。我们只是想让档案承认已经发生的生活。"
+      },
+      {
+        id: "PERSON-ZHOU", file: "12-D/C02", name: "周循", latin: "ZHOU XUN", age: 44,
+        role: "回访核心", occupation: "锅炉与管线维修工", citizen: "20-441-88",
+        color: "#C78238", colorName: "熟赭橙", secondary: "#8E765F", forbidden: "#4E77A8",
+        image: "../../assets/characters/dossier/person_zhou/concept.png",
+        who: "一个把照护责任全部揽在自己身上的维修工；他说话温和，却正在被配给制度一点点耗空。",
+        story: "周循负责住宅区的锅炉、供水阀和冬季管线，常在别人睡着后进入地下设备间。他与母亲杜春梅同住，后者需要持续用水服药，但两人的居住地址在一次街区重编后被系统拆成两个编号。周循不断递交临时水额申请，同时接私活补贴家用。他知道配给站的管线损耗被人为写低，却不愿举报蒋森，因为那些“损耗”实际流向了没有登记资格的住户。",
+        visits: ["申请提高净水额度，身份记录与居住证明地址不一致。", "若被驳回，杜春梅停药；若获批，配给站开始追查异常用量。", "交出地下管线图，证明多名角色共享同一条被隐去的供水支线。"],
+        quote: "表上写的是额度，回到家里，就是一个人今天能不能把药咽下去。"
+      },
+      {
+        id: "PERSON-XU", file: "12-D/C03", name: "许桥", latin: "XU QIAO", age: 25,
+        role: "回访核心", occupation: "区域文件递送员", citizen: "51-004-63",
+        color: "#D35245", colorName: "朱砂红", secondary: "#9A756E", forbidden: "#74836B",
+        image: "../../assets/characters/dossier/person_xu/concept.png",
+        who: "一个把速度当作尊严的文件递送员；她急着证明自己还能工作，因此把尚未痊愈的伤藏在每一次奔跑里。",
+        story: "许桥骑车穿行于第十二区各机构之间，熟悉每扇侧门和每个不在地图上的投递口。一次装配线事故中，她替唐霁完成紧急送件时受伤，诊疗站回执却因验收机时钟错误而在签发前就被判定过期。她害怕长期病假导致岗位注销，于是不断申请限制时段通行。她随身保留那张过期回执，因为背面的油印编号指向顾原隐瞒的事故名单。",
+        visits: ["持过期回执申请医疗通行，表现得急躁且疼痛明显。", "审批决定影响伤势与工作资格，唐霁开始替她追查封存袋。", "公开事故当天的真实投递路线，把诊疗站、装配线与监察处连在一起。"],
+        quote: "我不是要特殊照顾。我只想在还能走的时候，走到该去的地方。"
+      },
+      {
+        id: "PERSON-MENG", file: "12-D/C04", name: "孟秋兰", latin: "MENG QIULAN", age: 48,
+        role: "回访核心", occupation: "公共食堂配餐员", citizen: "46-208-71",
+        color: "#D6A126", colorName: "藏红花黄", secondary: "#9D8658", forbidden: "#744A78",
+        image: "../../assets/characters/dossier/person_meng/concept.png",
+        who: "一个用重复日常抵抗行政遗忘的母亲；她每天多留一份饭，好像那个被注销的人仍会回来。",
+        story: "孟秋兰在公共食堂工作了二十一年，记得每个固定用餐者不吃什么。她的儿子在顾原负责的夜间装配线事故后被登记为“主动离区”，随后从户籍和配给名册中消失。孟秋兰拒绝接受这个结论，持续替儿子领取食物，并用餐券背面记录每一次退件。罗雨棠保存着儿子最后一张夜班车票，黎素则在缺页档案中见过相同姓名。",
+        visits: ["申请延续家庭食品份额，系统显示家庭成员不存在。", "批准会触发冒领审查，驳回则让她失去唯一可持续查询的编号。", "她拿出二十一张退件回执，拼出事故后统一修改档案的时间窗口。"],
+        quote: "只要窗口还肯退给我一张纸，就说明系统里还有地方记得他。"
+      },
+      {
+        id: "PERSON-HE", file: "12-D/C05", name: "何芸", latin: "HE YUN", age: 34,
+        role: "回访核心", occupation: "第七码头夜校教师", citizen: "65-331-09",
+        color: "#2F9488", colorName: "孔雀青", secondary: "#7A9993", forbidden: "#A6443D",
+        image: "../../assets/characters/dossier/person_he/concept.png",
+        who: "一个语气温和、记忆锋利的夜校教师；她把被迁走的学生继续写在点名册里。",
+        story: "何芸白天在仓库做统计，晚上为码头工人和孩子教授阅读。街区迁移后，管理局要求她删除九名“已转移”学生，她却在私人点名册中保留姓名，并让仍在附近的人代答到。她最初只申请夜间照明和教材配额，后来发现名册中的三个姓名同时出现在黎素修复的档案缺页中。何芸相信识字能让人看见制度如何改写自己，因此宁愿承担私设课程的风险。",
+        visits: ["申请夜校照明配额，学生人数与官方名册不符。", "审批结果决定夜校是否继续，监察员魏岚开始旁听。", "交出私人点名册，证明“转移”记录与现实中的失踪并不相同。"],
+        quote: "名字被划掉以后，更需要有人把它念出来。"
+      },
+      {
+        id: "PERSON-DU", file: "12-D/C06", name: "杜春梅", latin: "DU CHUNMEI", age: 69,
+        role: "回访核心", occupation: "退休电话接线员", citizen: "11-604-42",
+        color: "#945B82", colorName: "李子紫", secondary: "#A4929C", forbidden: "#D49731",
+        image: "../../assets/characters/dossier/person_du/concept.png",
+        who: "一个记得太多声音、却开始忘记日期的退休接线员；她的记忆比档案更真实，也更脆弱。",
+        story: "杜春梅曾在中央交换台工作，能凭呼吸和停顿认出经常来电的人。退休后，她与儿子周循同住，需要稳定药物和净水。她记得老赫年轻时的暗房预约，也记得玩家旧身份曾用另一个代号拨打内部线路，但药物中断后，记忆会混入错误的年份。管理局把她的证词归类为“不稳定口述”，可她保存的手写分机表正好补上官方通信记录的空白。",
+        visits: ["申请恢复退休药品配给，对日期与地址的陈述前后不一。", "周循案件的结果影响她的身体状态和可用证词。", "在清醒时说出玩家旧部门的分机号，并把线索指向老赫。"],
+        quote: "名字我会忘，声音不会。有人说谎的时候，呼吸总要先停一下。"
+      },
+      {
+        id: "PERSON-GU", file: "12-D/C07", name: "顾原", latin: "GU YUAN", age: 62,
+        role: "回访核心", occupation: "夜间装配线领班", citizen: "32-770-16",
+        color: "#58745E", colorName: "松针绿", secondary: "#7E8578", forbidden: "#C15243",
+        image: "../../assets/characters/dossier/person_gu/concept.png",
+        who: "一个把愧疚藏在规章背后的老领班；他申请离开夜班，却仍握着一份不敢公开的事故名单。",
+        story: "顾原在第七码头装配厂工作三十七年，熟悉机器噪声中每一种异常。那场被定性为“小规模停机”的事故实际造成多人伤亡与失踪，他按照上级命令签署了删减名单，换来剩余工人的岗位保留。如今视力下降，他申请调到日间清点岗。许桥的过期回执、孟秋兰儿子的失踪和宋铎调整过的机器时钟，都能追溯到他保存的原始值班表。",
+        visits: ["申请工位调换，没有提交健康理由。", "审批结果决定他是否仍能进入夜线档案室取出原始值班表。", "承认自己删过名单，但指出真正下令者来自程序监察处之外。"],
+        quote: "我签了字，所以我有罪。但那张纸不是我写的第一版。"
+      },
+      {
+        id: "PERSON-SHEN", file: "12-D/C08", name: "沈青禾", latin: "SHEN QINGHE", age: 27,
+        role: "回访核心", occupation: "印刷合作社校对员", citizen: "74-119-03",
+        color: "#69AC8A", colorName: "青瓷绿", secondary: "#8CA498", forbidden: "#B84C43",
+        image: "../../assets/characters/dossier/person_shen/concept.png",
+        who: "一个擅长发现错字、也擅长替别人保守秘密的校对员；她比林默更清楚那三个月发生了什么。",
+        story: "沈青禾负责检查政府表单的小字、编号和印版误差，对版本差异有近乎本能的敏感。林默失踪期间，她收到过三封没有寄件人的校样，每封都藏着同一组机房编号。林默回来后，她同意递交共同居住申请，却在知情声明上使用了旧版签名格式。她想保护林默，也怀疑他带回来的记忆并不完整；玩家的审批会决定两人的档案是否被系统正式绑定。",
+        visits: ["作为林默共同居住关联人出现，签名格式与现行版本不符。", "单独申请更正声明，试图把林默从一次夜间征调中摘除。", "交出三封隐藏机房编号的校样，要求玩家选择保留或销毁。"],
+        quote: "一个字印错了，可以重印。一个人被写错了，谁来发新版？"
+      },
+      {
+        id: "PERSON-TANG", file: "12-D/C09", name: "唐霁", latin: "TANG JI", age: 19,
+        role: "回访核心", occupation: "见习公文投递员", citizen: "03-882-14",
+        color: "#3474D4", colorName: "电光蓝", secondary: "#738BAA", forbidden: "#8F6A37",
+        image: "../../assets/characters/dossier/person_tang/concept.png",
+        who: "一个真心相信公文能够准确抵达的年轻投递员；他的理想被一只改变现实的封存袋击中。",
+        story: "唐霁刚通过投递员考试，把每次签收都视作秩序运转的证明。许桥受伤那晚，他误把一只无地址封存袋送入日终验收通道，第二天，袋中人员便从多份名册上消失。机构把错误归因于他的见习操作，他也一度相信如此。随着许桥和宋铎提供的记录出现，他发现袋子的路线权限来自更高层，而且有人故意借用了他的工号。",
+        visits: ["申请免除一次错误投递处分，材料看似证据确凿。", "收到许桥的真实路线记录后，开始质疑自己的签收记忆。", "复制封存袋路线权限，证明有人用他的工号把档案直接送入验收。"],
+        quote: "我以为送到就是结束。后来才知道，有些文件一到，人才会结束。"
+      },
+      {
+        id: "PERSON-LUO", file: "12-D/C10", name: "罗雨棠", latin: "LUO YUTANG", age: 32,
+        role: "回访核心", occupation: "夜班电车售票员", citizen: "87-140-55",
+        color: "#E36F59", colorName: "珊瑚橙", secondary: "#A57A70", forbidden: "#477A91",
+        image: "../../assets/characters/dossier/person_luo/concept.png",
+        who: "一个用玩笑让乘客放松的夜班售票员；她把废票根变成了失踪者的私人时刻表。",
+        story: "罗雨棠在最后一班电车上工作，认识许多白天不会留下记录的人。官方要求每天销毁废票，她却按日期把无对应下车记录的票根藏进暖气罩。孟秋兰的儿子、装配线事故伤员和一名使用玩家旧代号的人，都曾搭乘不存在于官方时刻表的支线。叶蓁掌握调度记录，罗雨棠掌握乘客证据，两人长期假装互不相识。",
+        visits: ["申请延长夜间通行权限，理由写成设备清点。", "玩家决定会影响最后一班电车是否继续运行。", "拿出票根索引，将多个失踪者与同一条未登记路线连接起来。"],
+        quote: "车票很薄，压不住一个人。但十八张叠在一起，就能压住一句谎话。"
+      },
+      {
+        id: "PROPRIETOR-ZHOU", file: "12-D/N01", name: "周姨", latin: "AUNT ZHOU", age: 57,
+        role: "城市节点", occupation: "合作供销社表单发行人", citizen: "18-509-33",
+        color: "#D89B38", colorName: "蜂蜜琥珀", secondary: "#9C8465", forbidden: "#663C6F",
+        image: "../../assets/characters/dossier/person_zhou_aunt/concept.png",
+        who: "一个嘴上计算工本费、心里记录每个人生活变化的商店主理人；她掌握的是制度没有收走的日常记忆。",
+        story: "周姨经营获许可的表单发行窗口，知道哪一种表被悄悄换版，也知道谁已经付不起第二次工本费。玩家复职后，她是最早重新叫出玩家开局姓名的人。她不了解失忆前的完整身份，却保存着一本未进入电子系统的旧账：同一宿舍曾被另一个姓名使用。她会在玩家连续受罚或购买异常表单时主动提醒，但从不替玩家作出选择。",
+        visits: ["根据玩家生活状态提供普通表单与含蓄提醒。", "旧账本暴露同一住址曾属于另一个姓名。", "把一张无人领取的旧表塞入玩家档案袋，并假装记错了库存。"],
+        quote: "表我可以卖给你，路得你自己走。走错了，回执也别扔。"
+      },
+      {
+        id: "PROPRIETOR-HE", file: "12-D/N02", name: "老赫", latin: "OLD HE", age: 64,
+        role: "城市节点", occupation: "旧照相馆经营者", citizen: "09-377-61",
+        color: "#932D3E", colorName: "暗房深红", secondary: "#66585A", forbidden: "#E0A62A",
+        image: "../../assets/characters/dossier/person_old_he/concept.png",
+        who: "一个把怀疑当成生存习惯的旧摄影师；他认识失忆前的玩家，却不确定眼前的人是否仍值得信任。",
+        story: "老赫曾为证件照和内部档案拍摄标准像，后来照相馆被注销，他把后室改成停用表单的交换点。玩家失忆前曾从他手里取走一卷没有登记的底片，之后有人被捕，老赫因此认定玩家可能背叛过某个组织。他第一次见面会使用旧称呼试探。只有当玩家通过表单选择表现出熟悉的谨慎，他才会交出保留着旧身份影像的底片。",
+        visits: ["用旧称呼试探玩家，并出售用途含糊的停用表单。", "根据玩家工作决定调整信任，故意提供一张缺字段的申请。", "交出底片，但照片中的玩家旁边站着一个已被档案注销的人。"],
+        quote: "照片不会证明你是谁，只会证明那一刻，有人允许你被看见。"
+      },
+      {
+        id: "PERSON-FANG", file: "12-D/N03", name: "方澄", latin: "FANG CHENG", age: 31,
+        role: "城市节点", occupation: "第五诊疗站登记员", citizen: "60-214-79",
+        color: "#3FA9A2", colorName: "清水青", secondary: "#A7B6AE", forbidden: "#A83C34",
+        image: "../../assets/characters/dossier/person_fang/concept.png",
+        who: "一个相信手续应当保护病人的医疗登记员；他每天都在救人和服从过期规则之间折损一点自己。",
+        story: "方澄不负责诊断，却决定患者能否进入诊室。他会把急症回执夹进较早的批次，也因此收到多次程序警告。许桥的回执是他亲手签发，系统却显示签发时已经过期。他最初以为自己看错了钟，后来发现诊疗站、装配线和验收机房在同一晚出现时间偏移。方澄保留了那天的手写候诊顺序，足以证明许桥按时到达。",
+        visits: ["在诊疗站解释许桥回执为何被系统判定过期。", "若玩家多次机械驳回医疗申请，他会停止提供手写补证。", "拿出候诊顺序，与宋铎的机房日志对齐时间偏移。"],
+        quote: "病人不会因为表格过期就停止流血。"
+      },
+      {
+        id: "PERSON-LI", file: "12-D/N04", name: "黎素", latin: "LI SU", age: 42,
+        role: "城市节点", occupation: "中央档案索引员", citizen: "42-900-17",
+        color: "#7358A6", colorName: "鸢尾紫", secondary: "#9188A1", forbidden: "#C78B31",
+        image: "../../assets/characters/dossier/person_li/concept.png",
+        who: "一个把秘密藏进索引规则的档案员；她知道所谓缺页，往往是被精确地移到了另一个人名下。",
+        story: "黎素负责修复受潮、错页和编号冲突的历史档案。她很少直接删除内容，而是把危险信息藏进交叉索引，让真正需要的人有机会找到。何芸的学生名册、孟秋兰儿子的事故记录和玩家被拆分的个人档案，都曾经过她的手。她无法公开承认这些操作，因为每一次修复都有魏岚的程序签名。她希望玩家先证明自己会如何处理别人的档案，再决定是否打开自己的。",
+        visits: ["在档案节录申请上留下看似普通的校勘符号。", "根据玩家处理何芸与孟秋兰案件的方式开放不同索引。", "展示玩家档案的缺页去向，但拒绝说明是谁提交了拆分命令。"],
+        quote: "档案不会真正消失。它只会被放到一个没人知道该怎么问的位置。"
+      },
+      {
+        id: "PERSON-WEI", file: "12-D/N05", name: "魏岚", latin: "WEI LAN", age: 46,
+        role: "城市节点", occupation: "内部程序监察员", citizen: "23-771-08",
+        color: "#637080", colorName: "铁灰蓝", secondary: "#D26352", forbidden: "#E4C44B",
+        image: "../../assets/characters/dossier/person_wei/concept.png",
+        who: "一个以冷酷程序保护少数例外的监察员；她留下的每一道缝隙，都必须看起来像一次更严格的审查。",
+        story: "魏岚负责追查错版表单、越权审批和异常验收。她相信公开的善意会迅速被系统消灭，因此习惯用最严厉的批注为案件制造正式申诉路径。唐霁的错误投递处分、何芸的夜校审查和黎素的档案校勘都带有她的签名。她并不是地下组织成员，也不信任老赫；她唯一坚持的是，现实若必须被改变，也应留下能被反驳的程序痕迹。",
+        visits: ["以审查员身份复核玩家的异常决定，不表达私人立场。", "对重复机械审批施加压力，也会奖励证据完整的程序抗辩。", "承认自己故意保留申诉缝隙，并要求玩家为一次集体案件承担签名责任。"],
+        quote: "没有记录的善意，只是一种方便被否认的冲动。"
+      },
+      {
+        id: "PERSON-JIANG", file: "12-D/N06", name: "蒋森", latin: "JIANG SEN", age: 39,
+        role: "城市节点", occupation: "公共配给站班组长", citizen: "56-330-41",
+        color: "#829B45", colorName: "嫩橄榄绿", secondary: "#8B8C6E", forbidden: "#7B426F",
+        image: "../../assets/characters/dossier/person_jiang/concept.png",
+        who: "一个善于在数字之间挪出活路的配给站长；每次调度都意味着另一处短缺必须被解释。",
+        story: "蒋森管理净水、食品和燃料的日常发放，能一眼看出哪个家庭靠借卡撑过本周。他把管线泄漏写得比实际更严重，用差额供应没有登记资格的住户，这让周循得以照护杜春梅，也使配给站长期处于审计边缘。蒋森不把自己看作英雄，只认为制度中的损耗本来就该流向人。玩家若公开异常，他会失去岗位；若掩盖异常，短缺会转嫁到另一街区。",
+        visits: ["解释周循水额申请中的地址冲突与实际供水路径。", "配给审计逼近时，请玩家决定是否承认管线损耗。", "交出真实发放账，揭示多个角色其实共享同一条隐形生存网络。"],
+        quote: "数字一定要平。至于人怎么活下来，那是数字背后的事。"
+      },
+      {
+        id: "PERSON-SONG", file: "12-D/N07", name: "宋铎", latin: "SONG DUO", age: 52,
+        role: "城市节点", occupation: "日终验收机房技师", citizen: "31-225-67",
+        color: "#B8683D", colorName: "氧化铜橙", secondary: "#7D736B", forbidden: "#3F6F9A",
+        image: "../../assets/characters/dossier/person_song/concept.png",
+        who: "一个知道机器从不完全自动的老技师；他每天校准让档案取得现实效力的时间。",
+        story: "宋铎维护日终验收机、传送带和时间同步器。所有人都把机器当作不可质疑的裁决者，只有他知道每次“自动校准”都需要人工选择基准。装配线事故那晚，上级要求他把机房时钟拨快四十七分钟，使一批医疗回执过期，并让封存袋提前取得效力。他照做后一直保存原始日志，却把关键页拆成三份，分别藏在诊疗站、档案室和机器底座。",
+        visits: ["以维修通知形式出现，说明机器时间存在微小误差。", "当许桥与方澄的记录对齐后，他承认误差并非故障。", "交出原始日志，要求玩家决定是否让机器重新验收那一夜的全部档案。"],
+        quote: "机器没有良心，也没有恶意。把哪一分钟当成现在，是人的决定。"
+      },
+      {
+        id: "PERSON-YE", file: "12-D/N08", name: "叶蓁", latin: "YE ZHEN", age: 36,
+        role: "城市节点", occupation: "夜间交通调度员", citizen: "70-418-26",
+        color: "#5267BD", colorName: "蓝紫", secondary: "#8790AA", forbidden: "#C66142",
+        image: "../../assets/characters/dossier/person_ye/concept.png",
+        who: "一个在混乱中保持精确的夜间调度员；她掌握那些真实运行过、却从未进入官方时刻表的路线。",
+        story: "叶蓁负责夜间电车与公务车辆的路线调整。事故、封路和临时征调往往只通过电话下达，不会进入次日公开时刻表。她与罗雨棠共同保存一套私人路线记录：叶蓁记车辆，罗雨棠记乘客。林默失踪、装配线事故和玩家旧身份出现的夜晚，都有车辆驶向已停用住宅区。叶蓁不轻易交出记录，因为路线一旦公开，仍在使用它逃离审查的人也会暴露。",
+        visits: ["处理罗雨棠的夜间通行延期，并否认存在额外支线。", "在玩家取得足够票根后，开放一段缺失路线。", "要求玩家在追查过去与保护当前乘客之间选择公开范围。"],
+        quote: "地图上没有的路，不等于没人正在走。"
+      }
+    ];
+
+    const relations = [
+      "林默与沈青禾：共同居住申请与失踪三个月的不同叙述。",
+      "周循与杜春梅：照护、药物和一条未登记的供水支线。",
+      "许桥与唐霁：工伤、错误投递与被借用的见习工号。",
+      "孟秋兰与顾原：被注销的儿子和被删减的事故名单。",
+      "何芸与黎素：私人点名册与被移动到交叉索引的姓名。",
+      "罗雨棠与叶蓁：废票根记录乘客，调度本记录车辆。",
+      "方澄与宋铎：过期医疗回执与被拨快四十七分钟的时钟。",
+      "周姨与老赫：一个记得玩家现在的生活，一个保留玩家过去的影像。"
+    ];
+
+    const dossier = document.getElementById("dossier");
+    const spectrum = characters.map(c => `<span style="--swatch:${c.color}"></span>`).join("");
+
+    const cover = `
+      <section class="page cover">
+        <div class="eyebrow">DISTRICT 12 / CHARACTER INTELLIGENCE ASSET</div>
+        <h1>第十二区<br>人物档案</h1>
+        <p class="subtitle">FORMOCRACY · 18 人回访式群像与人格色谱</p>
+        <p class="statement">制度以统一格式记录所有人；人却通过欲望、记忆、关系和颜色从格式里溢出。本册用于统一人物叙事、美术主色与跨日回访结构。</p>
+        <div class="spectrum">${spectrum}</div>
+        <div class="meta"><span>REALITY ADMINISTRATION / INTERNAL USE</span><span>REV. 01 · 2026</span></div>
+      </section>`;
+
+    const coreRows = characters.slice(0, 10).map(c => `
+      <div class="cast-row" style="--row-accent:${c.color}">
+        <i class="cast-dot"></i><strong>${c.name}</strong><span>${c.occupation}</span>
+      </div>`).join("");
+
+    const nodeRows = characters.slice(10).map(c => `
+      <div class="cast-row" style="--row-accent:${c.color}">
+        <i class="cast-dot"></i><strong>${c.name}</strong><span>${c.occupation}</span>
+      </div>`).join("");
+
+    const index = `
+      <section class="page index-page">
+        <header class="page-header">
+          <div><div class="eyebrow">00 / CAST INDEX</div><h2>人物关系索引</h2></div>
+          <div class="classification">内部创作资料</div>
+        </header>
+        <p class="index-intro">十名回访核心人物通过窗口案件反复出现；八名城市节点人物通过夜间地点、批注、电话、送达物与验收记录把案件连接起来。颜色代表人格，不代表阵营。</p>
+        <div class="cast-groups">
+          <section>
+            <h3 class="group-title"><b>01</b> 回访核心 / 10</h3>
+            <div class="cast-list">${coreRows}</div>
+          </section>
+          <section>
+            <h3 class="group-title"><b>02</b> 城市节点 / 8</h3>
+            <div class="cast-list">${nodeRows}</div>
+          </section>
+        </div>
+        <section class="relation-box">
+          <h3>关键关系链</h3>
+          <ol>${relations.map(r => `<li>${r}</li>`).join("")}</ol>
+        </section>
+        <div class="folio"><span>FORMOCRACY / DISTRICT 12</span><span>02 / 20</span></div>
+      </section>`;
+
+    const pages = characters.map((c, i) => {
+      const pageNo = String(i + 3).padStart(2, "0");
+      return `
+        <section class="page character-page" style="--accent:${c.color}">
+          <header class="character-head">
+            <div>
+              <div class="eyebrow">${c.file} / ${c.id}</div>
+              <h2>${c.name}</h2>
+              <div class="latin">${c.latin}</div>
+            </div>
+            <div class="age-badge"><strong>${c.age}</strong><span>AGE / 年龄</span></div>
+          </header>
+          <div class="character-body">
+            <aside class="portrait-column">
+              <figure class="portrait-frame"><img src="${c.image}" alt="${c.name}人物立绘"></figure>
+              <div class="id-strip">
+                <p><b>职业 / OCCUPATION</b>${c.occupation}</p>
+                <span class="role-stamp">${c.role}</span>
+                <p><b>居民编号 / CITIZEN ID</b>${c.citizen}</p>
+              </div>
+              <section class="palette">
+                <h3>PERSONALITY PALETTE / 人格色谱</h3>
+                <div class="swatch-row">
+                  <div class="swatch" style="--swatch:${c.color}"><b>主色</b>${c.color}<br>${c.colorName}</div>
+                  <div class="swatch" style="--swatch:${c.secondary}"><b>辅助</b>${c.secondary}</div>
+                  <div class="swatch" style="--swatch:${c.forbidden};--swatch-text:#fff"><b>禁用</b>${c.forbidden}</div>
+                </div>
+              </section>
+            </aside>
+            <article class="copy-column">
+              <section class="section-block">
+                <div class="section-label"><b>01</b><h3>这个人是谁</h3></div>
+                <p class="identity-line">${c.who}</p>
+              </section>
+              <section class="section-block">
+                <div class="section-label"><b>02</b><h3>背景故事</h3></div>
+                <p class="story">${c.story}</p>
+              </section>
+              <section class="section-block">
+                <div class="section-label"><b>03</b><h3>回访轨迹</h3></div>
+                <div class="visits">
+                  ${c.visits.map((v, n) => `<div class="visit"><b>0${n + 1}</b><p>${v}</p></div>`).join("")}
+                </div>
+              </section>
+              <blockquote class="quote">${c.quote}”</blockquote>
+            </article>
+          </div>
+          <div class="folio"><span>${c.file} / CONFIDENTIAL</span><span>${pageNo} / 20</span></div>
+        </section>`;
+    }).join("");
+
+    dossier.innerHTML = cover + index + pages;
+  </script>
+</body>
+</html>

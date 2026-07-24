@@ -4,10 +4,10 @@
     "display_name": "周姨",
     "location_id": "LOCATION-FORM-SHOP",
     "knows_protagonist": true,
-    "relationship": "认识复职后的林默，记得他的生活细节，但不了解其失忆前的完整身份。",
+    "relationship": "认识复职后的玩家角色，记得其生活细节，但不了解其失忆前的完整身份。",
     "greetings": {
-      "default": "林默，今天还是老规矩？表我可以发，能不能拿到东西要看你自己怎么填。",
-      "has_blank_forms": "林默，你档案袋里还有没交的表。别只顾着买，申请局下班不等人。",
+      "default": "{player_name}，今天还是老规矩？表我可以发，能不能拿到东西要看你自己怎么填。",
+      "has_blank_forms": "{player_name}，你档案袋里还有没交的表。别只顾着买，申请局下班不等人。",
       "low_balance": "又被扣钱了？先看清表号，退件可不退工本费。"
     }
   }

@@ -36,8 +36,14 @@ developer_console_enabled=true
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/mode=3
-window/stretch/mode="disabled"
+# 启动时使用最大化窗口。macOS 多显示器下直接以全屏模式创建窗口，
+# Godot 4.7 可能生成高度为 0 的后备纹理并导致游戏窗口无法出现。
+# 玩家仍可通过 ESC 菜单切换真正的全屏模式。
+window/size/mode=2
+
+[gui]
+
+theme/custom="res://themes/pixel_theme.tres"
 
 [physics]
 
@@ -48,8 +54,3 @@ window/stretch/mode="disabled"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-textures/default_filters/use_nearest_mipmap_filter=false
-
-[gui]
-
-theme/custom="res://themes/pixel_theme.tres"

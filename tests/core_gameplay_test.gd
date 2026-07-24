@@ -28,10 +28,30 @@ func run() -> void:
 	assert(not desk.presenter.envelope_opened, "delivered envelope must start sealed")
 	desk.presenter.set_envelope_on_desk(true)
 	desk.presenter.open_envelope()
-	assert(desk.presenter.form.visible and desk.presenter.document_panels.size() >= 1, "opening must reveal one primary form and supporting documents")
+	assert(desk.presenter.thumbnail_tray.visible, "opening must reveal the documents as envelope thumbnails")
+	assert(
+		desk.presenter.all_document_views.all(func(document): return not document.visible),
+		"opening the envelope must not spread every document automatically"
+	)
+	desk.presenter.open_document(desk.presenter.primary_document_id)
+	var supporting_document = desk.presenter.document_panels[0]
+	desk.presenter.open_document(String(supporting_document.get_meta("document_id")))
+	assert(
+		desk.presenter.form.visible and supporting_document.visible,
+		"thumbnail selection must allow multiple documents to stay expanded"
+	)
+	desk.presenter.bring_document_to_front(desk.presenter.primary_document_id)
+	assert(
+		desk.presenter.form.z_index > supporting_document.z_index,
+		"selecting a document must bring it above overlapping documents"
+	)
 	assert(desk.presenter.envelope.visible, "opened envelope must remain visible as the repacking target")
-	assert(desk.presenter.envelope_flap.text.contains("拖回袋中"), "opened envelope must explain where documents should be repacked")
+	assert(desk.presenter.envelope_flap.text.contains("逐份展开"), "opened envelope must explain the thumbnail workflow")
 	desk.presenter.apply_stamp("批准", Vector2(350, 360))
+	assert(
+		desk.presenter.form.stamp_records.size() == 1,
+		"the primary document must retain its own stamp records"
+	)
 	desk.presenter.pack_all_documents()
 	assert(desk.presenter.packed_document_ids.size() == desk.current_case.documents.size(), "all materials must return to the original envelope")
 	desk.input_mgr._set_machine_preview(desk.presenter, true)

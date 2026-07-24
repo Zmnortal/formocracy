@@ -15,7 +15,7 @@ func run() -> void:
 	await create_timer(1.9).timeout
 	var opening = current_scene
 	var today := Time.get_date_dict_from_system()
-	opening.name_input.text = "林默"
+	opening.name_input.text = "测试职员"
 	opening.year_input.text = str(today.year)
 	opening.month_input.text = "%02d" % today.month
 	opening.day_input.text = "%02d" % today.day

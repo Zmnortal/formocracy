@@ -1,0 +1,33 @@
+{
+  "audit_date": "2026-07-24",
+  "source_png_count": 70,
+  "source_canvas": [512, 768],
+  "active_png_count": 20,
+  "active_directory": "res://assets/characters/applicants/person_lin/fullbody_frames_20",
+  "policy": {
+    "required_coverage": "full_body",
+    "required_filename_suffix": "_fullbody.png",
+    "runtime_texture_crop_allowed": false,
+    "runtime_clip_allowed": false
+  },
+  "source_actions": {
+    "angry_idle": { "coverage": "full_body", "inspected": 5, "kept_indices": [4] },
+    "angry_react": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 2, 4] },
+    "arrive": { "coverage": "full_body", "inspected": 5, "kept_indices": [], "reason": "当前队列流程不使用进场动画" },
+    "blink": { "coverage": "partial_body", "inspected": 5, "kept_indices": [], "reason": "五帧均缺少双脚" },
+    "deliver": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 2, 4] },
+    "happy_idle": { "coverage": "full_body", "inspected": 5, "kept_indices": [0] },
+    "happy_react": { "coverage": "full_body", "inspected": 5, "kept_indices": [1, 2, 3] },
+    "idle": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 3] },
+    "look_aside": { "coverage": "partial_body", "inspected": 5, "kept_indices": [], "reason": "五帧均缺少双脚，动作暂停使用" },
+    "nervous": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 1] },
+    "queue_idle": { "coverage": "full_body", "inspected": 5, "kept_indices": [0] },
+    "walk_in": { "coverage": "full_body", "inspected": 5, "kept_indices": [], "reason": "当前队列流程不使用进场动画" },
+    "walk_out_angry": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 3] },
+    "walk_out_happy": { "coverage": "full_body", "inspected": 5, "kept_indices": [0, 2] }
+  },
+  "notes": [
+    "blink 使用保留的全身闭眼帧重新组合。",
+    "look_aside 没有语义等价的全身帧，因此从微表情池移除，不使用 idle 冒充侧看。"
+  ]
+}

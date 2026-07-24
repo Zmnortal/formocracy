@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/scenes/evening_map.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/map/background/district_12_map.png" id="2_background"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://assets/map/locations/home_12c.png" id="5_home"]
 [ext_resource type="Texture2D" path="res://assets/map/tokens/player_token.png" id="6_token"]
 [ext_resource type="Texture2D" path="res://assets/map/stamps/locked_stamp.png" id="7_locked"]
+[ext_resource type="Script" path="res://scripts/ui/document_background.gd" id="8_document"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderPanel"]
 bg_color = Color(0.035, 0.055, 0.043, 0.97)
@@ -782,14 +783,15 @@ theme_override_font_sizes/font_size = 12
 text = "结束后将处理个人申请并进入下一工作日"
 horizontal_alignment = 2
 
-[node name="NextDayReceipt" type="Panel" parent="."]
+[node name="NextDayReceipt" type="TextureRect" parent="."]
 visible = false
 layout_mode = 0
 offset_left = 326.0
 offset_top = 104.0
 offset_right = 954.0
 offset_bottom = 616.0
-theme_override_styles/panel = SubResource("HeaderPanel")
+mouse_filter = 2
+script = ExtResource("8_document")
 
 [node name="Agency" type="Label" parent="NextDayReceipt"]
 layout_mode = 0
@@ -797,7 +799,7 @@ offset_left = 30.0
 offset_top = 24.0
 offset_right = 598.0
 offset_bottom = 52.0
-theme_override_colors/font_color = Color(0.58, 0.64, 0.45, 1)
+theme_override_colors/font_color = Color(0.25, 0.24, 0.18, 1)
 theme_override_font_sizes/font_size = 14
 text = "中央现实管理局 · 个人生活申请处理设施"
 
@@ -807,7 +809,7 @@ offset_left = 30.0
 offset_top = 66.0
 offset_right = 598.0
 offset_bottom = 106.0
-theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_color = Color(0.11, 0.12, 0.09, 1)
 theme_override_font_sizes/font_size = 24
 text = "次日个人申请处理回执"
 horizontal_alignment = 1
@@ -825,7 +827,7 @@ offset_left = 54.0
 offset_top = 150.0
 offset_right = 574.0
 offset_bottom = 188.0
-theme_override_colors/font_color = Color(0.85, 0.77, 0.49, 1)
+theme_override_colors/font_color = Color(0.25, 0.16, 0.10, 1)
 theme_override_font_sizes/font_size = 21
 text = "处理结果：等待处理"
 
@@ -835,7 +837,7 @@ offset_left = 54.0
 offset_top = 202.0
 offset_right = 574.0
 offset_bottom = 258.0
-theme_override_colors/font_color = Color(0.61, 0.66, 0.49, 1)
+theme_override_colors/font_color = Color(0.25, 0.24, 0.18, 1)
 theme_override_font_sizes/font_size = 15
 text = "处理详情"
 autowrap_mode = 2

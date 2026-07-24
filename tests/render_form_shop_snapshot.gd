@@ -11,7 +11,7 @@ func _init() -> void:
 func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.reset_for_tests()
-	state.player_name = "林默"
+	state.player_name = "测试职员"
 	state.balance = 42
 	state.begin_evening()
 	state.evening_location_id = "LOCATION-FORM-SHOP"

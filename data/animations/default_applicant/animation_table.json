@@ -3,7 +3,7 @@
   "character_id": "DEFAULT-APPLICANT",
   "default_animation": "idle",
   "substitute_frames_with_static_actor": true,
-  "static_actor_texture": "../../../assets/characters/applicants/npc_male_young.png",
+  "static_actor_texture": "../../../assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
   "emotion_fallbacks": {
     "happy": "happy_idle",
     "angry": "angry_idle"
@@ -26,7 +26,7 @@
     },
     {
       "action": "walk_in",
-      "fps": 7,
+      "fps": 4,
       "playback": "LOOP",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-00.png",
@@ -58,7 +58,7 @@
     },
     {
       "action": "blink",
-      "fps": 5,
+      "fps": 4,
       "playback": "ONCE",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-00.png",
@@ -89,7 +89,7 @@
     },
     {
       "action": "deliver",
-      "fps": 6,
+      "fps": 4,
       "playback": "ONCE",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-00.png",
@@ -101,7 +101,7 @@
     },
     {
       "action": "happy_react",
-      "fps": 6,
+      "fps": 4,
       "playback": "ONCE",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-00.png",
@@ -121,7 +121,7 @@
     },
     {
       "action": "angry_react",
-      "fps": 6,
+      "fps": 4,
       "playback": "HOLD",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-05.png",
@@ -141,7 +141,7 @@
     },
     {
       "action": "walk_out_happy",
-      "fps": 7,
+      "fps": 4,
       "playback": "LOOP",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-00.png",
@@ -153,7 +153,7 @@
     },
     {
       "action": "walk_out_angry",
-      "fps": 7,
+      "fps": 4,
       "playback": "LOOP",
       "frames": [
         "../../../assets/characters/idle_breathing/frame-05.png",

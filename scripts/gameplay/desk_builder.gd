@@ -12,6 +12,7 @@ const CALENDAR_TEXTURE := preload("res://assets/office/items/calendar.png")
 const SERVICE_RAILING_TEXTURE := preload("res://assets/office/foreground/service_railing.png")
 const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
 const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
+const DESK_DEFORMATION_SHADER := preload("res://shaders/desk_deformation.gdshader")
 
 
 # 在指定 root 节点下构建工作台，并返回共享的 DeskNodes 引用容器。
@@ -40,7 +41,7 @@ func build(root: Node2D) -> DeskNodes:
 	vignette.z_index = -90
 	root.add_child(vignette)
 
-	_build_office_props(root)
+	_build_office_props(root, desk)
 	_build_foreground_architecture(root)
 
 	var case_card := Panel.new()
@@ -92,10 +93,10 @@ func build(root: Node2D) -> DeskNodes:
 	desk.archive_count_label.add_theme_constant_override("outline_size", 3)
 	desk.archive_count_label.add_theme_color_override("font_outline_color", Color("31291f"))
 	var archive_label := WorkbenchUI.add_text(
-		root, "当日归档", 12, Color("d0c09b"), Vector2(1101, 530), Vector2(90, 20)
+		desk.slot, "当日归档", 12, Color("d0c09b"), Vector2(61, -18), Vector2(90, 20)
 	)
 	archive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	archive_label.z_index = 47
+	archive_label.z_index = 1
 	archive_label.add_theme_constant_override("outline_size", 3)
 	archive_label.add_theme_color_override("font_outline_color", Color("31291f"))
 	desk.slot_light = ColorRect.new()
@@ -110,12 +111,12 @@ func build(root: Node2D) -> DeskNodes:
 	desk.refresh_archive_stack()
 
 	var desk_surface_zone := Control.new()
-	desk_surface_zone.name = "DeskInteractionSurface"
-	desk_surface_zone.position = Vector2(300, 190)
-	desk_surface_zone.size = Vector2(700, 470)
+	desk_surface_zone.name = "DeskBounds"
+	desk_surface_zone.position = Vector2(DeskGeometry.LEFT, DeskGeometry.TOP)
+	desk_surface_zone.size = DeskGeometry.size()
 	desk_surface_zone.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desk_surface_zone.add_to_group("debug_interaction_zone")
-	desk_surface_zone.set_meta("debug_zone_label", "桌面放置区")
+	desk_surface_zone.set_meta("debug_zone_label", "桌面回弹范围 / DeskBounds")
 	root.add_child(desk_surface_zone)
 
 	var status_back := Panel.new()
@@ -161,9 +162,11 @@ func build(root: Node2D) -> DeskNodes:
 	return desk
 
 
-func _build_office_props(root: Node2D) -> void:
+func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_add_prop(root, "FilingCabinet", FILING_CABINET_TEXTURE, Vector2(22, 315), Vector2(140, 190), -4)
-	_add_prop(root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7)
+	desk.number_machine = _add_prop(
+		root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7
+	)
 	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
 
 
@@ -176,14 +179,26 @@ func _build_foreground_architecture(root: Node2D) -> void:
 		Vector2(580, 148),
 		4
 	)
-	_add_prop(
+	var worktable := _add_prop(
 		root,
 		"WorktableForeground",
 		WORKTABLE_TEXTURE,
-		Vector2(0, 465),
-		Vector2(1280, 409),
+		Vector2(DeskGeometry.LEFT, DeskGeometry.TOP),
+		DeskGeometry.size(),
 		3
 	)
+	# 桌面素材和 DeskBounds 共用同一个矩形，避免可见桌面与物理落点错位。
+	worktable.stretch_mode = TextureRect.STRETCH_SCALE
+	var deformation := ShaderMaterial.new()
+	deformation.shader = DESK_DEFORMATION_SHADER
+	deformation.set_shader_parameter(
+		"top_inset", DeskGeometry.inset_ratio(DeskGeometry.TOP_INSET)
+	)
+	deformation.set_shader_parameter(
+		"bottom_inset", DeskGeometry.inset_ratio(DeskGeometry.BOTTOM_INSET)
+	)
+	deformation.set_shader_parameter("vertical_bend", DeskGeometry.VERTICAL_BEND)
+	worktable.material = deformation
 
 
 func _add_prop(
@@ -193,7 +208,7 @@ func _add_prop(
 	at: Vector2,
 	display_size: Vector2,
 	layer: int
-) -> void:
+) -> TextureRect:
 	var prop := TextureRect.new()
 	prop.name = node_name
 	prop.texture = texture
@@ -209,6 +224,7 @@ func _add_prop(
 	# 加入父节点后再设置设计尺寸，确保大图素材不会撑破指定布局。
 	prop.position = at
 	prop.size = display_size
+	return prop
 
 
 func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:

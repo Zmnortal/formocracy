@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/scenes/daily_report.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/document_background.gd" id="2_document"]
 
 [sub_resource type="StyleBoxFlat" id="TerminalPanel"]
 bg_color = Color(0.035, 0.055, 0.045, 0.98)
@@ -91,29 +92,30 @@ theme_override_colors/font_color = Color(0.74, 0.53, 0.25, 1)
 text = "记录状态：等待人员确认"
 horizontal_alignment = 2
 
-[node name="Receipt" type="Panel" parent="Terminal"]
+[node name="Receipt" type="TextureRect" parent="Terminal"]
 layout_mode = 0
-offset_left = 78.0
-offset_top = 76.0
-offset_right = 1062.0
-offset_bottom = 622.0
-theme_override_styles/panel = SubResource("ReceiptPanel")
+offset_left = 190.0
+offset_top = 70.0
+offset_right = 950.0
+offset_bottom = 640.0
+mouse_filter = 2
+script = ExtResource("2_document")
 
 [node name="Agency" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 32.0
-offset_top = 22.0
-offset_right = 952.0
-offset_bottom = 48.0
+offset_left = 54.0
+offset_top = 42.0
+offset_right = 706.0
+offset_bottom = 68.0
 theme_override_colors/font_color = Color(0.15, 0.16, 0.12, 1)
 text = "中央现实管理局 · 第十二区行政记录处"
 
 [node name="Title" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 32.0
-offset_top = 56.0
-offset_right = 952.0
-offset_bottom = 100.0
+offset_left = 54.0
+offset_top = 76.0
+offset_right = 706.0
+offset_bottom = 116.0
 theme_override_colors/font_color = Color(0.1, 0.12, 0.09, 1)
 theme_override_font_sizes/font_size = 30
 text = "工作日处理回执 / 内部日报"
@@ -121,19 +123,19 @@ horizontal_alignment = 1
 
 [node name="Metadata" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 108.0
-offset_right = 950.0
-offset_bottom = 136.0
+offset_left = 58.0
+offset_top = 124.0
+offset_right = 702.0
+offset_bottom = 152.0
 theme_override_colors/font_color = Color(0.28, 0.29, 0.22, 1)
 text = "工作日：01    回执：D12-0001    生成时间：当日终止后"
 
 [node name="Stats" type="Panel" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 32.0
-offset_top = 148.0
-offset_right = 952.0
-offset_bottom = 235.0
+offset_left = 54.0
+offset_top = 164.0
+offset_right = 706.0
+offset_bottom = 254.0
 theme_override_styles/panel = SubResource("StatPanel")
 
 [node name="StatsText" type="Label" parent="Terminal/Receipt/Stats"]
@@ -153,19 +155,19 @@ text = "形式审查 00    送交验收 00    批准 00    驳回 00\n取得现�
 
 [node name="CasesTitle" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 250.0
+offset_left = 58.0
+offset_top = 270.0
 offset_right = 420.0
-offset_bottom = 276.0
+offset_bottom = 296.0
 theme_override_colors/font_color = Color(0.22, 0.23, 0.17, 1)
 text = "当日事项记录"
 
 [node name="CasesText" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 280.0
-offset_right = 950.0
-offset_bottom = 372.0
+offset_left = 58.0
+offset_top = 302.0
+offset_right = 702.0
+offset_bottom = 384.0
 theme_override_colors/font_color = Color(0.12, 0.14, 0.1, 1)
 theme_override_font_sizes/font_size = 15
 text = "01 / 尚无事项记录"
@@ -173,30 +175,30 @@ autowrap_mode = 2
 
 [node name="Notice" type="Label" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 382.0
-offset_right = 950.0
-offset_bottom = 428.0
+offset_left = 58.0
+offset_top = 398.0
+offset_right = 702.0
+offset_bottom = 444.0
 theme_override_colors/font_color = Color(0.38, 0.24, 0.14, 1)
 text = "设施通告：已获批准但尚未验收之事项，不构成任何权利、事实、时限或行政承诺。"
 autowrap_mode = 2
 
 [node name="Declaration" type="CheckBox" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 34.0
-offset_top = 440.0
-offset_right = 660.0
-offset_bottom = 482.0
+offset_left = 58.0
+offset_top = 462.0
+offset_right = 476.0
+offset_bottom = 510.0
 theme_override_colors/font_color = Color(0.13, 0.15, 0.1, 1)
 theme_override_colors/font_pressed_color = Color(0.13, 0.15, 0.1, 1)
 text = "本人确认以上记录完整，且未形成额外行政承诺。"
 
 [node name="ConfirmButton" type="Button" parent="Terminal/Receipt"]
 layout_mode = 0
-offset_left = 668.0
-offset_top = 436.0
-offset_right = 950.0
-offset_bottom = 490.0
+offset_left = 478.0
+offset_top = 458.0
+offset_right = 702.0
+offset_bottom = 510.0
 theme_override_colors/font_color = Color(0.72, 0.84, 0.49, 1)
 theme_override_colors/font_hover_color = Color(0.9, 0.96, 0.67, 1)
 theme_override_font_sizes/font_size = 18

@@ -5,6 +5,7 @@ const MENU_SCENE := "res://scenes/main_menu.tscn"
 const FORM_TEXTURE := preload("res://assets/opening/position-reinstatement-form-v2.png")
 const MACHINE_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_THEME := preload("res://themes/pixel_theme.tres")
 const SignaturePadScene := preload("res://scripts/ui/signature_pad.gd")
 const HandwrittenCheckScene := preload("res://scripts/ui/handwritten_check.gd")
 const UI := preload("res://scripts/ui/bureau_ui.gd")
@@ -45,6 +46,7 @@ func _ready() -> void:
 func build_scene() -> void:
 	size = Vector2(1280, 720)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	theme = PIXEL_THEME
 
 	black = ColorRect.new()
 	black.color = Color.BLACK

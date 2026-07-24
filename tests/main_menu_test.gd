@@ -22,8 +22,8 @@ func run() -> void:
 	await process_frame
 	assert(menu.start_button.text == "游戏开始", "main menu must expose game start")
 	assert(menu.exit_button.text == "退出游戏", "main menu must expose exit")
-	assert(menu.start_button.get_theme_font_size("font_size") == 30, "main menu text must remain legible at high resolutions")
-	assert(menu.start_button.custom_minimum_size == Vector2(380, 76), "main menu buttons must use the large presentation size")
+	assert(menu.start_button.get_theme_font_size("font_size") == 45, "main menu typography must use the enlarged presentation scale")
+	assert(menu.start_button.custom_minimum_size == Vector2(570, 114), "main menu buttons must follow the 1.5x presentation scale")
 	var artwork := menu.get_node("TitleArtwork") as TextureRect
 	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
 	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")

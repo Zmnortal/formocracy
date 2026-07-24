@@ -13,6 +13,7 @@ var npc_performance: NpcPerformanceController
 var secretary_briefing: SecretaryBriefingController
 var call_bell: CallBellController
 var batch_validation: BatchValidationController
+var desk_items: DeskItemController
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
@@ -26,15 +27,19 @@ func _ready() -> void:
 	Sfx.start_ambience()
 
 	desk = DeskBuilder.new().build(self)
+	desk_items = DeskItemController.new(self)
 	presenter = CasePresenter.new(self, desk)
-	stamp_mgr = StampManager.new(self, desk, presenter)
-	input_mgr = WorkbenchInput.new(self, desk)
+	stamp_mgr = StampManager.new(self, desk, presenter, desk_items)
+	input_mgr = WorkbenchInput.new(self, desk, desk_items)
 	submission_mgr = SubmissionManager.new(self, desk)
 	sequence = CaseSequence.new()
 	npc_performance = NpcPerformanceController.new(self)
 	secretary_briefing = SecretaryBriefingController.new(self)
 	call_bell = CallBellController.new(self)
 	batch_validation = BatchValidationController.new(self)
+	desk_items.register_item(desk.number_machine, "number_machine")
+	desk_items.register_item(desk.slot, "archive_tray")
+	call_bell.enable_desk_movement(desk_items)
 
 	sequence.case_started.connect(presenter.start_case)
 	sequence.case_started.connect(func(_data): input_mgr.bind_case(presenter))
@@ -77,7 +82,7 @@ func _on_case_started(case_data: Dictionary) -> void:
 	current_case = case_data
 	case_index = sequence.case_index
 	GameStateSync.publish_state({
-		"phase": "npc_entering",
+		"phase": "npc_at_counter",
 		"metadata": {
 			"caseId": String(case_data.get("case_id", "")),
 			"day": WorkdayState.day_number,
@@ -112,7 +117,8 @@ func _on_envelope_submitted() -> void:
 
 
 func _on_submission_finished() -> void:
-	npc_performance.react_and_leave(presenter.stamp_type())
+	var should_promote := accepting_new_cases and not WorkdayState.should_show_report()
+	npc_performance.react_and_leave(presenter.stamp_type(), should_promote)
 
 
 func _on_npc_departed() -> void:
@@ -120,8 +126,28 @@ func _on_npc_departed() -> void:
 		_begin_batch_validation()
 	else:
 		flow_state = "WAITING_FOR_NEXT_CALL"
+		_show_staged_applicant()
 		call_bell.unlock()
 		desk.status_label.text = "上一位申请人已离场。请按召唤铃传唤下一位。"
+
+
+func _show_staged_applicant() -> void:
+	var staged_id := npc_performance.staged_case_id
+	if staged_id.is_empty():
+		return
+	var staged_case := ConfigDatabase.get_gameplay_case(staged_id)
+	if staged_case.is_empty():
+		return
+	var display_name := String(
+		staged_case.get("person", {}).get("display_name", "身份受限")
+	)
+	if is_instance_valid(desk.applicant_card_label):
+		desk.applicant_card_label.text = "%s\n等待传唤\n档案尚未投递" % display_name
+	if is_instance_valid(desk.queue_label):
+		desk.queue_label.text = "%s\n已补位 / 等待传唤\n后续排队：%d 人" % [
+			display_name,
+			npc_performance.queue_case_ids.size(),
+		]
 
 
 func _on_briefing_finished() -> void:

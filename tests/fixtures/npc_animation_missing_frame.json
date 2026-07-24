@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "character_id": "TEST-STATIC-FALLBACK",
-  "static_actor_texture": "../../assets/characters/applicants/npc_female_young.png",
+  "static_actor_texture": "../../assets/characters/applicants/person_xu/fullbody.png",
   "actions": [
     {
       "action": "partial_once",

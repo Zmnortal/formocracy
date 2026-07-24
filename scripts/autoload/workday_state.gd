@@ -34,6 +34,7 @@ var settled_day_number := 0
 var machine_capacity := 2
 var archived_cases: Array[Dictionary] = []
 var next_archive_serial := 1
+var desk_item_layout: Dictionary = {}
 
 # 夜间地图状态
 var evening_day_number := 0
@@ -86,7 +87,14 @@ func record_case(case_data: Dictionary, stamp_type: String) -> void:
 
 # 记录一份案件的处理结果，包括决策、程序错误、耗时与已装袋材料。
 # 根据规则评估判断是否决策正确，并应用对应的后果（绩效、罚款、政治信用等）。
-func record_case_result(case_data: Dictionary, stamp_type: String, procedure_errors: Array, elapsed_seconds: float, packed_document_ids: Array) -> void:
+func record_case_result(
+	case_data: Dictionary,
+	stamp_type: String,
+	procedure_errors: Array,
+	elapsed_seconds: float,
+	packed_document_ids: Array,
+	document_stamps: Array = []
+) -> void:
 	var evaluation: Dictionary = ConfigDatabase.evaluate_gameplay_case(case_data) if case_data.has("rule_ids") else {"decision": String(case_data.get("correct_decision", stamp_type)), "violation_ids": []}
 	var correct := stamp_type == String(evaluation.get("decision", "")) and procedure_errors.is_empty()
 	var consequence_id := String(case_data.get("consequence_correct_id" if correct else "consequence_wrong_id", ""))
@@ -104,6 +112,7 @@ func record_case_result(case_data: Dictionary, stamp_type: String, procedure_err
 		"violation_ids": evaluation.get("violation_ids", []),
 		"procedure_errors": procedure_errors.duplicate(),
 		"packed_document_ids": packed_document_ids.duplicate(),
+		"document_stamps": document_stamps.duplicate(true),
 		"elapsed_seconds": elapsed_seconds,
 		"performance": int(consequence.get("performance", 0)),
 		"fine": int(consequence.get("fine", 0)),
@@ -121,6 +130,7 @@ func record_case_result(case_data: Dictionary, stamp_type: String, procedure_err
 		"request": recorded.request,
 		"decision": recorded.decision,
 		"procedure_errors": recorded.procedure_errors.duplicate(),
+		"document_stamps": recorded.document_stamps.duplicate(true),
 		"archived_day": day_number,
 		"waiting_days": 0,
 		"status": "ARCHIVED",
@@ -435,6 +445,22 @@ func get_drag_response_multiplier() -> float:
 	return 0.72 if water_deprived else 1.0
 
 
+# 保存单个桌面实体在 1280×720 设计画布中的稳定落点和遮挡顺序。
+func set_desk_item_layout(item_id: String, item_position: Vector2, layer: int) -> void:
+	if item_id.is_empty():
+		return
+	desk_item_layout[item_id] = {
+		"position": [item_position.x, item_position.y],
+		"layer": layer,
+	}
+	if persistence_enabled:
+		save_progress()
+
+
+func get_desk_item_layout(item_id: String) -> Dictionary:
+	return desk_item_layout.get(item_id, {}).duplicate(true)
+
+
 func get_personal_review_summary() -> Dictionary:
 	if last_personal_review_results.is_empty():
 		return {
@@ -612,6 +638,7 @@ func start_new_game() -> void:
 	machine_capacity = 2
 	archived_cases.clear()
 	next_archive_serial = 1
+	desk_item_layout.clear()
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"
@@ -645,6 +672,7 @@ func _capture_state() -> Dictionary:
 		"machine_capacity": machine_capacity,
 		"archived_cases": archived_cases,
 		"next_archive_serial": next_archive_serial,
+		"desk_item_layout": desk_item_layout,
 		"evening_day_number": evening_day_number,
 		"evening_actions_remaining": evening_actions_remaining,
 		"evening_location_id": evening_location_id,
@@ -707,6 +735,7 @@ func _apply_state(state: Dictionary) -> void:
 	machine_capacity = maxi(1, int(state.get("machine_capacity", 2)))
 	archived_cases.assign(state.get("archived_cases", []))
 	next_archive_serial = maxi(1, int(state.get("next_archive_serial", archived_cases.size() + 1)))
+	desk_item_layout = state.get("desk_item_layout", {}).duplicate(true)
 	evening_day_number = int(state.get("evening_day_number", 0))
 	evening_actions_remaining = clampi(int(state.get("evening_actions_remaining", 2)), 0, 2)
 	evening_location_id = String(state.get("evening_location_id", "LOCATION-OFFICE"))
@@ -864,6 +893,7 @@ func reset_for_tests() -> void:
 	machine_capacity = 2
 	archived_cases.clear()
 	next_archive_serial = 1
+	desk_item_layout.clear()
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"

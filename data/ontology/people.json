@@ -1,5 +1,93 @@
 [
-  {"id":"PERSON-LIN","display_name":"林默","citizen_id":"74-119-02","queue_label":"A01","actor_texture":"res://assets/characters/applicants/npc_male_young.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.16,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_male_young.wav"},
-  {"id":"PERSON-ZHOU","display_name":"周循","citizen_id":"20-441-88","queue_label":"A02","actor_texture":"res://assets/characters/applicants/npc_male_average.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.155,"move_speed":1.08,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"},
-  {"id":"PERSON-XU","display_name":"许桥","citizen_id":"51-004-63","queue_label":"A03","actor_texture":"res://assets/characters/applicants/npc_female_young.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.16,"move_speed":0.92,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"}
+  {
+    "id": "PERSON-LIN",
+    "display_name": "林默",
+    "citizen_id": "74-119-02",
+    "queue_label": "A01",
+    "actor_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_lin/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.32,
+    "move_speed": 1.0,
+    "voice_sfx": "res://assets/audio/sfx/people_male_young.wav"
+  },
+  {
+    "id": "PERSON-ZHOU",
+    "display_name": "周循",
+    "citizen_id": "20-441-88",
+    "queue_label": "A02",
+    "actor_texture": "res://assets/characters/applicants/person_zhou/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_zhou/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.155,
+    "move_speed": 1.08,
+    "voice_sfx": "res://assets/audio/sfx/people_male_average.wav"
+  },
+  {
+    "id": "PERSON-XU",
+    "display_name": "许桥",
+    "citizen_id": "51-004-63",
+    "queue_label": "A03",
+    "actor_texture": "res://assets/characters/applicants/person_xu/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_xu/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.16,
+    "move_speed": 0.92,
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id": "PERSON-MENG",
+    "display_name": "孟秋兰",
+    "citizen_id": "46-208-71",
+    "queue_label": "A04",
+    "actor_texture": "res://assets/characters/applicants/person_meng/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_meng/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.155,
+    "move_speed": 0.88,
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  },
+  {
+    "id": "PERSON-HE",
+    "display_name": "何芸",
+    "citizen_id": "65-331-09",
+    "queue_label": "A05",
+    "actor_texture": "res://assets/characters/applicants/person_he/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_he/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.155,
+    "move_speed": 0.96,
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  },
+  {
+    "id": "PERSON-DU",
+    "display_name": "杜春梅",
+    "citizen_id": "11-604-42",
+    "queue_label": "A06",
+    "actor_texture": "res://assets/characters/applicants/person_du/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_du/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.165,
+    "move_speed": 0.78,
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  },
+  {
+    "id": "PERSON-GU",
+    "display_name": "顾原",
+    "citizen_id": "32-770-16",
+    "queue_label": "A07",
+    "actor_texture": "res://assets/characters/applicants/person_gu/fullbody.png",
+    "portrait_texture": "res://assets/characters/applicants/person_gu/portrait.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "actor_tint": "ffffff",
+    "actor_scale": 0.165,
+    "move_speed": 0.82,
+    "voice_sfx": "res://assets/audio/sfx/people_male_old.wav"
+  }
 ]

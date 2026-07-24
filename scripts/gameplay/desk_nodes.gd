@@ -26,6 +26,7 @@ var archive_drop_zone: Control
 var machine_mouth_mask: ColorRect
 var archive_stack: Control
 var archive_count_label: Label
+var number_machine: TextureRect
 
 
 # 根据持久化的待送验档案数量刷新托盘内的文件袋堆叠。

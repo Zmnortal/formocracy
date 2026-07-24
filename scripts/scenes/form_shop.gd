@@ -64,7 +64,7 @@ func build_scene() -> void:
 	zhou.position = Vector2(62, 100)
 	zhou.size = Vector2(286, 286)
 	zhou.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	zhou.stretch_mode = TextureRect.STRETCH_SCALE
+	zhou.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	zhou.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	zhou.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(zhou)
@@ -182,11 +182,15 @@ func build_greeting() -> String:
 	var proprietor := ConfigDatabase.get_ontology("proprietors", "PROPRIETOR-ZHOU")
 	var greetings: Dictionary = proprietor.get("greetings", {})
 	var owned := WorkdayState.get_blank_personal_forms().size()
+	var greeting := ""
 	if owned > 0:
-		return "周姨：" + String(greetings.get("has_blank_forms", "档案袋里还有没交的表。"))
-	if WorkdayState.balance < 8:
-		return "周姨：" + String(greetings.get("low_balance", "先看清表号，退件不退工本费。"))
-	return "周姨：" + String(greetings.get("default", "表我可以发，能不能拿到东西要看你自己怎么填。"))
+		greeting = String(greetings.get("has_blank_forms", "档案袋里还有没交的表。"))
+	elif WorkdayState.balance < 8:
+		greeting = String(greetings.get("low_balance", "先看清表号，退件不退工本费。"))
+	else:
+		greeting = String(greetings.get("default", "表我可以发，能不能拿到东西要看你自己怎么填。"))
+	var player_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
+	return "周姨：" + greeting.replace("{player_name}", player_name)
 
 
 func return_to_map() -> void:

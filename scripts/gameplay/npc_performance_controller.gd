@@ -2,7 +2,7 @@ class_name NpcPerformanceController
 extends RefCounted
 
 # NPC 排队与窗口演出控制器。
-# 使用现有呼吸帧作为首版降级素材，负责进场、自动台词、递交、等待、结果反应与离场。
+# 前排角色直接在柜台递件，后排以遮暗叠放呈现；审批后角色向左离场并真实提升下一位。
 
 signal delivery_finished
 signal departure_finished
@@ -16,13 +16,25 @@ const FRAME_PATHS := [
 	"res://assets/characters/idle_breathing/frame-05.png",
 ]
 const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animation_table.json"
+const FRONT_POSITION := Vector2(640, 338)
+const EXIT_POSITION := Vector2(470, 352)
+const MAX_VISIBLE_QUEUE := 3
+const QUEUE_POSITIONS := [
+	Vector2(614, 330),
+	Vector2(590, 323),
+	Vector2(568, 317),
+]
+const QUEUE_SCALE_FACTORS := [0.92, 0.84, 0.76]
+const QUEUE_DARKNESS := [0.60, 0.75, 0.75]
 
 var root: Node2D
 var actor_layer: Node2D
 var current_actor: AnimatedSprite2D
 var animation_library: NpcAnimationLibrary
 var animation_player: NpcAnimationPlayer
-var queue_actors: Array[Sprite2D] = []
+var queue_actors: Array[AnimatedSprite2D] = []
+var queue_case_ids: Array[String] = []
+var staged_case_id := ""
 var speech_bubble: Panel
 var speech_label: Label
 var state := "IDLE"
@@ -31,6 +43,8 @@ var performance_token := 0
 var waiting_line_shown := false
 var skip_requested := false
 var micro_expression_rng := RandomNumberGenerator.new()
+var departure_in_progress := false
+var promote_after_departure := true
 
 
 func _init(owner_root: Node2D) -> void:
@@ -73,38 +87,26 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	current_case = case_data
 	waiting_line_shown = false
 	skip_requested = false
-	_clear_actors()
-	_build_queue(queued_case_ids)
-	current_actor = _make_actor(case_data.get("person", {}))
-	current_actor.position = Vector2(520, 355)
-	current_actor.scale *= 0.72
-	current_actor.modulate.a = 0.42
-	actor_layer.add_child(current_actor)
+	departure_in_progress = false
+	var case_id := String(case_data.get("case_id", ""))
+	if (
+		not staged_case_id.is_empty()
+		and staged_case_id == case_id
+		and is_instance_valid(current_actor)
+	):
+		_configure_current_actor(current_actor, case_data.get("person", {}))
+		staged_case_id = ""
+	else:
+		_clear_actors()
+		current_actor = _make_actor(case_data.get("person", {}))
+		current_actor.position = FRONT_POSITION
+		current_actor.z_index = 0
+		actor_layer.add_child(current_actor)
+	_sync_queue(queued_case_ids)
 	animation_player = NpcAnimationPlayer.new(current_actor)
 	animation_player.name = "NpcCutoutAnimationPlayer"
 	actor_layer.add_child(animation_player)
 	animation_player.set_sprite_frames(current_actor.sprite_frames)
-	_play_action("walk_in")
-	state = "WALKING_IN"
-	Sfx.start_walking()
-
-	var enter := root.create_tween().set_parallel(true)
-	enter.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	enter.tween_property(current_actor, "position", Vector2(640, 338), 0.62)
-	enter.tween_property(current_actor, "scale", current_actor.scale / 0.72, 0.62)
-	enter.tween_property(current_actor, "modulate:a", 1.0, 0.5)
-	await enter.finished
-	Sfx.stop_walking()
-	if token != performance_token:
-		return
-
-	state = "ARRIVING"
-	var arrive_duration := _play_action("arrive")
-	if arrive_duration > 0.0:
-		await root.get_tree().create_timer(arrive_duration).timeout
-	if token != performance_token:
-		return
-
 	state = "GREETING"
 	_play_action("idle")
 	await _say(String(case_data.get("dialogue", {}).get("greeting", "您好，我来办理事项。")), token)
@@ -126,7 +128,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	state = "WAITING"
 	_play_action("idle")
 	var settle := root.create_tween().set_parallel(true)
-	settle.tween_property(current_actor, "position", Vector2(640, 338), 0.2)
+	settle.tween_property(current_actor, "position", FRONT_POSITION, 0.2)
 	settle.tween_property(current_actor, "rotation", 0.0, 0.2)
 	_schedule_waiting_line(token)
 	_schedule_micro_expressions(token)
@@ -178,7 +180,10 @@ func _pick_micro_expression() -> String:
 	return ""
 
 
-func react_and_leave(decision: String) -> void:
+func react_and_leave(decision: String, promote_next := true) -> void:
+	if departure_in_progress:
+		return
+	promote_after_departure = promote_next
 	performance_token += 1
 	var token := performance_token
 	state = "REACTING"
@@ -216,36 +221,35 @@ func react_and_leave(decision: String) -> void:
 	Sfx.start_walking()
 	var exit := root.create_tween().set_parallel(true)
 	exit.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	exit.tween_property(current_actor, "position", Vector2(500, 360), 0.58)
-	exit.tween_property(current_actor, "scale", current_actor.scale * 0.68, 0.58)
+	exit.tween_property(current_actor, "position", EXIT_POSITION, 0.58)
+	exit.tween_property(current_actor, "rotation", -0.045, 0.58)
 	exit.tween_property(current_actor, "modulate:a", 0.0, 0.48)
 	await exit.finished
 	Sfx.stop_walking()
 	if token != performance_token:
 		return
-	state = "QUEUE_ADVANCING"
-	await _advance_queue()
-	state = "IDLE"
-	departure_finished.emit()
+	await _finish_departure(token)
 
 
 func skip_current_performance() -> void:
+	if departure_in_progress or state == "QUEUE_ADVANCING":
+		return
 	skip_requested = true
 	speech_bubble.visible = false
 	GameStateSync.speaker_stopped("npc_performance_skipped")
 	_stop_audio()
-	if state in ["WALKING_IN", "ARRIVING", "GREETING", "DELIVERING"]:
+	if state in ["GREETING", "DELIVERING"]:
 		performance_token += 1
 		state = "WAITING"
 		if is_instance_valid(current_actor):
-			current_actor.position = Vector2(640, 338)
+			current_actor.position = FRONT_POSITION
+			current_actor.rotation = 0.0
 			current_actor.modulate.a = 1.0
 			_play_action("idle")
 			delivery_finished.emit()
-	elif state in ["REACTING", "WALKING_OUT", "QUEUE_ADVANCING"]:
+	elif state in ["REACTING", "WALKING_OUT"]:
 		performance_token += 1
-		state = "IDLE"
-		departure_finished.emit()
+		_finish_departure(performance_token)
 
 
 func shutdown() -> void:
@@ -321,36 +325,142 @@ func _send_line_to_glass(person: Dictionary, text: String) -> void:
 
 
 func _build_queue(case_ids: Array[String]) -> void:
-	var positions := [Vector2(525, 346), Vector2(470, 340), Vector2(425, 334)]
-	var scales := [0.105, 0.085, 0.07]
-	for i in mini(case_ids.size(), 3):
-		var queued_case := ConfigDatabase.get_gameplay_case(case_ids[i])
-		var person: Dictionary = queued_case.get("person", {})
-		var sprite := Sprite2D.new()
-		var actor_texture := String(person.get("actor_texture", ""))
-		sprite.texture = load(actor_texture) if ResourceLoader.exists(actor_texture) else load(FRAME_PATHS[0])
-		sprite.position = positions[i]
-		sprite.scale = Vector2.ONE * scales[i]
-		var tint := Color(String(person.get("actor_tint", "8f948b")))
-		tint.a = 0.28 - i * 0.05
-		sprite.modulate = tint
-		sprite.z_index = -i - 1
+	for i in mini(case_ids.size(), MAX_VISIBLE_QUEUE):
+		var case_id := case_ids[i]
+		var sprite := _make_queue_actor(case_id)
 		actor_layer.add_child(sprite)
 		queue_actors.append(sprite)
+		queue_case_ids.append(case_id)
+		_apply_queue_slot(sprite, case_id, i)
 
 
-func _advance_queue() -> void:
+func _sync_queue(case_ids: Array[String]) -> void:
+	var desired_ids: Array[String] = []
+	for i in mini(case_ids.size(), MAX_VISIBLE_QUEUE):
+		desired_ids.append(case_ids[i])
 	if queue_actors.is_empty():
+		_build_queue(desired_ids)
 		return
+
+	var remaining_actors: Array[AnimatedSprite2D] = queue_actors.duplicate()
+	var remaining_ids: Array[String] = queue_case_ids.duplicate()
+	var next_actors: Array[AnimatedSprite2D] = []
+	for case_id in desired_ids:
+		var existing_index := remaining_ids.find(case_id)
+		var actor: AnimatedSprite2D
+		if existing_index >= 0:
+			actor = remaining_actors[existing_index]
+			remaining_actors.remove_at(existing_index)
+			remaining_ids.remove_at(existing_index)
+		else:
+			actor = _make_queue_actor(case_id)
+			actor_layer.add_child(actor)
+		next_actors.append(actor)
+	for actor in remaining_actors:
+		if is_instance_valid(actor):
+			actor.queue_free()
+	queue_actors = next_actors
+	queue_case_ids = desired_ids
+	for i in queue_actors.size():
+		_apply_queue_slot(queue_actors[i], queue_case_ids[i], i)
+
+
+func _finish_departure(token: int) -> void:
+	if departure_in_progress:
+		return
+	departure_in_progress = true
+	state = "QUEUE_ADVANCING"
+	_stop_audio()
+	speech_bubble.visible = false
+	_dispose_animation_player()
+	if is_instance_valid(current_actor):
+		current_actor.queue_free()
+	current_actor = null
+	animation_library = null
+	if token != performance_token:
+		departure_in_progress = false
+		return
+	if promote_after_departure:
+		await _promote_queue(token)
+	else:
+		_clear_queue()
+	if token != performance_token:
+		departure_in_progress = false
+		return
+	departure_in_progress = false
+	state = "FRONT_STAGED" if is_instance_valid(current_actor) else "IDLE"
+	departure_finished.emit()
+
+
+func _promote_queue(token: int) -> void:
+	if queue_actors.is_empty():
+		staged_case_id = ""
+		return
+	var promoted: AnimatedSprite2D = queue_actors.pop_front()
+	staged_case_id = String(queue_case_ids.pop_front())
+	current_actor = promoted
+	var promoted_person: Dictionary = ConfigDatabase.get_gameplay_case(staged_case_id).get("person", {})
+	var promoted_tint := _actor_tint(promoted_person)
+	var promoted_scale := float(promoted_person.get("actor_scale", 0.34))
+	current_actor.z_index = 0
 	var tween := root.create_tween().set_parallel(true)
-	for actor in queue_actors:
-		tween.tween_property(actor, "position", actor.position + Vector2(38, 8), 0.32)
-		tween.tween_property(actor, "modulate:a", minf(actor.modulate.a + 0.08, 0.42), 0.32)
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(current_actor, "position", FRONT_POSITION, 0.34)
+	tween.tween_property(current_actor, "scale", Vector2.ONE * promoted_scale, 0.34)
+	tween.tween_property(current_actor, "modulate", promoted_tint, 0.34)
+	for i in queue_actors.size():
+		var actor := queue_actors[i]
+		var person: Dictionary = ConfigDatabase.get_gameplay_case(queue_case_ids[i]).get("person", {})
+		var target_tint := _actor_tint(person).darkened(QUEUE_DARKNESS[i])
+		target_tint.a = 1.0
+		actor.z_index = -i - 1
+		tween.tween_property(actor, "position", QUEUE_POSITIONS[i], 0.34)
+		tween.tween_property(
+			actor,
+			"scale",
+			Vector2.ONE * float(person.get("actor_scale", 0.34)) * QUEUE_SCALE_FACTORS[i],
+			0.34
+		)
+		tween.tween_property(actor, "modulate", target_tint, 0.34)
 	await tween.finished
+	if token != performance_token:
+		return
+
+
+func _make_queue_actor(case_id: String) -> AnimatedSprite2D:
+	var queued_case := ConfigDatabase.get_gameplay_case(case_id)
+	var person: Dictionary = queued_case.get("person", {})
+	var actor_texture := String(person.get("actor_texture", ""))
+	var texture: Texture2D = (
+		load(actor_texture)
+		if ResourceLoader.exists(actor_texture)
+		else load(FRAME_PATHS[0])
+	)
+	var sprite := AnimatedSprite2D.new()
+	sprite.sprite_frames = _single_frame_resource(texture)
+	sprite.animation = &"idle"
+	sprite.frame = 0
+	sprite.centered = true
+	return sprite
+
+
+func _apply_queue_slot(actor: AnimatedSprite2D, case_id: String, depth: int) -> void:
+	var person: Dictionary = ConfigDatabase.get_gameplay_case(case_id).get("person", {})
+	var tint := _actor_tint(person).darkened(QUEUE_DARKNESS[depth])
+	tint.a = 1.0
+	actor.position = QUEUE_POSITIONS[depth]
+	actor.scale = Vector2.ONE * float(person.get("actor_scale", 0.34)) * QUEUE_SCALE_FACTORS[depth]
+	actor.modulate = tint
+	actor.z_index = -depth - 1
 
 
 func _make_actor(person: Dictionary) -> AnimatedSprite2D:
 	var sprite := AnimatedSprite2D.new()
+	_configure_current_actor(sprite, person)
+	return sprite
+
+
+func _configure_current_actor(sprite: AnimatedSprite2D, person: Dictionary) -> void:
 	var actor_texture := String(person.get("actor_texture", ""))
 	var animation_table := String(person.get("animation_table", DEFAULT_ANIMATION_TABLE))
 	animation_library = NpcAnimationLibrary.new()
@@ -359,9 +469,11 @@ func _make_actor(person: Dictionary) -> AnimatedSprite2D:
 		sprite.sprite_frames = animation_library.get_sprite_frames()
 	else:
 		var frames := SpriteFrames.new()
+		if frames.has_animation(&"default"):
+			frames.remove_animation(&"default")
 		frames.add_animation("idle")
 		frames.set_animation_loop("idle", true)
-		frames.set_animation_speed("idle", 5.0)
+		frames.set_animation_speed("idle", 4.0)
 		if not actor_texture.is_empty() and ResourceLoader.exists(actor_texture):
 			frames.add_frame("idle", load(actor_texture))
 		else:
@@ -373,7 +485,10 @@ func _make_actor(person: Dictionary) -> AnimatedSprite2D:
 		animation_library = null
 	if sprite.sprite_frames == null:
 		var fallback_frames := SpriteFrames.new()
+		if fallback_frames.has_animation(&"default"):
+			fallback_frames.remove_animation(&"default")
 		fallback_frames.add_animation("idle")
+		fallback_frames.set_animation_speed("idle", 4.0)
 		for path in FRAME_PATHS:
 			var texture: Texture2D = load(path)
 			if texture != null:
@@ -382,26 +497,44 @@ func _make_actor(person: Dictionary) -> AnimatedSprite2D:
 	sprite.centered = true
 	var configured_scale := float(person.get("actor_scale", 0.34))
 	sprite.scale = Vector2.ONE * configured_scale
-	sprite.modulate = Color(String(person.get("actor_tint", "ffffff")))
+	sprite.modulate = _actor_tint(person)
+	sprite.position = FRONT_POSITION
+	sprite.rotation = 0.0
+	sprite.z_index = 0
 	micro_expression_rng.seed = hash(String(person.get("id", "DEFAULT-APPLICANT")))
-	return sprite
+
+
+func _actor_tint(person: Dictionary) -> Color:
+	var tint := Color(String(person.get("actor_tint", "ffffff")))
+	tint.a = 1.0
+	return tint
 
 
 func _clear_actors() -> void:
 	_stop_audio()
 	speech_bubble.visible = false
-	if is_instance_valid(animation_player):
-		animation_player.shutdown()
-		animation_player.queue_free()
-	animation_player = null
+	_dispose_animation_player()
 	animation_library = null
 	if is_instance_valid(current_actor):
 		current_actor.queue_free()
 	current_actor = null
+	staged_case_id = ""
+	_clear_queue()
+
+
+func _clear_queue() -> void:
 	for actor in queue_actors:
 		if is_instance_valid(actor):
 			actor.queue_free()
 	queue_actors.clear()
+	queue_case_ids.clear()
+
+
+func _dispose_animation_player() -> void:
+	if is_instance_valid(animation_player):
+		animation_player.shutdown()
+		animation_player.queue_free()
+	animation_player = null
 
 
 func _play_action(requested_action: String) -> float:

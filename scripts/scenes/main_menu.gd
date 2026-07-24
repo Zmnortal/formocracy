@@ -1,81 +1,304 @@
 extends Control
 
-# 标题主菜单场景。
-# 负责展示标题、背景、开始/退出按钮。
 const WORKDAY_SELECTOR_SCENE := "res://scenes/workday_selector.tscn"
-const TITLE_TEXTURE := preload("res://assets/menu/formocracy-title.png")
 const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const DESIGN_SIZE := Vector2(1280.0, 720.0)
+const DOCUMENT_VISUAL_SCALE := 1.5
+const TYPOGRAPHY_SCALE := 1.5
 
-# UI 控件引用
+const DOCUMENTS: Array[Dictionary] = [
+	{"path": "res://assets/menu/document_collage/final/02_approval_register.png", "corner": "top_left", "offset": Vector2(130, 55), "size": Vector2(315, 205), "rotation": -11.0, "z": 1, "delay": 0.02, "phase": 0.3},
+	{"path": "res://assets/menu/document_collage/final/10_staff_transfer.png", "corner": "top_left", "offset": Vector2(190, 115), "size": Vector2(330, 238), "rotation": 8.0, "z": 2, "delay": 0.07, "phase": 1.2},
+	{"path": "res://assets/menu/document_collage/final/14_staff_id.png", "corner": "top_left", "offset": Vector2(84, 240), "size": Vector2(235, 160), "rotation": -16.0, "z": 3, "delay": 0.12, "phase": 2.1},
+	{"path": "res://assets/menu/document_collage/final/01_workday_report.png", "corner": "top_left", "offset": Vector2(235, 190), "size": Vector2(270, 375), "rotation": -3.5, "z": 4, "delay": 0.18, "phase": 2.8},
+
+	{"path": "res://assets/menu/document_collage/final/12_archive_access.png", "corner": "top_right", "offset": Vector2(-135, 65), "size": Vector2(320, 258), "rotation": 12.0, "z": 1, "delay": 0.04, "phase": 0.8},
+	{"path": "res://assets/menu/document_collage/final/16_stamps_sheet.png", "corner": "top_right", "offset": Vector2(-275, 92), "size": Vector2(215, 141), "rotation": -9.0, "z": 3, "delay": 0.10, "phase": 1.7},
+	{"path": "res://assets/menu/document_collage/final/13_application_receipt.png", "corner": "top_right", "offset": Vector2(-75, 245), "size": Vector2(220, 180), "rotation": 14.0, "z": 2, "delay": 0.14, "phase": 2.4},
+	{"path": "res://assets/menu/document_collage/final/09_government_report.png", "corner": "top_right", "offset": Vector2(-185, 205), "size": Vector2(238, 352), "rotation": 3.0, "z": 4, "delay": 0.20, "phase": 3.2},
+
+	{"path": "res://assets/menu/document_collage/final/07_passage_permit.png", "corner": "bottom_left", "offset": Vector2(95, -72), "size": Vector2(330, 264), "rotation": 10.0, "z": 1, "delay": 0.05, "phase": 0.5},
+	{"path": "res://assets/menu/document_collage/final/06_water_quota.png", "corner": "bottom_left", "offset": Vector2(70, -220), "size": Vector2(238, 348), "rotation": -13.0, "z": 2, "delay": 0.11, "phase": 1.4},
+	{"path": "res://assets/menu/document_collage/final/08_lost_property.png", "corner": "bottom_left", "offset": Vector2(265, -125), "size": Vector2(220, 338), "rotation": 15.0, "z": 3, "delay": 0.16, "phase": 2.0},
+	{"path": "res://assets/menu/document_collage/final/05_housing_change.png", "corner": "bottom_left", "offset": Vector2(190, -175), "size": Vector2(255, 365), "rotation": -2.5, "z": 4, "delay": 0.22, "phase": 2.9},
+
+	{"path": "res://assets/menu/document_collage/final/11_confidential_circulation.png", "corner": "bottom_right", "offset": Vector2(-90, -188), "size": Vector2(245, 348), "rotation": -13.0, "z": 1, "delay": 0.06, "phase": 0.1},
+	{"path": "res://assets/menu/document_collage/final/04_penalty_notice.png", "corner": "bottom_right", "offset": Vector2(-270, -100), "size": Vector2(224, 360), "rotation": 12.0, "z": 2, "delay": 0.12, "phase": 1.1},
+	{"path": "res://assets/menu/document_collage/final/15_reality_seal.png", "corner": "bottom_right", "offset": Vector2(-310, -280), "size": Vector2(170, 178), "rotation": -18.0, "z": 4, "delay": 0.17, "phase": 2.2},
+	{"path": "res://assets/menu/document_collage/final/03_reality_validation.png", "corner": "bottom_right", "offset": Vector2(-170, -185), "size": Vector2(255, 344), "rotation": 3.5, "z": 3, "delay": 0.23, "phase": 3.0},
+]
+
 var start_button: Button
 var exit_button: Button
+var collage_layer: Control
+var center_glow: Panel
+var center_column: VBoxContainer
+var document_nodes: Array[TextureRect] = []
+var animation_time := 0.0
+var collage_scale := 1.0
+var entrance_complete := false
+var transitioning := false
 
 
-# 初始化主菜单：播放开场音乐、构建场景并聚焦开始按钮。
 func _ready() -> void:
 	OpeningMusic.play_opening()
 	build_scene()
+	get_viewport().size_changed.connect(layout_documents)
+	await get_tree().process_frame
+	layout_documents()
+	animate_documents_in()
 	start_button.grab_focus()
 
 
-# 构建标题主菜单的完整 UI。
-# 包含背景图、暗角、主菜单按钮列，以及保存选择和覆盖确认弹窗。
+func _process(delta: float) -> void:
+	if not entrance_complete or transitioning:
+		return
+	animation_time += delta
+	var viewport_size := get_viewport_rect().size
+	var mouse_position := get_viewport().get_mouse_position()
+	for i in document_nodes.size():
+		var paper := document_nodes[i]
+		var config := DOCUMENTS[i]
+		var base_position: Vector2 = paper.get_meta("base_position", paper.position)
+		var corner_point := get_corner_point(String(config.corner), viewport_size)
+		var hover_distance := mouse_position.distance_to(corner_point)
+		var hover_amount := clampf(1.0 - hover_distance / (330.0 * collage_scale), 0.0, 1.0)
+		var unfold_direction := (paper.position + paper.size * 0.5 - corner_point).normalized()
+		var drift := Vector2(
+			sin(animation_time * 0.42 + float(config.phase)) * 1.2,
+			cos(animation_time * 0.36 + float(config.phase)) * 1.6
+		) * collage_scale
+		var target_position := base_position + drift + unfold_direction * hover_amount * 7.0 * collage_scale
+		paper.position = paper.position.lerp(target_position, minf(delta * 5.0, 1.0))
+		var rotation_wobble := sin(animation_time * 0.28 + float(config.phase)) * 0.22
+		paper.rotation = lerp_angle(paper.rotation, deg_to_rad(float(config.rotation) + rotation_wobble), minf(delta * 3.0, 1.0))
+
+
 func build_scene() -> void:
-	var background := TextureRect.new()
-	background.name = "TitleArtwork"
-	background.texture = TITLE_TEXTURE
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(background)
+	var backdrop := ColorRect.new()
+	backdrop.name = "Backdrop"
+	backdrop.color = Color("#070c0d")
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(backdrop)
 
-	var shade := ColorRect.new()
-	shade.color = Color(0.0, 0.0, 0.02, 0.2)
-	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(shade)
+	# 保留透明的兼容节点，旧测试和调试脚本仍可定位 TitleArtwork，
+	# 但主菜单不再依赖一张静态整图。
+	var artwork := TextureRect.new()
+	artwork.name = "TitleArtwork"
+	artwork.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	artwork.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	artwork.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	artwork.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(artwork)
 
-	var menu := VBoxContainer.new()
-	menu.name = "PrimaryMenu"
-	menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	menu.position = Vector2(-430, -250)
-	menu.size = Vector2(380, 190)
-	menu.add_theme_constant_override("separation", 18)
-	add_child(menu)
+	collage_layer = Control.new()
+	collage_layer.name = "DocumentCollage"
+	collage_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	collage_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(collage_layer)
+	build_documents()
+
+	center_glow = Panel.new()
+	center_glow.name = "CentralField"
+	center_glow.set_anchors_preset(Control.PRESET_CENTER)
+	center_glow.position = Vector2(-410, -360)
+	center_glow.size = Vector2(820, 720)
+	center_glow.z_index = 10
+	center_glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var center_style := StyleBoxFlat.new()
+	center_style.bg_color = Color(0.015, 0.025, 0.027, 0.72)
+	center_style.border_color = Color(0.23, 0.28, 0.25, 0.22)
+	center_style.set_border_width_all(1)
+	center_style.corner_radius_top_left = 8
+	center_style.corner_radius_top_right = 8
+	center_style.corner_radius_bottom_left = 8
+	center_style.corner_radius_bottom_right = 8
+	center_style.shadow_color = Color(0, 0, 0, 0.5)
+	center_style.shadow_size = 24
+	center_glow.add_theme_stylebox_override("panel", center_style)
+	add_child(center_glow)
+
+	center_column = VBoxContainer.new()
+	center_column.name = "CentralMenu"
+	center_column.set_anchors_preset(Control.PRESET_CENTER)
+	center_column.position = Vector2(-560, -360)
+	center_column.size = Vector2(1120, 620)
+	center_column.z_index = 11
+	center_column.alignment = BoxContainer.ALIGNMENT_CENTER
+	center_column.add_theme_constant_override("separation", 8)
+	add_child(center_column)
+
+	var title := make_label("FORMOCRACY", 72, Color("#f0efe5"))
+	title.add_theme_constant_override("outline_size", 5)
+	title.add_theme_color_override("font_outline_color", Color("#070b0c"))
+	center_column.add_child(title)
+	var chinese_title := make_label("纸面政治", 42, Color("#e4dec9"))
+	center_column.add_child(chinese_title)
+	var rule := HSeparator.new()
+	rule.custom_minimum_size = Vector2(0, 18)
+	rule.modulate = Color("#777765")
+	center_column.add_child(rule)
+
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0, 20)
+	center_column.add_child(spacer)
 
 	start_button = make_button("游戏开始")
 	start_button.name = "StartButton"
 	start_button.pressed.connect(on_start_pressed)
-	menu.add_child(start_button)
+	center_column.add_child(start_button)
 
 	exit_button = make_button("退出游戏")
 	exit_button.name = "ExitButton"
 	exit_button.pressed.connect(on_exit_pressed)
-	menu.add_child(exit_button)
+	center_column.add_child(exit_button)
 
 
+func build_documents() -> void:
+	for config in DOCUMENTS:
+		var paper := TextureRect.new()
+		paper.name = String(config.path).get_file().get_basename().to_pascal_case()
+		paper.texture = load(String(config.path))
+		paper.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		paper.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		paper.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		paper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		paper.z_index = int(config.z)
+		paper.rotation = deg_to_rad(float(config.rotation))
+		paper.modulate.a = 0.0
+		collage_layer.add_child(paper)
+		document_nodes.append(paper)
 
-# 创建主菜单按钮，统一使用像素字体与固定最小尺寸。
+
+func layout_documents() -> void:
+	var viewport_size := get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+	collage_scale = clampf(minf(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y), 0.72, 1.8)
+	# 全屏/Retina 下四角文件会随视口放大，中央 Opening UI 也必须使用同一比例，
+	# 否则标题与按钮会像一张没有响应式布局的小卡片缩在屏幕中心。
+	var center_scale := collage_scale
+	if is_instance_valid(center_glow):
+		center_glow.pivot_offset = center_glow.size * 0.5
+		center_glow.scale = Vector2.ONE * center_scale
+	if is_instance_valid(center_column):
+		center_column.pivot_offset = center_column.size * 0.5
+		center_column.scale = Vector2.ONE * center_scale
+	if document_nodes.is_empty():
+		return
+	for i in document_nodes.size():
+		var paper := document_nodes[i]
+		var config := DOCUMENTS[i]
+		paper.size = Vector2(config.size) * collage_scale * DOCUMENT_VISUAL_SCALE
+		paper.pivot_offset = paper.size * 0.5
+		var center := get_corner_point(String(config.corner), viewport_size) + Vector2(config.offset) * collage_scale
+		var base_position := center - paper.size * 0.5
+		paper.set_meta("base_position", base_position)
+		if entrance_complete:
+			paper.position = base_position
+
+
+func animate_documents_in() -> void:
+	entrance_complete = true
+	var viewport_center := get_viewport_rect().size * 0.5
+	for i in document_nodes.size():
+		var paper := document_nodes[i]
+		var config := DOCUMENTS[i]
+		var base_position: Vector2 = paper.get_meta("base_position")
+		var paper_center := base_position + paper.size * 0.5
+		var outward := (paper_center - viewport_center).normalized()
+		paper.position = base_position + outward * 85.0 * collage_scale
+		var tween := create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(paper, "position", base_position, 0.62).set_delay(float(config.delay)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(paper, "modulate:a", 1.0, 0.34).set_delay(float(config.delay))
+
+
+func settle_collage_for_snapshot() -> void:
+	entrance_complete = true
+	layout_documents()
+	for i in document_nodes.size():
+		var paper := document_nodes[i]
+		var config := DOCUMENTS[i]
+		paper.position = paper.get_meta("base_position", paper.position)
+		paper.rotation = deg_to_rad(float(config.rotation))
+		paper.modulate.a = 1.0
+
+
+func get_corner_point(corner: String, viewport_size: Vector2) -> Vector2:
+	match corner:
+		"top_right":
+			return Vector2(viewport_size.x, 0.0)
+		"bottom_left":
+			return Vector2(0.0, viewport_size.y)
+		"bottom_right":
+			return viewport_size
+		_:
+			return Vector2.ZERO
+
+
+func make_label(label_text: String, font_size: int, color: Color) -> Label:
+	var label := Label.new()
+	label.text = label_text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font", PIXEL_FONT)
+	label.add_theme_font_size_override("font_size", roundi(font_size * TYPOGRAPHY_SCALE))
+	label.add_theme_color_override("font_color", color)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
 func make_button(label_text: String) -> Button:
 	var button := Button.new()
 	button.text = label_text
-	button.custom_minimum_size = Vector2(380, 76)
+	button.custom_minimum_size = Vector2(570, 114)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	button.add_theme_font_override("font", PIXEL_FONT)
-	button.add_theme_font_size_override("font_size", 30)
+	button.add_theme_font_size_override("font_size", roundi(30 * TYPOGRAPHY_SCALE))
+	button.add_theme_color_override("font_color", Color("#ddd8c4"))
+	button.add_theme_color_override("font_hover_color", Color("#fff6cf"))
+	button.add_theme_color_override("font_pressed_color", Color("#171a16"))
+	button.add_theme_stylebox_override("normal", make_button_style(Color(0.035, 0.055, 0.052, 0.94), Color("#77795d"), 2))
+	button.add_theme_stylebox_override("hover", make_button_style(Color(0.09, 0.12, 0.095, 0.98), Color("#c2b36f"), 3))
+	button.add_theme_stylebox_override("pressed", make_button_style(Color("#b7a66d"), Color("#e9daa1"), 3))
+	button.add_theme_stylebox_override("focus", make_button_style(Color(0.06, 0.09, 0.075, 0.98), Color("#d7c578"), 3))
 	button.pressed.connect(func(): Sfx.play("ui_click"))
 	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
 	return button
 
 
-# 点击“游戏开始”时调用。
-# 始终进入独立的工作日选择场景。
+func make_button_style(background: Color, border: Color, width: int) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = background
+	style.border_color = border
+	style.set_border_width_all(width)
+	style.corner_radius_top_left = 3
+	style.corner_radius_top_right = 3
+	style.corner_radius_bottom_left = 3
+	style.corner_radius_bottom_right = 3
+	style.content_margin_top = 12
+	style.content_margin_bottom = 12
+	return style
+
+
 func on_start_pressed() -> void:
+	if transitioning:
+		return
+	transitioning = true
+	start_button.disabled = true
+	exit_button.disabled = true
+	var viewport_center := get_viewport_rect().size * 0.5
+	for paper in document_nodes:
+		var base_position: Vector2 = paper.get_meta("base_position", paper.position)
+		var outward := (base_position + paper.size * 0.5 - viewport_center).normalized()
+		var tween := create_tween().set_parallel(true)
+		tween.tween_property(paper, "position", base_position + outward * 95.0 * collage_scale, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tween.tween_property(paper, "modulate:a", 0.0, 0.24)
+	await get_tree().create_timer(0.3).timeout
 	change_scene(WORKDAY_SELECTOR_SCENE)
 
 
-# 点击“退出游戏”时调用。
-# Web 平台仅禁用按钮并提示关闭浏览器，桌面平台直接退出。
 func on_exit_pressed() -> void:
 	if OS.has_feature("web"):
 		exit_button.text = "请关闭浏览器页面"
@@ -84,14 +307,12 @@ func on_exit_pressed() -> void:
 		get_tree().quit()
 
 
-# 切换场景，若失败则推送错误信息。
 func change_scene(path: String) -> void:
 	var error := get_tree().change_scene_to_file(path)
 	if error != OK:
 		push_error("场景切换失败：%s / %s" % [path, error_string(error)])
 
 
-# 全局键盘输入：ESC 退出游戏。
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
 		on_exit_pressed()

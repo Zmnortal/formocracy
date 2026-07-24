@@ -47,7 +47,7 @@ func _init(owner_root: Node2D) -> void:
 	button.add_theme_stylebox_override("hover", transparent_style)
 	button.add_theme_stylebox_override("pressed", transparent_style)
 	button.add_theme_stylebox_override("disabled", transparent_style)
-	button.pressed.connect(_on_pressed)
+	button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	housing.add_child(button)
 
 	indicator = ColorRect.new()
@@ -56,6 +56,10 @@ func _init(owner_root: Node2D) -> void:
 	indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	housing.add_child(indicator)
 	lock()
+
+
+func enable_desk_movement(controller: DeskItemController) -> void:
+	controller.register_item(housing, "call_bell", _on_pressed)
 
 
 func unlock() -> void:

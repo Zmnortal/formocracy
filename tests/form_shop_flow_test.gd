@@ -11,7 +11,7 @@ func _init() -> void:
 func run() -> void:
 	var state = root.get_node("WorkdayState")
 	state.reset_for_tests()
-	state.player_name = "林默"
+	state.player_name = "测试职员"
 	state.balance = 30
 	state.begin_evening()
 	state.evening_location_id = "LOCATION-FORM-SHOP"
@@ -21,7 +21,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var shop = current_scene
-	assert(shop.dialogue_label.text.contains("周姨"), "proprietor must greet the known protagonist")
+	assert(shop.dialogue_label.text.contains("测试职员"), "proprietor must address the entered player name")
 	shop.purchase_form(CLAIM_FORM)
 	shop.purchase_form(ARCHIVE_FORM)
 	assert(state.get_personal_form_count(CLAIM_FORM, "blank") == 1, "shop must issue the selected claim form")
@@ -35,7 +35,7 @@ func run() -> void:
 	await process_frame
 	var office = current_scene
 	assert(office.blank_forms.size() == 2, "application office must list blank forms from the dossier")
-	office.applicant_input.text = "林默"
+	office.applicant_input.text = "测试职员"
 	office.residence_input.text = "第十二区 · 职员宿舍 12-C"
 	office.reason_input.text = "认领与本人身份记录有关的旧物"
 	office.truth_check.button_pressed = true

@@ -30,16 +30,20 @@ func run() -> void:
 	assert(main.get_node("ClerkDeskConcept").size == Vector2(1280, 720), "background control must retain design-canvas size")
 	assert(main.case_index == 0, "first case must be active")
 	assert(main.presenter.is_stamped() == false, "new form must be unstamped")
+	main.presenter.set_envelope_on_desk(true)
+	main.presenter.open_envelope()
+	main.presenter.open_document(main.presenter.primary_document_id)
 	assert(
 		main.presenter.form.get_meta("context_cursor") == CursorManager.Cursor.GRAB,
 		"form must advertise contextual grab interaction"
 	)
-	assert(main.stamp_mgr.stamp_tools.all(func(tool): return tool.size == Vector2(56, 74)), "stamp hit areas must match their visible textures")
+	assert(main.stamp_mgr.stamp_tools.all(func(tool): return tool.size == Vector2(32, 40)), "stamp hit areas must match their configured visible size")
 
 	main.presenter.apply_stamp("批准", Vector2(360, 365))
 	assert(main.presenter.is_stamped() == true, "stamp state must be recorded")
 	assert(main.presenter.stamp_type() == "批准", "stamp type must be recorded")
-	assert(main.presenter.stamp_mark.text.contains("批准"), "stamp must be visible on form")
+	assert(main.presenter.form.stamp_records.size() == 1, "stamp must remain attached to the form")
+	main.presenter.pack_all_documents()
 
 	main.npc_performance.skip_requested = true
 	main.submission_mgr.submit(main.presenter, main.current_case)
