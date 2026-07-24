@@ -15,6 +15,20 @@ const STOP_MOTION_FRAME_SECONDS := 0.25
 # 只捕获纸张本体。旧实现捕获整张 1280×720 场景，纸外的黑色背景也会
 # 被 Polygon2D 压成一个黑框；同时透视顶点围绕整屏而不是纸张四边计算。
 const FORM_CAPTURE_RECT := Rect2i(325, 30, 634, 662)
+# 纸张先以完整矩形出现，再让远端边朝机器口移动、近端边留在传送带前方。
+# 明确记录四边的目标位置，避免用中心缩放造成“从纸张中间向内塌缩”的观感。
+const FORM_START_TOP_WIDTH := 634.0
+const FORM_START_BOTTOM_WIDTH := 634.0
+const FORM_START_TOP_Y := 30.0
+const FORM_START_BOTTOM_Y := 692.0
+const FORM_APPROACH_TOP_WIDTH := 208.0
+const FORM_APPROACH_BOTTOM_WIDTH := 440.0
+const FORM_APPROACH_TOP_Y := 332.0
+const FORM_APPROACH_BOTTOM_Y := 628.0
+const FORM_INGEST_TOP_WIDTH := 180.0
+const FORM_INGEST_BOTTOM_WIDTH := 204.0
+const FORM_INGEST_TOP_Y := 346.0
+const FORM_INGEST_BOTTOM_Y := 374.0
 
 var form_stage: Control
 var form_viewport: SubViewport
@@ -406,7 +420,12 @@ func _prepare_projected_form() -> void:
 			Vector2(0, capture_size.y),
 		]
 	)
-	_set_projected_form_pose(1.0, 1.0, 0.0, 0.0)
+	_set_projected_form_edges(
+		FORM_START_TOP_WIDTH,
+		FORM_START_BOTTOM_WIDTH,
+		FORM_START_TOP_Y,
+		FORM_START_BOTTOM_Y
+	)
 	add_child(projected_form)
 	move_child(projected_form, machine_foreground.get_index())
 	if DisplayServer.get_name() != "headless":
@@ -424,7 +443,12 @@ func _play_stop_motion_approach() -> void:
 
 	for frame in range(1, APPROACH_FRAME_COUNT + 1):
 		var t := float(frame) / float(APPROACH_FRAME_COUNT)
-		_set_projected_form_pose(lerpf(1.0, 0.64, t), lerpf(1.0, 0.48, t), lerpf(0.0, 0.24, t), lerpf(0.0, 12.0, t))
+		_set_projected_form_edges(
+			lerpf(FORM_START_TOP_WIDTH, FORM_APPROACH_TOP_WIDTH, t),
+			lerpf(FORM_START_BOTTOM_WIDTH, FORM_APPROACH_BOTTOM_WIDTH, t),
+			lerpf(FORM_START_TOP_Y, FORM_APPROACH_TOP_Y, t),
+			lerpf(FORM_START_BOTTOM_Y, FORM_APPROACH_BOTTOM_Y, t)
+		)
 		submission_snap_count += 1
 		if DisplayServer.get_name() != "headless":
 			await get_tree().create_timer(STOP_MOTION_FRAME_SECONDS).timeout
@@ -443,7 +467,12 @@ func _play_stop_motion_ingestion() -> void:
 	machine_foreground.modulate.a = 1.0
 	for frame in range(1, INGEST_FRAME_COUNT + 1):
 		var t := float(frame) / float(INGEST_FRAME_COUNT)
-		_set_projected_form_pose(lerpf(0.64, 0.035, t), lerpf(0.48, 0.012, t), lerpf(0.24, 0.42, t), lerpf(12.0, 20.0, t))
+		_set_projected_form_edges(
+			lerpf(FORM_APPROACH_TOP_WIDTH, FORM_INGEST_TOP_WIDTH, t),
+			lerpf(FORM_APPROACH_BOTTOM_WIDTH, FORM_INGEST_BOTTOM_WIDTH, t),
+			lerpf(FORM_APPROACH_TOP_Y, FORM_INGEST_TOP_Y, t),
+			lerpf(FORM_APPROACH_BOTTOM_Y, FORM_INGEST_BOTTOM_Y, t)
+		)
 		submission_snap_count += 1
 		if DisplayServer.get_name() != "headless":
 			await get_tree().create_timer(STOP_MOTION_FRAME_SECONDS).timeout
@@ -451,23 +480,16 @@ func _play_stop_motion_ingestion() -> void:
 	Sfx.stop_conveyor()
 
 
-# 根据纸张本体的四边计算稳定梯形。缩放与透视始终作用于纸张四角，
-# 不再围绕整屏中心压缩一个包含黑色背景的大矩形。
-func _set_projected_form_pose(width_scale: float, height_scale: float, perspective: float, offset_y: float) -> void:
-	var paper_size := Vector2(FORM_CAPTURE_RECT.size)
-	var center := Vector2(FORM_CAPTURE_RECT.position) + paper_size * 0.5
-	center.y += offset_y
-	var bottom_width := paper_size.x * width_scale
-	var top_width := bottom_width * (1.0 - perspective)
-	var height := paper_size.y * height_scale
-	var top_y := center.y - height * 0.5
-	var bottom_y := center.y + height * 0.5
+# 根据纸张四边的绝对位置生成稳定梯形。
+# 远端边和近端边各自沿传送带移动，不围绕中心点对称缩放。
+func _set_projected_form_edges(top_width: float, bottom_width: float, top_y: float, bottom_y: float) -> void:
+	var center_x := float(FORM_CAPTURE_RECT.position.x) + float(FORM_CAPTURE_RECT.size.x) * 0.5
 	projected_form.polygon = PackedVector2Array(
 		[
-			Vector2(center.x - top_width * 0.5, top_y),
-			Vector2(center.x + top_width * 0.5, top_y),
-			Vector2(center.x + bottom_width * 0.5, bottom_y),
-			Vector2(center.x - bottom_width * 0.5, bottom_y),
+			Vector2(center_x - top_width * 0.5, top_y),
+			Vector2(center_x + top_width * 0.5, top_y),
+			Vector2(center_x + bottom_width * 0.5, bottom_y),
+			Vector2(center_x - bottom_width * 0.5, bottom_y),
 		]
 	)
 

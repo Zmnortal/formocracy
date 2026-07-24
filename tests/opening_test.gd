@@ -73,6 +73,10 @@ func run() -> void:
 	var top_width: float = opening.projected_form.polygon[0].distance_to(opening.projected_form.polygon[1])
 	var bottom_width: float = opening.projected_form.polygon[3].distance_to(opening.projected_form.polygon[2])
 	assert(top_width < bottom_width, "forward tilt must be rendered as a perspective trapezoid")
+	var mouth_bottom: float = opening.machine_foreground.position.y + opening.machine_foreground.size.y
+	assert(opening.FORM_APPROACH_TOP_Y >= opening.machine_foreground.position.y, "the paper far edge must not remain visible above the machine-mouth occluder")
+	assert(opening.FORM_APPROACH_BOTTOM_Y > mouth_bottom, "the paper near edge must remain visible on the conveyor before ingestion")
+	assert(opening.projected_form.polygon[2].y <= mouth_bottom, "the final paper quad must finish completely behind the machine mouth")
 	assert(opening.welcome_panel.visible, "submission must end on the welcome screen")
 	assert(bridge.last_emitted_event.type == "secretary_line", "the welcome reveal must be sent to the glasses")
 	assert(bridge.last_emitted_event.text == "欢迎回来，测试职员。", "glasses welcome must use the submitted player name")
