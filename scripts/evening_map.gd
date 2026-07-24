@@ -50,9 +50,16 @@ const LOCATION_NAMES := {
 @onready var submit_form_button: Button = $HomeWindow/SubmitButton
 @onready var close_home_button: Button = $HomeWindow/CloseButton
 @onready var home_form_status: Label = $HomeWindow/FormStatus
+@onready var end_night_button: Button = $HomeWindow/EndNightButton
+@onready var next_day_receipt: Panel = $NextDayReceipt
+@onready var review_result_label: Label = $NextDayReceipt/ReviewResult
+@onready var review_detail_label: Label = $NextDayReceipt/ReviewDetail
+@onready var next_day_effect_label: Label = $NextDayReceipt/Effect
+@onready var enter_workday_button: Button = $NextDayReceipt/EnterWorkdayButton
 
 var moving := false
 var purchasing := false
+var ending_night := false
 var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
 
@@ -75,6 +82,8 @@ func _ready() -> void:
 	residence_input.text_changed.connect(func(_text): refresh_home_form_validity())
 	reason_input.text_changed.connect(func(_text): refresh_home_form_validity())
 	truth_declaration.toggled.connect(func(_pressed): refresh_home_form_validity())
+	end_night_button.pressed.connect(end_night)
+	enter_workday_button.pressed.connect(enter_next_workday)
 	populate_water_catalog()
 	player_token.position = LOCATION_POSITIONS.get(WorkdayState.evening_location_id, LOCATION_POSITIONS[LOCATION_OFFICE]) - player_token.size * 0.5
 	refresh_map_state()
@@ -108,6 +117,7 @@ func select_location(location_id: String) -> void:
 	ration_window.visible = false
 	dossier_panel.visible = false
 	home_window.visible = false
+	next_day_receipt.visible = false
 	moving = true
 	set_location_buttons_enabled(false)
 	active_route_points = build_route(WorkdayState.evening_location_id, location_id)
@@ -214,6 +224,33 @@ func submit_water_form() -> void:
 	home_form_status.text = "回执：P-12/%02d · 预计第 %02d 工作日处理" % [WorkdayState.day_number, WorkdayState.day_number + 1]
 	notice_label.text = "个人饮水表已送交。当前状态：等待处理。"
 	refresh_purchase_ui()
+
+
+func end_night() -> void:
+	if ending_night or WorkdayState.evening_location_id != LOCATION_HOME:
+		return
+	ending_night = true
+	end_night_button.disabled = true
+	WorkdayState.begin_next_day()
+	home_window.visible = false
+	arrival_card.visible = false
+	var summary := WorkdayState.get_personal_review_summary()
+	review_result_label.text = "处理结果：%s" % summary.result
+	review_detail_label.text = String(summary.detail)
+	if bool(summary.water_deprived):
+		next_day_effect_label.text = "生活状态：缺水\n次日工作时间 -20 秒\n拖拽响应降低至 72%"
+		next_day_effect_label.add_theme_color_override("font_color", Color("d77b5d"))
+	else:
+		next_day_effect_label.text = "生活状态：饮水正常\n次日工作时间与操作响应保持正常"
+		next_day_effect_label.add_theme_color_override("font_color", Color("91ad69"))
+	enter_workday_button.text = "进入第 %02d 工作日" % WorkdayState.day_number
+	next_day_receipt.visible = true
+
+
+func enter_next_workday() -> void:
+	var error := get_tree().change_scene_to_file("res://main.tscn")
+	if error != OK:
+		review_detail_label.text = "进入下一工作日失败：%s" % error_string(error)
 
 
 func populate_water_catalog() -> void:

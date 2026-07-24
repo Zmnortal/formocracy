@@ -93,6 +93,16 @@ func build(root: Node2D) -> DeskNodes:
 	)
 	identity_label.add_theme_constant_override("outline_size", 5)
 	identity_label.add_theme_color_override("font_outline_color", Color("11130f"))
+	desk.need_status_label = WorkbenchUI.add_text(
+		root,
+		"生活状态：饮水正常",
+		13,
+		Color("aabd78"),
+		Vector2(36, 56),
+		Vector2(420, 24)
+	)
+	desk.need_status_label.add_theme_constant_override("outline_size", 4)
+	desk.need_status_label.add_theme_color_override("font_outline_color", Color("11130f"))
 
 	_build_machine_ingestion_zone(root, desk)
 	_build_queue_display(root, desk)

@@ -12,11 +12,13 @@ var form_dragging := false
 var envelope_dragging := false
 var envelope_in_machine_zone := false
 var envelope_preview_tween: Tween
+var drag_response_multiplier := 1.0
 
 
 func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
 	root = owner_root
 	desk = owner_desk
+	drag_response_multiplier = WorkdayState.get_drag_response_multiplier()
 
 
 # 为当前案件的表单、文件袋和材料连接输入事件。
@@ -63,7 +65,7 @@ func _on_form_input(event: InputEvent, presenter: CasePresenter) -> void:
 			if _is_over_open_envelope(presenter.form, presenter):
 				presenter.pack_document(presenter.primary_document_id)
 	elif event is InputEventMouseMotion and form_dragging:
-		presenter.form.position += event.relative
+		presenter.form.position += event.relative * drag_response_multiplier
 
 
 # 文件袋的拖拽、放置到工作台与送交验收槽处理。
@@ -91,7 +93,7 @@ func _on_envelope_input(event: InputEvent, presenter: CasePresenter) -> void:
 				if presenter.envelope_on_desk and is_instance_valid(desk.status_label):
 					desk.status_label.text = "文件袋已置于工作台，点击封口拆开。"
 	elif event is InputEventMouseMotion and envelope_dragging:
-		presenter.envelope.position += event.relative
+		presenter.envelope.position += event.relative * drag_response_multiplier
 		var entered := (
 			presenter.envelope_on_desk
 			and is_instance_valid(desk.machine_drop_zone)
@@ -141,7 +143,7 @@ func _on_document_input(event: InputEvent, document: Panel, presenter: CasePrese
 			if _is_over_open_envelope(document, presenter):
 				presenter.pack_document(String(document.get_meta("document_id")))
 	elif event is InputEventMouseMotion and bool(document.get_meta("dragging")):
-		document.position += event.relative
+		document.position += event.relative * drag_response_multiplier
 
 
 func _is_over_open_envelope(item: Control, presenter: CasePresenter) -> bool:

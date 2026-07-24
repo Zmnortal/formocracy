@@ -30,6 +30,8 @@ func run() -> void:
 	current_scene.refresh_home_form_validity()
 	current_scene.submit_water_form()
 	await process_frame
+	current_scene.end_night()
+	await process_frame
 	var image := root.get_viewport().get_texture().get_image()
 	var save_error := image.save_png(OUTPUT_PATH)
 	assert(save_error == OK, "snapshot must save")

@@ -17,6 +17,7 @@ var status_label: Label
 var applicant_card_label: Label
 var queue_label: Label
 var timer_label: Label
+var need_status_label: Label
 var validation_overlay: Control
 var validation_image: TextureRect
 var npc_panel: Panel

@@ -35,6 +35,12 @@ func _ready() -> void:
 
 	get_viewport().size_changed.connect(fit_to_window)
 	sequence.start_day(accepting_new_cases)
+	if WorkdayState.water_deprived:
+		desk.need_status_label.text = "生活状态：缺水 / 工作时间 -20 秒 / 拖拽响应 72%"
+		desk.need_status_label.add_theme_color_override("font_color", Color("d98463"))
+		desk.status_label.text = "个人饮水配额未生效。今日操作响应受到影响。"
+	else:
+		desk.need_status_label.text = "生活状态：饮水正常 / 配额有效至第 %02d 工作日" % WorkdayState.water_covered_until_day
 	fit_to_window()
 
 

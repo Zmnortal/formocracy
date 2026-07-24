@@ -37,6 +37,9 @@ var evening_actions_remaining := 2
 var evening_location_id := "LOCATION-OFFICE"
 var personal_form_inventory: Array[Dictionary] = []
 var next_inventory_serial := 1
+var water_covered_until_day := 1
+var water_deprived := false
+var last_personal_review_results: Array[Dictionary] = []
 
 
 # 使用 CSV 关卡配置初始化工作日状态。
@@ -186,6 +189,8 @@ func begin_next_day() -> void:
 	settle_current_day()
 	day_number += 1
 	records.clear()
+	process_due_personal_forms()
+	prepare_new_workday()
 	if persistence_enabled:
 		save_progress()
 
@@ -263,6 +268,64 @@ func submit_personal_form(form_type_id: String, fields: Dictionary) -> bool:
 	return false
 
 
+# 审核到期的个人表单。饮水表字段与登记身份一致时核发，否则退回补正。
+func process_due_personal_forms() -> void:
+	last_personal_review_results.clear()
+	for item in personal_form_inventory:
+		if String(item.get("status", "")) != "pending" or int(item.get("effective_day", 999999)) > day_number:
+			continue
+		var form_type_id := String(item.get("form_type_id", ""))
+		var fields: Dictionary = item.get("fields", {})
+		var approved := (
+			form_type_id == "PERSONAL-FORM-WATER-R01"
+			and not String(fields.get("applicant_name", "")).is_empty()
+			and (player_name.is_empty() or String(fields.get("applicant_name", "")) == player_name)
+			and String(fields.get("residence", "")).contains("12-C")
+			and not String(fields.get("request_reason", "")).is_empty()
+			and bool(fields.get("truth_declared", false))
+		)
+		item.status = "effective" if approved else "returned"
+		item.processed_day = day_number
+		item.review_result = "批准" if approved else "退回补正"
+		if approved:
+			var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+			water_covered_until_day = maxi(water_covered_until_day, day_number + int(form.get("valid_for_days", 1)) - 1)
+		else:
+			item.review_reason = "申请人身份、登记住所、申请事由或真实性声明不符合记录"
+		last_personal_review_results.append({
+			"inventory_id": item.get("inventory_id", ""),
+			"form_type_id": form_type_id,
+			"result": item.review_result,
+			"reason": item.get("review_reason", "记录核验通过"),
+		})
+
+
+# 根据饮水保障状态准备新工作日，缺水会缩短时间并降低拖拽响应。
+func prepare_new_workday() -> void:
+	water_deprived = day_number > water_covered_until_day
+	var time_penalty := 20.0 if water_deprived else 0.0
+	seconds_remaining = maxf(60.0, workday_duration - time_penalty)
+
+
+func get_drag_response_multiplier() -> float:
+	return 0.72 if water_deprived else 1.0
+
+
+func get_personal_review_summary() -> Dictionary:
+	if last_personal_review_results.is_empty():
+		return {
+			"result": "未收到有效申请",
+			"detail": "本周期饮水配额未获续接。",
+			"water_deprived": water_deprived,
+		}
+	var latest: Dictionary = last_personal_review_results[-1]
+	return {
+		"result": String(latest.get("result", "等待处理")),
+		"detail": "饮水配额已核发至第 %02d 工作日。" % water_covered_until_day if latest.get("result") == "批准" else String(latest.get("reason", "退回补正")),
+		"water_deprived": water_deprived,
+	}
+
+
 # 在抵达地点后登记一次夜间行动。回家始终可达，行动数不会低于零。
 func arrive_at_evening_location(location_id: String) -> void:
 	evening_location_id = location_id
@@ -297,6 +360,9 @@ func start_new_game() -> void:
 	evening_location_id = "LOCATION-OFFICE"
 	personal_form_inventory.clear()
 	next_inventory_serial = 1
+	water_covered_until_day = 1
+	water_deprived = false
+	last_personal_review_results.clear()
 	persistence_enabled = true
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
@@ -309,7 +375,7 @@ func save_progress() -> bool:
 		push_error("无法写入存档：%s" % FileAccess.get_open_error())
 		return false
 	file.store_string(JSON.stringify({
-		"version": 4,
+		"version": 5,
 		"day_number": day_number,
 		"records": records,
 		"current_level_id": current_level_id,
@@ -328,6 +394,9 @@ func save_progress() -> bool:
 		"evening_location_id": evening_location_id,
 		"personal_form_inventory": personal_form_inventory,
 		"next_inventory_serial": next_inventory_serial,
+		"water_covered_until_day": water_covered_until_day,
+		"water_deprived": water_deprived,
+		"last_personal_review_results": last_personal_review_results,
 	}))
 	return true
 
@@ -360,6 +429,9 @@ func load_progress() -> bool:
 	evening_location_id = String(parsed.get("evening_location_id", "LOCATION-OFFICE"))
 	personal_form_inventory.assign(parsed.get("personal_form_inventory", []))
 	next_inventory_serial = maxi(1, int(parsed.get("next_inventory_serial", personal_form_inventory.size() + 1)))
+	water_covered_until_day = int(parsed.get("water_covered_until_day", 1))
+	water_deprived = bool(parsed.get("water_deprived", false))
+	last_personal_review_results.assign(parsed.get("last_personal_review_results", []))
 	if decision_by_case_id.is_empty():
 		for record in records:
 			var saved_case_id := String(record.get("case_id", ""))
@@ -394,4 +466,7 @@ func reset_for_tests() -> void:
 	evening_location_id = "LOCATION-OFFICE"
 	personal_form_inventory.clear()
 	next_inventory_serial = 1
+	water_covered_until_day = 1
+	water_deprived = false
+	last_personal_review_results.clear()
 	persistence_enabled = false
