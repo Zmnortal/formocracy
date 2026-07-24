@@ -20,6 +20,8 @@ func run() -> void:
 	assert(opening.form_stage != null, "opening must begin with an interactive reinstatement form")
 	assert(opening.machine.modulate.a == 0.0, "validation machine must remain hidden before submission")
 	assert(opening.theme.resource_path == "res://themes/pixel_theme.tres", "opening must apply the pixel theme to the entire scene")
+	assert(opening.opening_pixel_font.antialiasing == TextServer.FONT_ANTIALIASING_NONE, "opening Chinese pixel font must disable antialiasing")
+	assert(opening.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "opening must preserve hard pixel glyph edges while scaling")
 	assert(opening.name_input.get_theme_font("font").resource_path.contains("ark-pixel"), "opening form must use Ark Pixel explicitly")
 	assert(opening.confirm_button.get_theme_font("font").resource_path.contains("ark-pixel"), "opening submit action must inherit Ark Pixel")
 	assert(opening.clear_signature_button.get_theme_font("font").resource_path.contains("ark-pixel"), "opening auxiliary actions must inherit Ark Pixel")

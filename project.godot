@@ -59,6 +59,9 @@ theme/custom="res://themes/pixel_theme.tres"
 
 [rendering]
 
+# 场景切换可能出现一帧没有任何 CanvasItem 的清屏间隙。
+# 默认清屏色必须固定为纯黑，否则主菜单进入记录页时会产生单帧白/灰闪。
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

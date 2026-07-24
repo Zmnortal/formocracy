@@ -50,15 +50,28 @@ var pass_button: Button
 var submission_locked := false
 var submission_snap_count := 0
 var submission_phase := "form"
+var opening_pixel_font: FontFile
 
 
 # 播放开场音乐、搭建场景并启动表单浮现动画。
 func _ready() -> void:
 	OpeningMusic.play_opening()
+	_configure_pixel_font_rendering()
 	_build_scene()
 	get_viewport().size_changed.connect(_fit_to_window)
 	_fit_to_window()
 	_play_form_reveal()
+
+
+# 强制开场中文字体使用无抗锯齿栅格，并以最近邻方式随画布缩放。
+# 字体导入虽然已经关闭抗锯齿，但默认线性过滤仍会在窗口拉伸时重新模糊字形边缘。
+func _configure_pixel_font_rendering() -> void:
+	# 通过运行时引用配置预载资源；GDScript 不允许直接给 const 资源属性赋值。
+	opening_pixel_font = PIXEL_FONT
+	opening_pixel_font.antialiasing = TextServer.FONT_ANTIALIASING_NONE
+	opening_pixel_font.generate_mipmaps = false
+	opening_pixel_font.multichannel_signed_distance_field = false
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 # 构建开场全部节点：黑幕、验收机器、表单舞台与欢迎面板。
@@ -420,12 +433,7 @@ func _prepare_projected_form() -> void:
 			Vector2(0, capture_size.y),
 		]
 	)
-	_set_projected_form_edges(
-		FORM_START_TOP_WIDTH,
-		FORM_START_BOTTOM_WIDTH,
-		FORM_START_TOP_Y,
-		FORM_START_BOTTOM_Y
-	)
+	_set_projected_form_edges(FORM_START_TOP_WIDTH, FORM_START_BOTTOM_WIDTH, FORM_START_TOP_Y, FORM_START_BOTTOM_Y)
 	add_child(projected_form)
 	move_child(projected_form, machine_foreground.get_index())
 	if DisplayServer.get_name() != "headless":

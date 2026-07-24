@@ -6,8 +6,10 @@ const GAME_SCENE := "res://main.tscn"
 const DAILY_REPORT_SCENE := "res://scenes/daily_report.tscn"
 const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const ENTRANCE_FADE_SECONDS := 0.7
 
 var canvas: Control
+var entrance_cover: ColorRect
 var title_label: Label
 var timeline_scroll: ScrollContainer
 var timeline: Control
@@ -28,16 +30,44 @@ var checkpoint_nodes_by_id: Dictionary = {}
 var checkpoint_positions: Dictionary = {}
 var resume_position := Vector2.ZERO
 var next_leaf_row := 0
+var entrance_complete := false
 
 
 # 播放开场音乐、搭建场景并刷新存档时间线。
 func _ready() -> void:
+	# 开发者控制台直接进入本场景时，同样保证首帧清屏为黑色。
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	OpeningMusic.play_opening()
 	_build_scene()
+	_build_entrance_cover()
 	_refresh_save_slot()
 	_fit_to_window()
 	get_viewport().size_changed.connect(_fit_to_window)
+	await get_tree().process_frame
+	await _play_entrance_fade()
 	_focus_primary_action()
+
+
+# 在已完整渲染的记录页面上淡出黑幕，首帧始终为黑色，不暴露视口底色。
+func _play_entrance_fade() -> void:
+	var reveal := create_tween()
+	reveal.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	reveal.tween_property(entrance_cover, "modulate:a", 0.0, ENTRANCE_FADE_SECONDS)
+	await reveal.finished
+	entrance_cover.visible = false
+	entrance_cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	entrance_complete = true
+
+
+# 创建覆盖真实视口的纯黑幕；记录页面在黑幕后方提前完成布局。
+func _build_entrance_cover() -> void:
+	entrance_cover = ColorRect.new()
+	entrance_cover.name = "EntranceCover"
+	entrance_cover.color = Color.BLACK
+	entrance_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	entrance_cover.mouse_filter = Control.MOUSE_FILTER_STOP
+	entrance_cover.z_index = 100
+	add_child(entrance_cover)
 
 
 # 构建选日界面：标题、时间线滚动区、底部按钮与确认层。

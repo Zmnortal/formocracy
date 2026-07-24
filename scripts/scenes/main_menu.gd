@@ -5,6 +5,8 @@ const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proport
 const DESIGN_SIZE := Vector2(1280.0, 720.0)
 const DOCUMENT_VISUAL_SCALE := 1.5
 const TYPOGRAPHY_SCALE := 1.5
+const EXIT_SCATTER_DURATION := 0.78
+const EXIT_BLACK_HOLD_SECONDS := 0.5
 
 const DOCUMENTS: Array[Dictionary] = [
 	{
@@ -175,14 +177,19 @@ var collage_layer: Control
 var center_glow: Panel
 var center_column: VBoxContainer
 var document_nodes: Array[TextureRect] = []
+var title_transition_nodes: Array[Control] = []
+var action_transition_nodes: Array[Control] = []
 var animation_time := 0.0
 var collage_scale := 1.0
 var entrance_complete := false
 var transitioning := false
+var transition_phase := "idle"
 
 
 # 主菜单就绪时播放开场音乐、构建界面、布局文件拼贴并播放入场动画。
 func _ready() -> void:
+	# 场景切换的无内容帧也必须使用黑色清屏，杜绝记录页出现单帧白闪。
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	OpeningMusic.play_opening()
 	build_scene()
 	get_viewport().size_changed.connect(layout_documents)
@@ -272,15 +279,21 @@ func build_scene() -> void:
 	add_child(center_column)
 
 	var title := make_label("FORMOCRACY", 72, Color("#f0efe5"))
+	title.name = "EnglishTitle"
 	title.add_theme_constant_override("outline_size", 5)
 	title.add_theme_color_override("font_outline_color", Color("#070b0c"))
 	center_column.add_child(title)
+	title_transition_nodes.append(title)
 	var chinese_title := make_label("纸面政治", 42, Color("#e4dec9"))
+	chinese_title.name = "ChineseTitle"
 	center_column.add_child(chinese_title)
+	title_transition_nodes.append(chinese_title)
 	var rule := HSeparator.new()
+	rule.name = "TitleRule"
 	rule.custom_minimum_size = Vector2(0, 18)
 	rule.modulate = Color("#777765")
 	center_column.add_child(rule)
+	title_transition_nodes.append(rule)
 
 	var spacer := Control.new()
 	spacer.custom_minimum_size = Vector2(0, 20)
@@ -290,11 +303,13 @@ func build_scene() -> void:
 	start_button.name = "StartButton"
 	start_button.pressed.connect(on_start_pressed)
 	center_column.add_child(start_button)
+	action_transition_nodes.append(start_button)
 
 	exit_button = make_button("退出游戏")
 	exit_button.name = "ExitButton"
 	exit_button.pressed.connect(on_exit_pressed)
 	center_column.add_child(exit_button)
+	action_transition_nodes.append(exit_button)
 
 
 # 按 DOCUMENTS 配置创建全部文件贴图节点并加入拼贴层，初始透明。
@@ -317,6 +332,8 @@ func build_documents() -> void:
 
 # 按视口尺寸计算拼贴缩放，同步中央面板缩放并重算每张文件的基准位置。
 func layout_documents() -> void:
+	if transitioning:
+		return
 	var viewport_size := get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
@@ -409,10 +426,11 @@ func make_button(label_text: String) -> Button:
 	button.add_theme_font_size_override("font_size", roundi(30 * TYPOGRAPHY_SCALE))
 	button.add_theme_color_override("font_color", Color("#ddd8c4"))
 	button.add_theme_color_override("font_hover_color", Color("#fff6cf"))
-	button.add_theme_color_override("font_pressed_color", Color("#171a16"))
+	# 按下时保持深色。亮色 pressed 样式会在点击“游戏开始”的瞬间形成一帧白闪。
+	button.add_theme_color_override("font_pressed_color", Color("#fff6cf"))
 	button.add_theme_stylebox_override("normal", make_button_style(Color(0.035, 0.055, 0.052, 0.94), Color("#77795d"), 2))
 	button.add_theme_stylebox_override("hover", make_button_style(Color(0.09, 0.12, 0.095, 0.98), Color("#c2b36f"), 3))
-	button.add_theme_stylebox_override("pressed", make_button_style(Color("#b7a66d"), Color("#e9daa1"), 3))
+	button.add_theme_stylebox_override("pressed", make_button_style(Color(0.045, 0.06, 0.05, 0.98), Color("#c2b36f"), 3))
 	button.add_theme_stylebox_override("focus", make_button_style(Color(0.06, 0.09, 0.075, 0.98), Color("#d7c578"), 3))
 	button.pressed.connect(func() -> void: Sfx.play("ui_click"))
 	button.mouse_entered.connect(func() -> void: Sfx.play("ui_hover"))
@@ -434,22 +452,78 @@ func make_button_style(background: Color, border: Color, width: int) -> StyleBox
 	return style
 
 
-# 点击开始后禁用按钮，播放文件向外飞散并淡出的过场，再切换到工作日选择场景。
+# 点击开始后播放完整散场、保留短暂黑场，再切换到工作日记录页面。
 func on_start_pressed() -> void:
 	if transitioning:
 		return
 	transitioning = true
+	transition_phase = "scattering"
 	start_button.disabled = true
 	exit_button.disabled = true
-	var viewport_center := get_viewport_rect().size * 0.5
-	for paper: TextureRect in document_nodes:
-		var base_position := _meta_vector(paper, "base_position", paper.position)
-		var outward := (base_position + paper.size * 0.5 - viewport_center).normalized()
-		var tween := create_tween().set_parallel(true)
-		tween.tween_property(paper, "position", base_position + outward * 95.0 * collage_scale, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		tween.tween_property(paper, "modulate:a", 0.0, 0.24)
-	await get_tree().create_timer(0.3).timeout
+	await _play_exit_scatter()
+	transition_phase = "black_hold"
+	collage_layer.visible = false
+	center_glow.visible = false
+	center_column.visible = false
+	await get_tree().create_timer(EXIT_BLACK_HOLD_SECONDS).timeout
+	transition_phase = "scene_change"
 	change_scene(WORKDAY_SELECTOR_SCENE)
+
+
+# 让四角表单加速飞出屏幕，同时将标题组向上、按钮组向下送离画面。
+func _play_exit_scatter() -> void:
+	var viewport_center := get_viewport_rect().size * 0.5
+	var viewport_size := get_viewport_rect().size
+	var scatter := create_tween()
+	scatter.set_parallel(true)
+
+	for i in document_nodes.size():
+		var paper: TextureRect = document_nodes[i]
+		var config: Dictionary = DOCUMENTS[i]
+		var paper_center := paper.position + paper.size * 0.5
+		var outward := (paper_center - viewport_center).normalized()
+		if outward.is_zero_approx():
+			outward = Vector2.UP.rotated(float(i) * TAU / float(document_nodes.size()))
+		var tangent := Vector2(-outward.y, outward.x)
+		var phase := WorkdayContext.read_float(config, "phase")
+		var scatter_direction := (outward + tangent * sin(phase * 1.7) * 0.28).normalized()
+		var travel := maxf(viewport_size.x, viewport_size.y) * 0.72 + paper.size.length() * 0.45
+		var delay := WorkdayContext.read_float(config, "delay") * 0.55
+		var duration := EXIT_SCATTER_DURATION + delay
+		var spin_direction := -1.0 if i % 2 == 0 else 1.0
+		var spin_degrees := lerpf(28.0, 78.0, absf(sin(phase * 1.3))) * spin_direction
+		scatter.tween_property(paper, "position", paper.position + scatter_direction * travel, duration).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		scatter.tween_property(paper, "rotation", paper.rotation + deg_to_rad(spin_degrees), duration).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		scatter.tween_property(paper, "modulate:a", 0.0, 0.28).set_delay(delay + duration * 0.62)
+
+	_detach_center_transition_nodes()
+	for node: Control in title_transition_nodes:
+		scatter.tween_property(node, "position:y", node.position.y - viewport_size.y * 0.62, EXIT_SCATTER_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		scatter.tween_property(node, "modulate:a", 0.0, 0.24).set_delay(EXIT_SCATTER_DURATION * 0.68)
+	for node: Control in action_transition_nodes:
+		scatter.tween_property(node, "position:y", node.position.y + viewport_size.y * 0.68, EXIT_SCATTER_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		scatter.tween_property(node, "modulate:a", 0.0, 0.24).set_delay(EXIT_SCATTER_DURATION * 0.68)
+	scatter.tween_property(center_glow, "modulate:a", 0.0, EXIT_SCATTER_DURATION * 0.72)
+	await scatter.finished
+
+
+# 将标题与按钮从 VBoxContainer 中取出并保持屏幕位置，允许两组独立反向飞行。
+func _detach_center_transition_nodes() -> void:
+	var transition_nodes: Array[Control] = []
+	transition_nodes.append_array(title_transition_nodes)
+	transition_nodes.append_array(action_transition_nodes)
+	var global_positions: Array[Vector2] = []
+	var global_scales: Array[Vector2] = []
+	for node: Control in transition_nodes:
+		global_positions.append(node.global_position)
+		global_scales.append(node.get_global_transform().get_scale())
+	for i in transition_nodes.size():
+		var node: Control = transition_nodes[i]
+		node.reparent(self, false)
+		node.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		node.global_position = global_positions[i]
+		node.scale = global_scales[i]
+		node.z_index = 12
 
 
 # 点击退出：Web 平台提示关闭浏览器页面，其余平台直接退出游戏。

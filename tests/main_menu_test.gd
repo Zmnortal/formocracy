@@ -20,10 +20,17 @@ func run() -> void:
 	var menu = packed.instantiate()
 	root.add_child(menu)
 	await process_frame
+	assert(RenderingServer.get_default_clear_color() == Color.BLACK, "scene transition clear frames must always be black")
 	assert(menu.start_button.text == "游戏开始", "main menu must expose game start")
 	assert(menu.exit_button.text == "退出游戏", "main menu must expose exit")
 	assert(menu.start_button.get_theme_font_size("font_size") == 45, "main menu typography must use the enlarged presentation scale")
+	var pressed_style := menu.start_button.get_theme_stylebox("pressed") as StyleBoxFlat
+	assert(pressed_style != null, "main menu start button must define its pressed style")
+	assert(pressed_style.bg_color.get_luminance() < 0.1, "start button pressed state must stay dark and never create a white flash")
 	assert(menu.start_button.custom_minimum_size == Vector2(570, 114), "main menu buttons must follow the 1.5x presentation scale")
+	assert(menu.title_transition_nodes.size() == 3, "Formocracy, Chinese title and divider must leave through the upper transition group")
+	assert(menu.action_transition_nodes.size() == 2, "start and exit actions must leave through the lower transition group")
+	assert(menu.EXIT_BLACK_HOLD_SECONDS == 0.5, "the empty menu must hold on black for half a second before records appear")
 	var artwork := menu.get_node("TitleArtwork") as TextureRect
 	assert(artwork.anchor_right == 1.0 and artwork.anchor_bottom == 1.0, "title artwork must follow the full viewport")
 	assert(artwork.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_COVERED, "title artwork must stay centered with aspect-cover cropping")
@@ -45,6 +52,10 @@ func run() -> void:
 	var selector = selector_scene.instantiate()
 	root.add_child(selector)
 	await process_frame
+	assert(selector.canvas.modulate.a == 1.0, "the record page must render fully behind its entrance cover")
+	assert(selector.entrance_cover.visible and selector.entrance_cover.modulate.a > 0.0, "an opaque black cover must prevent a viewport-color flash on the first frame")
+	assert(selector.entrance_cover.color == Color.BLACK, "the record-page transition must reveal from black rather than white")
+	assert(not selector.entrance_complete, "the workday record page must wait for its entrance fade")
 	assert(selector.title_label.text == "选择一天来继续或者从头开始游戏", "selector must present the workday timeline heading")
 	assert(selector.timeline_scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_AUTO, "deep save trees must expose horizontal scrolling")
 	assert(selector.timeline_scroll.follow_focus, "keyboard navigation must scroll focused checkpoints into view")
