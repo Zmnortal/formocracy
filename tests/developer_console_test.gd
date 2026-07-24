@@ -21,6 +21,8 @@ func run() -> void:
 	assert(console.scene_selector.get_item_metadata(0) == "res://scenes/main_menu.tscn", "main menu must be selectable")
 	assert(console.scene_selector.get_item_metadata(5) == "res://scenes/evening_map.tscn", "evening map must be selectable")
 	assert(console.level_selector.item_count >= 1, "level selector must expose CSV-configured levels")
+	assert(console.glass_event_selector.item_count == 7, "developer console must expose every supported glasses demo event")
+	assert(console.glass_event_selector.get_item_metadata(2) == "npc", "glasses selector must preserve stable event ids")
 	assert(console.collision_button != null, "developer console must expose collision visualization")
 	assert(console.interaction_overlay != null, "developer console must create the UI interaction overlay")
 	assert(not console.get_tree().debug_collisions_hint, "collision visualization must default to off")

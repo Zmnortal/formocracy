@@ -25,6 +25,7 @@ var seed_selector: SpinBox
 var preset_selector: OptionButton
 var collision_button: Button
 var glass_test_button: Button
+var glass_event_selector: OptionButton
 var interaction_overlay: Control
 var status_label: Label
 var output: RichTextLabel
@@ -184,9 +185,25 @@ func build_ui() -> void:
 	console_panel.add_child(preset_selector)
 	var apply_preset := create_button("应用并打开日报", Vector2(292, 254), Vector2(188, 40))
 	apply_preset.pressed.connect(_on_apply_preset)
-	glass_test_button = create_button("发送眼镜测试", Vector2(492, 254), Vector2(188, 40))
+	glass_event_selector = OptionButton.new()
+	glass_event_selector.name = "GlassEventSelector"
+	glass_event_selector.position = Vector2(492, 254)
+	glass_event_selector.size = Vector2(220, 40)
+	for event in [
+		["连接测试", "test"],
+		["晨间指令", "briefing"],
+		["NPC 台词", "npc"],
+		["现实验收回执", "receipt"],
+		["每日结算", "report"],
+		["后果回流", "consequence"],
+		["内部广播", "broadcast"],
+	]:
+		glass_event_selector.add_item(event[0])
+		glass_event_selector.set_item_metadata(glass_event_selector.item_count - 1, event[1])
+	console_panel.add_child(glass_event_selector)
+	glass_test_button = create_button("发送眼镜事件", Vector2(724, 254), Vector2(248, 40))
 	glass_test_button.name = "GlassTestButton"
-	glass_test_button.pressed.connect(send_glass_test)
+	glass_test_button.pressed.connect(send_selected_glass_event)
 
 	var fill_button := create_button("填充三件测试申请", Vector2(28, 310), Vector2(210, 40))
 	fill_button.pressed.connect(func(): fill_test_records("mixed"))
@@ -261,8 +278,13 @@ func refresh_collision_button() -> void:
 	collision_button.text = "交互框：%s" % ("显示" if interaction_overlay.visible else "关闭")
 
 
-# 向当前连接的眼镜发送一张联调卡片。
-func send_glass_test() -> void:
+# 发送选择器中当前选中的眼镜联调事件。
+func send_selected_glass_event() -> void:
+	var event_id := String(glass_event_selector.get_item_metadata(glass_event_selector.selected))
+	send_glass_event(event_id)
+
+
+func send_glass_event(event_id: String) -> void:
 	var bridge := get_node_or_null("/root/RealityBridge")
 	if bridge == null:
 		append_output("眼镜桥接器未加载。")
@@ -270,8 +292,25 @@ func send_glass_test() -> void:
 	if not bridge.is_connected_to_glass():
 		append_output("眼镜尚未连接；请确认手机 App 的游戏连接服务已启动。")
 		return
-	bridge.send_test()
-	append_output("已发送眼镜连接测试卡片。")
+	match event_id:
+		"test":
+			bridge.send_test()
+		"briefing":
+			bridge.morning_briefing(WorkdayState.day_number, ["今日配额：3 件", "重点核验：身份与现居地址", "程序错误将进入日终问责"], "第十二区 · 晨间指令")
+		"npc":
+			bridge.npc_line("林默", "您好。我来办理共同居住配额。", "male", "young")
+		"receipt":
+			bridge.reality_receipt("林默 · 现实验收回执", "处理决定：批准\n程序记录：完整\n档案已取得现实效力", "normal", WorkdayState.day_number, "CASE-001", "approved")
+		"report":
+			bridge.day_report(["形式审查：3　批准：2　驳回：1", "程序错误：0　现实生效：2", "日薪：+120　罚款：-0", "本日结余：+90"], WorkdayState.day_number, "工作日处理回执")
+		"consequence":
+			bridge.consequence("昨日工作后果", "行政罚款：-80\n政治信用：-2\n系统评价：受到关注", "warning")
+		"broadcast":
+			bridge.secretary_line("下一位。")
+		_:
+			append_output("未知眼镜事件：%s" % event_id)
+			return
+	append_output("已发送眼镜事件：%s" % event_id)
 
 
 # 全局输入监听。
@@ -518,10 +557,10 @@ func execute_command(command: String) -> void:
 			else:
 				append_output("用法：npc state | npc skip")
 		"glass":
-			if parts.size() > 1 and parts[1].to_lower() == "test":
-				send_glass_test()
+			if parts.size() > 1:
+				send_glass_event(parts[1].to_lower())
 			else:
-				append_output("用法：glass test")
+				append_output("用法：glass test|briefing|npc|receipt|report|consequence|broadcast")
 		"state": refresh_status(); append_output(status_label.text.replace("\n", " | "))
 		"clear": output.clear()
 		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])
