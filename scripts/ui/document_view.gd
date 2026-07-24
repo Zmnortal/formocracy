@@ -4,9 +4,9 @@ extends Panel
 # 一份可展开、拖动、盖多枚章并重新装袋的正式文件。
 
 const LOGICAL_SIZE := Vector2(640, 480)
-const APPROVE_MARK := preload("res://assets/day1_8bit/interactive/approve_stamp.png")
-const RETURN_MARK := preload("res://assets/day1_8bit/interactive/return_stamp.png")
-const STAMP_DISPLAY_SIZE := Vector2(68, 82)
+const APPROVE_MARK := preload("res://assets/office/stamp_marks/approve_mark.png")
+const REJECT_MARK := preload("res://assets/office/stamp_marks/reject_mark.png")
+const STAMP_DISPLAY_SIZE := Vector2(92, 92)
 
 var document_id := ""
 var document_type_id := ""
@@ -88,10 +88,10 @@ func add_stamp(kind: String, local_position: Vector2) -> Dictionary:
 
 	var mark := TextureRect.new()
 	mark.name = "StampMark%d" % order
-	mark.texture = APPROVE_MARK if kind == "批准" else RETURN_MARK
+	mark.texture = APPROVE_MARK if kind == "批准" else REJECT_MARK
 	mark.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	mark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	mark.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	mark.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mark.size = STAMP_DISPLAY_SIZE
 	mark.position = constrained - STAMP_DISPLAY_SIZE / 2.0

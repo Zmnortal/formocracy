@@ -7,7 +7,7 @@ signal stamp_applied(kind: String, document_id: String, local_position: Vector2)
 
 const APPROVE_STAMP_TEXTURE := preload("res://assets/office/items/approve_stamp.png")
 const RETURN_STAMP_TEXTURE := preload("res://assets/office/items/return_stamp.png")
-const STAMP_SIZE := Vector2(32, 40)
+const STAMP_SIZE := Vector2(46, 56)
 
 var root: Node2D
 var desk: DeskNodes
@@ -47,7 +47,7 @@ func _create_stamp_tool(kind: String, at: Vector2) -> void:
 	stamp_image.texture = APPROVE_STAMP_TEXTURE if kind == "批准" else RETURN_STAMP_TEXTURE
 	stamp_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	stamp_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	stamp_image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	stamp_image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	stamp_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tool.add_child(stamp_image)
 	# TextureRect 会先采用原图 250×300 的最小尺寸；进入场景树后再覆盖，
