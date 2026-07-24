@@ -35,16 +35,32 @@ func play(lines: Array[String]) -> void:
 	var current_token := token
 	playing = true
 	panel.visible = true
+	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
+	if bridge != null and not lines.is_empty():
+		bridge.morning_briefing(
+			WorkdayState.day_number,
+			lines,
+			"第十二区 · 工作日晨间指令"
+		)
 	for line in lines:
 		if current_token != token:
 			return
 		label.text = line
+		GameStateSync.speaker_started(
+			"SECRETARY",
+			"内部广播 / 来源未登记",
+			"secretary",
+			line,
+			"secretary_briefing",
+			{"day": WorkdayState.day_number}
+		)
 		Sfx.play_voice("SECRETARY", VOICE_PATH)
 		await root.get_tree().create_timer(clampf(1.2 + line.length() * 0.045, 2.0, 4.2)).timeout
 	if current_token != token:
 		return
 	playing = false
 	panel.visible = false
+	GameStateSync.speaker_stopped("waiting_for_call")
 	Sfx.stop_voice()
 	finished.emit()
 
@@ -55,6 +71,7 @@ func skip() -> void:
 	token += 1
 	playing = false
 	panel.visible = false
+	GameStateSync.speaker_stopped("waiting_for_call")
 	Sfx.stop_voice()
 	finished.emit()
 
@@ -62,4 +79,5 @@ func skip() -> void:
 func shutdown() -> void:
 	token += 1
 	playing = false
+	GameStateSync.speaker_stopped("scene_exiting")
 	Sfx.stop_voice()
