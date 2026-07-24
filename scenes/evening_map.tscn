@@ -1,6 +1,12 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/evening_map.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/map/background/district_12_map.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/central_forms.png" id="3_forms"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/ration_depot.png" id="4_ration"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/home_12c.png" id="5_home"]
+[ext_resource type="Texture2D" path="res://assets/map/tokens/player_token.png" id="6_token"]
+[ext_resource type="Texture2D" path="res://assets/map/stamps/locked_stamp.png" id="7_locked"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderPanel"]
 bg_color = Color(0.035, 0.055, 0.043, 0.97)
@@ -91,6 +97,74 @@ offset_right = 1280.0
 offset_bottom = 720.0
 script = ExtResource("1_script")
 
+[node name="MapBackground" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="MapShade" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.02, 0.025, 0.02, 0.12)
+
+[node name="FormsSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 218.0
+offset_top = 112.0
+offset_right = 422.0
+offset_bottom = 260.0
+mouse_filter = 2
+texture = ExtResource("3_forms")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RationSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 548.0
+offset_top = 220.0
+offset_right = 732.0
+offset_bottom = 350.0
+mouse_filter = 2
+texture = ExtResource("4_ration")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HomeSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 870.0
+offset_top = 350.0
+offset_right = 970.0
+offset_bottom = 542.0
+mouse_filter = 2
+texture = ExtResource("5_home")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RouteHighlight" type="Line2D" parent="."]
+visible = false
+width = 5.0
+default_color = Color(0.96, 0.77, 0.25, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = false
+
+[node name="RouteMarkers" type="Control" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+
 [node name="Header" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 54.0
@@ -142,10 +216,10 @@ horizontal_alignment = 2
 
 [node name="FormsButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 128.0
-offset_right = 294.0
-offset_bottom = 208.0
+offset_left = 216.0
+offset_top = 258.0
+offset_right = 424.0
+offset_bottom = 322.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -158,10 +232,10 @@ text = "中央表单部\n特殊窗口"
 
 [node name="RationButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 500.0
-offset_top = 188.0
-offset_right = 714.0
-offset_bottom = 270.0
+offset_left = 536.0
+offset_top = 346.0
+offset_right = 744.0
+offset_bottom = 410.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -195,6 +269,18 @@ theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
 theme_override_font_sizes/font_size = 16
 text = "第十二区诊疗所\n需通行表"
 
+[node name="LockedStamp" type="TextureRect" parent="Clinic"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 132.0
+offset_top = 8.0
+offset_right = 196.0
+offset_bottom = 72.0
+mouse_filter = 2
+texture = ExtResource("7_locked")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Transit" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 160.0
@@ -218,12 +304,24 @@ theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
 theme_override_font_sizes/font_size = 16
 text = "交通许可处\n已关闭"
 
+[node name="LockedStamp" type="TextureRect" parent="Transit"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 132.0
+offset_top = 8.0
+offset_right = 196.0
+offset_bottom = 72.0
+mouse_filter = 2
+texture = ExtResource("7_locked")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="HomeButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 916.0
-offset_top = 380.0
-offset_right = 1130.0
-offset_bottom = 460.0
+offset_left = 826.0
+offset_top = 528.0
+offset_right = 1034.0
+offset_bottom = 586.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -234,26 +332,17 @@ theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
 text = "职员宿舍 12-C\n回家"
 
-[node name="PlayerToken" type="Panel" parent="."]
+[node name="PlayerToken" type="TextureRect" parent="."]
+texture_filter = 1
 layout_mode = 0
-offset_left = 612.0
-offset_top = 310.0
-offset_right = 652.0
-offset_bottom = 350.0
-theme_override_styles/panel = SubResource("TokenPanel")
-
-[node name="Glyph" type="Label" parent="PlayerToken"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.98, 0.85, 0.45, 1)
-theme_override_font_sizes/font_size = 20
-text = "人"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = 716.0
+offset_top = 488.0
+offset_right = 780.0
+offset_bottom = 552.0
+mouse_filter = 2
+texture = ExtResource("6_token")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="NoticePanel" type="Panel" parent="."]
 layout_mode = 0

@@ -1,6 +1,7 @@
 extends Control
 
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const ROUTE_NODE_TEXTURE := preload("res://assets/map/tokens/route_node_active.png")
 const DESIGN_SIZE := Vector2(1280, 720)
 const LOCATION_OFFICE := "LOCATION-OFFICE"
 const LOCATION_FORMS := "LOCATION-FORMS"
@@ -9,10 +10,10 @@ const LOCATION_HOME := "LOCATION-HOME"
 const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
 
 const LOCATION_POSITIONS := {
-	LOCATION_OFFICE: Vector2(766, 446),
-	LOCATION_FORMS: Vector2(184, 256),
-	LOCATION_RATION: Vector2(642, 288),
-	LOCATION_HOME: Vector2(1040, 414),
+	LOCATION_OFFICE: Vector2(748, 520),
+	LOCATION_FORMS: Vector2(320, 220),
+	LOCATION_RATION: Vector2(640, 350),
+	LOCATION_HOME: Vector2(920, 540),
 }
 const LOCATION_NAMES := {
 	LOCATION_FORMS: "中央表单部",
@@ -24,7 +25,9 @@ const LOCATION_NAMES := {
 @onready var balance_label: Label = $Header/Balance
 @onready var action_label: Label = $Header/Actions
 @onready var notice_label: Label = $Notice
-@onready var player_token: Panel = $PlayerToken
+@onready var player_token: TextureRect = $PlayerToken
+@onready var route_highlight: Line2D = $RouteHighlight
+@onready var route_markers: Control = $RouteMarkers
 @onready var forms_button: Button = $FormsButton
 @onready var ration_button: Button = $RationButton
 @onready var home_button: Button = $HomeButton
@@ -123,7 +126,7 @@ func select_location(location_id: String) -> void:
 	active_route_points = build_route(WorkdayState.evening_location_id, location_id)
 	highlighted_route_points = [active_route_points[0]]
 	notice_label.text = "正在前往：%s" % LOCATION_NAMES[location_id]
-	queue_redraw()
+	refresh_route_overlay()
 	await animate_route(active_route_points)
 	WorkdayState.arrive_at_evening_location(location_id)
 	moving = false
@@ -150,7 +153,26 @@ func animate_route(route: Array[Vector2]) -> void:
 		tween.tween_property(player_token, "position", route[i] - player_token.size * 0.5, 0.34)
 		await tween.finished
 		highlighted_route_points.append(route[i])
-		queue_redraw()
+		refresh_route_overlay()
+
+
+func refresh_route_overlay() -> void:
+	route_highlight.clear_points()
+	for point in highlighted_route_points:
+		route_highlight.add_point(point)
+	route_highlight.visible = highlighted_route_points.size() > 1
+	for child in route_markers.get_children():
+		child.queue_free()
+	for point in highlighted_route_points:
+		var marker := TextureRect.new()
+		marker.texture = ROUTE_NODE_TEXTURE
+		marker.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		marker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		marker.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		marker.position = point - Vector2(11, 11)
+		marker.size = Vector2(22, 22)
+		marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		route_markers.add_child(marker)
 
 
 func show_arrival_card(location_id: String) -> void:
@@ -324,7 +346,6 @@ func refresh_map_state() -> void:
 	notice_label.text = "当前位置：%s。请选择下一处地点。" % get_current_location_name()
 	if WorkdayState.evening_actions_remaining <= 0:
 		notice_label.text = "今日行动已经用尽。请返回职员宿舍。"
-	queue_redraw()
 
 
 func set_location_buttons_enabled(enabled: bool) -> void:
@@ -358,45 +379,3 @@ func fit_to_window() -> void:
 		return
 	scale = Vector2(viewport_size.x / DESIGN_SIZE.x, viewport_size.y / DESIGN_SIZE.y)
 	position = Vector2.ZERO
-
-
-func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, DESIGN_SIZE), Color("090d0b"))
-	draw_rect(Rect2(34, 28, 1212, 650), Color("182019"), true)
-	draw_rect(Rect2(34, 28, 1212, 650), Color("718054"), false, 4.0)
-	draw_rect(Rect2(54, 106, 1172, 548), Color("b7a77c"), true)
-	draw_rect(Rect2(54, 106, 1172, 548), Color("443e2e"), false, 3.0)
-	for x in range(78, 1210, 48):
-		draw_line(Vector2(x, 122), Vector2(x, 638), Color(0.23, 0.22, 0.16, 0.18), 1.0)
-	for y in range(130, 638, 40):
-		draw_line(Vector2(70, y), Vector2(1210, y), Color(0.23, 0.22, 0.16, 0.18), 1.0)
-	var river := PackedVector2Array([
-		Vector2(70, 500), Vector2(230, 474), Vector2(390, 510),
-		Vector2(540, 478), Vector2(720, 528), Vector2(910, 492), Vector2(1210, 530)
-	])
-	draw_polyline(river, Color("405c5a"), 28.0, true)
-	draw_polyline(river, Color("718b7f"), 4.0, true)
-	var routes := [
-		PackedVector2Array([Vector2(184, 256), Vector2(418, 210), Vector2(642, 288), Vector2(898, 210), Vector2(1088, 294)]),
-		PackedVector2Array([Vector2(184, 256), Vector2(330, 410), Vector2(642, 288), Vector2(766, 446), Vector2(1040, 414)]),
-	]
-	for route in routes:
-		draw_polyline(route, Color("6f2e25"), 8.0, true)
-		draw_polyline(route, Color("b35a3f"), 2.0, true)
-	var blocks := [
-		Rect2(116, 180, 136, 100), Rect2(350, 150, 150, 104),
-		Rect2(572, 238, 144, 104), Rect2(826, 150, 156, 104),
-		Rect2(1010, 242, 138, 104), Rect2(250, 364, 154, 108),
-		Rect2(690, 392, 152, 106), Rect2(964, 366, 154, 108),
-	]
-	for block in blocks:
-		draw_rect(block, Color("273126"), true)
-		draw_rect(block, Color("4e563c"), false, 3.0)
-		draw_line(block.position + Vector2(10, 18), Vector2(block.end.x - 10, block.position.y + 18), Color("84825f"), 2.0)
-	for point in [Vector2(184, 256), Vector2(418, 210), Vector2(642, 288), Vector2(898, 210), Vector2(1088, 294), Vector2(330, 410), Vector2(766, 446), Vector2(1040, 414)]:
-		draw_circle(point, 11, Color("171b15"))
-		draw_circle(point, 7, Color("d2b95f"))
-	if highlighted_route_points.size() > 1:
-		draw_polyline(PackedVector2Array(highlighted_route_points), Color("f2cb52"), 4.0, true)
-	for point in highlighted_route_points:
-		draw_circle(point, 6, Color("ffe477"))

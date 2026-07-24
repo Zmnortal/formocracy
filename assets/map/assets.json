@@ -1,0 +1,48 @@
+{
+  "collection": "FORMOCRACY District 12 Evening Map",
+  "generated_with": "OpenAI built-in image generation",
+  "style_reference": "res://assets/opening/opening-03-day-one-reveal-8bit-v1.png",
+  "composition_reference": "archive-map.png",
+  "palette": ["#151a15", "#4b5137", "#b7a576", "#762f25", "#aa8946", "#365557"],
+  "assets": [
+    {
+      "id": "MAP-DISTRICT-12",
+      "path": "res://assets/map/background/district_12_map.png",
+      "size": [1280, 720],
+      "usage": "evening map full-screen background"
+    },
+    {
+      "id": "LOCATION-FORMS-SPRITE",
+      "path": "res://assets/map/locations/central_forms.png",
+      "usage": "central forms location"
+    },
+    {
+      "id": "LOCATION-RATION-SPRITE",
+      "path": "res://assets/map/locations/ration_depot.png",
+      "usage": "public ration depot location"
+    },
+    {
+      "id": "LOCATION-HOME-SPRITE",
+      "path": "res://assets/map/locations/home_12c.png",
+      "usage": "employee housing location"
+    },
+    {
+      "id": "PLAYER-TOKEN",
+      "path": "res://assets/map/tokens/player_token.png",
+      "size": [64, 64],
+      "usage": "map travel token"
+    },
+    {
+      "id": "ROUTE-NODE-ACTIVE",
+      "path": "res://assets/map/tokens/route_node_active.png",
+      "size": [28, 28],
+      "usage": "active travel route marker"
+    },
+    {
+      "id": "LOCATION-LOCKED-STAMP",
+      "path": "res://assets/map/stamps/locked_stamp.png",
+      "size": [72, 72],
+      "usage": "locked location overlay"
+    }
+  ]
+}
