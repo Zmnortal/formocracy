@@ -24,6 +24,7 @@ OpeningMusic="*res://scripts/autoload/opening_music.gd"
 Sfx="*res://scripts/autoload/sfx.gd"
 PauseMenu="*res://scripts/autoload/pause_menu.gd"
 DeveloperConsole="*res://scripts/autoload/developer_console.gd"
+RealityBridge="*res://RealityBridge.gd"
 
 [debug]
 

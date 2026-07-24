@@ -189,6 +189,8 @@ func _say(text: String, token: int) -> void:
 	if text.strip_edges().is_empty() or skip_requested:
 		return
 	speech_label.text = text
+	var person: Dictionary = current_case.get("person", {})
+	_send_line_to_glass(person, text)
 	speech_bubble.modulate.a = 0.0
 	speech_bubble.visible = true
 	_play_voice()
@@ -204,6 +206,34 @@ func _say(text: String, token: int) -> void:
 	await hide.finished
 	if token == performance_token:
 		speech_bubble.visible = false
+
+
+func _send_line_to_glass(person: Dictionary, text: String) -> void:
+	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
+	if bridge == null:
+		return
+	var voice_source := String(person.get("voice_sfx", "")).to_lower()
+	var visual_source := String(person.get("actor_texture", "")).to_lower()
+	var identity_source := voice_source + " " + visual_source
+	var gender := ""
+	if identity_source.contains("female"):
+		gender = "female"
+	elif identity_source.contains("male"):
+		gender = "male"
+	var age := ""
+	for source in [voice_source, visual_source]:
+		for candidate in ["young", "average", "old"]:
+			if source.contains(candidate):
+				age = candidate
+				break
+		if not age.is_empty():
+			break
+	bridge.npc_line(
+		String(person.get("display_name", current_case.get("applicant", "身份受限"))),
+		text,
+		gender,
+		age
+	)
 
 
 func _build_queue(case_ids: Array[String]) -> void:
