@@ -21,6 +21,12 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	await create_timer(1.9).timeout
+	if DisplayServer.get_name() == "headless":
+		state.start_new_game()
+		state.save_path = state.DEFAULT_SAVE_PATH
+		print("FORMOCRACY_OPENING_ANIMATION_RENDER_OK (skipped on headless display)")
+		quit(0)
+		return
 	var opening = current_scene
 	var today := Time.get_date_dict_from_system()
 	opening.name_input.text = "张子奕"

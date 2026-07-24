@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/concepts/validation-machine.png" id="1_image"]
-[ext_resource type="Script" path="res://scripts/validation_preview.gd" id="2_script"]
+[ext_resource type="Script" path="res://scripts/scenes/validation_preview.gd" id="2_script"]
 
 [node name="ValidationPreview" type="Control"]
 layout_mode = 3

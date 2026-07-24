@@ -16,6 +16,8 @@ func run() -> void:
 	var desk = packed.instantiate()
 	root.add_child(desk)
 	await process_frame
+	desk.start_first_case_for_tests()
+	await process_frame
 	assert(desk.get_node("ClerkDeskConcept").texture.resource_path == "res://assets/opening/opening-03-day-one-reveal-8bit-v1.png", "gameplay background must be the configured final opening slide")
 	assert(desk.get_node("ClerkDeskConcept").stretch_mode == TextureRect.STRETCH_SCALE, "background must fill the canvas without cropping its right or bottom edge")
 	assert(desk.get_node("ClerkDeskConcept").size == Vector2(1280, 720), "background control must retain the full design-canvas size after entering the tree")

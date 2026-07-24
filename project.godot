@@ -17,13 +17,13 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-WorkdayState="*res://scripts/workday_state.gd"
-ConfigDatabase="*res://scripts/config_database.gd"
-LevelDirector="*res://scripts/level_director.gd"
-OpeningMusic="*res://scripts/opening_music.gd"
-Sfx="*res://scripts/sfx.gd"
-PauseMenu="*res://scripts/pause_menu.gd"
-DeveloperConsole="*res://scripts/developer_console.gd"
+WorkdayState="*res://scripts/autoload/workday_state.gd"
+ConfigDatabase="*res://scripts/autoload/config_database.gd"
+LevelDirector="*res://scripts/autoload/level_director.gd"
+OpeningMusic="*res://scripts/autoload/opening_music.gd"
+Sfx="*res://scripts/autoload/sfx.gd"
+PauseMenu="*res://scripts/autoload/pause_menu.gd"
+DeveloperConsole="*res://scripts/autoload/developer_console.gd"
 
 [debug]
 

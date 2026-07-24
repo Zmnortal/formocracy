@@ -20,6 +20,10 @@ func run() -> void:
 	await process_frame
 	current_scene.select_location(current_scene.LOCATION_RATION)
 	await create_timer(1.2).timeout
+	if DisplayServer.get_name() == "headless":
+		print("FORMOCRACY_EVENING_MAP_ASSETS_SNAPSHOT_OK (skipped on headless display)")
+		quit(0)
+		return
 	var image := root.get_viewport().get_texture().get_image()
 	var save_error := image.save_png(OUTPUT_PATH)
 	assert(save_error == OK, "snapshot must save")

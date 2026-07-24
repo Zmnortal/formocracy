@@ -4,7 +4,7 @@ extends Node
 # 加载并索引 CSV 配置（角色、案件、关卡）与 JSON 本体数据（人物、目的、材料类型、规则、违规、后果、案件、工作日），
 # 提供统一的查询接口与规则评估入口。
 
-const RULE_EVALUATOR := preload("res://scripts/rule_evaluator.gd")
+const RULE_EVALUATOR := preload("res://scripts/rules/rule_evaluator.gd")
 const CONFIG_DIR := "res://data/config"
 
 # 本体 JSON 文件路径表

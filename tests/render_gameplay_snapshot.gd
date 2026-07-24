@@ -6,6 +6,7 @@ extends SceneTree
 const SNAPSHOT_PATH := "/tmp/formocracy-core-gameplay.png"
 const INGESTION_SNAPSHOT_PATH := "/tmp/formocracy-machine-ingestion.png"
 const NPC_SNAPSHOT_PATH := "/tmp/formocracy-npc-performance.png"
+const BRIEFING_SNAPSHOT_PATH := "/tmp/formocracy-daily-briefing.png"
 
 
 func _init() -> void:
@@ -24,6 +25,12 @@ func run() -> void:
 		print("FORMOCRACY_RENDER_SNAPSHOT_OK (skipped on headless display)")
 		quit(0)
 		return
+	await create_timer(0.25).timeout
+	var briefing_image := root.get_viewport().get_texture().get_image()
+	assert(not briefing_image.is_empty(), "daily briefing must produce a rendered frame")
+	assert(briefing_image.save_png(BRIEFING_SNAPSHOT_PATH) == OK, "daily briefing screenshot must be saved")
+	current_scene.start_first_case_for_tests()
+	await process_frame
 	await create_timer(0.9).timeout
 	var npc_image := root.get_viewport().get_texture().get_image()
 	assert(not npc_image.is_empty(), "NPC entrance must produce a rendered frame")
@@ -47,7 +54,7 @@ func run() -> void:
 		"machine ingestion screenshot must be saved"
 	)
 	print(
-		"FORMOCRACY_RENDER_SNAPSHOT_OK %s %s %s"
-		% [NPC_SNAPSHOT_PATH, SNAPSHOT_PATH, INGESTION_SNAPSHOT_PATH]
+		"FORMOCRACY_RENDER_SNAPSHOT_OK %s %s %s %s"
+		% [BRIEFING_SNAPSHOT_PATH, NPC_SNAPSHOT_PATH, SNAPSHOT_PATH, INGESTION_SNAPSHOT_PATH]
 	)
 	quit(0)

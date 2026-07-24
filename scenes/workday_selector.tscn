@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource path="res://scripts/workday_selector.gd" type="Script" id="1_selector"]
+[ext_resource path="res://scripts/scenes/workday_selector.gd" type="Script" id="1_selector"]
 
 [node name="WorkdaySelector" type="Control"]
 layout_mode = 3

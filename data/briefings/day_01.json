@@ -1,0 +1,24 @@
+{
+  "fixed": [
+    "内部广播。第十二区居住配置处，第一工作日。",
+    "昨日没有可供复核的处理记录。",
+    "今日所有现实事项必须经过形式审查、盖章并送交中央验收。",
+    "简报结束。请按下召唤铃，传唤第一位申请人。"
+  ],
+  "conditional": [
+    {
+      "id": "water_deprived",
+      "priority": 20,
+      "once": false,
+      "condition": {"water_deprived": true},
+      "lines": ["个人饮水配额未生效。该情况不构成降低工作标准的理由。"]
+    },
+    {
+      "id": "previous_error",
+      "priority": 10,
+      "once": true,
+      "condition": {"has_incorrect_record": true},
+      "lines": ["昨日处理记录存在偏差。有关扣款将在结算时自动执行。"]
+    }
+  ]
+}

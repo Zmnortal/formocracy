@@ -262,6 +262,7 @@ func _on_date_changed(value: String, input: LineEdit) -> void:
 
 
 func _on_form_changed(_value := "") -> void:
+	Sfx.typewriter_tick()
 	refresh_form_validity()
 
 
@@ -318,6 +319,7 @@ func submit_form() -> void:
 	if submission_locked or not confirm_button.visible:
 		return
 	submission_locked = true
+	Sfx.play("ui_click")
 	WorkdayState.player_name = name_input.text.strip_edges()
 	WorkdayState.reinstatement_date = entered_date()
 	WorkdayState.player_signature = signature_pad.serialize_strokes()
@@ -412,6 +414,7 @@ func play_stop_motion_approach() -> void:
 
 func play_stop_motion_ingestion() -> void:
 	submission_phase = "ingestion"
+	Sfx.start_conveyor()
 	# 遮挡只在纸张真正进入插槽时出现；靠近机器时不能盖住表单。
 	machine_foreground.modulate.a = 1.0
 	for frame in range(1, INGEST_FRAME_COUNT + 1):
@@ -426,6 +429,7 @@ func play_stop_motion_ingestion() -> void:
 		if DisplayServer.get_name() != "headless":
 			await get_tree().create_timer(STOP_MOTION_FRAME_SECONDS).timeout
 	projected_form.visible = false
+	Sfx.stop_conveyor()
 
 
 func set_projected_form_pose(width_scale: float, height_scale: float, perspective: float, offset_y: float) -> void:
@@ -459,6 +463,7 @@ func fade_machine_out() -> void:
 
 func show_welcome() -> void:
 	submission_phase = "welcome"
+	Sfx.play("bling")
 	welcome_panel.modulate.a = 0.0
 	welcome_panel.visible = true
 	if DisplayServer.get_name() == "headless":
@@ -473,6 +478,7 @@ func show_welcome() -> void:
 func complete_reinstatement() -> void:
 	if not submission_locked:
 		return
+	Sfx.play("start")
 	WorkdayState.save_progress()
 	enter_first_day()
 

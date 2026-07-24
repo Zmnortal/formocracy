@@ -20,6 +20,12 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	await create_timer(0.2).timeout
+	if DisplayServer.get_name() == "headless":
+		print("FORMOCRACY_WORKDAY_SELECTOR_RENDER_OK (skipped on headless display)")
+		state.start_new_game()
+		state.save_path = state.DEFAULT_SAVE_PATH
+		quit(0)
+		return
 	var image := root.get_viewport().get_texture().get_image()
 	assert(not image.is_empty(), "selector viewport must produce an image")
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "selector snapshot must save")

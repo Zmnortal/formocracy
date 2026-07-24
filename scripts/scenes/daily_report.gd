@@ -55,6 +55,7 @@ func populate_report() -> void:
 # 根据 pressed 状态启用或禁用确认按钮，并在状态栏提示“可结束工作日”或“等待人员确认”。
 # 当处于封存过程中时，按钮仍保持禁用，避免重复提交。
 func _on_declaration_toggled(pressed: bool) -> void:
+	Sfx.play("ui_switch")
 	confirm_button.disabled = not pressed or confirming
 	status_line.text = "记录状态：可结束工作日" if pressed else "记录状态：等待人员确认"
 
@@ -66,6 +67,7 @@ func _on_confirm_pressed() -> void:
 	if confirming or not declaration.button_pressed:
 		return
 	confirming = true
+	Sfx.play("ui_click")
 	confirm_button.disabled = true
 	status_line.text = "记录状态：正在封存"
 	WorkdayState.begin_evening()

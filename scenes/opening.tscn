@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource path="res://scripts/opening.gd" type="Script" id="1_opening"]
+[ext_resource path="res://scripts/scenes/opening.gd" type="Script" id="1_opening"]
 
 [node name="Opening" type="Control"]
 offset_right = 1280.0

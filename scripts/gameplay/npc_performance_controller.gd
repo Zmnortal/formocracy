@@ -65,6 +65,7 @@ func _build_layer() -> void:
 func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	performance_token += 1
 	var token := performance_token
+	_stop_audio()
 	current_case = case_data
 	waiting_line_shown = false
 	skip_requested = false
@@ -77,6 +78,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	actor_layer.add_child(current_actor)
 	current_actor.play("idle")
 	state = "WALKING_IN"
+	Sfx.start_walking()
 
 	var enter := root.create_tween().set_parallel(true)
 	enter.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -84,6 +86,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	enter.tween_property(current_actor, "scale", current_actor.scale / 0.72, 0.62)
 	enter.tween_property(current_actor, "modulate:a", 1.0, 0.5)
 	await enter.finished
+	Sfx.stop_walking()
 	if token != performance_token:
 		return
 
@@ -98,6 +101,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	await deliver.finished
 	if token != performance_token:
 		return
+	Sfx.play("ui_switch", -5.0, 0.82)
 	await _say(String(case_data.get("dialogue", {}).get("delivery", "材料都在这里。")), token)
 	if token != performance_token:
 		return
@@ -142,12 +146,14 @@ func react_and_leave(decision: String) -> void:
 	if token != performance_token:
 		return
 	state = "WALKING_OUT"
+	Sfx.start_walking()
 	var exit := root.create_tween().set_parallel(true)
 	exit.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	exit.tween_property(current_actor, "position", Vector2(205, 335), 0.58)
 	exit.tween_property(current_actor, "scale", current_actor.scale * 0.68, 0.58)
 	exit.tween_property(current_actor, "modulate:a", 0.0, 0.48)
 	await exit.finished
+	Sfx.stop_walking()
 	if token != performance_token:
 		return
 	state = "QUEUE_ADVANCING"
@@ -159,6 +165,7 @@ func react_and_leave(decision: String) -> void:
 func skip_current_performance() -> void:
 	skip_requested = true
 	speech_bubble.visible = false
+	_stop_audio()
 	if state in ["WALKING_IN", "GREETING", "DELIVERING"]:
 		performance_token += 1
 		state = "WAITING"
@@ -172,12 +179,19 @@ func skip_current_performance() -> void:
 		departure_finished.emit()
 
 
+func shutdown() -> void:
+	performance_token += 1
+	speech_bubble.visible = false
+	_stop_audio()
+
+
 func _say(text: String, token: int) -> void:
 	if text.strip_edges().is_empty() or skip_requested:
 		return
 	speech_label.text = text
 	speech_bubble.modulate.a = 0.0
 	speech_bubble.visible = true
+	_play_voice()
 	var show := root.create_tween()
 	show.tween_property(speech_bubble, "modulate:a", 1.0, 0.12)
 	await show.finished
@@ -239,6 +253,7 @@ func _make_actor(person: Dictionary) -> AnimatedSprite2D:
 
 
 func _clear_actors() -> void:
+	_stop_audio()
 	speech_bubble.visible = false
 	if is_instance_valid(current_actor):
 		current_actor.queue_free()
@@ -247,3 +262,13 @@ func _clear_actors() -> void:
 		if is_instance_valid(actor):
 			actor.queue_free()
 	queue_actors.clear()
+
+
+func _play_voice() -> void:
+	var person: Dictionary = current_case.get("person", {})
+	Sfx.play_voice(String(person.get("id", "")), String(person.get("voice_sfx", "")))
+
+
+func _stop_audio() -> void:
+	Sfx.stop_voice()
+	Sfx.stop_walking()

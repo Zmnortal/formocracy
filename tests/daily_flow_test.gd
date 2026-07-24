@@ -12,7 +12,7 @@ func _init() -> void:
 func run() -> void:
 	var state := root.get_node_or_null("WorkdayState")
 	if state == null:
-		state = load("res://scripts/workday_state.gd").new()
+		state = load("res://scripts/autoload/workday_state.gd").new()
 		state.name = "WorkdayState"
 		root.add_child(state)
 	state.reset_for_tests()
@@ -21,12 +21,18 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	assert(current_scene != null, "main scene must become current")
+	current_scene.start_first_case_for_tests()
+	await process_frame
 	for i in 3:
 		var desk := current_scene
 		desk.presenter.apply_stamp("批准" if i != 1 else "驳回", Vector2(350, 360))
 		desk.npc_performance.skip_requested = true
 		desk.submission_mgr.submit(desk.presenter, desk.current_case)
 		await create_timer(3.8).timeout
+		if i < 2:
+			assert(desk.call_bell.available, "completed case must wait for the call bell")
+			desk.call_bell.trigger(true)
+			await process_frame
 	assert(current_scene.name == "DailyReport", "third processed case must open daily report")
 	assert(state.records.size() == 3, "daily report must retain all three records")
 	assert(current_scene.stats_label.text.contains("批准 02"), "daily report must show decisions")

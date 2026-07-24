@@ -12,6 +12,8 @@ const STREAMS := {
 	"door": preload("res://assets/audio/sfx/item_door.wav"),
 	"bling": preload("res://assets/audio/sfx/special_bling.wav"),
 	"start": preload("res://assets/audio/sfx/special_start.wav"),
+	"call_bell": preload("res://assets/audio/sfx/external/call_bell_cc0.wav"),
+	"call_intercom": preload("res://assets/audio/sfx/external/call_intercom_noise.wav"),
 }
 
 # 各音效的默认音量（分贝），未列出的按 0 dB 播放。
@@ -23,6 +25,8 @@ const DEFAULT_VOLUME_DB := {
 	"door": -8.0,
 	"bling": -6.0,
 	"start": -6.0,
+	"call_bell": -7.0,
+	"call_intercom": -12.0,
 }
 
 const VOICE_STREAMS := {
@@ -48,8 +52,10 @@ var ambience_player: AudioStreamPlayer
 var walk_player: AudioStreamPlayer
 var conveyor_player: AudioStreamPlayer
 var typewriter_player: AudioStreamPlayer
+var voice_player: AudioStreamPlayer
 var typewriter_deadline := 0.0
 var voice_fallback_index := 0
+var last_voice_person_id := ""
 
 
 # 创建一次性音效池与各专用播放器；暂停时仍可播放 UI 音效。
@@ -76,6 +82,11 @@ func _ready() -> void:
 	typewriter_player.stream = TYPEWRITER_STREAM
 	typewriter_player.volume_db = -10.0
 	add_child(typewriter_player)
+
+	voice_player = AudioStreamPlayer.new()
+	voice_player.name = "NpcVoice"
+	voice_player.volume_db = -9.0
+	add_child(voice_player)
 
 
 func _make_looping_player(player_name: String, stream: AudioStreamMP3, volume_db: float) -> AudioStreamPlayer:
@@ -108,22 +119,28 @@ func play(sound_name: String, volume_offset_db := 0.0, pitch := 1.0) -> void:
 		return
 
 
-# 播放案件人物入场语音；未登记人物轮流使用备用声线。
-func play_voice(person_id: String) -> void:
+# 播放一次短促人物拟声；配置路径无效时按人物 ID 或备用声线降级。
+func play_voice(person_id: String, configured_path := "") -> void:
 	if _is_muted():
 		return
-	var stream: AudioStream = VOICE_STREAMS.get(person_id)
+	var stream: AudioStream
+	if not configured_path.is_empty() and ResourceLoader.exists(configured_path):
+		stream = load(configured_path)
+	if stream == null:
+		stream = VOICE_STREAMS.get(person_id)
 	if stream == null:
 		stream = VOICE_FALLBACKS[voice_fallback_index % VOICE_FALLBACKS.size()]
 		voice_fallback_index += 1
-	for player in one_shot_players:
-		if player.playing:
-			continue
-		player.stream = stream
-		player.volume_db = -6.0
-		player.pitch_scale = 1.0
-		player.play()
-		return
+	voice_player.stop()
+	voice_player.stream = stream
+	voice_player.pitch_scale = 1.0
+	last_voice_person_id = person_id
+	voice_player.play()
+
+
+func stop_voice() -> void:
+	if is_instance_valid(voice_player):
+		voice_player.stop()
 
 
 # 开始播放办公室环境底噪（人声嘈杂声）循环。

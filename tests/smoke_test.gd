@@ -12,7 +12,7 @@ func _init() -> void:
 func run() -> void:
 	var state := root.get_node_or_null("WorkdayState")
 	if state == null:
-		state = load("res://scripts/workday_state.gd").new()
+		state = load("res://scripts/autoload/workday_state.gd").new()
 		state.name = "WorkdayState"
 		root.add_child(state)
 	state.reset_for_tests()
@@ -20,6 +20,8 @@ func run() -> void:
 	assert(packed != null, "main scene must load")
 	var main := packed.instantiate()
 	root.add_child(main)
+	await process_frame
+	main.start_first_case_for_tests()
 	await process_frame
 	assert(main.presenter.form != null, "a form must be created")
 	assert(not main.desk.applicant_card_label.text.is_empty(), "applicant card must be populated")
@@ -41,6 +43,9 @@ func run() -> void:
 	await create_timer(0.9).timeout
 	assert(main.desk.validation_overlay.visible, "validation concept transition must appear")
 	await create_timer(3.1).timeout
+	assert(main.call_bell.available, "next case must wait for the player to ring the call bell")
+	main.call_bell.trigger(true)
+	await process_frame
 	assert(main.case_index == 1, "accepted form must advance to next case")
 	assert(main.presenter.is_stamped() == false, "next case must reset stamp state")
 	assert(main.presenter.form != null, "next form must be created")

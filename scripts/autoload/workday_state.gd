@@ -54,7 +54,10 @@ func configure_level(level_id: String, configured_day: int, case_count: int, con
 # 使用 JSON 工作日本体配置初始化工作日状态（时长、日薪、生活支出等）。
 func configure_workday(workday: Dictionary) -> void:
 	current_level_id = String(workday.get("id", "WORKDAY-001"))
-	day_number = int(workday.get("day_number", 1))
+	# 工作日配置定义的是该关卡最早可出现的日期，不能覆盖存档中已经推进的日期。
+	# 否则进入下一天主场景时，WORKDAY-001 会把 day_number 从 2 写回 1，
+	# 夜间地图便会误判为同一天并保留已经用尽的行动次数。
+	day_number = maxi(day_number, int(workday.get("day_number", 1)))
 	target_case_count = workday.get("case_ids", []).size()
 	report_title = String(workday.get("report_title", "工作日处理回执"))
 	workday_duration = float(workday.get("duration_seconds", 180))
@@ -189,6 +192,10 @@ func begin_next_day() -> void:
 	settle_current_day()
 	day_number += 1
 	records.clear()
+	# 跨日时立即建立新一天的夜间额度，避免主场景或存档恢复期间短暂携带昨日的 0 次行动。
+	evening_day_number = day_number
+	evening_actions_remaining = 2
+	evening_location_id = "LOCATION-OFFICE"
 	process_due_personal_forms()
 	prepare_new_workday()
 	if persistence_enabled:
@@ -402,7 +409,7 @@ func save_progress() -> bool:
 		push_error("无法写入存档：%s" % FileAccess.get_open_error())
 		return false
 	file.store_string(JSON.stringify({
-		"version": 5,
+		"version": 6,
 		"day_number": day_number,
 		"records": records,
 		"current_level_id": current_level_id,
@@ -464,7 +471,31 @@ func load_progress() -> bool:
 			var saved_case_id := String(record.get("case_id", ""))
 			if not saved_case_id.is_empty():
 				decision_by_case_id[saved_case_id] = String(record.get("decision", ""))
+	var repaired_legacy_evening := repair_legacy_exhausted_evening(int(parsed.get("version", 1)))
 	persistence_enabled = true
+	if repaired_legacy_evening:
+		save_progress()
+	return true
+
+
+# 修复 v5 及更早版本可能产生的跨日卡死存档：
+# 当日案件已经全部完成并结算，但日期仍停留在行动耗尽的同一夜晚。
+func repair_legacy_exhausted_evening(save_version: int) -> bool:
+	if (
+		save_version > 5
+		or evening_actions_remaining > 0
+		or evening_day_number != day_number
+		or settled_day_number != day_number
+		or records.size() < target_case_count
+	):
+		return false
+	day_number += 1
+	records.clear()
+	evening_day_number = day_number
+	evening_actions_remaining = 2
+	evening_location_id = "LOCATION-OFFICE"
+	process_due_personal_forms()
+	prepare_new_workday()
 	return true
 
 

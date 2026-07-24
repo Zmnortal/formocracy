@@ -10,9 +10,13 @@ var input_mgr: WorkbenchInput
 var submission_mgr: SubmissionManager
 var sequence: CaseSequence
 var npc_performance: NpcPerformanceController
+var secretary_briefing: SecretaryBriefingController
+var call_bell: CallBellController
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
+var flow_state := "BRIEFING"
+var workday_started := false
 
 
 # 进入主工作台场景时调用：构建工作台、初始化各模块并启动第一个案件。
@@ -27,6 +31,8 @@ func _ready() -> void:
 	submission_mgr = SubmissionManager.new(self, desk)
 	sequence = CaseSequence.new()
 	npc_performance = NpcPerformanceController.new(self)
+	secretary_briefing = SecretaryBriefingController.new(self)
+	call_bell = CallBellController.new(self)
 
 	sequence.case_started.connect(presenter.start_case)
 	sequence.case_started.connect(func(_data): input_mgr.bind_case(presenter))
@@ -36,10 +42,12 @@ func _ready() -> void:
 	submission_mgr.submission_finished.connect(_on_submission_finished)
 	npc_performance.delivery_finished.connect(_on_npc_delivery_finished)
 	npc_performance.departure_finished.connect(_on_npc_departed)
+	secretary_briefing.finished.connect(_on_briefing_finished)
+	call_bell.called.connect(_on_call_bell)
 	sequence.day_finished.connect(_on_day_finished)
 
 	get_viewport().size_changed.connect(fit_to_window)
-	sequence.start_day(accepting_new_cases)
+	sequence.start_day(accepting_new_cases, false)
 	if WorkdayState.water_deprived:
 		desk.need_status_label.text = "生活状态：缺水 / 工作时间 -20 秒 / 拖拽响应 72%"
 		desk.need_status_label.add_theme_color_override("font_color", Color("d98463"))
@@ -47,12 +55,14 @@ func _ready() -> void:
 	else:
 		desk.need_status_label.text = "生活状态：饮水正常 / 配额有效至第 %02d 工作日" % WorkdayState.water_covered_until_day
 	fit_to_window()
+	secretary_briefing.play(DailyBriefingDirector.new(WorkdayState).build_lines())
 
 
-var case_index := 0
+var case_index := -1
 
 
 func _on_case_started(case_data: Dictionary) -> void:
+	flow_state = "NPC_PERFORMANCE"
 	current_case = case_data
 	case_index = sequence.case_index
 	if is_instance_valid(presenter.envelope):
@@ -95,7 +105,28 @@ func _on_npc_departed() -> void:
 				desk.status_label.text = "内部日报生成失败，当前记录已保留。"
 			sequence.advance(accepting_new_cases)
 	else:
-		sequence.advance(accepting_new_cases)
+		flow_state = "WAITING_FOR_NEXT_CALL"
+		call_bell.unlock()
+		desk.status_label.text = "上一位申请人已离场。请按召唤铃传唤下一位。"
+
+
+func _on_briefing_finished() -> void:
+	flow_state = "WAITING_FOR_FIRST_CALL"
+	call_bell.unlock()
+	desk.status_label.text = "简报结束。请按召唤铃传唤第一位申请人。"
+
+
+func _on_call_bell() -> void:
+	if not workday_started:
+		workday_started = true
+	flow_state = "CALLING"
+	desk.status_label.text = "内部广播：下一位。"
+	sequence.advance(accepting_new_cases)
+
+
+func start_first_case_for_tests() -> void:
+	secretary_briefing.skip()
+	call_bell.trigger(true)
 
 
 func _on_day_finished() -> void:
@@ -106,13 +137,17 @@ func _on_day_finished() -> void:
 
 # 离开工作台场景时停止办公室环境音。
 func _exit_tree() -> void:
+	if npc_performance != null:
+		npc_performance.shutdown()
+	if secretary_briefing != null:
+		secretary_briefing.shutdown()
 	Sfx.stop_ambience()
 	Sfx.stop_conveyor()
 
 
 # 每帧更新倒计时，时间到后停止接收新案件。
 func _process(_delta: float) -> void:
-	if not get_tree().paused and accepting_new_cases:
+	if workday_started and not get_tree().paused and accepting_new_cases:
 		WorkdayState.tick(_delta)
 		if is_instance_valid(desk.timer_label):
 			var remaining := ceili(WorkdayState.seconds_remaining)

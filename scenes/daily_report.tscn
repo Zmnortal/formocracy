@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3]
 
-[ext_resource type="Script" path="res://scripts/daily_report.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/scenes/daily_report.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="TerminalPanel"]
 bg_color = Color(0.035, 0.055, 0.045, 0.98)

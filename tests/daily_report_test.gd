@@ -8,7 +8,7 @@ func _init() -> void:
 func run() -> void:
 	var state := root.get_node_or_null("WorkdayState")
 	if state == null:
-		state = load("res://scripts/workday_state.gd").new()
+		state = load("res://scripts/autoload/workday_state.gd").new()
 		state.name = "WorkdayState"
 		root.add_child(state)
 	state.reset_for_tests()

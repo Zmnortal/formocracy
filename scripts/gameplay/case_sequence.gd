@@ -12,12 +12,13 @@ var current_case: Dictionary = {}
 
 # 启动默认工作日的案件队列。
 # accepting_new_cases 用于主脚本判断当天是否已超时。
-func start_day(accepting_new_cases := true) -> void:
+func start_day(accepting_new_cases := true, auto_start := true) -> void:
 	if not LevelDirector.start_gameplay_workday():
 		push_error("无法启动游戏工作日：%s" % "；".join(LevelDirector.runtime_errors))
 		day_finished.emit()
 		return
-	advance(accepting_new_cases)
+	if auto_start:
+		advance(accepting_new_cases)
 
 
 # 推进到下一件案件；若当天已结束则发射 day_finished。
