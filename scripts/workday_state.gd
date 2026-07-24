@@ -29,11 +29,14 @@ var living_expenses: Dictionary = {}
 var balance := 0
 var political_credit := 0
 var delayed_consequences: Array[Dictionary] = []
+var settled_day_number := 0
 
 # 夜间地图状态
 var evening_day_number := 0
 var evening_actions_remaining := 2
 var evening_location_id := "LOCATION-OFFICE"
+var personal_form_inventory: Array[Dictionary] = []
+var next_inventory_serial := 1
 
 
 # 使用 CSV 关卡配置初始化工作日状态。
@@ -180,7 +183,7 @@ func get_summary() -> Dictionary:
 # 将 day_number 加 1，并清空 records 数组，准备接收新一天的案件。
 # 进入下一工作日：更新余额并清空当日记录。
 func begin_next_day() -> void:
-	balance = int(get_settlement().balance_after)
+	settle_current_day()
 	day_number += 1
 	records.clear()
 	if persistence_enabled:
@@ -189,12 +192,52 @@ func begin_next_day() -> void:
 
 # 初始化当前工作日的夜间地图状态。重复进入同一天地图时保留行动次数与当前位置。
 func begin_evening() -> void:
+	settle_current_day()
 	if evening_day_number != day_number:
 		evening_day_number = day_number
 		evening_actions_remaining = 2
 		evening_location_id = "LOCATION-OFFICE"
 	if persistence_enabled:
 		save_progress()
+
+
+# 将日报中的日薪、绩效、罚款与生活支出结算到余额，同一天最多执行一次。
+func settle_current_day() -> void:
+	if settled_day_number == day_number:
+		return
+	balance = int(get_settlement().balance_after)
+	settled_day_number = day_number
+
+
+# 购买一份配置定义的空白个人表单，成功时扣除工本费并生成唯一库存条目。
+func purchase_personal_form(form_type_id: String) -> bool:
+	var form := ConfigDatabase.get_ontology("personal_forms", form_type_id)
+	if form.is_empty():
+		return false
+	var fee := int(form.get("fee", 0))
+	if balance < fee:
+		return false
+	balance -= fee
+	personal_form_inventory.append({
+		"inventory_id": "INV-%02d-%04d" % [day_number, next_inventory_serial],
+		"form_type_id": form_type_id,
+		"status": String(form.get("status_on_purchase", "blank")),
+		"acquired_day": day_number,
+		"version": String(form.get("version", "01")),
+	})
+	next_inventory_serial += 1
+	if persistence_enabled:
+		save_progress()
+	return true
+
+
+# 返回档案袋中指定表单类型的持有数量，可按状态筛选。
+func get_personal_form_count(form_type_id: String, status := "") -> int:
+	var count := 0
+	for item in personal_form_inventory:
+		if String(item.get("form_type_id", "")) == form_type_id and (status.is_empty() or String(item.get("status", "")) == status):
+			count += 1
+	return count
 
 
 # 在抵达地点后登记一次夜间行动。回家始终可达，行动数不会低于零。
@@ -225,9 +268,12 @@ func start_new_game() -> void:
 	balance = 0
 	political_credit = 0
 	delayed_consequences.clear()
+	settled_day_number = 0
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"
+	personal_form_inventory.clear()
+	next_inventory_serial = 1
 	persistence_enabled = true
 	if has_save():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
@@ -240,7 +286,7 @@ func save_progress() -> bool:
 		push_error("无法写入存档：%s" % FileAccess.get_open_error())
 		return false
 	file.store_string(JSON.stringify({
-		"version": 3,
+		"version": 4,
 		"day_number": day_number,
 		"records": records,
 		"current_level_id": current_level_id,
@@ -253,9 +299,12 @@ func save_progress() -> bool:
 		"balance": balance,
 		"political_credit": political_credit,
 		"delayed_consequences": delayed_consequences,
+		"settled_day_number": settled_day_number,
 		"evening_day_number": evening_day_number,
 		"evening_actions_remaining": evening_actions_remaining,
 		"evening_location_id": evening_location_id,
+		"personal_form_inventory": personal_form_inventory,
+		"next_inventory_serial": next_inventory_serial,
 	}))
 	return true
 
@@ -282,9 +331,12 @@ func load_progress() -> bool:
 	balance = int(parsed.get("balance", 0))
 	political_credit = int(parsed.get("political_credit", 0))
 	delayed_consequences.assign(parsed.get("delayed_consequences", []))
+	settled_day_number = int(parsed.get("settled_day_number", 0))
 	evening_day_number = int(parsed.get("evening_day_number", 0))
 	evening_actions_remaining = clampi(int(parsed.get("evening_actions_remaining", 2)), 0, 2)
 	evening_location_id = String(parsed.get("evening_location_id", "LOCATION-OFFICE"))
+	personal_form_inventory.assign(parsed.get("personal_form_inventory", []))
+	next_inventory_serial = maxi(1, int(parsed.get("next_inventory_serial", personal_form_inventory.size() + 1)))
 	if decision_by_case_id.is_empty():
 		for record in records:
 			var saved_case_id := String(record.get("case_id", ""))
@@ -313,7 +365,10 @@ func reset_for_tests() -> void:
 	balance = 0
 	political_credit = 0
 	delayed_consequences.clear()
+	settled_day_number = 0
 	evening_day_number = 0
 	evening_actions_remaining = 2
 	evening_location_id = "LOCATION-OFFICE"
+	personal_form_inventory.clear()
+	next_inventory_serial = 1
 	persistence_enabled = false

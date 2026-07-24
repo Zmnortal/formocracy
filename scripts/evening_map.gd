@@ -6,6 +6,7 @@ const LOCATION_OFFICE := "LOCATION-OFFICE"
 const LOCATION_FORMS := "LOCATION-FORMS"
 const LOCATION_RATION := "LOCATION-RATION"
 const LOCATION_HOME := "LOCATION-HOME"
+const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
 
 const LOCATION_POSITIONS := {
 	LOCATION_OFFICE: Vector2(766, 446),
@@ -30,8 +31,20 @@ const LOCATION_NAMES := {
 @onready var arrival_card: Panel = $ArrivalCard
 @onready var arrival_title: Label = $ArrivalCard/Title
 @onready var arrival_body: Label = $ArrivalCard/Body
+@onready var ration_window: Panel = $RationWindow
+@onready var catalog_name: Label = $RationWindow/FormSlip/FormName
+@onready var catalog_code: Label = $RationWindow/FormSlip/FormCode
+@onready var catalog_fee: Label = $RationWindow/FormSlip/Fee
+@onready var buy_button: Button = $RationWindow/BuyButton
+@onready var close_ration_button: Button = $RationWindow/CloseButton
+@onready var form_slip: Panel = $RationWindow/FormSlip
+@onready var dossier_button: Button = $DossierButton
+@onready var dossier_panel: Panel = $DossierPanel
+@onready var dossier_contents: Label = $DossierPanel/Contents
+@onready var close_dossier_button: Button = $DossierPanel/CloseButton
 
 var moving := false
+var purchasing := false
 var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
 
@@ -44,6 +57,11 @@ func _ready() -> void:
 	connect_location_button(forms_button, LOCATION_FORMS)
 	connect_location_button(ration_button, LOCATION_RATION)
 	connect_location_button(home_button, LOCATION_HOME)
+	buy_button.pressed.connect(purchase_water_form)
+	close_ration_button.pressed.connect(func(): ration_window.visible = false)
+	dossier_button.pressed.connect(toggle_dossier)
+	close_dossier_button.pressed.connect(func(): dossier_panel.visible = false)
+	populate_water_catalog()
 	player_token.position = LOCATION_POSITIONS.get(WorkdayState.evening_location_id, LOCATION_POSITIONS[LOCATION_OFFICE]) - player_token.size * 0.5
 	refresh_map_state()
 	get_viewport().size_changed.connect(fit_to_window)
@@ -73,6 +91,8 @@ func select_location(location_id: String) -> void:
 		notice_label.text = "今日行动已经用尽。你只能返回职员宿舍。"
 		return
 	arrival_card.visible = false
+	ration_window.visible = false
+	dossier_panel.visible = false
 	moving = true
 	set_location_buttons_enabled(false)
 	active_route_points = build_route(WorkdayState.evening_location_id, location_id)
@@ -112,12 +132,74 @@ func show_arrival_card(location_id: String) -> void:
 	arrival_title.text = "已抵达 · %s" % LOCATION_NAMES[location_id]
 	match location_id:
 		LOCATION_RATION:
-			arrival_body.text = "营业状态：开放\n饮水与食品表单目录将在下一阶段接入。"
+			arrival_body.text = "营业状态：开放\n可购买居民饮水配额领取申请。"
+			ration_window.visible = true
+			refresh_purchase_ui()
 		LOCATION_HOME:
 			arrival_body.text = "住宅门禁已确认身份。\n回家填写个人表单将在后续阶段接入。"
 		_:
 			arrival_body.text = "特殊窗口仅在收到行政通知时办理。\n当前没有可办理事项。"
 	arrival_card.visible = true
+
+
+func populate_water_catalog() -> void:
+	var form := ConfigDatabase.get_ontology("personal_forms", WATER_FORM_ID)
+	catalog_name.text = String(form.get("name", "未登记表单"))
+	catalog_code.text = "表单 %s · 版本 %s" % [form.get("form_code", ""), form.get("version", "")]
+	catalog_fee.text = "工本费  %d 配给券" % int(form.get("fee", 0))
+	refresh_purchase_ui()
+
+
+func refresh_purchase_ui() -> void:
+	var form := ConfigDatabase.get_ontology("personal_forms", WATER_FORM_ID)
+	var fee := int(form.get("fee", 0))
+	var owned := WorkdayState.get_personal_form_count(WATER_FORM_ID, "blank")
+	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
+	dossier_button.text = "个人档案袋  空白表单 × %d" % owned
+	buy_button.text = "购买空白表单  -%d" % fee
+	buy_button.disabled = purchasing or WorkdayState.balance < fee
+	dossier_contents.text = "居民饮水配额领取申请\nR-01 / 版本 01 / 空白\n持有数量：%d" % owned if owned > 0 else "档案袋内没有空白个人表单。"
+
+
+func purchase_water_form() -> void:
+	if purchasing or WorkdayState.evening_location_id != LOCATION_RATION:
+		return
+	if not WorkdayState.purchase_personal_form(WATER_FORM_ID):
+		notice_label.text = "余额不足，无法支付表单工本费。"
+		refresh_purchase_ui()
+		return
+	purchasing = true
+	buy_button.disabled = true
+	notice_label.text = "表单已登记，正在装入个人档案袋……"
+	await animate_form_to_dossier()
+	purchasing = false
+	refresh_purchase_ui()
+	notice_label.text = "购买完成：空白饮水表已放入个人档案袋。"
+
+
+func animate_form_to_dossier() -> void:
+	var original_parent := form_slip.get_parent()
+	var original_position := form_slip.position
+	form_slip.reparent(self, true)
+	form_slip.z_index = 20
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(form_slip, "position", dossier_button.position + Vector2(40, -16), 0.55)
+	tween.tween_property(form_slip, "scale", Vector2(0.28, 0.28), 0.55)
+	tween.tween_property(form_slip, "modulate:a", 0.15, 0.55)
+	await tween.finished
+	form_slip.reparent(original_parent, false)
+	form_slip.position = original_position
+	form_slip.scale = Vector2.ONE
+	form_slip.modulate = Color.WHITE
+	form_slip.z_index = 0
+
+
+func toggle_dossier() -> void:
+	dossier_panel.visible = not dossier_panel.visible
+	if dossier_panel.visible:
+		refresh_purchase_ui()
 
 
 func refresh_map_state() -> void:

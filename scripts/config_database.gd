@@ -15,6 +15,8 @@ const ONTOLOGY_FILES := {
 	"rules": "res://data/ontology/rules.json",
 	"violations": "res://data/ontology/violations.json",
 	"consequences": "res://data/ontology/consequences.json",
+	"locations": "res://data/ontology/locations.json",
+	"personal_forms": "res://data/ontology/personal_forms.json",
 	"cases_v2": "res://data/cases/day_01_cases.json",
 	"workdays": "res://data/levels/day_01.json",
 }
@@ -150,6 +152,15 @@ func _validate_ontology() -> void:
 		for case_id in ontology.workdays[workday_id].get("case_ids", []):
 			if not ontology.get("cases_v2", {}).has(String(case_id)):
 				errors.append("工作日 %s 引用了不存在的案件 %s" % [workday_id, case_id])
+	for form_id in ontology.get("personal_forms", {}):
+		var form: Dictionary = ontology.personal_forms[form_id]
+		_require_reference(form_id, "issuer_location_id", form, "locations")
+		if int(form.get("fee", -1)) < 0:
+			errors.append("个人表单 %s 的工本费不能小于零" % form_id)
+	for location_id in ontology.get("locations", {}):
+		for form_id in ontology.locations[location_id].get("sells_form_ids", []):
+			if not ontology.get("personal_forms", {}).has(String(form_id)):
+				errors.append("地点 %s 引用了不存在的个人表单 %s" % [location_id, form_id])
 
 
 # 辅助：校验 source 对象中的 field 是否指向目标本体表中的有效 ID。

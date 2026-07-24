@@ -1,0 +1,26 @@
+[
+  {
+    "id": "LOCATION-OFFICE",
+    "name": "中央现实管理局",
+    "first_open_day": 1,
+    "sells_form_ids": []
+  },
+  {
+    "id": "LOCATION-FORMS",
+    "name": "中央表单部",
+    "first_open_day": 1,
+    "sells_form_ids": []
+  },
+  {
+    "id": "LOCATION-RATION",
+    "name": "公共配给站",
+    "first_open_day": 1,
+    "sells_form_ids": ["PERSONAL-FORM-WATER-R01"]
+  },
+  {
+    "id": "LOCATION-HOME",
+    "name": "职员宿舍 12-C",
+    "first_open_day": 1,
+    "sells_form_ids": []
+  }
+]

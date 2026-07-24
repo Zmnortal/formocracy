@@ -19,6 +19,8 @@ func run() -> void:
 	await process_frame
 	current_scene.select_location(current_scene.LOCATION_RATION)
 	await create_timer(1.1).timeout
+	current_scene.purchase_water_form()
+	await create_timer(0.7).timeout
 	var image := root.get_viewport().get_texture().get_image()
 	var save_error := image.save_png(OUTPUT_PATH)
 	assert(save_error == OK, "snapshot must save")

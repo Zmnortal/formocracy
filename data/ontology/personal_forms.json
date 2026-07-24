@@ -1,0 +1,14 @@
+[
+  {
+    "id": "PERSONAL-FORM-WATER-R01",
+    "name": "居民饮水配额领取申请",
+    "form_code": "R-01/WATER",
+    "version": "01",
+    "issuer_location_id": "LOCATION-RATION",
+    "fee": 5,
+    "effective_delay_days": 1,
+    "valid_for_days": 2,
+    "status_on_purchase": "blank",
+    "description": "用于申请下一周期的居民净水领取额度。"
+  }
+]
