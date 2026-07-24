@@ -15,6 +15,9 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var map = current_scene
+	map.end_sequence_fade_duration = 0.01
+	map.end_sequence_step_duration = 0.01
+	map.auto_transition_after_end_sequence = false
 	var start_position: Vector2 = map.player_token.position
 	map.select_location(map.LOCATION_RATION)
 	await create_timer(1.0).timeout
@@ -27,15 +30,11 @@ func run() -> void:
 	map.select_location(map.LOCATION_FORMS)
 	await create_timer(1.4).timeout
 	assert(state.evening_actions_remaining == 0, "second arrival must consume the final action")
-	assert(map.forms_button.disabled and map.ration_button.disabled, "non-home locations must lock at zero actions")
-	assert(not map.home_button.disabled, "home must remain available at zero actions")
-	map.select_location(map.LOCATION_HOME)
-	await create_timer(1.4).timeout
-	assert(state.evening_location_id == map.LOCATION_HOME, "player must still be able to return home")
-	assert(state.evening_actions_remaining == 0, "returning home cannot make actions negative")
-	state.begin_evening()
-	assert(state.evening_actions_remaining == 0, "re-entering the same evening must preserve actions")
-	state.day_number = 3
+	assert(map.ending_night, "using the final action must start the end-of-night sequence")
+	assert(map.end_overlay.visible, "the end-of-night sequence must black out the map")
+	assert(map.forms_button.disabled and map.ration_button.disabled and map.home_button.disabled, "all map input must lock during blackout")
+	assert(state.day_number == 3, "the dialogue sequence must advance to the next day")
+	assert(state.evening_actions_remaining == 0, "evening actions reset only when the next evening begins")
 	state.begin_evening()
 	assert(state.evening_actions_remaining == 2, "a new workday must restore two evening actions")
 	assert(state.evening_location_id == map.LOCATION_OFFICE, "a new evening must start at the office")

@@ -19,6 +19,9 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var map = current_scene
+	map.end_sequence_fade_duration = 0.01
+	map.end_sequence_step_duration = 0.01
+	map.auto_transition_after_end_sequence = false
 	map.select_location(map.LOCATION_HOME)
 	await create_timer(1.4).timeout
 	assert(map.home_window.visible, "arriving home must open personal form desk")
@@ -35,9 +38,10 @@ func run() -> void:
 	assert(int(submitted.effective_day) == 2, "water form must be scheduled for next-day processing")
 	assert(map.submit_form_button.text.contains("等待次日处理"), "form desk must show submission receipt")
 	map.end_night()
+	await create_timer(0.1).timeout
 	assert(state.day_number == 2, "ending the night must advance the workday")
-	assert(map.next_day_receipt.visible, "ending the night must show the personal review receipt")
-	assert(map.review_result_label.text.contains("批准"), "valid submitted form must be approved")
-	assert(map.next_day_effect_label.text.contains("饮水正常"), "approved form must show normal next-day status")
+	assert(map.end_overlay.visible, "ending the night must play the blackout dialogue")
+	assert(map.end_dialogue_label.text.contains("批准"), "valid submitted form must be approved during the transition")
+	assert(not state.water_deprived, "approved form must preserve normal next-day status")
 	print("FORMOCRACY_PERSONAL_FORM_SUBMISSION_TEST_OK")
 	quit(0)
