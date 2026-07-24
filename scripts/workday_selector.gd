@@ -40,7 +40,7 @@ func build_scene() -> void:
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	canvas.add_child(background)
 
-	title_label = make_label("选择一天来继续或者从头开始游戏", 34, Vector2(240, 58), Vector2(800, 62))
+	title_label = make_label("选择一天来继续或者从头开始游戏", 32, Vector2(240, 58), Vector2(800, 62))
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	canvas.add_child(title_label)
 	canvas.add_child(make_line(Vector2(0, 132), Vector2(1280, 2)))
@@ -52,7 +52,7 @@ func build_scene() -> void:
 	timeline.size = Vector2(900, 300)
 	canvas.add_child(timeline)
 
-	var node_one := make_label("※\n1", 24, Vector2(42, 0), Vector2(70, 62), true)
+	var node_one := make_label("※\n1", 16, Vector2(42, 0), Vector2(70, 62), true)
 	node_one.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	timeline.add_child(node_one)
 
@@ -65,7 +65,7 @@ func build_scene() -> void:
 	connector.name = "SaveConnector"
 	timeline.add_child(connector)
 
-	var node_two := make_label("※\n2", 24, Vector2(194, 0), Vector2(70, 62), true)
+	var node_two := make_label("※\n2", 16, Vector2(194, 0), Vector2(70, 62), true)
 	node_two.name = "SaveNodeNumber"
 	node_two.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	timeline.add_child(node_two)
@@ -109,10 +109,10 @@ func build_confirmation_layer() -> void:
 	UI.style_panel(panel)
 	confirmation_layer.add_child(panel)
 
-	confirmation_title = make_label("", 30, Vector2(40, 38), Vector2(500, 52))
+	confirmation_title = make_label("", 32, Vector2(40, 38), Vector2(500, 52))
 	confirmation_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	panel.add_child(confirmation_title)
-	confirmation_copy = make_label("", 19, Vector2(55, 112), Vector2(470, 80), true)
+	confirmation_copy = make_label("", 16, Vector2(55, 112), Vector2(470, 80), true)
 	confirmation_copy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	confirmation_copy.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	panel.add_child(confirmation_copy)
@@ -260,7 +260,7 @@ func make_timeline_button(text: String, at: Vector2, dimensions: Vector2) -> But
 	button.position = at
 	button.size = dimensions
 	button.custom_minimum_size = dimensions
-	UI.style_button(button, 23)
+	UI.style_button(button, 16)
 	button.pressed.connect(func(): Sfx.play("ui_click"))
 	button.mouse_entered.connect(func(): Sfx.play("ui_hover"))
 	return button
