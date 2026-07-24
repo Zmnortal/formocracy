@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FORMOCRACY · 角色声音分配台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="eyebrow">FORMOCRACY / VOICE CASTING DESK</p>
+        <h1>角色声音分配台</h1>
+        <p class="intro">按“角色 × 场景”分配声音：聊天、批准反应、驳回反应。所有选择、备注和标记均保存在本机浏览器。</p>
+      </div>
+      <div class="summary">
+        <strong id="boundCount">0 / 0</strong>
+        <span>声音槽位已绑定</span>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div id="filters" class="filters">
+        <button class="filter active" data-filter="all">全部音色</button>
+        <button class="filter" data-filter="male-young">青年男</button>
+        <button class="filter" data-filter="male-old">老年男</button>
+        <button class="filter" data-filter="female-young">青年女</button>
+        <button class="filter" data-filter="female-old">老年女</button>
+        <input id="voiceSearch" type="search" placeholder="搜索：叹气、grunt、哭、Hm…" aria-label="搜索声音" />
+      </div>
+      <div class="actions">
+        <button id="autoAssign" class="primary">自动补全未绑定</button>
+        <button id="exportJson" class="primary">导出 JSON</button>
+        <button id="copyJson">复制 JSON</button>
+        <button id="resetAll" class="danger">清空</button>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <aside class="character-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">01 / CHARACTERS</p>
+            <h2>选择角色</h2>
+          </div>
+          <select id="characterFilter" aria-label="筛选角色">
+            <option value="all">所有角色</option>
+            <option value="unbound">只看未绑定</option>
+            <option value="bound">只看已绑定</option>
+          </select>
+        </div>
+        <div id="characterList" class="character-list"></div>
+      </aside>
+
+      <main class="voice-panel">
+        <div class="selected-character" id="selectedCharacter">
+          <div class="portrait-frame"><img id="selectedPortrait" alt="" /></div>
+          <div>
+            <p class="eyebrow">当前角色</p>
+            <h2 id="selectedName">正在读取角色资料…</h2>
+            <p id="selectedMeta"></p>
+            <p id="currentBinding"></p>
+          </div>
+          <button id="unbindVoice" class="danger">解除绑定</button>
+          <div id="bindingOverview" class="binding-overview" aria-label="当前角色声音绑定总览"></div>
+        </div>
+
+        <div class="scene-selector" id="sceneSelector" aria-label="选择发声场景">
+          <button data-scene="chat" class="active">
+            <strong>聊天 / 普通</strong>
+            <small>问候、递件、等待催促</small>
+          </button>
+          <button data-scene="approve">
+            <strong>Approve / 开心</strong>
+            <small>批准后的回应</small>
+          </button>
+          <button data-scene="reject">
+            <strong>Reject / 驳回</strong>
+            <small>驳回后的回应</small>
+          </button>
+        </div>
+
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">02 / VOICES</p>
+            <h2>试听并绑定</h2>
+          </div>
+          <span id="voiceCount"></span>
+        </div>
+        <div id="tagFilters" class="tag-filters" aria-label="声音标签"></div>
+        <div id="voiceGrid" class="voice-grid"></div>
+      </main>
+    </div>
+
+    <div id="status" class="status" role="status"></div>
+
+    <template id="characterTemplate">
+      <button class="character-card">
+        <img alt="" />
+        <span class="character-copy">
+          <strong></strong>
+          <small class="bio"></small>
+          <small class="binding"></small>
+        </span>
+        <span class="state-dot" aria-hidden="true"></span>
+      </button>
+    </template>
+
+    <template id="voiceTemplate">
+      <article class="voice-card">
+        <div class="card-top">
+          <span class="voice-id"></span>
+          <span class="category"></span>
+          <span class="scene-fit"></span>
+          <button class="favorite" title="标记为喜欢" aria-pressed="false">☆</button>
+        </div>
+        <h3></h3>
+        <p class="description"></p>
+        <div class="voice-tags"></div>
+        <audio controls preload="none"></audio>
+        <div class="source-row">
+          <span class="source"></span>
+          <span class="license"></span>
+        </div>
+        <label>角色备注<input class="note" placeholder="例如：驳回后使用；需要降低音调" /></label>
+        <button class="assign primary">绑定给当前角色</button>
+      </article>
+    </template>
+
+    <template id="bindingRowTemplate">
+      <div class="binding-row">
+        <button class="binding-scene"></button>
+        <span class="binding-voice"></span>
+        <button class="quick-play">▶ 快速试听</button>
+      </div>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

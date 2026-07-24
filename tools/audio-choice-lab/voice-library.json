@@ -1,0 +1,5643 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-24T20:19:36.844Z",
+  "voices": [
+    {
+      "id": "BASE-001",
+      "category": "female-old",
+      "title": "people_female_old",
+      "file": "library/BASE-001.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "项目现有人物声音",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/声音素材/people_female_old.wav",
+      "license": "原素材授权待复核"
+    },
+    {
+      "id": "FS-007",
+      "category": "female-old",
+      "title": "Female Type 2 Attacking 15",
+      "file": "library/FS-007.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Attacking 15.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-008",
+      "category": "female-old",
+      "title": "Female Type 2 Cheering 12",
+      "file": "library/FS-008.wav",
+      "description": "标签：笑。",
+      "tags": [
+        "笑"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Cheering 12.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-009",
+      "category": "female-old",
+      "title": "Female Type 2 Crying 7",
+      "file": "library/FS-009.wav",
+      "description": "标签：哭。",
+      "tags": [
+        "哭"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Crying 7.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-010",
+      "category": "female-old",
+      "title": "Female Type 2 Idle 9",
+      "file": "library/FS-010.wav",
+      "description": "标签：空闲。",
+      "tags": [
+        "空闲"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Idle 9.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-011",
+      "category": "female-old",
+      "title": "Female Type 2 Pain 10",
+      "file": "library/FS-011.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Pain 10.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-012",
+      "category": "female-old",
+      "title": "Female Type 2 Screaming 11",
+      "file": "library/FS-012.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 2 Screaming 11.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "R3-001",
+      "category": "female-old",
+      "title": "aqua",
+      "file": "library/R3-001.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/aqua.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-002",
+      "category": "female-old",
+      "title": "attack1",
+      "file": "library/R3-002.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/attack1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-003",
+      "category": "female-old",
+      "title": "attack2",
+      "file": "library/R3-003.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/attack2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-004",
+      "category": "female-old",
+      "title": "attack3",
+      "file": "library/R3-004.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/attack3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-005",
+      "category": "female-old",
+      "title": "blizzard",
+      "file": "library/R3-005.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/blizzard.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-006",
+      "category": "female-old",
+      "title": "bubbles",
+      "file": "library/R3-006.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/bubbles.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-007",
+      "category": "female-old",
+      "title": "burn",
+      "file": "library/R3-007.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/burn.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-008",
+      "category": "female-old",
+      "title": "corruption",
+      "file": "library/R3-008.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/corruption.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-009",
+      "category": "female-old",
+      "title": "cure",
+      "file": "library/R3-009.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/cure.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-010",
+      "category": "female-old",
+      "title": "curse",
+      "file": "library/R3-010.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/curse.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-011",
+      "category": "female-old",
+      "title": "cyclone",
+      "file": "library/R3-011.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/cyclone.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-012",
+      "category": "female-old",
+      "title": "damaged1",
+      "file": "library/R3-012.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/damaged1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-013",
+      "category": "female-old",
+      "title": "damaged2",
+      "file": "library/R3-013.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/damaged2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-014",
+      "category": "female-old",
+      "title": "damaged3",
+      "file": "library/R3-014.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/damaged3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-015",
+      "category": "female-old",
+      "title": "fire",
+      "file": "library/R3-015.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/fire.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-016",
+      "category": "female-old",
+      "title": "freeze",
+      "file": "library/R3-016.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/freeze.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-017",
+      "category": "female-old",
+      "title": "heal",
+      "file": "library/R3-017.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/heal.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-018",
+      "category": "female-old",
+      "title": "healed1",
+      "file": "library/R3-018.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/healed1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-019",
+      "category": "female-old",
+      "title": "healed2",
+      "file": "library/R3-019.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/healed2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-020",
+      "category": "female-old",
+      "title": "healed3",
+      "file": "library/R3-020.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/healed3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-021",
+      "category": "female-old",
+      "title": "hellstorm",
+      "file": "library/R3-021.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/hellstorm.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-022",
+      "category": "female-old",
+      "title": "hex",
+      "file": "library/R3-022.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/hex.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-023",
+      "category": "female-old",
+      "title": "ice",
+      "file": "library/R3-023.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/ice.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-024",
+      "category": "female-old",
+      "title": "jump1",
+      "file": "library/R3-024.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/jump1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-025",
+      "category": "female-old",
+      "title": "jump2",
+      "file": "library/R3-025.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/jump2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-026",
+      "category": "female-old",
+      "title": "jump3",
+      "file": "library/R3-026.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/jump3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-027",
+      "category": "female-old",
+      "title": "tornado",
+      "file": "library/R3-027.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/tornado.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-028",
+      "category": "female-old",
+      "title": "twister",
+      "file": "library/R3-028.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/twister.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-029",
+      "category": "female-old",
+      "title": "water",
+      "file": "library/R3-029.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/water.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R3-030",
+      "category": "female-old",
+      "title": "wind",
+      "file": "library/R3-030.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 3",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 3/wind.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FO-001",
+      "category": "female-old",
+      "title": "老年女倾向 · Wa-Wa Mumble",
+      "file": "library/WEB-FO-001.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / JohnsonBrandEditing 243379",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/chat-female-wawa-cc0.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FO-101",
+      "category": "female-old",
+      "title": "女性 · 克制叹气",
+      "file": "library/WEB-FO-101.mp3",
+      "description": "真实人声候选；适合：chat / reject。",
+      "tags": [
+        "网络精选",
+        "叹气"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Freesound / morganveilleux 389992",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-389992.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FO-102",
+      "category": "female-old",
+      "title": "女性 · 思考与被说服 Hmm",
+      "file": "library/WEB-FO-102.mp3",
+      "description": "真实人声候选；适合：chat / approve。",
+      "tags": [
+        "网络精选",
+        "犹豫",
+        "肯定"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Freesound / sterferny 337082",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-337082.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FO-103",
+      "category": "female-old",
+      "title": "女性 · 远处含混交谈 B",
+      "file": "library/WEB-FO-103.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / senshi.sun 428072",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-428072.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "BASE-002",
+      "category": "female-young",
+      "title": "people_female_young",
+      "file": "library/BASE-002.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "项目现有人物声音",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/声音素材/people_female_young.wav",
+      "license": "原素材授权待复核"
+    },
+    {
+      "id": "FS-001",
+      "category": "female-young",
+      "title": "Female Type 1 Affirmation 3",
+      "file": "library/FS-001.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Affirmation 3.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-002",
+      "category": "female-young",
+      "title": "Female Type 1 Attacking 10",
+      "file": "library/FS-002.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Attacking 10.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-003",
+      "category": "female-young",
+      "title": "Female Type 1 Dying 1",
+      "file": "library/FS-003.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Dying 1.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-004",
+      "category": "female-young",
+      "title": "Female Type 1 Exertion 10",
+      "file": "library/FS-004.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Exertion 10.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-005",
+      "category": "female-young",
+      "title": "Female Type 1 Idle 4",
+      "file": "library/FS-005.wav",
+      "description": "标签：空闲。",
+      "tags": [
+        "空闲"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Idle 4.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-006",
+      "category": "female-young",
+      "title": "Female Type 1 Laughing 1",
+      "file": "library/FS-006.wav",
+      "description": "标签：笑。",
+      "tags": [
+        "笑"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Female Type 1 Laughing 1.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "GF-001",
+      "category": "female-young",
+      "title": "All Done!",
+      "file": "library/GF-001.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/All Done!.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-002",
+      "category": "female-young",
+      "title": "Bye",
+      "file": "library/GF-002.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Bye.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-003",
+      "category": "female-young",
+      "title": "Come on",
+      "file": "library/GF-003.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Come on.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-004",
+      "category": "female-young",
+      "title": "Crying",
+      "file": "library/GF-004.wav",
+      "description": "标签：哭。",
+      "tags": [
+        "哭"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Crying.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-005",
+      "category": "female-young",
+      "title": "Cya",
+      "file": "library/GF-005.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Cya.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-006",
+      "category": "female-young",
+      "title": "Damage sounds",
+      "file": "library/GF-006.wav",
+      "description": "标签：疼痛、肯定。",
+      "tags": [
+        "疼痛",
+        "肯定"
+      ],
+      "scenes": [
+        "approve",
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Damage sounds.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-007",
+      "category": "female-young",
+      "title": "Definitely",
+      "file": "library/GF-007.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Definitely.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-008",
+      "category": "female-young",
+      "title": "Effort sounds",
+      "file": "library/GF-008.wav",
+      "description": "标签：肯定、用力。",
+      "tags": [
+        "肯定",
+        "用力"
+      ],
+      "scenes": [
+        "approve",
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Effort sounds.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-009",
+      "category": "female-young",
+      "title": "Game over",
+      "file": "library/GF-009.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Game over.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-010",
+      "category": "female-young",
+      "title": "Good luck",
+      "file": "library/GF-010.wav",
+      "description": "标签：笑、台词。",
+      "tags": [
+        "笑",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Good luck.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-011",
+      "category": "female-young",
+      "title": "Goodbye",
+      "file": "library/GF-011.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Goodbye.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-012",
+      "category": "female-young",
+      "title": "Great",
+      "file": "library/GF-012.wav",
+      "description": "标签：笑、台词。",
+      "tags": [
+        "笑",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Great.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-013",
+      "category": "female-young",
+      "title": "Hello",
+      "file": "library/GF-013.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Hello.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-014",
+      "category": "female-young",
+      "title": "Hey",
+      "file": "library/GF-014.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Hey.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-015",
+      "category": "female-young",
+      "title": "Hi",
+      "file": "library/GF-015.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Hi.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-016",
+      "category": "female-young",
+      "title": "Hm",
+      "file": "library/GF-016.wav",
+      "description": "标签：犹豫。",
+      "tags": [
+        "犹豫"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Hm.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-017",
+      "category": "female-young",
+      "title": "Huh",
+      "file": "library/GF-017.wav",
+      "description": "标签：犹豫。",
+      "tags": [
+        "犹豫"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Huh.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-018",
+      "category": "female-young",
+      "title": "I love you",
+      "file": "library/GF-018.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/I love you.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-019",
+      "category": "female-young",
+      "title": "Im sorry",
+      "file": "library/GF-019.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Im sorry.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-020",
+      "category": "female-young",
+      "title": "Later",
+      "file": "library/GF-020.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Later.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-021",
+      "category": "female-young",
+      "title": "Laugh",
+      "file": "library/GF-021.wav",
+      "description": "标签：笑。",
+      "tags": [
+        "笑"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Laugh.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-022",
+      "category": "female-young",
+      "title": "Lets go",
+      "file": "library/GF-022.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Lets go.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-023",
+      "category": "female-young",
+      "title": "Never",
+      "file": "library/GF-023.wav",
+      "description": "标签：否定。",
+      "tags": [
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Never.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-024",
+      "category": "female-young",
+      "title": "No way",
+      "file": "library/GF-024.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/No way.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-025",
+      "category": "female-young",
+      "title": "No",
+      "file": "library/GF-025.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/No.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-026",
+      "category": "female-young",
+      "title": "Not happening",
+      "file": "library/GF-026.wav",
+      "description": "标签：否定。",
+      "tags": [
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Not happening.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-027",
+      "category": "female-young",
+      "title": "Ok",
+      "file": "library/GF-027.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Ok.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-028",
+      "category": "female-young",
+      "title": "On my way",
+      "file": "library/GF-028.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/On my way.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-029",
+      "category": "female-young",
+      "title": "Ready",
+      "file": "library/GF-029.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Ready.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-030",
+      "category": "female-young",
+      "title": "Sigh",
+      "file": "library/GF-030.wav",
+      "description": "标签：叹气。",
+      "tags": [
+        "叹气"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Sigh.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-031",
+      "category": "female-young",
+      "title": "Sorry",
+      "file": "library/GF-031.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Sorry.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-032",
+      "category": "female-young",
+      "title": "Take Care",
+      "file": "library/GF-032.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Take Care.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-033",
+      "category": "female-young",
+      "title": "What",
+      "file": "library/GF-033.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/What.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-034",
+      "category": "female-young",
+      "title": "Whats up",
+      "file": "library/GF-034.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Whats up.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-035",
+      "category": "female-young",
+      "title": "Wow",
+      "file": "library/GF-035.wav",
+      "description": "标签：笑、疼痛。",
+      "tags": [
+        "笑",
+        "疼痛"
+      ],
+      "scenes": [
+        "approve",
+        "reject"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Wow.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-036",
+      "category": "female-young",
+      "title": "Yeah",
+      "file": "library/GF-036.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Yeah.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-037",
+      "category": "female-young",
+      "title": "Yes",
+      "file": "library/GF-037.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Yes.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-038",
+      "category": "female-young",
+      "title": "Yo",
+      "file": "library/GF-038.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/Yo.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "GF-039",
+      "category": "female-young",
+      "title": "You got it",
+      "file": "library/GF-039.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Free Generic Female Voice Pack",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/young Female Voice Clips/Audio/You got it.wav",
+      "license": "免费商用 / 需署名"
+    },
+    {
+      "id": "R1-001",
+      "category": "female-young",
+      "title": "aqua",
+      "file": "library/R1-001.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/aqua.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-002",
+      "category": "female-young",
+      "title": "attack1",
+      "file": "library/R1-002.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/attack1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-003",
+      "category": "female-young",
+      "title": "attack2",
+      "file": "library/R1-003.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/attack2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-004",
+      "category": "female-young",
+      "title": "attack3",
+      "file": "library/R1-004.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/attack3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-005",
+      "category": "female-young",
+      "title": "blizzard",
+      "file": "library/R1-005.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/blizzard.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-006",
+      "category": "female-young",
+      "title": "bubbles",
+      "file": "library/R1-006.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/bubbles.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-007",
+      "category": "female-young",
+      "title": "burn",
+      "file": "library/R1-007.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/burn.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-008",
+      "category": "female-young",
+      "title": "corruption",
+      "file": "library/R1-008.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/corruption.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-009",
+      "category": "female-young",
+      "title": "cure",
+      "file": "library/R1-009.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/cure.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-010",
+      "category": "female-young",
+      "title": "curse",
+      "file": "library/R1-010.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/curse.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-011",
+      "category": "female-young",
+      "title": "cyclone",
+      "file": "library/R1-011.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/cyclone.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-012",
+      "category": "female-young",
+      "title": "damaged1",
+      "file": "library/R1-012.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/damaged1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-013",
+      "category": "female-young",
+      "title": "damaged2",
+      "file": "library/R1-013.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/damaged2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-014",
+      "category": "female-young",
+      "title": "damaged3",
+      "file": "library/R1-014.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/damaged3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-015",
+      "category": "female-young",
+      "title": "fire",
+      "file": "library/R1-015.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/fire.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-016",
+      "category": "female-young",
+      "title": "freeze",
+      "file": "library/R1-016.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/freeze.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-017",
+      "category": "female-young",
+      "title": "heal",
+      "file": "library/R1-017.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/heal.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-018",
+      "category": "female-young",
+      "title": "healed1",
+      "file": "library/R1-018.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/healed1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-019",
+      "category": "female-young",
+      "title": "healed2",
+      "file": "library/R1-019.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/healed2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-020",
+      "category": "female-young",
+      "title": "healed3",
+      "file": "library/R1-020.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/healed3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-021",
+      "category": "female-young",
+      "title": "hellstorm",
+      "file": "library/R1-021.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/hellstorm.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-022",
+      "category": "female-young",
+      "title": "hex",
+      "file": "library/R1-022.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/hex.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-023",
+      "category": "female-young",
+      "title": "ice",
+      "file": "library/R1-023.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/ice.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-024",
+      "category": "female-young",
+      "title": "jump1",
+      "file": "library/R1-024.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/jump1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-025",
+      "category": "female-young",
+      "title": "jump2",
+      "file": "library/R1-025.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/jump2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-026",
+      "category": "female-young",
+      "title": "jump3",
+      "file": "library/R1-026.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/jump3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-027",
+      "category": "female-young",
+      "title": "tornado",
+      "file": "library/R1-027.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/tornado.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-028",
+      "category": "female-young",
+      "title": "twister",
+      "file": "library/R1-028.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/twister.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-029",
+      "category": "female-young",
+      "title": "water",
+      "file": "library/R1-029.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/water.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R1-030",
+      "category": "female-young",
+      "title": "wind",
+      "file": "library/R1-030.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 1",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 1/wind.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-001",
+      "category": "female-young",
+      "title": "aqua",
+      "file": "library/R2-001.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/aqua.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-002",
+      "category": "female-young",
+      "title": "attack1",
+      "file": "library/R2-002.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/attack1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-003",
+      "category": "female-young",
+      "title": "attack2",
+      "file": "library/R2-003.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/attack2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-004",
+      "category": "female-young",
+      "title": "attack3",
+      "file": "library/R2-004.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/attack3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-005",
+      "category": "female-young",
+      "title": "blizzard",
+      "file": "library/R2-005.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/blizzard.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-006",
+      "category": "female-young",
+      "title": "bubbles",
+      "file": "library/R2-006.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/bubbles.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-007",
+      "category": "female-young",
+      "title": "burn",
+      "file": "library/R2-007.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/burn.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-008",
+      "category": "female-young",
+      "title": "corruption",
+      "file": "library/R2-008.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/corruption.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-009",
+      "category": "female-young",
+      "title": "cure",
+      "file": "library/R2-009.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/cure.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-010",
+      "category": "female-young",
+      "title": "curse",
+      "file": "library/R2-010.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/curse.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-011",
+      "category": "female-young",
+      "title": "cyclone",
+      "file": "library/R2-011.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/cyclone.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-012",
+      "category": "female-young",
+      "title": "damaged1",
+      "file": "library/R2-012.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/damaged1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-013",
+      "category": "female-young",
+      "title": "damaged2",
+      "file": "library/R2-013.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/damaged2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-014",
+      "category": "female-young",
+      "title": "damaged3",
+      "file": "library/R2-014.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/damaged3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-015",
+      "category": "female-young",
+      "title": "fire",
+      "file": "library/R2-015.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/fire.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-016",
+      "category": "female-young",
+      "title": "freeze",
+      "file": "library/R2-016.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/freeze.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-017",
+      "category": "female-young",
+      "title": "heal",
+      "file": "library/R2-017.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/heal.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-018",
+      "category": "female-young",
+      "title": "healed1",
+      "file": "library/R2-018.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/healed1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-019",
+      "category": "female-young",
+      "title": "healed2",
+      "file": "library/R2-019.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/healed2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-020",
+      "category": "female-young",
+      "title": "healed3",
+      "file": "library/R2-020.wav",
+      "description": "标签：治愈。",
+      "tags": [
+        "治愈"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/healed3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-021",
+      "category": "female-young",
+      "title": "hellstorm",
+      "file": "library/R2-021.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/hellstorm.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-022",
+      "category": "female-young",
+      "title": "hex",
+      "file": "library/R2-022.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/hex.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-023",
+      "category": "female-young",
+      "title": "ice",
+      "file": "library/R2-023.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/ice.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-024",
+      "category": "female-young",
+      "title": "jump1",
+      "file": "library/R2-024.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/jump1.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-025",
+      "category": "female-young",
+      "title": "jump2",
+      "file": "library/R2-025.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/jump2.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-026",
+      "category": "female-young",
+      "title": "jump3",
+      "file": "library/R2-026.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/jump3.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-027",
+      "category": "female-young",
+      "title": "tornado",
+      "file": "library/R2-027.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/tornado.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-028",
+      "category": "female-young",
+      "title": "twister",
+      "file": "library/R2-028.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/twister.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-029",
+      "category": "female-young",
+      "title": "water",
+      "file": "library/R2-029.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/water.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "R2-030",
+      "category": "female-young",
+      "title": "wind",
+      "file": "library/R2-030.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "RPG Voice Starter Pack / Type 2",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/RPG Voice Starter Pack/Type 2/wind.wav",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-001",
+      "category": "female-young",
+      "title": "青年女倾向 · Gibberish",
+      "file": "library/WEB-FY-001.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / cloyen 800349",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/chat-female-gibberish-cc0.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-101",
+      "category": "female-young",
+      "title": "女性 · 无意义碎语 A",
+      "file": "library/WEB-FY-101.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / mvVoiceActing 238642",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-238642.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-102",
+      "category": "female-young",
+      "title": "女性 · 疑问 Hmm",
+      "file": "library/WEB-FY-102.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "犹豫",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / esperar 170768",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-170768.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-103",
+      "category": "female-young",
+      "title": "女性 · 多种 Hmm / Mm-hmm",
+      "file": "library/WEB-FY-103.mp3",
+      "description": "真实人声候选；适合：chat / approve。",
+      "tags": [
+        "网络精选",
+        "犹豫",
+        "肯定",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Freesound / esperar 170766",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-170766.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-104",
+      "category": "female-young",
+      "title": "女性 · 无意义碎语 B",
+      "file": "library/WEB-FY-104.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / mvVoiceActing 368384",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-368384.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-FY-105",
+      "category": "female-young",
+      "title": "女性 · 远处含混交谈 A",
+      "file": "library/WEB-FY-105.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / senshi.sun 428071",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-428071.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "BASE-003",
+      "category": "male-old",
+      "title": "people_male_average",
+      "file": "library/BASE-003.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "项目现有人物声音",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/声音素材/people_male_average.wav",
+      "license": "原素材授权待复核"
+    },
+    {
+      "id": "BASE-004",
+      "category": "male-old",
+      "title": "people_male_old",
+      "file": "library/BASE-004.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "项目现有人物声音",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/声音素材/people_male_old.wav",
+      "license": "原素材授权待复核"
+    },
+    {
+      "id": "FS-020",
+      "category": "male-old",
+      "title": "Male Type 2 Attacking 18",
+      "file": "library/FS-020.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Attacking 18.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-021",
+      "category": "male-old",
+      "title": "Male Type 2 Booing 11",
+      "file": "library/FS-021.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Booing 11.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-022",
+      "category": "male-old",
+      "title": "Male Type 2 Crying 7",
+      "file": "library/FS-022.wav",
+      "description": "标签：哭。",
+      "tags": [
+        "哭"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Crying 7.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-023",
+      "category": "male-old",
+      "title": "Male Type 2 Dying 2",
+      "file": "library/FS-023.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Dying 2.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-024",
+      "category": "male-old",
+      "title": "Male Type 2 Exertion 1",
+      "file": "library/FS-024.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Exertion 1.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-025",
+      "category": "male-old",
+      "title": "Male Type 2 Pain 15",
+      "file": "library/FS-025.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 2 Pain 15.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "WEB-MO-001",
+      "category": "male-old",
+      "title": "老年男倾向 · Deep Mumble",
+      "file": "library/WEB-MO-001.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / dynamique 536967",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/chat-male-deep-mumble-cc0.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MO-101",
+      "category": "male-old",
+      "title": "低沉倾向 · 含混耳语与嘟囔",
+      "file": "library/WEB-MO-101.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / frosthardr 346638",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-346638.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MO-102",
+      "category": "male-old",
+      "title": "男性 · Oooh / Aaah / Errr",
+      "file": "library/WEB-MO-102.mp3",
+      "description": "真实人声候选；适合：chat / reject。",
+      "tags": [
+        "网络精选",
+        "犹豫",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Freesound / GreasyPlastic 790337",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-790337.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "BASE-005",
+      "category": "male-young",
+      "title": "people_male_young",
+      "file": "library/BASE-005.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "项目现有人物声音",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/声音素材/people_male_young.wav",
+      "license": "原素材授权待复核"
+    },
+    {
+      "id": "FS-013",
+      "category": "male-young",
+      "title": "Male Type 1 Affirmation 2",
+      "file": "library/FS-013.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Affirmation 2.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-014",
+      "category": "male-young",
+      "title": "Male Type 1 Attacking 12",
+      "file": "library/FS-014.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Attacking 12.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-015",
+      "category": "male-young",
+      "title": "Male Type 1 Erm 4",
+      "file": "library/FS-015.wav",
+      "description": "标签：犹豫。",
+      "tags": [
+        "犹豫"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Erm 4.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-016",
+      "category": "male-young",
+      "title": "Male Type 1 Objection 22",
+      "file": "library/FS-016.wav",
+      "description": "标签：否定。",
+      "tags": [
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Objection 22.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-017",
+      "category": "male-young",
+      "title": "Male Type 1 Pain 10",
+      "file": "library/FS-017.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Pain 10.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-018",
+      "category": "male-young",
+      "title": "Male Type 1 Reaction 25",
+      "file": "library/FS-018.wav",
+      "description": "标签：空闲。",
+      "tags": [
+        "空闲"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Reaction 25.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "FS-019",
+      "category": "male-young",
+      "title": "Male Type 1 Thinking 29",
+      "file": "library/FS-019.wav",
+      "description": "标签：犹豫。",
+      "tags": [
+        "犹豫"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "FS Free Human Voices",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/FS Free Human Voices/SOUNDS/Male Type 1 Thinking 29.wav",
+      "license": "免费商用"
+    },
+    {
+      "id": "MP-001",
+      "category": "male-young",
+      "title": "Alrighty Then 1",
+      "file": "library/MP-001.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Alrighty Then 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-002",
+      "category": "male-young",
+      "title": "Alrighty then 2",
+      "file": "library/MP-002.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Alrighty then 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-003",
+      "category": "male-young",
+      "title": "Another Time 1",
+      "file": "library/MP-003.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Another Time 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-004",
+      "category": "male-young",
+      "title": "Another Time 2",
+      "file": "library/MP-004.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Another Time 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-005",
+      "category": "male-young",
+      "title": "Bye 1",
+      "file": "library/MP-005.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-006",
+      "category": "male-young",
+      "title": "Bye 2",
+      "file": "library/MP-006.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-007",
+      "category": "male-young",
+      "title": "Bye 3",
+      "file": "library/MP-007.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-008",
+      "category": "male-young",
+      "title": "Bye Bye 1",
+      "file": "library/MP-008.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye Bye 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-009",
+      "category": "male-young",
+      "title": "Bye Bye 2",
+      "file": "library/MP-009.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye Bye 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-010",
+      "category": "male-young",
+      "title": "Bye Bye Now 1",
+      "file": "library/MP-010.wav",
+      "description": "标签：疼痛、告别、台词。",
+      "tags": [
+        "疼痛",
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye Bye Now 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-011",
+      "category": "male-young",
+      "title": "Bye Bye Now 2",
+      "file": "library/MP-011.wav",
+      "description": "标签：疼痛、告别、台词。",
+      "tags": [
+        "疼痛",
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Bye Bye Now 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-012",
+      "category": "male-young",
+      "title": "Fair Well 1",
+      "file": "library/MP-012.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Fair Well 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-013",
+      "category": "male-young",
+      "title": "Fair Well 2",
+      "file": "library/MP-013.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Fair Well 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-014",
+      "category": "male-young",
+      "title": "Good Bye 1",
+      "file": "library/MP-014.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Good Bye 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-015",
+      "category": "male-young",
+      "title": "Good Bye 2",
+      "file": "library/MP-015.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Good Bye 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-016",
+      "category": "male-young",
+      "title": "Good Bye 3",
+      "file": "library/MP-016.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Good Bye 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-017",
+      "category": "male-young",
+      "title": "Grunt 1",
+      "file": "library/MP-017.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-018",
+      "category": "male-young",
+      "title": "Grunt 10",
+      "file": "library/MP-018.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 10.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-019",
+      "category": "male-young",
+      "title": "Grunt 11",
+      "file": "library/MP-019.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 11.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-020",
+      "category": "male-young",
+      "title": "Grunt 12",
+      "file": "library/MP-020.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 12.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-021",
+      "category": "male-young",
+      "title": "Grunt 13",
+      "file": "library/MP-021.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 13.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-022",
+      "category": "male-young",
+      "title": "Grunt 14",
+      "file": "library/MP-022.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 14.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-023",
+      "category": "male-young",
+      "title": "Grunt 15",
+      "file": "library/MP-023.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 15.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-024",
+      "category": "male-young",
+      "title": "Grunt 16",
+      "file": "library/MP-024.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 16.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-025",
+      "category": "male-young",
+      "title": "Grunt 17",
+      "file": "library/MP-025.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 17.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-026",
+      "category": "male-young",
+      "title": "Grunt 18",
+      "file": "library/MP-026.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 18.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-027",
+      "category": "male-young",
+      "title": "Grunt 19",
+      "file": "library/MP-027.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 19.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-028",
+      "category": "male-young",
+      "title": "Grunt 2",
+      "file": "library/MP-028.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-029",
+      "category": "male-young",
+      "title": "Grunt 20",
+      "file": "library/MP-029.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 20.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-030",
+      "category": "male-young",
+      "title": "Grunt 21",
+      "file": "library/MP-030.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 21.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-031",
+      "category": "male-young",
+      "title": "Grunt 22",
+      "file": "library/MP-031.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 22.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-032",
+      "category": "male-young",
+      "title": "Grunt 23",
+      "file": "library/MP-032.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 23.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-033",
+      "category": "male-young",
+      "title": "Grunt 24",
+      "file": "library/MP-033.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 24.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-034",
+      "category": "male-young",
+      "title": "Grunt 3",
+      "file": "library/MP-034.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-035",
+      "category": "male-young",
+      "title": "Grunt 4",
+      "file": "library/MP-035.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-036",
+      "category": "male-young",
+      "title": "Grunt 5",
+      "file": "library/MP-036.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-037",
+      "category": "male-young",
+      "title": "Grunt 6",
+      "file": "library/MP-037.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 6.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-038",
+      "category": "male-young",
+      "title": "Grunt 7",
+      "file": "library/MP-038.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 7.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-039",
+      "category": "male-young",
+      "title": "Grunt 8",
+      "file": "library/MP-039.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 8.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-040",
+      "category": "male-young",
+      "title": "Grunt 9",
+      "file": "library/MP-040.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt 9.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-041",
+      "category": "male-young",
+      "title": "Grunt Ah 1",
+      "file": "library/MP-041.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ah 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-042",
+      "category": "male-young",
+      "title": "Grunt Ah 2",
+      "file": "library/MP-042.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ah 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-043",
+      "category": "male-young",
+      "title": "Grunt Ah 3",
+      "file": "library/MP-043.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ah 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-044",
+      "category": "male-young",
+      "title": "Grunt Ah 4",
+      "file": "library/MP-044.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ah 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-045",
+      "category": "male-young",
+      "title": "Grunt Ah 5",
+      "file": "library/MP-045.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ah 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-046",
+      "category": "male-young",
+      "title": "Grunt Ayy 1",
+      "file": "library/MP-046.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ayy 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-047",
+      "category": "male-young",
+      "title": "Grunt Buh 1",
+      "file": "library/MP-047.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Buh 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-048",
+      "category": "male-young",
+      "title": "Grunt Ee 1",
+      "file": "library/MP-048.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ee 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-049",
+      "category": "male-young",
+      "title": "Grunt Ehh 1",
+      "file": "library/MP-049.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ehh 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-050",
+      "category": "male-young",
+      "title": "Grunt Gr",
+      "file": "library/MP-050.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Gr.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-051",
+      "category": "male-young",
+      "title": "Grunt Hi 1",
+      "file": "library/MP-051.wav",
+      "description": "标签：招呼、用力、台词。",
+      "tags": [
+        "招呼",
+        "用力",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Hi 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-052",
+      "category": "male-young",
+      "title": "Grunt Kwa",
+      "file": "library/MP-052.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Kwa.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-053",
+      "category": "male-young",
+      "title": "Grunt Ng 1",
+      "file": "library/MP-053.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ng 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-054",
+      "category": "male-young",
+      "title": "Grunt Oh 1",
+      "file": "library/MP-054.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-055",
+      "category": "male-young",
+      "title": "Grunt Oh 2",
+      "file": "library/MP-055.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-056",
+      "category": "male-young",
+      "title": "Grunt Oh 3",
+      "file": "library/MP-056.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-057",
+      "category": "male-young",
+      "title": "Grunt Oh 4",
+      "file": "library/MP-057.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-058",
+      "category": "male-young",
+      "title": "Grunt Oh 5",
+      "file": "library/MP-058.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-059",
+      "category": "male-young",
+      "title": "Grunt Oh 6",
+      "file": "library/MP-059.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oh 6.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-060",
+      "category": "male-young",
+      "title": "Grunt Oo 1",
+      "file": "library/MP-060.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oo 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-061",
+      "category": "male-young",
+      "title": "Grunt Oo 2",
+      "file": "library/MP-061.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oo 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-062",
+      "category": "male-young",
+      "title": "Grunt Oo 3",
+      "file": "library/MP-062.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oo 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-063",
+      "category": "male-young",
+      "title": "Grunt Oo 4",
+      "file": "library/MP-063.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oo 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-064",
+      "category": "male-young",
+      "title": "Grunt Oo 5",
+      "file": "library/MP-064.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oo 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-065",
+      "category": "male-young",
+      "title": "Grunt Oof 1",
+      "file": "library/MP-065.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oof 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-066",
+      "category": "male-young",
+      "title": "Grunt Oof 2",
+      "file": "library/MP-066.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oof 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-067",
+      "category": "male-young",
+      "title": "Grunt Oof 3",
+      "file": "library/MP-067.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oof 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-068",
+      "category": "male-young",
+      "title": "Grunt Oof 4",
+      "file": "library/MP-068.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Oof 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-069",
+      "category": "male-young",
+      "title": "Grunt Ra 1",
+      "file": "library/MP-069.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ra 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-070",
+      "category": "male-young",
+      "title": "Grunt Ra 2",
+      "file": "library/MP-070.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ra 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-071",
+      "category": "male-young",
+      "title": "Grunt Ra 3",
+      "file": "library/MP-071.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ra 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-072",
+      "category": "male-young",
+      "title": "Grunt Ra 4",
+      "file": "library/MP-072.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ra 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-073",
+      "category": "male-young",
+      "title": "Grunt Ra 5",
+      "file": "library/MP-073.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Ra 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-074",
+      "category": "male-young",
+      "title": "Grunt Uhuhh 1",
+      "file": "library/MP-074.wav",
+      "description": "标签：犹豫、用力。",
+      "tags": [
+        "犹豫",
+        "用力"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uhuhh 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-075",
+      "category": "male-young",
+      "title": "Grunt Uhuhh 2",
+      "file": "library/MP-075.wav",
+      "description": "标签：犹豫、用力。",
+      "tags": [
+        "犹豫",
+        "用力"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uhuhh 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-076",
+      "category": "male-young",
+      "title": "Grunt Uhuhh 3",
+      "file": "library/MP-076.wav",
+      "description": "标签：犹豫、用力。",
+      "tags": [
+        "犹豫",
+        "用力"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uhuhh 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-077",
+      "category": "male-young",
+      "title": "Grunt Uoe 1",
+      "file": "library/MP-077.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-078",
+      "category": "male-young",
+      "title": "Grunt Uoe 2",
+      "file": "library/MP-078.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-079",
+      "category": "male-young",
+      "title": "Grunt Uoe 3",
+      "file": "library/MP-079.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-080",
+      "category": "male-young",
+      "title": "Grunt Uoe 4",
+      "file": "library/MP-080.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-081",
+      "category": "male-young",
+      "title": "Grunt Uoe 5",
+      "file": "library/MP-081.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-082",
+      "category": "male-young",
+      "title": "Grunt Uoe 6",
+      "file": "library/MP-082.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Uoe 6.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-083",
+      "category": "male-young",
+      "title": "Grunt Wa 1",
+      "file": "library/MP-083.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Grunt Wa 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-084",
+      "category": "male-young",
+      "title": "Hello 1",
+      "file": "library/MP-084.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hello 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-085",
+      "category": "male-young",
+      "title": "Hello 2",
+      "file": "library/MP-085.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hello 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-086",
+      "category": "male-young",
+      "title": "Hey 1",
+      "file": "library/MP-086.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hey 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-087",
+      "category": "male-young",
+      "title": "Hey 2",
+      "file": "library/MP-087.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hey 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-088",
+      "category": "male-young",
+      "title": "Hey 3",
+      "file": "library/MP-088.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hey 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-089",
+      "category": "male-young",
+      "title": "Hi 1",
+      "file": "library/MP-089.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hi 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-090",
+      "category": "male-young",
+      "title": "Hi 2",
+      "file": "library/MP-090.wav",
+      "description": "标签：招呼、台词。",
+      "tags": [
+        "招呼",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hi 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-091",
+      "category": "male-young",
+      "title": "Hiyah 1",
+      "file": "library/MP-091.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hiyah 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-092",
+      "category": "male-young",
+      "title": "Hiyah 2",
+      "file": "library/MP-092.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hiyah 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-093",
+      "category": "male-young",
+      "title": "Hiyah 3",
+      "file": "library/MP-093.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hiyah 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-094",
+      "category": "male-young",
+      "title": "Hiyah 4",
+      "file": "library/MP-094.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Hiyah 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-095",
+      "category": "male-young",
+      "title": "Howdy 1",
+      "file": "library/MP-095.wav",
+      "description": "标签：招呼。",
+      "tags": [
+        "招呼"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Howdy 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-096",
+      "category": "male-young",
+      "title": "Is That So 1",
+      "file": "library/MP-096.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Is That So 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-097",
+      "category": "male-young",
+      "title": "Is That So 2",
+      "file": "library/MP-097.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Is That So 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-098",
+      "category": "male-young",
+      "title": "Is That So 3",
+      "file": "library/MP-098.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Is That So 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-099",
+      "category": "male-young",
+      "title": "JP Anno Sa 1",
+      "file": "library/MP-099.wav",
+      "description": "标签：犹豫、否定、台词。",
+      "tags": [
+        "犹豫",
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Anno Sa 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-100",
+      "category": "male-young",
+      "title": "JP Anno Sa 2",
+      "file": "library/MP-100.wav",
+      "description": "标签：犹豫、否定、台词。",
+      "tags": [
+        "犹豫",
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Anno Sa 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-101",
+      "category": "male-young",
+      "title": "JP Doushio Kana 1",
+      "file": "library/MP-101.wav",
+      "description": "标签：犹豫。",
+      "tags": [
+        "犹豫"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Doushio Kana 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-102",
+      "category": "male-young",
+      "title": "JP Itai 1",
+      "file": "library/MP-102.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Itai 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-103",
+      "category": "male-young",
+      "title": "JP Itai 2",
+      "file": "library/MP-103.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Itai 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-104",
+      "category": "male-young",
+      "title": "JP Konnichiha 1",
+      "file": "library/MP-104.wav",
+      "description": "标签：招呼。",
+      "tags": [
+        "招呼"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Konnichiha 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-105",
+      "category": "male-young",
+      "title": "JP Konnichiha 2",
+      "file": "library/MP-105.wav",
+      "description": "标签：招呼。",
+      "tags": [
+        "招呼"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Konnichiha 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-106",
+      "category": "male-young",
+      "title": "JP Mata Ne 1",
+      "file": "library/MP-106.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Mata Ne 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-107",
+      "category": "male-young",
+      "title": "JP Mata Ne 2",
+      "file": "library/MP-107.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Mata Ne 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-108",
+      "category": "male-young",
+      "title": "JP N 1",
+      "file": "library/MP-108.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP N 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-109",
+      "category": "male-young",
+      "title": "JP Ohayou 1",
+      "file": "library/MP-109.wav",
+      "description": "标签：招呼。",
+      "tags": [
+        "招呼"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Ohayou 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-110",
+      "category": "male-young",
+      "title": "JP Ohayou Gozaimas 1",
+      "file": "library/MP-110.wav",
+      "description": "标签：招呼。",
+      "tags": [
+        "招呼"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Ohayou Gozaimas 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-111",
+      "category": "male-young",
+      "title": "JP Sayonara 1",
+      "file": "library/MP-111.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Sayonara 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-112",
+      "category": "male-young",
+      "title": "JP Sayonara 2",
+      "file": "library/MP-112.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Sayonara 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-113",
+      "category": "male-young",
+      "title": "JP Shimatta 1",
+      "file": "library/MP-113.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Shimatta 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-114",
+      "category": "male-young",
+      "title": "JP Sou 1",
+      "file": "library/MP-114.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Sou 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-115",
+      "category": "male-young",
+      "title": "JP Sou Des Ne 1",
+      "file": "library/MP-115.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Sou Des Ne 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-116",
+      "category": "male-young",
+      "title": "JP Sou Des Ne 2",
+      "file": "library/MP-116.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/JP Sou Des Ne 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-117",
+      "category": "male-young",
+      "title": "Jump 1",
+      "file": "library/MP-117.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-118",
+      "category": "male-young",
+      "title": "Jump 10",
+      "file": "library/MP-118.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 10.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-119",
+      "category": "male-young",
+      "title": "Jump 11",
+      "file": "library/MP-119.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 11.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-120",
+      "category": "male-young",
+      "title": "Jump 12",
+      "file": "library/MP-120.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 12.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-121",
+      "category": "male-young",
+      "title": "Jump 2",
+      "file": "library/MP-121.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-122",
+      "category": "male-young",
+      "title": "Jump 3",
+      "file": "library/MP-122.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-123",
+      "category": "male-young",
+      "title": "Jump 4",
+      "file": "library/MP-123.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 4.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-124",
+      "category": "male-young",
+      "title": "Jump 5",
+      "file": "library/MP-124.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 5.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-125",
+      "category": "male-young",
+      "title": "Jump 6",
+      "file": "library/MP-125.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 6.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-126",
+      "category": "male-young",
+      "title": "Jump 7",
+      "file": "library/MP-126.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 7.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-127",
+      "category": "male-young",
+      "title": "Jump 8",
+      "file": "library/MP-127.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 8.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-128",
+      "category": "male-young",
+      "title": "Jump 9",
+      "file": "library/MP-128.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Jump 9.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-129",
+      "category": "male-young",
+      "title": "Kick 1",
+      "file": "library/MP-129.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Kick 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-130",
+      "category": "male-young",
+      "title": "Kick 2",
+      "file": "library/MP-130.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Kick 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-131",
+      "category": "male-young",
+      "title": "No 1",
+      "file": "library/MP-131.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/No 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-132",
+      "category": "male-young",
+      "title": "No 2",
+      "file": "library/MP-132.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/No 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-133",
+      "category": "male-young",
+      "title": "No 3",
+      "file": "library/MP-133.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/No 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-134",
+      "category": "male-young",
+      "title": "No No No 1",
+      "file": "library/MP-134.wav",
+      "description": "标签：否定、台词。",
+      "tags": [
+        "否定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/No No No 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-135",
+      "category": "male-young",
+      "title": "Now Then 1",
+      "file": "library/MP-135.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Now Then 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-136",
+      "category": "male-young",
+      "title": "Oh Helllo 1",
+      "file": "library/MP-136.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Oh Helllo 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-137",
+      "category": "male-young",
+      "title": "OK 1",
+      "file": "library/MP-137.wav",
+      "description": "标签：肯定。",
+      "tags": [
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/OK 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-138",
+      "category": "male-young",
+      "title": "Ouch 1",
+      "file": "library/MP-138.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Ouch 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-139",
+      "category": "male-young",
+      "title": "Ow 1",
+      "file": "library/MP-139.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Ow 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-140",
+      "category": "male-young",
+      "title": "Pained Death 1",
+      "file": "library/MP-140.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Pained Death 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-141",
+      "category": "male-young",
+      "title": "Pained Death 2",
+      "file": "library/MP-141.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Pained Death 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-142",
+      "category": "male-young",
+      "title": "Pained Death 3",
+      "file": "library/MP-142.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Pained Death 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-143",
+      "category": "male-young",
+      "title": "Punch 1",
+      "file": "library/MP-143.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Punch 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-144",
+      "category": "male-young",
+      "title": "Punch 2",
+      "file": "library/MP-144.wav",
+      "description": "标签：用力。",
+      "tags": [
+        "用力"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Punch 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-145",
+      "category": "male-young",
+      "title": "See Ya 1",
+      "file": "library/MP-145.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/See Ya 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-146",
+      "category": "male-young",
+      "title": "See Ya Buddy 1",
+      "file": "library/MP-146.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/See Ya Buddy 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-147",
+      "category": "male-young",
+      "title": "See Ya Later 1",
+      "file": "library/MP-147.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/See Ya Later 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-148",
+      "category": "male-young",
+      "title": "See Ya Later 2",
+      "file": "library/MP-148.wav",
+      "description": "标签：告别、台词。",
+      "tags": [
+        "告别",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/See Ya Later 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-149",
+      "category": "male-young",
+      "title": "See You 1",
+      "file": "library/MP-149.wav",
+      "description": "标签：告别。",
+      "tags": [
+        "告别"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/See You 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-150",
+      "category": "male-young",
+      "title": "Stupid monster death",
+      "file": "library/MP-150.wav",
+      "description": "标签：疼痛。",
+      "tags": [
+        "疼痛"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Stupid monster death.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-151",
+      "category": "male-young",
+      "title": "Thank You 1",
+      "file": "library/MP-151.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thank You 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-152",
+      "category": "male-young",
+      "title": "Thank You 2",
+      "file": "library/MP-152.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thank You 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-153",
+      "category": "male-young",
+      "title": "Thank You 3",
+      "file": "library/MP-153.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thank You 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-154",
+      "category": "male-young",
+      "title": "Thanks 1",
+      "file": "library/MP-154.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thanks 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-155",
+      "category": "male-young",
+      "title": "Thanks 2",
+      "file": "library/MP-155.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thanks 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-156",
+      "category": "male-young",
+      "title": "Thanks 3",
+      "file": "library/MP-156.wav",
+      "description": "标签：肯定、台词。",
+      "tags": [
+        "肯定",
+        "台词"
+      ],
+      "scenes": [
+        "chat",
+        "approve"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/Thanks 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-157",
+      "category": "male-young",
+      "title": "What Should I do 1",
+      "file": "library/MP-157.wav",
+      "description": "标签：台词。",
+      "tags": [
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/What Should I do 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-158",
+      "category": "male-young",
+      "title": "What To Do 1",
+      "file": "library/MP-158.wav",
+      "description": "标签：犹豫、台词。",
+      "tags": [
+        "犹豫",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/What To Do 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-159",
+      "category": "male-young",
+      "title": "What to Do 2",
+      "file": "library/MP-159.wav",
+      "description": "标签：犹豫、台词。",
+      "tags": [
+        "犹豫",
+        "台词"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/What to Do 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-160",
+      "category": "male-young",
+      "title": "When We Next Meet 1",
+      "file": "library/MP-160.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/When We Next Meet 1.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-161",
+      "category": "male-young",
+      "title": "When We Next Meet 2",
+      "file": "library/MP-161.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/When We Next Meet 2.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "MP-162",
+      "category": "male-young",
+      "title": "When We Next Meet 3",
+      "file": "library/MP-162.wav",
+      "description": "标签：其他。",
+      "tags": [
+        "其他"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Male protagonist",
+      "source_file": "/Users/amin/Desktop/FORMOCRACY/audios/Male protagonist/When We Next Meet 3.wav",
+      "license": "素材包授权待复核"
+    },
+    {
+      "id": "WEB-MY-001",
+      "category": "male-young",
+      "title": "青年男倾向 · Gibberish",
+      "file": "library/WEB-MY-001.mp3",
+      "description": "真实人声候选；适合：chat。",
+      "tags": [
+        "网络精选",
+        "嘟囔"
+      ],
+      "scenes": [
+        "chat"
+      ],
+      "source": "Freesound / SoundCollectah 109404",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/chat-male-gibberish-cc0.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-101",
+      "category": "male-young",
+      "title": "男性 NPC · Why",
+      "file": "library/WEB-MY-101.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "犹豫",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801100",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801100.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-102",
+      "category": "male-young",
+      "title": "男性 NPC · Nope",
+      "file": "library/WEB-MY-102.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801092",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801092.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-103",
+      "category": "male-young",
+      "title": "男性 NPC · Yes",
+      "file": "library/WEB-MY-103.mp3",
+      "description": "真实人声候选；适合：approve。",
+      "tags": [
+        "网络精选",
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Freesound / Sadiquecat 801296",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801296.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-104",
+      "category": "male-young",
+      "title": "男性 NPC · Yay",
+      "file": "library/WEB-MY-104.mp3",
+      "description": "真实人声候选；适合：approve。",
+      "tags": [
+        "网络精选",
+        "笑",
+        "肯定"
+      ],
+      "scenes": [
+        "approve"
+      ],
+      "source": "Freesound / Sadiquecat 801292",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801292.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-105",
+      "category": "male-young",
+      "title": "男性 NPC · No 多版本",
+      "file": "library/WEB-MY-105.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801073",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801073.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-106",
+      "category": "male-young",
+      "title": "男性 NPC · Ugh",
+      "file": "library/WEB-MY-106.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "叹气",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801094",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801094.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-107",
+      "category": "male-young",
+      "title": "男性 NPC · No No No",
+      "file": "library/WEB-MY-107.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801076",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801076.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-108",
+      "category": "male-young",
+      "title": "男性 NPC · Naahh",
+      "file": "library/WEB-MY-108.mp3",
+      "description": "真实人声候选；适合：chat / reject。",
+      "tags": [
+        "网络精选",
+        "嘟囔",
+        "否定"
+      ],
+      "scenes": [
+        "chat",
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801072",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801072.mp3",
+      "license": "CC0"
+    },
+    {
+      "id": "WEB-MY-109",
+      "category": "male-young",
+      "title": "男性 NPC · Yuck",
+      "file": "library/WEB-MY-109.mp3",
+      "description": "真实人声候选；适合：reject。",
+      "tags": [
+        "网络精选",
+        "否定"
+      ],
+      "scenes": [
+        "reject"
+      ],
+      "source": "Freesound / Sadiquecat 801101",
+      "source_file": "/Users/amin/formocracy/tools/audio-choice-lab/audio/web/fs-801101.mp3",
+      "license": "CC0"
+    }
+  ]
+}
