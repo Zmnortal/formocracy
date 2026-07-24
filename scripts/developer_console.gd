@@ -4,6 +4,7 @@ const MAIN_SCENE := "res://main.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const OPENING_SCENE := "res://scenes/opening.tscn"
 const REPORT_SCENE := "res://scenes/daily_report.tscn"
+const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
 const VALIDATION_SCENE := "res://scenes/validation_preview.tscn"
 
 # 共享 UI 样式工具库
@@ -115,8 +116,10 @@ func build_ui() -> void:
 	scene_selector.set_item_metadata(2, MAIN_SCENE)
 	scene_selector.add_item("工作日处理回执")
 	scene_selector.set_item_metadata(3, REPORT_SCENE)
+	scene_selector.add_item("下班后的城市地图")
+	scene_selector.set_item_metadata(4, EVENING_MAP_SCENE)
 	scene_selector.add_item("现实验收设施预览")
-	scene_selector.set_item_metadata(4, VALIDATION_SCENE)
+	scene_selector.set_item_metadata(5, VALIDATION_SCENE)
 	console_panel.add_child(scene_selector)
 	var switch_button := create_button("立即切换", Vector2(292, 100), Vector2(126, 40))
 	switch_button.pressed.connect(_on_switch_scene)
@@ -410,17 +413,18 @@ func execute_command(command: String) -> void:
 	var parts := clean.split(" ", false)
 	match parts[0].to_lower():
 		"help":
-			append_output("scene menu | scene opening | scene main | scene report | scene validation | scene reload")
+			append_output("scene menu | scene opening | scene main | scene report | scene map | scene validation | scene reload")
 			append_output("level <id> [seed] | config reload | queue | report fill | day next | state | clear")
 		"scene":
 			if parts.size() < 2:
-				append_output("用法：scene menu|opening|main|report|validation|reload")
+				append_output("用法：scene menu|opening|main|report|map|validation|reload")
 			else:
 				match parts[1].to_lower():
 					"menu": switch_scene(MENU_SCENE)
 					"opening": switch_scene(OPENING_SCENE)
 					"main": switch_scene(MAIN_SCENE)
 					"report": switch_scene(REPORT_SCENE)
+					"map": switch_scene(EVENING_MAP_SCENE)
 					"validation": switch_scene(VALIDATION_SCENE)
 					"reload": reload_scene()
 					_: append_output("未知场景：" + parts[1])

@@ -1,5 +1,7 @@
 extends Control
 
+const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
+
 @onready var metadata_label: Label = $Terminal/Receipt/Metadata
 @onready var title_label: Label = $Terminal/Receipt/Title
 @onready var stats_label: Label = $Terminal/Receipt/Stats/StatsText
@@ -58,7 +60,7 @@ func _on_declaration_toggled(pressed: bool) -> void:
 
 
 # 玩家点击确认封存后执行。先校验声明已勾选且未处于封存中，设置 confirming 标志防止重复提交。
-# 成功后切换回主场景，并通过 WorkdayState.begin_next_day() 进入下一工作日；
+# 成功后进入下班地图；此时仍属于当前工作日，不提前结算或清除当日记录。
 # 若场景切换失败则复位标志并提示“封存失败，请重试”。
 func _on_confirm_pressed() -> void:
 	if confirming or not declaration.button_pressed:
@@ -66,13 +68,11 @@ func _on_confirm_pressed() -> void:
 	confirming = true
 	confirm_button.disabled = true
 	status_line.text = "记录状态：正在封存"
-	var error: Error = get_tree().change_scene_to_file("res://main.tscn")
+	var error: Error = get_tree().change_scene_to_file(EVENING_MAP_SCENE)
 	if error != OK:
 		confirming = false
 		status_line.text = "记录状态：封存失败，请重试"
 		confirm_button.disabled = false
-	else:
-		WorkdayState.begin_next_day()
 
 
 # 以 1280x720 为设计分辨率，按实际视口大小等比例缩放整个日报 Control 并将位置归零。

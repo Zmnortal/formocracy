@@ -17,8 +17,9 @@ func run() -> void:
 	await process_frame
 	assert(console.dev_button != null, "DEV button must be created")
 	assert(console.root_control.mouse_filter == Control.MOUSE_FILTER_IGNORE, "closed developer console must not intercept game input")
-	assert(console.scene_selector.item_count == 5, "scene selector must expose menu, narrative and three development scenes")
+	assert(console.scene_selector.item_count == 6, "scene selector must expose menu, narrative and four development scenes")
 	assert(console.scene_selector.get_item_metadata(0) == "res://scenes/main_menu.tscn", "main menu must be selectable")
+	assert(console.scene_selector.get_item_metadata(4) == "res://scenes/evening_map.tscn", "evening map must be selectable")
 	assert(console.level_selector.item_count >= 1, "level selector must expose CSV-configured levels")
 	console.toggle_console()
 	assert(console.is_open and console.blocker.visible, "console must open")

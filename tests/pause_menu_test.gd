@@ -14,6 +14,7 @@ func run() -> void:
 	var developer_console = root.get_node("DeveloperConsole")
 	assert(pause_menu.is_scene_allowed_path("res://main.tscn"), "main gameplay must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/daily_report.tscn"), "daily report must allow pause menu")
+	assert(pause_menu.is_scene_allowed_path("res://scenes/evening_map.tscn"), "evening map must allow pause menu")
 	assert(not pause_menu.is_scene_allowed_path("res://scenes/opening.tscn"), "opening must retain its own escape behavior")
 	assert(not pause_menu.is_scene_allowed_path("res://scenes/main_menu.tscn"), "main menu must retain its own escape behavior")
 
