@@ -49,6 +49,39 @@ func populate_report() -> void:
 	if lines.is_empty():
 		lines.append("00 / 本工作日未形成可供汇总的事项记录")
 	cases_label.text = "\n".join(lines)
+	_send_report_to_glass(day, summary, settlement)
+
+
+func _send_report_to_glass(day: int, summary: Dictionary, settlement: Dictionary) -> void:
+	var bridge := get_tree().root.get_node_or_null("RealityBridge")
+	if bridge == null:
+		return
+	bridge.day_report(
+		[
+			"形式审查：%d　批准：%d　驳回：%d" % [
+				summary.reviewed,
+				summary.approved,
+				summary.rejected,
+			],
+			"程序错误：%d　现实生效：%d　等待处理：%d" % [
+				summary.procedure_errors,
+				summary.effective,
+				summary.pending,
+			],
+			"日薪：%+d　绩效：%+d　罚款：-%d" % [
+				settlement.base_salary,
+				settlement.performance,
+				settlement.fines,
+			],
+			"生活支出：-%d　本日结余：%+d" % [
+				settlement.living_expenses,
+				settlement.net,
+			],
+			"政治评价：%s" % settlement.political_evaluation,
+		],
+		day,
+		WorkdayState.report_title
+	)
 
 
 # 玩家勾选或取消“已核对记录”声明时调用。

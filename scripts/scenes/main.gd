@@ -12,6 +12,7 @@ var sequence: CaseSequence
 var npc_performance: NpcPerformanceController
 var secretary_briefing: SecretaryBriefingController
 var call_bell: CallBellController
+var batch_validation: BatchValidationController
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
@@ -33,6 +34,7 @@ func _ready() -> void:
 	npc_performance = NpcPerformanceController.new(self)
 	secretary_briefing = SecretaryBriefingController.new(self)
 	call_bell = CallBellController.new(self)
+	batch_validation = BatchValidationController.new(self)
 
 	sequence.case_started.connect(presenter.start_case)
 	sequence.case_started.connect(func(_data): input_mgr.bind_case(presenter))
@@ -44,9 +46,18 @@ func _ready() -> void:
 	npc_performance.departure_finished.connect(_on_npc_departed)
 	secretary_briefing.finished.connect(_on_briefing_finished)
 	call_bell.called.connect(_on_call_bell)
+	batch_validation.finished.connect(_open_daily_report)
 	sequence.day_finished.connect(_on_day_finished)
 
 	get_viewport().size_changed.connect(fit_to_window)
+	GameStateSync.scene_changed(
+		"workbench",
+		"briefing",
+		{
+			"day": WorkdayState.day_number,
+			"levelId": WorkdayState.current_level_id,
+		}
+	)
 	sequence.start_day(accepting_new_cases, false)
 	if WorkdayState.water_deprived:
 		desk.need_status_label.text = "生活状态：缺水 / 工作时间 -20 秒 / 拖拽响应 72%"
@@ -65,6 +76,13 @@ func _on_case_started(case_data: Dictionary) -> void:
 	flow_state = "NPC_PERFORMANCE"
 	current_case = case_data
 	case_index = sequence.case_index
+	GameStateSync.publish_state({
+		"phase": "npc_entering",
+		"metadata": {
+			"caseId": String(case_data.get("case_id", "")),
+			"day": WorkdayState.day_number,
+		},
+	})
 	if is_instance_valid(presenter.envelope):
 		presenter.envelope.visible = false
 		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -74,12 +92,12 @@ func _on_case_started(case_data: Dictionary) -> void:
 func _on_npc_delivery_finished() -> void:
 	if not is_instance_valid(presenter.envelope):
 		return
-	presenter.envelope.position = Vector2(365, 300)
+	presenter.envelope.position = Vector2(610, 420)
 	presenter.envelope.visible = true
 	presenter.envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var delivery := create_tween()
 	delivery.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	delivery.tween_property(presenter.envelope, "position", Vector2(115, 320), 0.32)
+	delivery.tween_property(presenter.envelope, "position", Vector2(250, 505), 0.32)
 	await delivery.finished
 	if is_instance_valid(presenter.envelope):
 		presenter.envelope.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -99,11 +117,7 @@ func _on_submission_finished() -> void:
 
 func _on_npc_departed() -> void:
 	if WorkdayState.should_show_report() or not accepting_new_cases:
-		var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
-		if error != OK:
-			if is_instance_valid(desk.status_label):
-				desk.status_label.text = "内部日报生成失败，当前记录已保留。"
-			sequence.advance(accepting_new_cases)
+		_begin_batch_validation()
 	else:
 		flow_state = "WAITING_FOR_NEXT_CALL"
 		call_bell.unlock()
@@ -112,6 +126,7 @@ func _on_npc_departed() -> void:
 
 func _on_briefing_finished() -> void:
 	flow_state = "WAITING_FOR_FIRST_CALL"
+	GameStateSync.speaker_stopped("waiting_for_first_call")
 	call_bell.unlock()
 	desk.status_label.text = "简报结束。请按召唤铃传唤第一位申请人。"
 
@@ -120,6 +135,17 @@ func _on_call_bell() -> void:
 	if not workday_started:
 		workday_started = true
 	flow_state = "CALLING"
+	var bridge := get_tree().root.get_node_or_null("RealityBridge")
+	if bridge != null:
+		bridge.secretary_line("下一位。")
+	GameStateSync.speaker_started(
+		"INTERNAL-BROADCAST",
+		"内部广播",
+		"system",
+		"下一位。",
+		"calling",
+		{"day": WorkdayState.day_number}
+	)
 	desk.status_label.text = "内部广播：下一位。"
 	sequence.advance(accepting_new_cases)
 
@@ -130,6 +156,20 @@ func start_first_case_for_tests() -> void:
 
 
 func _on_day_finished() -> void:
+	_begin_batch_validation()
+
+
+func _begin_batch_validation() -> void:
+	flow_state = "BATCH_VALIDATION"
+	call_bell.lock()
+	if WorkdayState.get_pending_archives().is_empty():
+		_open_daily_report()
+		return
+	batch_validation.open()
+	desk.status_label.text = "工作时间结束：请从归档与积压中选择有限档案统一送验。"
+
+
+func _open_daily_report() -> void:
 	var error: Error = get_tree().change_scene_to_file("res://scenes/daily_report.tscn")
 	if error != OK and is_instance_valid(desk.status_label):
 		desk.status_label.text = "内部日报生成失败，当前记录已保留。"

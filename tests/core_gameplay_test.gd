@@ -18,9 +18,12 @@ func run() -> void:
 	await process_frame
 	desk.start_first_case_for_tests()
 	await process_frame
-	assert(desk.get_node("ClerkDeskConcept").texture.resource_path == "res://assets/opening/opening-03-day-one-reveal-8bit-v1.png", "gameplay background must be the configured final opening slide")
+	assert(desk.get_node("ClerkDeskConcept").texture.resource_path == "res://assets/office/background/service_hall_light.png", "gameplay must use the configured service-hall background plate")
 	assert(desk.get_node("ClerkDeskConcept").stretch_mode == TextureRect.STRETCH_SCALE, "background must fill the canvas without cropping its right or bottom edge")
 	assert(desk.get_node("ClerkDeskConcept").size == Vector2(1280, 720), "background control must retain the full design-canvas size after entering the tree")
+	assert(desk.has_node("FilingCabinet") and desk.has_node("NumberMachine") and desk.has_node("WallCalendar"), "office props must remain independent scene nodes")
+	assert(desk.has_node("ServiceRailingForeground") and desk.has_node("WorktableForeground"), "railing and worktable must be independent foreground layers")
+	assert(desk.get_node("ServiceRailingForeground").z_index > desk.npc_performance.actor_layer.z_index, "NPC must render behind the service railing")
 	assert(desk.desk.npc_panel.z_index >= 0 and desk.presenter.envelope.z_index > desk.get_node("ClerkDeskConcept").z_index, "interactive queue and envelope must render over the background")
 	assert(not desk.presenter.envelope_opened, "delivered envelope must start sealed")
 	desk.presenter.set_envelope_on_desk(true)
@@ -51,6 +54,11 @@ func run() -> void:
 	var delayed_case: Dictionary = root.get_node("ConfigDatabase").get_gameplay_case("CASE-003")
 	state.record_case_result(delayed_case, "批准", [], 8.0, delayed_case.document_ids)
 	assert(state.delayed_consequences.size() == 1, "configured sensitive mistakes must reserve delayed accountability")
+	var bridge := root.get_node("RealityBridge")
+	bridge.last_emitted_event.clear()
+	state.begin_next_day()
+	assert(bridge.last_emitted_event.type == "consequence", "a penalized workday must send its consequence to the glasses")
+	assert(bridge.last_emitted_event.body.contains("行政罚款"), "glasses consequence must include the administrative fine")
 	var before_tick: float = state.seconds_remaining
 	state.tick(1.5)
 	assert(state.seconds_remaining < before_tick, "workday countdown must advance with elapsed work time")

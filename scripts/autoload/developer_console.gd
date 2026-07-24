@@ -10,6 +10,7 @@ const VALIDATION_SCENE := "res://scenes/validation_preview.tscn"
 
 # 共享 UI 样式工具库
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const InteractionDebugOverlayScene := preload("res://scripts/ui/interaction_debug_overlay.gd")
 
 var enabled := true
 var is_open := false
@@ -22,6 +23,9 @@ var day_selector: SpinBox
 var level_selector: OptionButton
 var seed_selector: SpinBox
 var preset_selector: OptionButton
+var collision_button: Button
+var glass_test_button: Button
+var interaction_overlay: Control
 var status_label: Label
 var output: RichTextLabel
 var command_input: LineEdit
@@ -66,6 +70,13 @@ func build_ui() -> void:
 	root_control.size = Vector2(1280, 720)
 	root_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root_control)
+
+	interaction_overlay = InteractionDebugOverlayScene.new()
+	interaction_overlay.name = "InteractionDebugOverlay"
+	interaction_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	interaction_overlay.z_index = -50
+	interaction_overlay.visible = false
+	root_control.add_child(interaction_overlay)
 
 	dev_button = Button.new()
 	dev_button.text = "DEV"
@@ -173,6 +184,9 @@ func build_ui() -> void:
 	console_panel.add_child(preset_selector)
 	var apply_preset := create_button("应用并打开日报", Vector2(292, 254), Vector2(188, 40))
 	apply_preset.pressed.connect(_on_apply_preset)
+	glass_test_button = create_button("发送眼镜测试", Vector2(492, 254), Vector2(188, 40))
+	glass_test_button.name = "GlassTestButton"
+	glass_test_button.pressed.connect(send_glass_test)
 
 	var fill_button := create_button("填充三件测试申请", Vector2(28, 310), Vector2(210, 40))
 	fill_button.pressed.connect(func(): fill_test_records("mixed"))
@@ -182,6 +196,10 @@ func build_ui() -> void:
 	next_button.pressed.connect(next_day)
 	var reload_button := create_button("重载当前场景", Vector2(630, 310), Vector2(170, 40))
 	reload_button.pressed.connect(reload_scene)
+	collision_button = create_button("", Vector2(812, 310), Vector2(160, 40))
+	collision_button.name = "CollisionDebugButton"
+	collision_button.pressed.connect(toggle_collision_debug)
+	refresh_collision_button()
 
 	create_section_label("命令终端", Vector2(28, 374))
 	output = RichTextLabel.new()
@@ -226,6 +244,34 @@ func create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
 	UI.style_button(button, 15)
 	console_panel.add_child(button)
 	return button
+
+
+# 切换 Godot 运行时碰撞形状绘制。仅影响当前开发会话，不写入游戏存档。
+func toggle_collision_debug() -> void:
+	var enabled_now := not interaction_overlay.visible
+	interaction_overlay.visible = enabled_now
+	get_tree().debug_collisions_hint = enabled_now
+	refresh_collision_button()
+	append_output("游戏交互框：%s" % ("显示" if enabled_now else "关闭"))
+
+
+func refresh_collision_button() -> void:
+	if collision_button == null:
+		return
+	collision_button.text = "交互框：%s" % ("显示" if interaction_overlay.visible else "关闭")
+
+
+# 向当前连接的眼镜发送一张联调卡片。
+func send_glass_test() -> void:
+	var bridge := get_node_or_null("/root/RealityBridge")
+	if bridge == null:
+		append_output("眼镜桥接器未加载。")
+		return
+	if not bridge.is_connected_to_glass():
+		append_output("眼镜尚未连接；请确认手机 App 的游戏连接服务已启动。")
+		return
+	bridge.send_test()
+	append_output("已发送眼镜连接测试卡片。")
 
 
 # 全局输入监听。
@@ -418,6 +464,7 @@ func execute_command(command: String) -> void:
 		"help":
 			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
 			append_output("level <id> [seed] | config reload | queue | npc state | npc skip | report fill | day next | state | clear")
+			append_output("glass test")
 		"scene":
 			if parts.size() < 2:
 				append_output("用法：scene menu|days|opening|main|report|map|validation|reload")
@@ -470,6 +517,11 @@ func execute_command(command: String) -> void:
 				append_output("NPC 状态：" + performance.state)
 			else:
 				append_output("用法：npc state | npc skip")
+		"glass":
+			if parts.size() > 1 and parts[1].to_lower() == "test":
+				send_glass_test()
+			else:
+				append_output("用法：glass test")
 		"state": refresh_status(); append_output(status_label.text.replace("\n", " | "))
 		"clear": output.clear()
 		_: append_output("未知命令：%s；输入 help 查看帮助。" % parts[0])

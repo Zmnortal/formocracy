@@ -1,5 +1,5 @@
 [
-  {"id":"PERSON-LIN","display_name":"林默","citizen_id":"74-119-02","queue_label":"A01","actor_tint":"c4b7a4","actor_scale":0.34,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_male_young.wav"},
-  {"id":"PERSON-ZHOU","display_name":"周循","citizen_id":"20-441-88","queue_label":"A02","actor_tint":"9eb6a3","actor_scale":0.32,"move_speed":1.08,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"},
-  {"id":"PERSON-XU","display_name":"许桥","citizen_id":"51-004-63","queue_label":"A03","actor_tint":"b6a4a8","actor_scale":0.35,"move_speed":0.92,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"}
+  {"id":"PERSON-LIN","display_name":"林默","citizen_id":"74-119-02","queue_label":"A01","actor_texture":"res://assets/characters/applicants/npc_male_young.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.16,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_male_young.wav"},
+  {"id":"PERSON-ZHOU","display_name":"周循","citizen_id":"20-441-88","queue_label":"A02","actor_texture":"res://assets/characters/applicants/npc_male_average.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.155,"move_speed":1.08,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"},
+  {"id":"PERSON-XU","display_name":"许桥","citizen_id":"51-004-63","queue_label":"A03","actor_texture":"res://assets/characters/applicants/npc_female_young.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.16,"move_speed":0.92,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"}
 ]

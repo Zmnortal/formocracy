@@ -154,7 +154,7 @@ func _create_form() -> void:
 func _create_envelope() -> void:
 	envelope = Panel.new()
 	envelope.name = "CaseEnvelope"
-	envelope.position = Vector2(94, 470)
+	envelope.position = Vector2(600, 430)
 	envelope.size = Vector2(285, 155)
 	envelope.z_index = 12
 	envelope.mouse_default_cursor_shape = Control.CURSOR_ARROW
@@ -187,7 +187,7 @@ func _create_envelope() -> void:
 	envelope_flap.button_down.connect(_on_flap_pressed)
 
 	var delivery := root.create_tween()
-	delivery.tween_property(envelope, "position", Vector2(115, 320), 0.28)
+	delivery.tween_property(envelope, "position", Vector2(250, 505), 0.28)
 
 
 func _on_flap_pressed() -> void:
@@ -207,8 +207,10 @@ func _create_documents(raw_documents: Array) -> void:
 
 		var document := Panel.new()
 		document.name = String(document_data.get("id", "Document"))
-		document.position = Vector2(350 + index * 54, 230 + index * 32)
+		document.position = Vector2(285 + index * 42, 405 + index * 24)
 		document.size = Vector2(300, 230)
+		document.pivot_offset = document.size / 2.0
+		document.scale = Vector2(0.72, 0.72)
 		document.z_index = 6 + index
 		document.visible = false
 		document.set_meta("document_id", String(document_data.get("id", "")))
@@ -257,7 +259,7 @@ func open_envelope() -> void:
 	envelope_opened = true
 	Sfx.play("ui_switch")
 	envelope.visible = true
-	envelope.position = Vector2(78, 505)
+	envelope.position = Vector2(250, 505)
 	envelope.z_index = 4
 	if is_instance_valid(envelope_flap):
 		envelope_flap.disabled = true

@@ -466,6 +466,10 @@ func show_welcome() -> void:
 	Sfx.play("bling")
 	welcome_panel.modulate.a = 0.0
 	welcome_panel.visible = true
+	var bridge := get_tree().root.get_node_or_null("RealityBridge")
+	if bridge != null:
+		var clerk_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
+		bridge.secretary_line("欢迎回来，%s。" % clerk_name)
 	if DisplayServer.get_name() == "headless":
 		welcome_panel.modulate.a = 1.0
 		return

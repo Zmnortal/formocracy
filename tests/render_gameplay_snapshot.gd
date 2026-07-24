@@ -46,7 +46,7 @@ func run() -> void:
 	current_scene.presenter.apply_stamp("批准", Vector2(350, 360))
 	current_scene.presenter.pack_all_documents()
 	current_scene.submission_mgr.submit(current_scene.presenter, current_scene.current_case)
-	await create_timer(0.4).timeout
+	await create_timer(0.75).timeout
 	var ingestion_image := root.get_viewport().get_texture().get_image()
 	assert(not ingestion_image.is_empty(), "machine ingestion must produce a rendered frame")
 	assert(

@@ -340,6 +340,7 @@ func show_end_dialogue_line(index: int) -> void:
 	var line := end_dialogue_lines[index]
 	end_speaker_label.text = String(line.speaker)
 	end_dialogue_label.text = String(line.text)
+	_send_end_dialogue_to_glass(String(line.speaker), String(line.text))
 	end_continue_label.text = "点击继续  ·  %d / %d" % [index + 1, end_dialogue_lines.size()]
 	var expected_index := index
 	get_tree().create_timer(end_sequence_step_duration).timeout.connect(func():
@@ -365,6 +366,7 @@ func finish_end_of_night_sequence() -> void:
 	var summary := WorkdayState.get_personal_review_summary()
 	end_speaker_label.text = "中央现实管理局"
 	end_dialogue_label.text = "第 %02d 工作日\n个人申请处理：%s" % [WorkdayState.day_number, summary.result]
+	_send_end_dialogue_to_glass(end_speaker_label.text, end_dialogue_label.text)
 	end_continue_label.text = ""
 	var completed_day := WorkdayState.day_number
 	get_tree().create_timer(end_sequence_step_duration * 0.75).timeout.connect(func():
@@ -374,6 +376,18 @@ func finish_end_of_night_sequence() -> void:
 		if auto_transition_after_end_sequence:
 			enter_next_workday()
 	)
+
+
+func _send_end_dialogue_to_glass(speaker: String, text: String) -> void:
+	var bridge := get_tree().root.get_node_or_null("RealityBridge")
+	if bridge == null or text.strip_edges().is_empty():
+		return
+	if speaker.contains("广播") or speaker.contains("管理局"):
+		bridge.secretary_line(text)
+	elif speaker == WorkdayState.player_name or speaker == "林默":
+		bridge.npc_line(speaker, text, "male", "young")
+	else:
+		bridge.npc_line(speaker, text)
 
 
 func enter_next_workday() -> void:

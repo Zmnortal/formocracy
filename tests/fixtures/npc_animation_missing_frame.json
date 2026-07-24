@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "character_id": "TEST-STATIC-FALLBACK",
+  "static_actor_texture": "../../assets/characters/applicants/npc_female_young.png",
+  "actions": [
+    {
+      "action": "partial_once",
+      "fps": 9,
+      "playback": "ONCE",
+      "frames": [
+        "../../assets/characters/idle_breathing/frame-00.png",
+        "../../assets/characters/idle_breathing/does-not-exist.png",
+        "../../assets/characters/idle_breathing/frame-01.png"
+      ]
+    },
+    {
+      "action": "empty_action",
+      "fps": 4,
+      "playback": "HOLD",
+      "frames": [
+        "../../assets/characters/idle_breathing/also-does-not-exist.png"
+      ]
+    }
+  ]
+}

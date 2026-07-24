@@ -34,7 +34,7 @@ func run() -> void:
 		main.presenter.form.get_meta("context_cursor") == CursorManager.Cursor.GRAB,
 		"form must advertise contextual grab interaction"
 	)
-	assert(main.stamp_mgr.stamp_tools.all(func(tool): return tool.size == Vector2(140, 132)), "stamp hit areas must match their visible textures")
+	assert(main.stamp_mgr.stamp_tools.all(func(tool): return tool.size == Vector2(56, 74)), "stamp hit areas must match their visible textures")
 
 	main.presenter.apply_stamp("批准", Vector2(360, 365))
 	assert(main.presenter.is_stamped() == true, "stamp state must be recorded")
@@ -44,7 +44,10 @@ func run() -> void:
 	main.npc_performance.skip_requested = true
 	main.submission_mgr.submit(main.presenter, main.current_case)
 	await create_timer(0.9).timeout
-	assert(main.desk.validation_overlay.visible, "validation concept transition must appear")
+	assert(state.archived_cases.size() == 1, "completed case must enter the archive backlog")
+	assert(state.archived_cases[0].status == "ARCHIVED", "daytime archiving must not grant reality effect")
+	assert(main.desk.archive_stack.get_child_count() == 1, "archived envelope must remain visibly stacked in the tray")
+	assert(main.desk.archive_count_label.text == "×1", "archive tray must display its persistent envelope count")
 	await create_timer(3.1).timeout
 	assert(main.call_bell.available, "next case must wait for the player to ring the call bell")
 	main.call_bell.trigger(true)

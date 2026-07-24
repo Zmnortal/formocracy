@@ -7,6 +7,8 @@ func _init() -> void:
 
 func run() -> void:
 	var state = root.get_node("WorkdayState")
+	var bridge = root.get_node("RealityBridge")
+	bridge.last_emitted_event.clear()
 	state.reset_for_tests()
 	state.day_number = 2
 	state.begin_evening()
@@ -34,6 +36,8 @@ func run() -> void:
 	assert(map.end_overlay.visible, "the end-of-night sequence must black out the map")
 	assert(map.forms_button.disabled and map.ration_button.disabled and map.home_button.disabled, "all map input must lock during blackout")
 	assert(state.day_number == 3, "the dialogue sequence must advance to the next day")
+	assert(bridge.last_emitted_event.type == "secretary_line", "the final central broadcast must be sent to the glasses")
+	assert(bridge.last_emitted_event.text.contains("第 03 工作日"), "glasses broadcast must include the new workday")
 	assert(state.evening_actions_remaining == 2, "advancing the day must immediately restore evening actions")
 	assert(state.evening_location_id == map.LOCATION_OFFICE, "advancing the day must reset the evening location")
 	state.configure_workday({"id": "WORKDAY-001", "day_number": 1, "case_ids": []})

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "character_id": "DEFAULT-APPLICANT",
+  "default_animation": "idle",
+  "substitute_frames_with_static_actor": true,
+  "static_actor_texture": "../../../assets/characters/applicants/npc_male_young.png",
+  "emotion_fallbacks": {
+    "happy": "happy_idle",
+    "angry": "angry_idle"
+  },
+  "micro_expressions": [
+    { "action": "blink", "weight": 50 },
+    { "action": "look_aside", "weight": 30 },
+    { "action": "nervous", "weight": 20 }
+  ],
+  "micro_expression_cooldown": [2.5, 5.0],
+  "actions": [
+    {
+      "action": "queue_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png"
+      ]
+    },
+    {
+      "action": "walk_in",
+      "fps": 7,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-04.png"
+      ]
+    },
+    {
+      "action": "arrive",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-00.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "fps": 3,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png"
+      ]
+    },
+    {
+      "action": "blink",
+      "fps": 5,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-04.png",
+        "../../../assets/characters/idle_breathing/frame-00.png"
+      ]
+    },
+    {
+      "action": "look_aside",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-01.png"
+      ]
+    },
+    {
+      "action": "nervous",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-04.png",
+        "../../../assets/characters/idle_breathing/frame-05.png",
+        "../../../assets/characters/idle_breathing/frame-02.png"
+      ]
+    },
+    {
+      "action": "deliver",
+      "fps": 6,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-04.png"
+      ]
+    },
+    {
+      "action": "happy_react",
+      "fps": 6,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-03.png"
+      ]
+    },
+    {
+      "action": "happy_idle",
+      "fps": 3,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png"
+      ]
+    },
+    {
+      "action": "angry_react",
+      "fps": 6,
+      "playback": "HOLD",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-05.png",
+        "../../../assets/characters/idle_breathing/frame-04.png",
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-02.png"
+      ]
+    },
+    {
+      "action": "angry_idle",
+      "fps": 3,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-04.png",
+        "../../../assets/characters/idle_breathing/frame-05.png"
+      ]
+    },
+    {
+      "action": "walk_out_happy",
+      "fps": 7,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-00.png",
+        "../../../assets/characters/idle_breathing/frame-01.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-04.png"
+      ]
+    },
+    {
+      "action": "walk_out_angry",
+      "fps": 7,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/idle_breathing/frame-05.png",
+        "../../../assets/characters/idle_breathing/frame-04.png",
+        "../../../assets/characters/idle_breathing/frame-03.png",
+        "../../../assets/characters/idle_breathing/frame-02.png",
+        "../../../assets/characters/idle_breathing/frame-01.png"
+      ]
+    }
+  ]
+}

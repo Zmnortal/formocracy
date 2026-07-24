@@ -2,10 +2,16 @@ class_name DeskBuilder
 extends RefCounted
 
 # 构建主工作台场景的静态视觉部分。
-# 不负责印章、表单、文件袋等动态案件节点；只创建背景、申请人卡、验收槽、状态栏、队列与转场层。
+# 底景只负责空间结构；办公室设施与交互物保持为独立节点，避免把玩法状态绘死在背景里。
 
-const WORKBENCH_TEXTURE := preload("res://assets/opening/opening-03-day-one-reveal-8bit-v1.png")
+const WORKBENCH_TEXTURE := preload("res://assets/office/background/service_hall_light.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
+const FILING_CABINET_TEXTURE := preload("res://assets/office/items/filing_cabinet.png")
+const NUMBER_MACHINE_TEXTURE := preload("res://assets/office/items/number_machine.png")
+const CALENDAR_TEXTURE := preload("res://assets/office/items/calendar.png")
+const SERVICE_RAILING_TEXTURE := preload("res://assets/office/foreground/service_railing.png")
+const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
+const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
 
 
 # 在指定 root 节点下构建工作台，并返回共享的 DeskNodes 引用容器。
@@ -18,6 +24,7 @@ func build(root: Node2D) -> DeskNodes:
 	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	backdrop.stretch_mode = TextureRect.STRETCH_SCALE
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backdrop.z_index = -100
 	root.add_child(backdrop)
 	# TextureRect 在未进入场景树时会保留纹理原始最小尺寸。
 	# 加入父节点后再固定到设计画布，避免 1672×941 原图越过 1280×720 边界。
@@ -26,59 +33,102 @@ func build(root: Node2D) -> DeskNodes:
 
 	var vignette := ColorRect.new()
 	vignette.name = "InteractionContrast"
-	vignette.color = Color(0.04, 0.045, 0.04, 0.18)
+	vignette.color = Color(0.025, 0.03, 0.025, 0.08)
 	vignette.position = Vector2.ZERO
 	vignette.size = Vector2(1280, 720)
 	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.z_index = -90
 	root.add_child(vignette)
+
+	_build_office_props(root)
+	_build_foreground_architecture(root)
 
 	var case_card := Panel.new()
 	case_card.name = "ApplicantCard"
-	case_card.position = Vector2(1010, 350)
-	case_card.size = Vector2(235, 112)
+	case_card.position = Vector2(1030, 305)
+	case_card.size = Vector2(218, 104)
 	case_card.add_theme_stylebox_override(
 		"panel",
-		WorkbenchUI.style_box(Color(0.08, 0.075, 0.06, 0.94), 4, WorkbenchUI.COLORS.brass, 2)
+		WorkbenchUI.style_box(Color(0.045, 0.052, 0.043, 0.92), 3, WorkbenchUI.COLORS.brass, 1)
 	)
 	root.add_child(case_card)
 	WorkbenchUI.add_text(case_card, "当前申请人档案", 12, Color("b9aa88"), Vector2(14, 10), Vector2(200, 20))
 	desk.applicant_card_label = WorkbenchUI.add_text(
-		case_card, "", 14, Color("ddd0ac"), Vector2(14, 35), Vector2(207, 67)
+		case_card, "", 13, Color("ddd0ac"), Vector2(14, 34), Vector2(190, 62)
 	)
 
 	desk.slot = Panel.new()
 	desk.slot.name = "RealityValidationSlot"
-	desk.slot.position = Vector2(1010, 475)
-	desk.slot.size = Vector2(235, 92)
+	desk.slot.position = Vector2(1040, 548)
+	desk.slot.size = Vector2(198, 102)
+	desk.slot.pivot_offset = desk.slot.size / 2.0
 	desk.slot.add_theme_stylebox_override(
 		"panel",
-		WorkbenchUI.style_box(Color(0.035, 0.035, 0.03, 0.96), 5, WorkbenchUI.COLORS.brass, 3)
+		WorkbenchUI.style_box(Color(0, 0, 0, 0), 0)
 	)
+	desk.slot.z_index = 46
 	root.add_child(desk.slot)
-	WorkbenchUI.add_text(desk.slot, "送交中央现实验收", 15, Color("d0c09b"), Vector2(16, 11), Vector2(190, 22))
-	var opening := ColorRect.new()
-	opening.color = Color("030303")
-	opening.position = Vector2(16, 47)
-	opening.size = Vector2(202, 20)
-	opening.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	desk.slot.add_child(opening)
+	var archive_image := TextureRect.new()
+	archive_image.name = "ArchiveTrayAsset"
+	archive_image.texture = ARCHIVE_TRAY_TEXTURE
+	archive_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	archive_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	archive_image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	archive_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk.slot.add_child(archive_image)
+	archive_image.position = Vector2.ZERO
+	archive_image.size = desk.slot.size
+	desk.archive_stack = Control.new()
+	desk.archive_stack.name = "ArchivedEnvelopeStack"
+	desk.archive_stack.position = Vector2.ZERO
+	desk.archive_stack.size = desk.slot.size
+	desk.archive_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk.slot.add_child(desk.archive_stack)
+	desk.archive_count_label = WorkbenchUI.add_text(
+		desk.slot, "", 11, Color("ead8ad"), Vector2(145, 16), Vector2(42, 20)
+	)
+	desk.archive_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	desk.archive_count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk.archive_count_label.add_theme_constant_override("outline_size", 3)
+	desk.archive_count_label.add_theme_color_override("font_outline_color", Color("31291f"))
+	var archive_label := WorkbenchUI.add_text(
+		root, "当日归档", 12, Color("d0c09b"), Vector2(1101, 530), Vector2(90, 20)
+	)
+	archive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	archive_label.z_index = 47
+	archive_label.add_theme_constant_override("outline_size", 3)
+	archive_label.add_theme_color_override("font_outline_color", Color("31291f"))
 	desk.slot_light = ColorRect.new()
 	desk.slot_light.color = WorkbenchUI.COLORS.red
-	desk.slot_light.position = Vector2(207, 13)
-	desk.slot_light.size = Vector2(10, 10)
+	desk.slot_light.position = Vector2(166, 76)
+	desk.slot_light.size = Vector2(10, 7)
 	desk.slot_light.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	desk.slot.add_child(desk.slot_light)
+	desk.archive_drop_zone = desk.slot
+	desk.archive_drop_zone.add_to_group("debug_interaction_zone")
+	desk.archive_drop_zone.set_meta("debug_zone_label", "归档投放区")
+	desk.refresh_archive_stack()
+
+	var desk_surface_zone := Control.new()
+	desk_surface_zone.name = "DeskInteractionSurface"
+	desk_surface_zone.position = Vector2(300, 190)
+	desk_surface_zone.size = Vector2(700, 470)
+	desk_surface_zone.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk_surface_zone.add_to_group("debug_interaction_zone")
+	desk_surface_zone.set_meta("debug_zone_label", "桌面放置区")
+	root.add_child(desk_surface_zone)
 
 	var status_back := Panel.new()
-	status_back.position = Vector2(370, 680)
-	status_back.size = Vector2(540, 34)
+	status_back.position = Vector2(300, 681)
+	status_back.size = Vector2(390, 31)
+	status_back.z_index = 60
 	status_back.add_theme_stylebox_override(
 		"panel",
 		WorkbenchUI.style_box(Color(0.04, 0.035, 0.025, 0.92), 4, WorkbenchUI.COLORS.brass, 1)
 	)
 	root.add_child(status_back)
 	desk.status_label = WorkbenchUI.add_text(
-		status_back, "请完成申请的形式处理。", 14, Color("d8c9a9"), Vector2(14, 6), Vector2(510, 22)
+		status_back, "请完成申请的形式处理。", 13, Color("d8c9a9"), Vector2(12, 5), Vector2(366, 21)
 	)
 	desk.status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
@@ -88,7 +138,7 @@ func build(root: Node2D) -> DeskNodes:
 		"经办员：%s  /  第 %02d 工作日" % [clerk_name, WorkdayState.day_number],
 		14,
 		Color("d8c9a9"),
-		Vector2(36, 28),
+		Vector2(24, 18),
 		Vector2(520, 28)
 	)
 	identity_label.add_theme_constant_override("outline_size", 5)
@@ -98,7 +148,7 @@ func build(root: Node2D) -> DeskNodes:
 		"生活状态：饮水正常",
 		13,
 		Color("aabd78"),
-		Vector2(36, 56),
+		Vector2(24, 45),
 		Vector2(420, 24)
 	)
 	desk.need_status_label.add_theme_constant_override("outline_size", 4)
@@ -111,12 +161,64 @@ func build(root: Node2D) -> DeskNodes:
 	return desk
 
 
+func _build_office_props(root: Node2D) -> void:
+	_add_prop(root, "FilingCabinet", FILING_CABINET_TEXTURE, Vector2(22, 315), Vector2(140, 190), -4)
+	_add_prop(root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7)
+	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
+
+
+func _build_foreground_architecture(root: Node2D) -> void:
+	_add_prop(
+		root,
+		"ServiceRailingForeground",
+		SERVICE_RAILING_TEXTURE,
+		Vector2(350, 350),
+		Vector2(580, 148),
+		4
+	)
+	_add_prop(
+		root,
+		"WorktableForeground",
+		WORKTABLE_TEXTURE,
+		Vector2(0, 465),
+		Vector2(1280, 409),
+		3
+	)
+
+
+func _add_prop(
+	root: Node2D,
+	node_name: String,
+	texture: Texture2D,
+	at: Vector2,
+	display_size: Vector2,
+	layer: int
+) -> void:
+	var prop := TextureRect.new()
+	prop.name = node_name
+	prop.texture = texture
+	prop.position = at
+	prop.size = display_size
+	prop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	prop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	prop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	prop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	prop.z_index = layer
+	root.add_child(prop)
+	# TextureRect 在尚未进入场景树时会保留纹理的原始最小尺寸。
+	# 加入父节点后再设置设计尺寸，确保大图素材不会撑破指定布局。
+	prop.position = at
+	prop.size = display_size
+
+
 func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:
 	desk.machine_drop_zone = Control.new()
 	desk.machine_drop_zone.name = "MachineDropZone"
 	desk.machine_drop_zone.position = Vector2(485, 205)
 	desk.machine_drop_zone.size = Vector2(310, 285)
 	desk.machine_drop_zone.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	desk.machine_drop_zone.add_to_group("debug_interaction_zone")
+	desk.machine_drop_zone.set_meta("debug_zone_label", "机器吞入区")
 	root.add_child(desk.machine_drop_zone)
 
 	# 覆盖传送口前沿。文件袋在吞入阶段降到该层之后，
@@ -135,18 +237,18 @@ func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:
 func _build_queue_display(root: Node2D, desk: DeskNodes) -> void:
 	desk.npc_panel = Panel.new()
 	desk.npc_panel.name = "NpcWindow"
-	desk.npc_panel.position = Vector2(36, 80)
-	desk.npc_panel.size = Vector2(260, 170)
+	desk.npc_panel.position = Vector2(24, 84)
+	desk.npc_panel.size = Vector2(246, 112)
 	desk.npc_panel.add_theme_stylebox_override(
 		"panel",
-		WorkbenchUI.style_box(Color(0.055, 0.07, 0.06, 0.94), 4, WorkbenchUI.COLORS.brass, 2)
+		WorkbenchUI.style_box(Color(0.04, 0.05, 0.042, 0.9), 3, WorkbenchUI.COLORS.brass, 1)
 	)
 	root.add_child(desk.npc_panel)
 	WorkbenchUI.add_text(
-		desk.npc_panel, "办事窗口 / 当前来访者", 14, Color("b9aa88"), Vector2(14, 10), Vector2(230, 24)
+		desk.npc_panel, "当前来访者", 13, Color("b9aa88"), Vector2(13, 9), Vector2(218, 22)
 	)
 	desk.queue_label = WorkbenchUI.add_text(
-		desk.npc_panel, "队列准备中", 16, Color("ddd0ac"), Vector2(14, 45), Vector2(230, 100)
+		desk.npc_panel, "队列准备中", 14, Color("ddd0ac"), Vector2(13, 36), Vector2(218, 68)
 	)
 	desk.timer_label = WorkbenchUI.add_text(
 		root, "剩余 03:00", 18, Color("ddd0ac"), Vector2(1040, 28), Vector2(190, 28)

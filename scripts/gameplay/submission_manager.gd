@@ -17,7 +17,7 @@ func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
 
 
 # 提交当前案件。
-# 检查程序错误，记录结果，播放验收动画与转场。
+# 检查程序错误，记录结果，并把封好的文件袋收入当日归档区。
 func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	if submission_in_progress:
 		return
@@ -42,43 +42,31 @@ func submit(presenter: CasePresenter, case_data: Dictionary) -> void:
 	var submitted_object: Control = presenter.envelope if is_instance_valid(presenter.envelope) else null
 	if not is_instance_valid(submitted_object):
 		_record_submission(presenter, case_data, procedure_errors)
-		_show_validation_transition()
+		submission_in_progress = false
+		submission_finished.emit()
 		return
 
 	submitted_object.visible = true
 	submitted_object.pivot_offset = submitted_object.size / 2.0
 	submitted_object.z_index = 46
-	Sfx.start_conveyor()
-	if is_instance_valid(desk.machine_mouth_mask):
-		desk.machine_mouth_mask.visible = true
-	var zone_rect := desk.machine_drop_zone.get_global_rect()
+	var zone_rect := desk.archive_drop_zone.get_global_rect()
 	var target := zone_rect.position + Vector2(
 		(zone_rect.size.x - submitted_object.size.x) / 2.0,
-		zone_rect.size.y * 0.56
+		(zone_rect.size.y - submitted_object.size.y) / 2.0
 	)
 
-	var snap := root.create_tween().set_parallel(true)
-	snap.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	snap.tween_property(submitted_object, "global_position", target, 0.2)
-	snap.tween_property(submitted_object, "scale", Vector2(0.78, 0.46), 0.2)
-	snap.tween_property(submitted_object, "rotation", -0.065, 0.2)
-	await snap.finished
-
-	submitted_object.z_index = 40
-	var ingest := root.create_tween().set_parallel(true)
-	ingest.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	ingest.tween_property(submitted_object, "global_position", target + Vector2(0, -92), 0.58)
-	ingest.tween_property(submitted_object, "scale", Vector2(0.54, 0.035), 0.58)
-	ingest.tween_property(submitted_object, "rotation", 0.0, 0.4)
-	ingest.tween_property(submitted_object, "modulate:a", 0.0, 0.18).set_delay(0.42)
-	await ingest.finished
+	var archive := root.create_tween().set_parallel(true)
+	archive.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	archive.tween_property(submitted_object, "global_position", target, 0.48)
+	archive.tween_property(submitted_object, "scale", Vector2(0.42, 0.24), 0.48)
+	archive.tween_property(submitted_object, "rotation", -0.04, 0.3)
+	archive.tween_property(submitted_object, "modulate:a", 0.0, 0.16).set_delay(0.32)
+	await archive.finished
 
 	submitted_object.visible = false
-	if is_instance_valid(desk.machine_mouth_mask):
-		desk.machine_mouth_mask.visible = false
-	Sfx.stop_conveyor()
 	_record_submission(presenter, case_data, procedure_errors)
-	_show_validation_transition()
+	submission_in_progress = false
+	submission_finished.emit()
 
 
 func _record_submission(
@@ -93,8 +81,9 @@ func _record_submission(
 		Time.get_ticks_msec() / 1000.0 - presenter.case_started_at,
 		presenter.packed_document_ids.duplicate()
 	)
+	desk.refresh_archive_stack(true)
 	if is_instance_valid(desk.status_label):
-		desk.status_label.text = "材料已吞入。批准不构成现实效力承诺。"
+		desk.status_label.text = "文件袋已归档，等待日终统一送验。"
 	Sfx.play("bling")
 	_flash_slot(WorkbenchUI.COLORS.green_glow)
 

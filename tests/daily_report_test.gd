@@ -26,6 +26,9 @@ func run() -> void:
 	var report := packed.instantiate()
 	root.add_child(report)
 	await process_frame
+	var bridge := root.get_node("RealityBridge")
+	assert(bridge.last_emitted_event.type == "day_report", "opening the daily report must send its summary to the glasses")
+	assert(bridge.last_emitted_event.lines.size() == 5, "glasses daily report must contain the compact settlement summary")
 	assert(report.metadata_label.text.contains("测试审批员"), "daily report must use the name entered during reinstatement")
 	assert(report.stats_label.text.contains("批准 02"), "report must aggregate approvals")
 	assert(report.stats_label.text.contains("驳回 01"), "report must aggregate rejections")

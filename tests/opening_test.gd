@@ -7,6 +7,8 @@ func _init() -> void:
 
 func run() -> void:
 	var state = root.get_node("WorkdayState")
+	var bridge = root.get_node("RealityBridge")
+	bridge.last_emitted_event.clear()
 	state.save_path = "user://formocracy-opening-playtest.json"
 	state.start_new_game()
 	var open_error := change_scene_to_file("res://scenes/opening.tscn")
@@ -67,6 +69,8 @@ func run() -> void:
 	var bottom_width: float = opening.projected_form.polygon[3].distance_to(opening.projected_form.polygon[2])
 	assert(top_width < bottom_width, "forward tilt must be rendered as a perspective trapezoid")
 	assert(opening.welcome_panel.visible, "submission must end on the welcome screen")
+	assert(bridge.last_emitted_event.type == "secretary_line", "the welcome reveal must be sent to the glasses")
+	assert(bridge.last_emitted_event.text == "欢迎回来，测试职员。", "glasses welcome must use the submitted player name")
 	assert(current_scene == opening, "the game must not start before the player confirms they passed")
 	opening.complete_reinstatement()
 	await create_timer(0.5).timeout

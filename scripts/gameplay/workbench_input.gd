@@ -27,15 +27,21 @@ func bind_case(presenter: CasePresenter) -> void:
 	envelope_in_machine_zone = false
 	if is_instance_valid(presenter.form):
 		CursorManager.watch(presenter.form, CursorManager.Cursor.GRAB)
+		presenter.form.add_to_group("debug_interaction_zone")
+		presenter.form.set_meta("debug_zone_label", "主表单")
 		presenter.form.gui_input.connect(_on_form_input.bind(presenter))
 		presenter.form.mouse_entered.connect(_on_form_hover.bind(presenter, true))
 		presenter.form.mouse_exited.connect(_on_form_hover.bind(presenter, false))
 	if is_instance_valid(presenter.envelope):
 		CursorManager.watch(presenter.envelope, CursorManager.Cursor.GRAB)
+		presenter.envelope.add_to_group("debug_interaction_zone")
+		presenter.envelope.set_meta("debug_zone_label", "文件袋")
 		presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
 	for document in presenter.document_panels:
 		if is_instance_valid(document):
 			CursorManager.watch(document, CursorManager.Cursor.GRAB)
+			document.add_to_group("debug_interaction_zone")
+			document.set_meta("debug_zone_label", "证明材料")
 			document.gui_input.connect(_on_document_input.bind(document, presenter))
 
 
@@ -108,8 +114,8 @@ func _on_envelope_input(event: InputEvent, presenter: CasePresenter) -> void:
 		presenter.envelope.position += event.relative * drag_response_multiplier
 		var entered := (
 			presenter.envelope_on_desk
-			and is_instance_valid(desk.machine_drop_zone)
-			and presenter.envelope.get_global_rect().intersects(desk.machine_drop_zone.get_global_rect())
+			and is_instance_valid(desk.archive_drop_zone)
+			and presenter.envelope.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
 		)
 		if entered != envelope_in_machine_zone:
 			_set_machine_preview(presenter, entered)
@@ -141,8 +147,12 @@ func _set_machine_preview(presenter: CasePresenter, active: bool) -> void:
 	)
 	if is_instance_valid(desk.slot_light):
 		desk.slot_light.color = Color("d7aa45") if active else WorkbenchUI.COLORS.red
+	if is_instance_valid(desk.slot):
+		var tray_tween := root.create_tween()
+		tray_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tray_tween.tween_property(desk.slot, "scale", Vector2(1.035, 1.035) if active else Vector2.ONE, 0.12)
 	if active and is_instance_valid(desk.status_label):
-		desk.status_label.text = "验收机器已锁定文件袋：松手送入。"
+		desk.status_label.text = "归档区已锁定文件袋：松手完成本案归档。"
 
 
 # 单个材料的拖拽与装袋处理。
