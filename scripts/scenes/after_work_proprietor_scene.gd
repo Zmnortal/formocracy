@@ -5,9 +5,6 @@ const UI := preload("res://scripts/ui/bureau_ui.gd")
 const DESIGN_SIZE := Vector2(1280, 720)
 const MAP_SCENE := "res://scenes/evening_map.tscn"
 const BUTTON_NORMAL := preload("res://assets/ui/after_work_buttons/button_normal.png")
-const BUTTON_HOVER := preload("res://assets/ui/after_work_buttons/button_hover.png")
-const BUTTON_PRESSED := preload("res://assets/ui/after_work_buttons/button_pressed.png")
-const BUTTON_DISABLED := preload("res://assets/ui/after_work_buttons/button_disabled.png")
 const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
 
 var background_texture: Texture2D
@@ -155,20 +152,24 @@ func _make_button(text_value: String) -> Button:
 	button.add_theme_color_override("font_outline_color", Color(0.02, 0.025, 0.022, 0.95))
 	button.add_theme_constant_override("outline_size", 3)
 	button.add_theme_constant_override("h_separation", 10)
-	button.add_theme_stylebox_override("normal", _make_button_style(BUTTON_NORMAL))
-	button.add_theme_stylebox_override("hover", _make_button_style(BUTTON_HOVER))
-	button.add_theme_stylebox_override("focus", _make_button_style(BUTTON_HOVER))
-	button.add_theme_stylebox_override("pressed", _make_button_style(BUTTON_PRESSED, 3.0))
-	button.add_theme_stylebox_override("disabled", _make_button_style(BUTTON_DISABLED))
+	button.add_theme_stylebox_override("normal", _make_button_style(Color.WHITE))
+	button.add_theme_stylebox_override("hover", _make_button_style(Color("dce8d6")))
+	button.add_theme_stylebox_override("focus", _make_button_style(Color("dce8d6")))
+	button.add_theme_stylebox_override("pressed", _make_button_style(Color("b8c6b4"), 3.0))
+	button.add_theme_stylebox_override("disabled", _make_button_style(Color("747a72")))
 	button.pivot_offset = button.size * 0.5
 	button.mouse_entered.connect(func(): _animate_button(button, true))
 	button.mouse_exited.connect(func(): _animate_button(button, false))
 	return button
 
 
-func _make_button_style(texture: Texture2D, pressed_offset := 0.0) -> StyleBoxTexture:
+func _make_button_style(tint: Color, pressed_offset := 0.0) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
-	style.texture = texture
+	# 所有交互状态必须共用这一张完整按钮底图。旧 hover/pressed 状态图是未裁好的
+	# 精灵表切片，主体分别落在下半幅或夹带下一枚按钮，悬停时会表现成“折半”。
+	# 用同一轮廓配合染色与文字位移表达状态，可确保生活流程里所有派生场景一致。
+	style.texture = BUTTON_NORMAL
+	style.modulate_color = tint
 	style.texture_margin_left = 44.0
 	style.texture_margin_top = 18.0
 	style.texture_margin_right = 18.0

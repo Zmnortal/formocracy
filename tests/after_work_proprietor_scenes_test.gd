@@ -69,4 +69,13 @@ func _assert_scene(path: String, expected_name: String, expected_proprietor: Str
 	assert(right_item.get_node_or_null("PaperTag") == null, "right action hover must not create a sliding paper tag")
 	assert(left_item.get_node("ActionButton").get_theme_stylebox("hover") is StyleBoxTexture, "left action must retain a normal button hover style")
 	assert(right_item.get_node("ActionButton").get_theme_stylebox("hover") is StyleBoxTexture, "right action must retain a normal button hover style")
+	for item in [left_item, right_item]:
+		var action_button := item.get_node("ActionButton") as Button
+		for state_name in ["normal", "hover", "focus", "pressed", "disabled"]:
+			var state_style := action_button.get_theme_stylebox(state_name) as StyleBoxTexture
+			assert(state_style != null, "%s must use the shared textured button style" % state_name)
+			assert(
+				state_style.texture == scene.BUTTON_NORMAL,
+				"%s must reuse the complete normal texture instead of a broken state sprite" % state_name,
+			)
 	assert(scene.dialogue_box.visible, "scene must open with proprietor dialogue")
