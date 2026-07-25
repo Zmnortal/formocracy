@@ -2,7 +2,7 @@ extends Control
 
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const TIMELINE_SCENE := "res://scenes/workday_selector.tscn"
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 
 
 func _ready() -> void:

@@ -6,8 +6,14 @@
   <title>FORMOCRACY · 材料三态校样台</title>
   <style>
     @font-face {
-      font-family: "Ark Pixel";
-      src: url("../../assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf") format("truetype");
+      font-family: "Unifont";
+      src: url("../../assets/fonts/unifont/unifont-15.1.04.ttf") format("opentype");
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Unifont JP";
+      src: url("../../assets/fonts/unifont/unifont_jp-15.1.04.ttf") format("opentype");
       font-display: swap;
     }
 
@@ -36,7 +42,7 @@
         linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
         radial-gradient(circle at 50% -20%, #34372c 0, #171a17 40%, #0d0f0e 100%);
       background-size: 16px 16px, 16px 16px, auto;
-      font-family: "Ark Pixel", monospace;
+      font-family: "Unifont", "Unifont JP", monospace;
     }
 
     button, input { font: inherit; }
@@ -584,14 +590,17 @@
         code: "DOCTYPE-RESIDENCE",
         inspection: {
           logical: [600, 885],
-          title: { text: "林默第十二区居住证明", position: [100, 218], size: [400, 38], font: 22 },
-          code: { text: "R-12", position: [430, 796], size: [120, 28], font: 12 },
+          title: { text: "第十二区居住登记", position: [220, 72], size: [330, 38], font: 22 },
+          code: { text: "R-12 / 户册 17-4", position: [150, 805], size: [180, 28], font: 12 },
           fields: [
-            { text: "核准住所：第十二区 17-4", position: [88, 316], size: [424, 184], font: 16 },
-            { text: "证明状态：有效 / 已签署", position: [96, 548], size: [408, 34], font: 13 },
-            { text: "登记人：林默", position: [96, 592], size: [408, 34], font: 13 },
-            { text: "签发辖区：第十二区街区办", position: [96, 636], size: [408, 34], font: 13 },
-            { text: "有效期限：第 02 工作日", position: [96, 680], size: [408, 34], font: 13 }
+            { text: "登记住址：第十二区 17号楼", position: [110, 205], size: [400, 75], font: 16 },
+            { text: "房号：17-4", position: [110, 300], size: [400, 45], font: 15 },
+            { text: "住户名册登记人：林默", position: [110, 365], size: [400, 42], font: 14 },
+            { text: "片区：第十二区", position: [160, 450], size: [340, 34], font: 13 },
+            { text: "登记日期：灾害前 74-03-16", position: [160, 500], size: [340, 34], font: 13 },
+            { text: "盖章：有效 / 正式片区章", position: [160, 550], size: [340, 34], font: 13 },
+            { text: "居住性质：长期居住 ☑ / 租住 □", position: [190, 610], size: [300, 70], font: 13 },
+            { text: "名册签发：第十二区街区办", position: [145, 760], size: [245, 34], font: 12 }
           ]
         },
         states: {

@@ -1,6 +1,12 @@
 @font-face {
-  font-family: "Ark Pixel";
-  src: url("../../assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf") format("truetype");
+  font-family: "Unifont";
+  src: url("../../assets/fonts/unifont/unifont-15.1.04.ttf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Unifont JP";
+  src: url("../../assets/fonts/unifont/unifont_jp-15.1.04.ttf") format("opentype");
   font-display: swap;
 }
 
@@ -20,7 +26,7 @@
   --shadow: rgba(0, 0, 0, 0.68);
   --actor-scale: 1;
   --actor-darkness: 1;
-  font-family: "Ark Pixel", "Courier New", monospace;
+  font-family: "Unifont", "Unifont JP", monospace;
 }
 
 * {

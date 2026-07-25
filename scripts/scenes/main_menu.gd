@@ -1,7 +1,7 @@
 extends Control
 
 const WORKDAY_SELECTOR_SCENE := "res://scenes/workday_selector.tscn"
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 const DESIGN_SIZE := Vector2(1280.0, 720.0)
 const DOCUMENT_VISUAL_SCALE := 1.5
 const TYPOGRAPHY_SCALE := 1.5

@@ -1,7 +1,7 @@
 extends Control
 
 const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 const PORTRAIT := preload("res://assets/characters/portraits_8bit/person_du.png")
 const CLINIC_STILL_PATH := "res://assets/narrative/events/du_chunmei_death/clinic_window.png"
 const BELONGINGS_STILL_PATH := "res://assets/narrative/events/du_chunmei_death/belongings.png"

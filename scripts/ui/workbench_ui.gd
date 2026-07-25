@@ -2,7 +2,7 @@ class_name WorkbenchUI
 extends RefCounted
 
 # 工作台共享的视觉资源与调色板。
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 
 const COLORS := {
 	"wall": Color("171b1a"),

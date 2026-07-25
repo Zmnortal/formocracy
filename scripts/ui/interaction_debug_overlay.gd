@@ -1,7 +1,7 @@
 class_name InteractionDebugOverlay
 extends Control
 
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 const OUTLINE := Color(0.55, 1.0, 0.35, 0.92)
 const FILL := Color(0.3, 0.9, 0.2, 0.08)
 

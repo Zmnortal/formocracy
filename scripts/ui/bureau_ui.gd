@@ -4,7 +4,7 @@ extends RefCounted
 # 局务 UI 工具库。
 # 提供统一的像素字体、配色与样式工厂，用于构建控制台、弹窗等共享 UI 控件。
 
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 
 # 共享配色常量
 const COLOR_BACKDROP := Color(0.015, 0.02, 0.015, 0.82)

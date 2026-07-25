@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/scenes/pre_work_sequence.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/concepts/after_work_interiors/home_12c_concept.png" id="2_home"]
-[ext_resource type="FontFile" path="res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf" id="3_font"]
+[ext_resource type="FontVariation" path="res://assets/fonts/unifont/unifont_ui.tres" id="3_font"]
 [ext_resource type="Theme" path="res://themes/pixel_theme.tres" id="4_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_newspaper"]

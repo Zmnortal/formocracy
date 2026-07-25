@@ -4,10 +4,11 @@ const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const FORM_TEXTURE := preload("res://assets/opening/position-reinstatement-form-v2.png")
 const MACHINE_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
-const PIXEL_FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 const PIXEL_THEME := preload("res://themes/pixel_theme.tres")
 const SignaturePadScene := preload("res://scripts/ui/signature_pad.gd")
 const HandwrittenCheckScene := preload("res://scripts/ui/handwritten_check.gd")
+const PaperReplaceHandleScene := preload("res://scripts/ui/paper_replace_handle.gd")
 const UI := preload("res://scripts/ui/bureau_ui.gd")
 const APPROACH_FRAME_COUNT := 8
 const INGEST_FRAME_COUNT := 10
@@ -44,12 +45,13 @@ var signature_pad
 var confirmation
 var confirm_button: Button
 var status_label: Label
-var clear_signature_button: Button
+var paper_replace_handle
 var opening_exiting := false
 var submission_locked := false
+var replacing_form := false
 var submission_snap_count := 0
 var submission_phase := "form"
-var opening_pixel_font: FontFile
+var opening_pixel_font: FontVariation
 
 
 # 播放开场音乐、搭建场景并启动表单浮现动画。
@@ -67,9 +69,10 @@ func _ready() -> void:
 func _configure_pixel_font_rendering() -> void:
 	# 通过运行时引用配置预载资源；GDScript 不允许直接给 const 资源属性赋值。
 	opening_pixel_font = PIXEL_FONT
-	opening_pixel_font.antialiasing = TextServer.FONT_ANTIALIASING_NONE
-	opening_pixel_font.generate_mipmaps = false
-	opening_pixel_font.multichannel_signed_distance_field = false
+	var primary_font := opening_pixel_font.base_font as FontFile
+	primary_font.antialiasing = TextServer.FONT_ANTIALIASING_NONE
+	primary_font.generate_mipmaps = false
+	primary_font.multichannel_signed_distance_field = false
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
@@ -157,13 +160,12 @@ func _add_form_inputs() -> void:
 	signature_pad.signature_changed.connect(_on_signature_changed)
 	form_stage.add_child(signature_pad)
 
-	clear_signature_button = Button.new()
-	clear_signature_button.text = "重签"
-	clear_signature_button.position = Vector2(858, 398)
-	clear_signature_button.size = Vector2(74, 32)
-	UI.style_button(clear_signature_button, 13)
-	clear_signature_button.pressed.connect(signature_pad.clear_signature)
-	form_stage.add_child(clear_signature_button)
+	paper_replace_handle = PaperReplaceHandleScene.new()
+	paper_replace_handle.name = "PaperReplaceHandle"
+	paper_replace_handle.position = Vector2(895, 630)
+	paper_replace_handle.size = Vector2(48, 48)
+	paper_replace_handle.replacement_requested.connect(replace_entire_form)
+	form_stage.add_child(paper_replace_handle)
 
 	confirmation = HandwrittenCheckScene.new()
 	confirmation.name = "Confirmation"
@@ -332,6 +334,61 @@ func _play_form_reveal() -> void:
 		name_input.grab_focus()
 
 
+# 作废当前纸张并换取空白新表：旧表被抽走，新表从另一侧铺回，所有字段一起清空。
+func replace_entire_form() -> void:
+	if submission_locked or replacing_form:
+		return
+	replacing_form = true
+	set_form_interaction(false)
+	Sfx.play("ui_switch", -3.0, 0.86)
+	status_label.text = "当前表单作废，正在换取空白新表……"
+	confirm_button.visible = false
+
+	var duration := 0.0 if DisplayServer.get_name() == "headless" else 0.42
+	var discard := create_tween()
+	discard.set_parallel(true)
+	discard.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	discard.tween_property(form_stage, "position", Vector2(-420, 72), duration)
+	discard.tween_property(form_stage, "rotation_degrees", -4.0, duration)
+	discard.tween_property(form_stage, "scale", Vector2(0.96, 0.96), duration)
+	discard.tween_property(form_stage, "modulate:a", 0.0, duration)
+	await discard.finished
+
+	_clear_entire_form()
+	form_stage.position = Vector2(380, -36)
+	form_stage.rotation_degrees = 3.5
+	form_stage.scale = Vector2(0.97, 0.97)
+	form_stage.modulate.a = 0.0
+
+	var replace_duration := 0.0 if DisplayServer.get_name() == "headless" else 0.56
+	var replacement := create_tween()
+	replacement.set_parallel(true)
+	replacement.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	replacement.tween_property(form_stage, "position", Vector2.ZERO, replace_duration)
+	replacement.tween_property(form_stage, "rotation_degrees", 0.0, replace_duration)
+	replacement.tween_property(form_stage, "scale", Vector2.ONE, replace_duration)
+	replacement.tween_property(form_stage, "modulate:a", 1.0, replace_duration)
+	await replacement.finished
+
+	replacing_form = false
+	set_form_interaction(true)
+	name_input.grab_focus()
+
+
+# 清空整张申请表，而不是只擦除签名。
+func _clear_entire_form() -> void:
+	name_input.text = ""
+	year_input.text = ""
+	month_input.text = ""
+	day_input.text = ""
+	signature_pad.clear_signature()
+	confirmation.drawing = false
+	confirmation.button_pressed = false
+	status_label.visible = true
+	status_label.text = "请完整填写姓名、当天日期并亲笔签名"
+	confirm_button.visible = false
+
+
 # 提交表单：锁定交互、保存填写信息并播放吞入动画。
 func submit_form() -> void:
 	if submission_locked or not confirm_button.visible:
@@ -345,7 +402,7 @@ func submit_form() -> void:
 	# 只捕获完成后的纸面内容，开发交互控件不应进入吞噬动画。
 	confirm_button.visible = false
 	status_label.visible = false
-	clear_signature_button.visible = false
+	paper_replace_handle.visible = false
 	await _prepare_projected_form()
 	await _play_submission()
 
@@ -361,7 +418,7 @@ func set_form_interaction(enabled: bool) -> void:
 	signature_pad.mouse_filter = Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
 	confirmation.disabled = not enabled
 	confirm_button.disabled = not enabled
-	clear_signature_button.disabled = not enabled
+	paper_replace_handle.disabled = not enabled
 
 
 # 依次播放靠近、吞入和机器淡出，随后进入每日晨间上班序列。

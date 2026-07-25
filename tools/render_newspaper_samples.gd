@@ -4,7 +4,7 @@ const CONFIG_PATH := "res://data/narrative/newspapers.json"
 const OUTPUT_DIR := "res://output/newspaper-7day-samples/images"
 const PAGE_SIZE := Vector2(350, 525)
 const OUTPUT_SCALE := 2.0
-const FONT := preload("res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf")
+const FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 
 
 func _init() -> void:
