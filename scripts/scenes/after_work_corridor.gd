@@ -65,7 +65,7 @@ func _show_slide(index: int) -> void:
 	_flash_slide()
 
 
-# 每次手动换图使用短促黑场硬切，保留 PPT 播片的顿挫感。
+# 每次手动换图使用短促黑场硬切，保留低帧播片的顿挫感。
 func _flash_slide() -> void:
 	slide_fade.visible = true
 	slide_fade.modulate.a = 0.72

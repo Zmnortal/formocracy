@@ -21,6 +21,7 @@ var console_panel: Panel
 var scene_selector: OptionButton
 var day_selector: SpinBox
 var credit_selector: SpinBox
+var ration_selector: SpinBox
 var level_selector: OptionButton
 var seed_selector: SpinBox
 var preset_selector: OptionButton
@@ -100,8 +101,8 @@ func _build_ui() -> void:
 
 	console_panel = Panel.new()
 	console_panel.set_anchors_preset(Control.PRESET_CENTER)
-	console_panel.position = Vector2(-500, -330)
-	console_panel.size = Vector2(1000, 660)
+	console_panel.position = Vector2(-500, -345)
+	console_panel.size = Vector2(1000, 690)
 	UI.style_panel(console_panel)
 	blocker.add_child(console_panel)
 
@@ -252,10 +253,31 @@ func _build_ui() -> void:
 	story_marker_button.pressed.connect(toggle_story_marker_debug)
 	refresh_story_marker_button()
 
-	_create_section_label("命令终端", Vector2(28, 458))
+	_create_section_label("配给券调试", Vector2(28, 458))
+	ration_selector = SpinBox.new()
+	ration_selector.name = "RationSelector"
+	ration_selector.position = Vector2(28, 488)
+	ration_selector.size = Vector2(190, 40)
+	ration_selector.min_value = -9999
+	ration_selector.max_value = 9999
+	ration_selector.value = WorkdayState.balance
+	ration_selector.prefix = "配给券 "
+	console_panel.add_child(ration_selector)
+	var ration_minus_ten := _create_button("−10", Vector2(232, 488), Vector2(76, 40))
+	ration_minus_ten.pressed.connect(func(): adjust_rations(-10))
+	var ration_minus_one := _create_button("−1", Vector2(320, 488), Vector2(76, 40))
+	ration_minus_one.pressed.connect(func(): adjust_rations(-1))
+	var ration_set := _create_button("设为输入值", Vector2(408, 488), Vector2(132, 40))
+	ration_set.pressed.connect(set_rations_from_selector)
+	var ration_plus_one := _create_button("+1", Vector2(552, 488), Vector2(76, 40))
+	ration_plus_one.pressed.connect(func(): adjust_rations(1))
+	var ration_plus_ten := _create_button("+10", Vector2(640, 488), Vector2(76, 40))
+	ration_plus_ten.pressed.connect(func(): adjust_rations(10))
+
+	_create_section_label("命令终端", Vector2(28, 540))
 	output = RichTextLabel.new()
-	output.position = Vector2(28, 488)
-	output.size = Vector2(944, 92)
+	output.position = Vector2(28, 568)
+	output.size = Vector2(944, 66)
 	output.bbcode_enabled = true
 	output.scroll_active = true
 	output.add_theme_color_override("default_color", Color("9fbd72"))
@@ -265,8 +287,8 @@ func _build_ui() -> void:
 	console_panel.add_child(output)
 	command_input = LineEdit.new()
 	command_input.placeholder_text = "输入命令，例如：scene report"
-	command_input.position = Vector2(28, 592)
-	command_input.size = Vector2(944, 44)
+	command_input.position = Vector2(28, 642)
+	command_input.size = Vector2(944, 36)
 	command_input.add_theme_font_override("font", UI.PIXEL_FONT)
 	command_input.add_theme_font_size_override("font_size", 16)
 	command_input.text_submitted.connect(execute_command)
@@ -428,6 +450,7 @@ func toggle_console() -> void:
 	if is_open:
 		day_selector.value = WorkdayState.day_number
 		credit_selector.value = WorkdayState.political_credit
+		ration_selector.value = WorkdayState.balance
 		refresh_status()
 		command_input.grab_focus()
 	else:
@@ -470,12 +493,13 @@ func refresh_status() -> void:
 	if get_tree().current_scene != null:
 		current = get_tree().current_scene.name
 	status_label.text = (
-		"场景：%s  关卡：%s\n工作日：%d  Credit：%d  记录：%d / %d\n日报：%s"
+		"场景：%s  关卡：%s\n工作日：%d  Credit：%d  配给券：%d  记录：%d / %d\n日报：%s"
 		% [
 			current,
 			WorkdayState.current_level_id,
 			WorkdayState.day_number,
 			WorkdayState.political_credit,
+			WorkdayState.balance,
 			WorkdayState.records.size(),
 			WorkdayState.target_case_count,
 			"可生成" if WorkdayState.manager.should_show_report() else "未满足触发条件"
@@ -526,6 +550,24 @@ func set_credit(value: int) -> void:
 # 在现有政治信用基础上增减指定数值。
 func adjust_credit(delta: int) -> void:
 	set_credit(WorkdayState.political_credit + delta)
+
+
+# 将配给券余额直接设为输入框中的值。
+func set_rations_from_selector() -> void:
+	set_rations(int(ration_selector.value))
+
+
+# 将配给券余额设为指定值，并同步控制台状态。
+func set_rations(value: int) -> void:
+	WorkdayState.balance = clampi(value, -9999, 9999)
+	ration_selector.value = WorkdayState.balance
+	append_output("配给券已设置为 %d" % WorkdayState.balance)
+	refresh_status()
+
+
+# 在现有配给券余额基础上增减指定数值。
+func adjust_rations(delta: int) -> void:
+	set_rations(WorkdayState.balance + delta)
 
 
 # 启动选中的关卡，成功后切换到主工作台场景。
@@ -624,7 +666,8 @@ func execute_command(command: String) -> void:
 	match parts[0].to_lower():
 		"help":
 			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
-			append_output("level <id> [seed] | credit set <值> | credit add <增量> | config reload | queue | npc state | npc skip | npc story on|off|toggle")
+			append_output("level <id> [seed] | credit set|add <值> | ration set|add <值> | config reload | queue")
+			append_output("npc state | npc skip | npc story on|off|toggle")
 			append_output("report fill | day next | state | clear")
 			append_output("glass test")
 		"scene":
@@ -669,6 +712,15 @@ func execute_command(command: String) -> void:
 				adjust_credit(int(parts[2]))
 			else:
 				append_output("用法：credit set <值> | credit add <增量>")
+		"ration":
+			if parts.size() < 3 or not parts[2].is_valid_int():
+				append_output("用法：ration set <值> | ration add <增量>")
+			elif parts[1].to_lower() == "set":
+				set_rations(int(parts[2]))
+			elif parts[1].to_lower() == "add":
+				adjust_rations(int(parts[2]))
+			else:
+				append_output("用法：ration set <值> | ration add <增量>")
 		"level":
 			if parts.size() < 2:
 				append_output("用法：level <level_id> [seed]")

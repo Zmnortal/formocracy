@@ -168,14 +168,34 @@
   },
   {
     "id":"DOCTYPE-UTILITY","name":"水电缴费与实际居住记录","is_primary":false,
-    "visual_language":{"category":"公用服务","icon":"drop","accent":"3F6970"},
-    "background":"res://assets/documents/templates/residence_certificate.png",
-    "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
+    "visual_language":{"category":"生活痕迹","icon":"drop","accent":"9B6C24"},
+    "background":"res://assets/documents/types/utility/inspection.png",
+    "visuals":{
+      "pocket":{"texture":"res://assets/documents/types/utility/pocket.png","size":[140,88]},
+      "desk":{"texture":"res://assets/documents/types/utility/desk.png","size":[520,375]},
+      "inspection":{"texture":"res://assets/documents/types/utility/inspection.png","size":[360,900]}
+    },
+    "title_position":[45,42],"title_size":[270,38],"code_position":[238,838],
+    "prefill":{
+      "period":"第01工作日",
+      "account":"W-17-4-012",
+      "water_usage":"18 单位 / 正常",
+      "electricity_usage":"31 单位 / 异常峰值",
+      "heating_usage":"12 单位 / 正常",
+      "arrears":"欠费 2 期",
+      "paid":"未结清 / 待复核",
+      "stop_history":"无停供记录"
+    },
     "fields":{
-      "address":{"label":"服务地址","position":[335,145],"size":[260,52],"font_size":16},
-      "period":{"label":"计费期间","position":[335,218],"size":[260,44],"font_size":16},
-      "paid":{"label":"缴费状态","position":[335,289],"size":[260,44],"font_size":15},
-      "account":{"label":"账户编号","position":[48,358],"size":[547,40],"font_size":14}
+      "account":{"label":"账户","position":[45,96],"size":[270,28],"font_size":12},
+      "address":{"label":"服务地址","position":[45,126],"size":[270,34],"font_size":13},
+      "period":{"label":"计费期间","position":[45,156],"size":[270,28],"font_size":12},
+      "water_usage":{"label":"用水","position":[112,205],"size":[205,56],"font_size":13},
+      "electricity_usage":{"label":"用电","position":[112,332],"size":[205,56],"font_size":13},
+      "heating_usage":{"label":"供热","position":[112,458],"size":[205,56],"font_size":13},
+      "stop_history":{"label":"停供记录","position":[55,585],"size":[250,48],"font_size":12},
+      "arrears":{"label":"欠费栏","position":[55,700],"size":[250,52],"font_size":14},
+      "paid":{"label":"缴费状态","position":[55,772],"size":[250,42],"font_size":13}
     }
   },
   {

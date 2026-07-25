@@ -608,6 +608,31 @@
           desk: { label: "桌面平放态", file: "desk.png", native: "878 × 681", game: "600 × 465" },
           inspection: { label: "打开查验态", file: "inspection.png", native: "852 × 1256", game: "600 × 885" }
         }
+      },
+      utility: {
+        label: "水电缴费单",
+        code: "DOCTYPE-UTILITY",
+        inspection: {
+          logical: [360, 900],
+          title: { text: "第十二区水电缴费单", position: [45, 42], size: [270, 38], font: 20 },
+          code: { text: "DOC-05 / W-17-4-012", position: [238, 838], size: [110, 28], font: 10 },
+          fields: [
+            { text: "账户：W-17-4-012", position: [45, 96], size: [270, 28], font: 12 },
+            { text: "服务地址：第十二区 17-4", position: [45, 126], size: [270, 34], font: 13 },
+            { text: "计费期间：第01工作日", position: [45, 156], size: [270, 28], font: 12 },
+            { text: "用水：18 单位 / 正常", position: [112, 205], size: [205, 56], font: 13 },
+            { text: "用电：31 单位 / 异常峰值", position: [112, 332], size: [205, 56], font: 13 },
+            { text: "供热：12 单位 / 正常", position: [112, 458], size: [205, 56], font: 13 },
+            { text: "停供记录：无", position: [55, 585], size: [250, 48], font: 12 },
+            { text: "欠费栏：欠费 2 期", position: [55, 700], size: [250, 52], font: 14 },
+            { text: "缴费状态：未结清 / 待复核", position: [55, 772], size: [250, 42], font: 13 }
+          ]
+        },
+        states: {
+          pocket: { label: "袋内露出态", file: "pocket.png", native: "560 × 350", game: "140 × 88" },
+          desk: { label: "桌面平放态", file: "desk.png", native: "720 × 520", game: "520 × 375" },
+          inspection: { label: "打开查验态", file: "inspection.png", native: "560 × 1400", game: "360 × 900" }
+        }
       }
     };
 

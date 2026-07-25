@@ -381,12 +381,12 @@
       "daytime": [
         {
           "id": "D07-DAY-000",
-          "scene": "死亡登记抄件",
+          "scene": "上班路事件",
           "speaker": "第五诊疗站",
           "tone": "系统",
           "status": "implemented",
           "source": "scripts/scenes/du_chunmei_death_notice.gd",
-          "text": "第 06 工作日 23:40，杜春梅被登记死亡。连续用药与净水配额未能按时生效。"
+          "text": "第 07 工作日清晨，杜春梅倒在现实校验局外的上班路上。第五诊疗站的车将她带走；她没有再睁开眼。"
         },
         {
           "id": "D07-DAY-001",

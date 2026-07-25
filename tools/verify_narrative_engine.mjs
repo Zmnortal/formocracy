@@ -32,7 +32,7 @@ new vm.Script(scriptMatches[0][1], { filename: htmlPath });
 
 const lines = dialogue.days.flatMap((day) => [...day.daytime, ...day.evening]);
 for (const required of [
-  "第 06 工作日 23:40，杜春梅被登记死亡",
+  "第 07 工作日清晨，杜春梅倒在现实校验局外的上班路上",
   "七日试行期已经结束。感谢前来试玩",
   "只有批准且在第六夜前完成验收",
 ]) {

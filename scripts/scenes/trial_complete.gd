@@ -82,7 +82,7 @@ func _build_scene() -> void:
 
 func _outcome_text() -> String:
 	if WorkdayContext.read_bool(WorkdayState.narrative_flags, "du_chunmei_deceased"):
-		return "杜春梅：死亡登记已生效。\n原因：M-52 的净水与连续用药资源未能在第六夜前生效。"
+		return "杜春梅：第七日上班路事件确认死亡。\n原因：M-52 的净水与连续用药资源未能在第六夜前生效。"
 	if WorkdayContext.read_bool(WorkdayState.narrative_flags, "du_chunmei_protected"):
 		return "杜春梅：生存资源已经生效。\n她活过了这个周期，但下一份申请仍在等待。"
 	return "杜春梅：结果未登记。"

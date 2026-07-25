@@ -24,7 +24,7 @@ func run() -> void:
 	state.manager.begin_next_day()
 	assert(state.day_number == 7, "finishing day six must enter day seven")
 	assert(WorkdayContext.read_bool(state.narrative_flags, "du_chunmei_deceased"), "rejecting M-52 must trigger Du Chunmei's death")
-	assert(state.get_resume_phase() == "du_chunmei_death_notice", "day seven must open with the death notice")
+	assert(state.get_resume_phase() == "du_chunmei_death_notice", "day seven must open with the commute cinematic")
 
 	state.reset_for_tests()
 	state.day_number = 6
@@ -61,10 +61,33 @@ func run() -> void:
 
 	var notice_scene := load("res://scenes/du_chunmei_death_notice.tscn") as PackedScene
 	var complete_scene := load("res://scenes/trial_complete.tscn") as PackedScene
-	assert(notice_scene != null, "death notice scene must load")
+	assert(notice_scene != null, "death cinematic scene must load")
 	assert(complete_scene != null, "trial-complete scene must load")
-	assert(ResourceLoader.exists("res://assets/narrative/events/du_chunmei_death/clinic_window.png"), "death notice clinic frame must exist")
-	assert(ResourceLoader.exists("res://assets/narrative/events/du_chunmei_death/belongings.png"), "death notice belongings frame must exist")
+	assert(FileAccess.file_exists("res://data/narrative/cinematics/du_chunmei_death.json"), "death cinematic configuration must exist")
+	for image_name in [
+		"01_commute_street.png",
+		"02_du_collapsed.png",
+		"03_ambulance_arrives.png",
+		"04_stretcher.png",
+		"05_ambulance_leaves.png",
+	]:
+		var image_path := "res://assets/narrative/events/du_chunmei_death/cinematic/%s" % image_name
+		assert(ResourceLoader.exists(image_path), "death cinematic frame must exist: %s" % image_path)
+
+	var cinematic := notice_scene.instantiate()
+	root.add_child(cinematic)
+	await process_frame
+	assert(cinematic.shots.size() == 9, "death cinematic must contain nine shots")
+	assert(cinematic.shot_index == 0, "death cinematic must start on its first shot")
+	var initial_scale: Vector2 = cinematic.frame_image.scale
+	await create_timer(0.2).timeout
+	assert(cinematic.shot_index == 0, "death cinematic must never auto-advance")
+	assert(cinematic.frame_image.scale != initial_scale, "each still must receive a subtle camera move")
+	cinematic.advance_cinematic()
+	await create_timer(0.6).timeout
+	assert(cinematic.shot_index == 1, "click advance must move to the next shot")
+	cinematic.queue_free()
+	await process_frame
 
 	state.reset_for_tests()
 	print("FORMOCRACY_SEVEN_DAY_CAMPAIGN_TEST_OK")

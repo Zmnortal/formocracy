@@ -26,6 +26,9 @@ func run() -> void:
 	assert(opening.confirm_button.get_theme_font("font").resource_path.ends_with("unifont_ui.tres"), "opening submit action must inherit Unifont")
 	assert(opening.paper_replace_handle.get_script().resource_path == "res://scripts/ui/paper_replace_handle.gd", "opening must replace the resign button with a diegetic paper-corner handle")
 	assert(not (opening.paper_replace_handle is Button), "the paper replacement affordance must not use a conventional button")
+	assert(opening.approval_stamp.size == Vector2(156, 188), "the animated approval stamp must use the enlarged 1.5x presentation size")
+	for child in opening.form_stage.get_children():
+		assert(not (child is Label and child.text.contains("请完整填写姓名")), "opening must not show the redundant form status hint below the main form")
 	assert(not opening.confirm_button.visible, "submission must remain hidden until the form is complete")
 	var today := Time.get_date_dict_from_system()
 	opening.name_input.text = "测试职员"
@@ -88,6 +91,10 @@ func run() -> void:
 	assert(opening.name_input.mouse_filter == Control.MOUSE_FILTER_IGNORE, "locked inputs must stop pointer interaction without changing appearance")
 	opening.set_form_interaction(true)
 	await opening.submit_form()
+	assert(opening.approval_stamp_count == 1, "confirming the opening form must strike exactly one approval stamp")
+	assert(opening.approval_mark.modulate.a > 0.9, "the approval strike must leave a visible 同意 mark on the paper")
+	assert(not opening.approval_stamp.visible, "the physical stamp must lift away before machine ingestion")
+	assert(opening.submission_sequence == ["approval_stamp", "machine_ingestion"], "approval stamping must complete before machine ingestion begins")
 	assert(opening.submission_snap_count == opening.APPROACH_FRAME_COUNT + opening.INGEST_FRAME_COUNT, "form ingestion must advance at exactly four held frames per second")
 	assert(opening.form_stage.rotation_degrees == 0.0, "perspective must not use left or right rotation")
 	assert(opening.projected_form.uv[2] == Vector2(opening.FORM_CAPTURE_RECT.size), "submission projection must capture only the paper bounds instead of the black full-screen stage")

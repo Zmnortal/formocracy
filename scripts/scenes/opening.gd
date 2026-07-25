@@ -4,6 +4,8 @@ const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const FORM_TEXTURE := preload("res://assets/opening/position-reinstatement-form-v2.png")
 const MACHINE_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
+const APPROVAL_STAMP_TEXTURE := preload("res://assets/office/items/approve_stamp.png")
+const APPROVAL_MARK_TEXTURE := preload("res://assets/office/stamp_marks/approve_mark.png")
 const PIXEL_FONT := preload("res://assets/fonts/unifont/unifont_ui.tres")
 const PIXEL_THEME := preload("res://themes/pixel_theme.tres")
 const SignaturePadScene := preload("res://scripts/ui/signature_pad.gd")
@@ -30,6 +32,10 @@ const FORM_INGEST_TOP_WIDTH := 180.0
 const FORM_INGEST_BOTTOM_WIDTH := 204.0
 const FORM_INGEST_TOP_Y := 346.0
 const FORM_INGEST_BOTTOM_Y := 374.0
+const STAMP_SIZE := Vector2(156, 188)
+# 印章放大为原来的 1.5 倍后同步修正左上角坐标，保持动画中心与盖章落点不变。
+const STAMP_RAISED_POSITION := Vector2(743, 154)
+const STAMP_IMPACT_POSITION := Vector2(743, 324)
 
 var form_stage: Control
 var form_viewport: SubViewport
@@ -44,13 +50,16 @@ var day_input: LineEdit
 var signature_pad
 var confirmation
 var confirm_button: Button
-var status_label: Label
 var paper_replace_handle
+var approval_stamp: TextureRect
+var approval_mark: TextureRect
 var opening_exiting := false
 var submission_locked := false
 var replacing_form := false
 var submission_snap_count := 0
 var submission_phase := "form"
+var submission_sequence: Array[String] = []
+var approval_stamp_count := 0
 var opening_pixel_font: FontVariation
 
 
@@ -115,6 +124,7 @@ func _build_scene() -> void:
 
 	_add_form_copy()
 	_add_form_inputs()
+	_build_approval_stamp()
 
 	_build_machine_foreground()
 
@@ -178,10 +188,6 @@ func _add_form_inputs() -> void:
 	confirmation_copy.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	form_stage.add_child(confirmation_copy)
 
-	status_label = _make_label("请完整填写姓名、当天日期并亲笔签名", 14, Vector2(405, 606), Vector2(470, 24), true)
-	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	form_stage.add_child(status_label)
-
 	confirm_button = Button.new()
 	confirm_button.name = "ConfirmButton"
 	confirm_button.text = "确认并提交"
@@ -191,6 +197,36 @@ func _add_form_inputs() -> void:
 	confirm_button.visible = false
 	confirm_button.pressed.connect(submit_form)
 	form_stage.add_child(confirm_button)
+
+
+# 构建自动审批公章与会被捕获进最终纸面的“同意”印迹。
+func _build_approval_stamp() -> void:
+	approval_mark = TextureRect.new()
+	approval_mark.name = "ApprovalMark"
+	approval_mark.texture = APPROVAL_MARK_TEXTURE
+	approval_mark.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	approval_mark.stretch_mode = TextureRect.STRETCH_SCALE
+	approval_mark.position = Vector2(780, 438)
+	approval_mark.size = Vector2(82, 82)
+	approval_mark.pivot_offset = approval_mark.size * 0.5
+	approval_mark.rotation_degrees = -7.0
+	approval_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	approval_mark.modulate.a = 0.0
+	approval_mark.z_index = 20
+	form_stage.add_child(approval_mark)
+
+	approval_stamp = TextureRect.new()
+	approval_stamp.name = "ApprovalStamp"
+	approval_stamp.texture = APPROVAL_STAMP_TEXTURE
+	approval_stamp.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	approval_stamp.stretch_mode = TextureRect.STRETCH_SCALE
+	approval_stamp.position = STAMP_RAISED_POSITION
+	approval_stamp.size = STAMP_SIZE
+	approval_stamp.pivot_offset = approval_stamp.size * 0.5
+	approval_stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	approval_stamp.visible = false
+	approval_stamp.z_index = 30
+	add_child(approval_stamp)
 
 
 # 裁切机器插槽下沿作为前景遮挡层，用于吞入阶段的遮挡效果。
@@ -289,7 +325,7 @@ func _on_confirmation_toggled(_pressed: bool) -> void:
 	refresh_form_validity()
 
 
-# 校验姓名、日期、签名与勾选，更新提示文案与提交按钮可见性。
+# 校验姓名、日期、签名与勾选；满足全部条件时才显示提交按钮。
 func refresh_form_validity() -> void:
 	if confirm_button == null:
 		return
@@ -298,16 +334,6 @@ func refresh_form_validity() -> void:
 	var signature_valid: bool = signature_pad.has_signature()
 	var ready: bool = name_valid and date_valid and signature_valid and bool(confirmation.button_pressed)
 	confirm_button.visible = ready
-	if not name_valid:
-		status_label.text = "请填写法定姓名"
-	elif not date_valid:
-		status_label.text = "恢复日期必须填写今天：%s" % current_date()
-	elif not signature_valid:
-		status_label.text = "请在签名栏内亲笔签名"
-	elif not confirmation.button_pressed:
-		status_label.text = "请在声明框内亲手画勾"
-	else:
-		status_label.text = "表单已完整，可以提交验收"
 
 
 # 返回用户填写的日期字符串，未填完整时返回空串。
@@ -341,7 +367,6 @@ func replace_entire_form() -> void:
 	replacing_form = true
 	set_form_interaction(false)
 	Sfx.play("ui_switch", -3.0, 0.86)
-	status_label.text = "当前表单作废，正在换取空白新表……"
 	confirm_button.visible = false
 
 	var duration := 0.0 if DisplayServer.get_name() == "headless" else 0.42
@@ -384,12 +409,11 @@ func _clear_entire_form() -> void:
 	signature_pad.clear_signature()
 	confirmation.drawing = false
 	confirmation.button_pressed = false
-	status_label.visible = true
-	status_label.text = "请完整填写姓名、当天日期并亲笔签名"
+	approval_mark.modulate.a = 0.0
 	confirm_button.visible = false
 
 
-# 提交表单：锁定交互、保存填写信息并播放吞入动画。
+# 提交表单：先自动盖下“同意”章，再捕获已盖章纸面并送入机器。
 func submit_form() -> void:
 	if submission_locked or not confirm_button.visible:
 		return
@@ -398,13 +422,59 @@ func submit_form() -> void:
 	WorkdayState.player_name = name_input.text.strip_edges()
 	WorkdayState.reinstatement_date = entered_date()
 	WorkdayState.player_signature = signature_pad.serialize_strokes()
+	submission_sequence.clear()
 	set_form_interaction(false)
 	# 只捕获完成后的纸面内容，开发交互控件不应进入吞噬动画。
 	confirm_button.visible = false
-	status_label.visible = false
 	paper_replace_handle.visible = false
+	await _play_approval_stamp()
+	submission_sequence.append("machine_ingestion")
 	await _prepare_projected_form()
 	await _play_submission()
+
+
+# 公章从纸面上方落下，撞击时播放盖章声并留下“同意”印迹，抬起后才允许机器启动。
+func _play_approval_stamp() -> void:
+	submission_phase = "approval_stamp"
+	approval_stamp_count += 1
+	approval_stamp.visible = true
+	approval_stamp.position = STAMP_RAISED_POSITION
+	approval_stamp.scale = Vector2(1.08, 1.08)
+	approval_stamp.modulate.a = 1.0
+	approval_mark.modulate.a = 0.0
+	approval_mark.scale = Vector2(1.28, 1.28)
+
+	var drop_duration := 0.0 if DisplayServer.get_name() == "headless" else 0.24
+	var drop := create_tween()
+	drop.set_parallel(true)
+	drop.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	drop.tween_property(approval_stamp, "position", STAMP_IMPACT_POSITION, drop_duration)
+	drop.tween_property(approval_stamp, "scale", Vector2.ONE, drop_duration)
+	await drop.finished
+
+	Sfx.play("stamp")
+	submission_sequence.append("approval_stamp")
+	approval_mark.modulate.a = 0.94
+	form_stage.position = Vector2(0, 3)
+	var impact_duration := 0.0 if DisplayServer.get_name() == "headless" else 0.12
+	var impact := create_tween()
+	impact.set_parallel(true)
+	impact.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	impact.tween_property(approval_mark, "scale", Vector2.ONE, impact_duration)
+	impact.tween_property(form_stage, "position", Vector2.ZERO, impact_duration)
+	await impact.finished
+
+	var lift_duration := 0.0 if DisplayServer.get_name() == "headless" else 0.32
+	var lift := create_tween()
+	lift.set_parallel(true)
+	lift.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	lift.tween_property(approval_stamp, "position", STAMP_RAISED_POSITION, lift_duration)
+	lift.tween_property(approval_stamp, "modulate:a", 0.0, lift_duration)
+	await lift.finished
+	approval_stamp.visible = false
+	submission_phase = "stamped"
+	if DisplayServer.get_name() != "headless":
+		await get_tree().create_timer(0.28).timeout
 
 
 # 统一开关表单各输入控件的交互与焦点能力。
