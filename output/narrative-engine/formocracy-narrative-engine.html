@@ -1339,8 +1339,8 @@
         {
           "id": "D01-DAY-002",
           "scene": "晨间简报",
-          "speaker": "内部广播",
-          "tone": "指令",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "data/narrative/demo_workdays.json",
           "text": "简单事项只核验当日有效申请表。"
@@ -1401,8 +1401,8 @@
         {
           "id": "D02-DAY-002",
           "scene": "晨间简报",
-          "speaker": "内部广播",
-          "tone": "指令",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "data/narrative/demo_workdays.json",
           "text": "医疗回执以验收机记录时点判断有效期。"
@@ -1439,11 +1439,11 @@
         {
           "id": "D02-NIGHT-003",
           "scene": "夜间广播",
-          "speaker": "走廊广播",
-          "tone": "系统",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "scripts/scenes/evening_map.gd",
-          "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"
+          "text": "第十二区夜间窗口已经关闭。该回登记住所了——今天的表格不会趁您不在自己变少。"
         }
       ]
     },
@@ -1525,8 +1525,8 @@
         {
           "id": "D04-DAY-002",
           "scene": "晨间简报",
-          "speaker": "内部广播",
-          "tone": "指令",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "data/narrative/demo_workdays.json",
           "text": "境外文件必须附认证译文；北陆互惠今日暂停，紧急维修令除外。"
@@ -1563,11 +1563,11 @@
         {
           "id": "D04-NIGHT-003",
           "scene": "夜间广播",
-          "speaker": "走廊广播",
-          "tone": "系统",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "scripts/scenes/evening_map.gd",
-          "text": "所有职员返回登记住所。"
+          "text": "该回登记住所了。今天的表格不会趁您不在自己变少。"
         }
       ]
     },
@@ -1700,6 +1700,15 @@
       "title": "程序正确与公共伤害",
       "daytime": [
         {
+          "id": "D07-DAY-000",
+          "scene": "死亡登记抄件",
+          "speaker": "第五诊疗站",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/du_chunmei_death_notice.gd",
+          "text": "第 06 工作日 23:40，杜春梅被登记死亡。连续用药与净水配额未能按时生效。"
+        },
+        {
           "id": "D07-DAY-001",
           "scene": "晨间报纸",
           "speaker": "经办员",
@@ -1740,11 +1749,11 @@
         {
           "id": "D07-NIGHT-002",
           "scene": "夜间广播",
-          "speaker": "走廊广播",
-          "tone": "系统",
+          "speaker": "秘书",
+          "tone": "克制、略带温度",
           "status": "implemented",
           "source": "scripts/scenes/evening_map.gd",
-          "text": "所有职员返回登记住所。"
+          "text": "该回登记住所了。今天的表格不会趁您不在自己变少。"
         },
         {
           "id": "D07-NIGHT-003",
@@ -1754,11 +1763,21 @@
           "status": "draft",
           "source": "narrative-engine",
           "text": "记录会留下我做了什么。它不会替我解释为什么。"
+        },
+        {
+          "id": "D07-NIGHT-004",
+          "scene": "试玩结束",
+          "speaker": "中央现实管理局",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "七日试行期已经结束。感谢前来试玩。你的全部裁决已写入时间线。"
         }
       ]
     }
   ]
-}</script>
+}
+  </script>
   <script>
     (() => {
       "use strict";
@@ -1979,28 +1998,28 @@
         {
           id: "CASE-S-M52-D5", day: 5, lane: 2, npc: "杜春梅", form: "M-52",
           title: "慢性病优先级",
-          summary: "杜衡请求为慢性病患者预留资源。若批准，这份资源将与第七天魏清源的合法材料直接竞争。",
+          summary: "杜春梅请求为慢性病患者预留资源。只有批准且在第六夜前完成验收，才能避免她被登记死亡。",
           outcomes: {
             approved: {
-              direct: ["杜衡的资源被预留，眼前伤害降低。", "最后一张资源券的余量被提前占用。"],
+              direct: ["若归档及时变为 EFFECTIVE，杜春梅活过本轮资源周期。", "最后一张资源券的余量被提前占用。"],
               impacts: [
                 ["CASE-S-V01-D7", "两个都合法的人将竞争同一份资源。"]
               ],
               axes: [-1, 2, 0, 1]
             },
             rejected: {
-              direct: ["程序配额保持整齐。", "杜衡承担健康恶化，信任下降。"],
+              direct: ["程序配额保持整齐。", "第六夜 23:40，杜春梅被登记死亡。"],
               impacts: [
-                ["CASE-S-V01-D7", "魏清源的批准更容易，但代价被移到画面外。"]
+                ["CASE-S-V01-D7", "魏岚的批准更容易，但代价在第七日晨间被明确展示。"]
               ],
-              axes: [2, -2, 0, -1]
+              axes: [2, -3, 0, -2]
             },
             missing: {
-              direct: ["最终资源冲突失去前置对象。"],
+              direct: ["M-52 没有在第六夜前形成现实效力。", "第七日晨间出现杜春梅的死亡登记与遗留物。"],
               impacts: [
-                ["CASE-S-V01-D7", "最后一案只剩普通合规判断。"]
+                ["CASE-S-V01-D7", "最后一案仍然合法，但资源伤害已经发生。"]
               ],
-              axes: [0, -1, -1, 0]
+              axes: [0, -3, -1, -2]
             }
           }
         },

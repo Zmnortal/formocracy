@@ -18,6 +18,7 @@ func run() -> void:
 	var main = packed.instantiate()
 	root.add_child(main)
 	await process_frame
+	var voice_count_before_case: int = sfx.voice_play_count
 	main.manager.start_first_case_for_tests()
 	await process_frame
 
@@ -202,6 +203,11 @@ func run() -> void:
 		await process_frame
 	assert(sfx.last_voice_person_id == "PERSON-LIN", "greeting must play the configured NPC voice")
 	assert(sfx.voice_player.stream != null, "configured NPC voice stream must load")
+	assert(sfx.voice_play_count == voice_count_before_case + 1, "one NPC dialogue line must trigger exactly one natural voice sound")
+	assert(
+		sfx.voice_player.stream.resource_path == "res://assets/audio/sfx/voices_natural/male_young_hesitation.wav",
+		"greeting must use the configured natural human hesitation sound",
+	)
 	assert(bridge.last_emitted_event.type == "npc_line", "NPC greeting must be emitted to the glasses")
 	assert(bridge.last_emitted_event.title == "林默", "glasses NPC event must include the speaker name")
 	assert(bridge.last_emitted_event.text == "您好。我来办理共同居住配额。", "glasses NPC event must include the spoken line")

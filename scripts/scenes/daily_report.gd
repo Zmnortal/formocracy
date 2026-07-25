@@ -152,7 +152,7 @@ func _play_reveal_sequence() -> void:
 	_finish_reveal_sequence()
 
 
-# 显示单个字段组并播放一次机械短音。
+# 显示单个字段组并播放轻微的界面切换音。
 func _reveal_block(index: int) -> void:
 	var block := reveal_blocks[index]
 	block.visible = true
@@ -164,7 +164,7 @@ func _reveal_block(index: int) -> void:
 	tween.parallel().tween_property(block, "modulate:a", 1.0, REVEAL_SETTLE_SECONDS)
 	revealed_block_count = index + 1
 	status_line.text = "记录状态：正在生成 %02d / %02d" % [revealed_block_count, reveal_blocks.size()]
-	Sfx.play("dialogue_tick")
+	Sfx.play("ui_switch", -8.0)
 
 
 # 完成逐块生成并开放声明勾选。

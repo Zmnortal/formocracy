@@ -2,6 +2,7 @@ class_name WorkbenchBriefingDirector
 extends RefCounted
 
 const DAY_ONE_PATH := "res://data/briefings/day_01.json"
+const SECRETARY := preload("res://scripts/narrative/secretary_voice.gd")
 
 var workday_state: WorkdayContext
 
@@ -21,7 +22,7 @@ func build_lines() -> Array[String]:
 			lines.append(WorkdayContext.stringify_value(line))
 	else:
 		var configured_day := WorkdayContext.read_int(workday, "day_number", workday_state.day_number)
-		lines.append("内部广播。第十二区，第 %02d 工作日。" % configured_day)
+		lines.append(SECRETARY.morning_opening(configured_day))
 		lines.append(WorkdayContext.read_string(workday, "briefing_title", "今日行政指导"))
 		for policy: Variant in WorkdayContext.read_array(workday, "policy_cards"):
 			lines.append("今日规则：%s" % WorkdayContext.stringify_value(policy))
@@ -41,7 +42,7 @@ func build_lines() -> Array[String]:
 			seen[fragment_id] = true
 	workday_state.set_meta("briefing_seen", seen)
 	if not lines.is_empty() and not lines[-1].contains("召唤铃"):
-		lines.append("简报结束。请按下召唤铃，传唤第一位申请人。")
+		lines.append(SECRETARY.briefing_complete())
 	return lines
 
 
@@ -63,13 +64,13 @@ func _matches(condition: Dictionary) -> bool:
 # 加载每日简报 JSON 配置；缺失时返回兜底文案。
 func _load_config(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
-		return {"fixed": ["内部广播。今日流程配置缺失。请按铃开始工作。"]}
+		return {"fixed": [SECRETARY.missing_briefing()]}
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if parsed is Dictionary:
 		@warning_ignore("unsafe_cast")
 		var config: Dictionary = parsed
 		return config
-	return {"fixed": ["内部广播。简报读取失败。请按铃开始工作。"]}
+	return {"fixed": [SECRETARY.unreadable_briefing()]}
 
 
 # 从字典字段收窄强类型字典列表。

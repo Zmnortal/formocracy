@@ -9,6 +9,7 @@
 - `demo_cases.json`：35 宗可实际审批的案件。
 - `demo_workdays.json`：七天每日五槽编排及晨间政策。
 - `daily_dialogue.json`：供叙事引擎统一维护的七日白天与夜间文案登记表。
+- `../../docs/narrative/secretary.md`：吉祥物“秘书”的正式称呼、神秘感边界、语言规则与运行时事件映射。
 - `../ontology/people.json`：18 名人物的运行时身份、图片、声音和颜色。
 - `../ontology/document_types.json`：12 类可在桌面展开的文书布局。
 - `../ontology/purposes.json`：业务名称与承办部门。

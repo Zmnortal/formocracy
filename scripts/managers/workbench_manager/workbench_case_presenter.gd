@@ -113,7 +113,6 @@ func start_case(data: Dictionary) -> void:
 	if is_instance_valid(desk.queue_label):
 		var display_name := WorkdayContext.read_string(person, "display_name", "身份受限")
 		desk.queue_label.text = "%s\n窗口就位\n后续排队：%d 人" % [display_name, LevelDirector.get_gameplay_queue().size()]
-	Sfx.play_voice(WorkdayContext.read_string(person, "id"))
 
 	_create_documents(WorkdayContext.read_array(current_case, "documents"))
 	_create_envelope()

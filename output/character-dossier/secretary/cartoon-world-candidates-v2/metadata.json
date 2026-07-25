@@ -1,0 +1,45 @@
+{
+  "entity_id": "SEC-00",
+  "entity_name": "秘书",
+  "set_id": "secretary-cartoon-world-candidates-v2",
+  "purpose": "主游戏世界观内的卡通吉祥物母版候选",
+  "design_rule": "保持完整卡通动物结构，不使用人身猫头、真人比例、拟兽人体或完整人类制服",
+  "world_style": [
+    "衡川行政系统的低饱和旧印刷配色",
+    "轻微纸张与油墨颗粒",
+    "少量窗口、档案及内部广播元素",
+    "角色仍被明确理解为世界内的显示卡通形象"
+  ],
+  "output_spec": {
+    "format": "PNG",
+    "width": 512,
+    "height": 768,
+    "background": "transparent"
+  },
+  "candidates": [
+    {
+      "number": 1,
+      "name": "批准显示形象",
+      "direction": "元素最少、轮廓最稳定，适合作为默认官方形象",
+      "file": "01-approved-display-game-512x768.png"
+    },
+    {
+      "number": 2,
+      "name": "窗口文书",
+      "direction": "加入叫号票、旧帽和文件包，最贴近白天主玩法",
+      "file": "02-window-clerk-game-512x768.png"
+    },
+    {
+      "number": 3,
+      "name": "档案吉祥物",
+      "direction": "抱着档案夹，最适合叙事与人物档案场景",
+      "file": "03-archive-mascot-game-512x768.png"
+    },
+    {
+      "number": 4,
+      "name": "闭馆广播",
+      "direction": "只有旧式接收器，神秘感最强",
+      "file": "04-after-hours-broadcast-game-512x768.png"
+    }
+  ]
+}

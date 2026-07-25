@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FORMOCRACY · 美式卡通吉祥物候选 V2</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --green: #7dff9a;
+      --green-soft: #3ed76b;
+      --ink: #030806;
+      --panel: rgba(5, 20, 11, .72);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--green);
+      background:
+        radial-gradient(circle at 50% 20%, rgba(43, 123, 65, .2), transparent 45%),
+        #010302;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 3px,
+        rgba(125, 255, 154, .035) 3px,
+        rgba(125, 255, 154, .035) 4px
+      );
+      mix-blend-mode: screen;
+    }
+
+    main {
+      width: min(1060px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 60px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(125, 255, 154, .3);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 38px);
+      font-weight: 600;
+      letter-spacing: .08em;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: rgba(125, 255, 154, .6);
+      font-size: 12px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .card {
+      position: relative;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid rgba(125, 255, 154, .25);
+      background: var(--panel);
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .card:hover,
+    .card.selected {
+      border-color: var(--green);
+      background: rgba(13, 48, 24, .72);
+      transform: translateY(-2px);
+    }
+
+    .candidate {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--green);
+      filter: drop-shadow(0 0 5px rgba(125, 255, 154, .55));
+      image-rendering: pixelated;
+      mask: var(--image) center / contain no-repeat;
+      -webkit-mask: var(--image) center / contain no-repeat;
+    }
+
+    .card footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      color: rgba(125, 255, 154, .58);
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+
+    .card.selected footer { color: var(--green); }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 256px 1fr;
+      gap: 30px;
+      align-items: center;
+      min-height: 320px;
+      margin-top: 22px;
+      padding: 30px;
+      border: 1px solid rgba(125, 255, 154, .35);
+      background: rgba(2, 9, 5, .8);
+    }
+
+    .hero {
+      width: 256px;
+      height: 256px;
+      background: var(--green);
+      filter:
+        drop-shadow(0 0 3px var(--green))
+        drop-shadow(0 0 15px rgba(62, 215, 107, .38));
+      image-rendering: pixelated;
+      mask: url("candidate-1-128.png") center / contain no-repeat;
+      -webkit-mask: url("candidate-1-128.png") center / contain no-repeat;
+    }
+
+    .copy small {
+      color: rgba(125, 255, 154, .46);
+      letter-spacing: .16em;
+    }
+
+    .copy h2 {
+      margin: 12px 0 14px;
+      font-size: clamp(26px, 5vw, 54px);
+      font-weight: 500;
+      line-height: 1.1;
+      text-shadow: 0 0 13px rgba(125, 255, 154, .3);
+    }
+
+    .copy p {
+      max-width: 560px;
+      margin: 0;
+      color: rgba(125, 255, 154, .68);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .stage { grid-template-columns: 1fr; text-align: center; }
+      .hero { margin: 0 auto; }
+      header { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>吉祥物视觉校准</h1>
+        <p>R-128 / AMERICAN CORPORATE CARTOON / ROUND 02 / ROKID GREEN</p>
+      </div>
+      <div class="status">DISPLAY CHANNEL ACTIVE</div>
+    </header>
+
+    <section class="grid" aria-label="吉祥物候选">
+      <article class="card selected" data-index="1" data-name="端正讲解员">
+        <div class="candidate" style="--image: url('candidate-1-128.png')"></div>
+        <footer><span>候选 01</span><span>端正讲解员</span></footer>
+      </article>
+      <article class="card" data-index="2" data-name="心虚接待员">
+        <div class="candidate" style="--image: url('candidate-2-128.png')"></div>
+        <footer><span>候选 02</span><span>心虚接待员</span></footer>
+      </article>
+      <article class="card" data-index="3" data-name="程序管理员">
+        <div class="candidate" style="--image: url('candidate-3-128.png')"></div>
+        <footer><span>候选 03</span><span>程序管理员</span></footer>
+      </article>
+      <article class="card" data-index="4" data-name="规则秘书官">
+        <div class="candidate" style="--image: url('candidate-4-128.png')"></div>
+        <footer><span>候选 04</span><span>规则秘书官</span></footer>
+      </article>
+    </section>
+
+    <section class="stage">
+      <div class="hero" id="hero"></div>
+      <div class="copy">
+        <small>CENTRAL REALITY ADMINISTRATION</small>
+        <h2 id="selection">01 / 端正讲解员</h2>
+        <p>第二轮集中探索同一个角色的性格细节：端正、心虚、权威和守规矩。四个版本都保持复古美式企业吉祥物的亲切感，并用过度职业化的姿态制造“假正经”。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const cards = [...document.querySelectorAll(".card")];
+    const hero = document.querySelector("#hero");
+    const selection = document.querySelector("#selection");
+
+    cards.forEach((card) => {
+      card.addEventListener("click", () => {
+        cards.forEach((item) => item.classList.remove("selected"));
+        card.classList.add("selected");
+        const index = card.dataset.index;
+        hero.style.maskImage = `url("candidate-${index}-128.png")`;
+        hero.style.webkitMaskImage = `url("candidate-${index}-128.png")`;
+        selection.textContent = `${index.padStart(2, "0")} / ${card.dataset.name}`;
+      });
+    });
+  </script>
+</body>
+</html>

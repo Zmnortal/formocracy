@@ -135,11 +135,10 @@ func reveal_current_line() -> void:
 	_character_progress = float(full_text.length())
 	state = DialogueState.WAITING_FOR_INPUT
 	advance_arrow.visible = true
-	_play_tick()
 	line_completed.emit()
 
 
-# 逐帧吐字并为每个非空白字符播放短促击键音；完成后仅显示箭头并等待。
+# 逐帧吐字但不附加逐字电子音；完成后仅显示箭头并等待。
 func _process(delta: float) -> void:
 	if state == DialogueState.TYPING:
 		_character_progress += delta * characters_per_second
@@ -147,9 +146,6 @@ func _process(delta: float) -> void:
 		var old_count := maxi(dialogue_label.visible_characters, 0)
 		if target_count > old_count:
 			dialogue_label.visible_characters = target_count
-			for index in range(old_count, target_count):
-				if not full_text[index].strip_edges().is_empty():
-					_play_tick()
 		if target_count >= full_text.length():
 			dialogue_label.visible_characters = -1
 			state = DialogueState.WAITING_FOR_INPUT
@@ -190,13 +186,6 @@ func _handle_manual_advance() -> void:
 			sfx.call("play", "ui_click")
 		resolution_id += 1
 		advance_requested.emit()
-
-
-# 通过运行时节点调用逐字音效，使组件在独立测试和场景工具中也可安全加载。
-func _play_tick() -> void:
-	var sfx := get_node_or_null("/root/Sfx")
-	if sfx != null:
-		sfx.call("dialogue_tick")
 
 
 # 不同来源只改变说话人色彩，结构、位置与交互保持完全一致。

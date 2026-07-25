@@ -3,6 +3,7 @@ extends Control
 signal end_sequence_finished
 
 const UI := preload("res://scripts/ui/bureau_ui.gd")
+const SECRETARY := preload("res://scripts/narrative/secretary_voice.gd")
 const ROUTE_NODE_TEXTURE := preload("res://assets/map/tokens/route_node_active.png")
 const LOCATION_TEXTURES := {
 	"LOCATION-FORMS": preload("res://assets/map/locations/central_forms_v2.png"),
@@ -87,7 +88,7 @@ var location_dossier_cancel: Button
 var end_dialogue_lines: Array[Dictionary] = [
 	{"speaker": "邻室职员", "text": "还不走？这一层的灯马上就要熄了。"},
 	{"speaker": "PLAYER", "text": "今天的行动许可已经用完。剩下的事，只能留到明天。"},
-	{"speaker": "走廊广播", "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"},
+	{"speaker": SECRETARY.NAME, "text": SECRETARY.night_close()},
 ]
 var dialogue_box: DialogueBox
 var end_speaker_label: Label
@@ -593,7 +594,7 @@ func _show_end_dialogue_line(index: int) -> void:
 	end_dialogue_index = index
 	var line := end_dialogue_lines[index]
 	var speaker := _resolve_dialogue_speaker(String(line.speaker))
-	var speaker_kind := "broadcast" if speaker.contains("广播") else ("player" if speaker == WorkdayState.player_name else "npc")
+	var speaker_kind := SECRETARY.KIND if speaker == SECRETARY.NAME else ("player" if speaker == WorkdayState.player_name else "npc")
 	dialogue_box.show_line(speaker, String(line.text), speaker_kind)
 	_send_end_dialogue_to_glass(speaker, String(line.text))
 
@@ -624,14 +625,14 @@ func _finish_end_of_night_sequence() -> void:
 	WorkdayState.manager.begin_next_day()
 	campaign_completed = WorkdayContext.read_bool(WorkdayState.narrative_flags, "trial_completed")
 	if campaign_completed:
-		var completion_text := "七日试行期已经结束。\n感谢前来试玩。你的全部裁决已写入时间线。"
-		dialogue_box.show_line("中央现实管理局", completion_text, "system")
-		_send_end_dialogue_to_glass("中央现实管理局", completion_text)
+		var completion_text := "七日试行期已经结束。辛苦了。\n您的全部裁决都写进了时间线——至少这次，没有少一页。"
+		dialogue_box.show_line(SECRETARY.NAME, completion_text, SECRETARY.KIND)
+		_send_end_dialogue_to_glass(SECRETARY.NAME, completion_text)
 		return
 	var summary := WorkdayState.manager.get_personal_review_summary()
-	var summary_text := "第 %02d 工作日\n个人申请处理：%s" % [WorkdayState.day_number, summary.result]
-	dialogue_box.show_line("中央现实管理局", summary_text, "system")
-	_send_end_dialogue_to_glass("中央现实管理局", summary_text)
+	var summary_text := "第 %02d 工作日\n个人申请处理：%s\n我把回执放在这里了，明早别说没看见。" % [WorkdayState.day_number, summary.result]
+	dialogue_box.show_line(SECRETARY.NAME, summary_text, SECRETARY.KIND)
+	_send_end_dialogue_to_glass(SECRETARY.NAME, summary_text)
 
 
 # 将结尾对话按说话人类型转发给 RealityBridge。
@@ -639,7 +640,7 @@ func _send_end_dialogue_to_glass(speaker: String, text: String) -> void:
 	var bridge := get_tree().root.get_node_or_null("RealityBridge")
 	if bridge == null or text.strip_edges().is_empty():
 		return
-	if speaker.contains("广播") or speaker.contains("管理局"):
+	if speaker == SECRETARY.NAME:
 		bridge.secretary_line(text)
 	elif speaker == WorkdayState.player_name:
 		bridge.npc_line(speaker, text, "male", "young")

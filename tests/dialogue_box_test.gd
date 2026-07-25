@@ -8,7 +8,16 @@ func _init() -> void:
 
 # 一句话必须经过两次手动操作，且等待期间绝不自行推进。
 func run() -> void:
-	assert(ResourceLoader.exists("res://assets/audio/sfx/dialogue_type_tick.wav", "AudioStream"), "dialogue typewriter tick must import as a playable audio stream")
+	var sfx = root.get_node("Sfx")
+	assert(not sfx.STREAMS.has("dialogue_tick"), "chat text reveal must not expose the retired electronic dialogue tick")
+	var natural_voice_paths: Array[String] = [
+		"res://assets/audio/sfx/voices_natural/female_young_breath.wav",
+		"res://assets/audio/sfx/voices_natural/female_old_sigh.wav",
+		"res://assets/audio/sfx/voices_natural/male_young_hesitation.wav",
+		"res://assets/audio/sfx/voices_natural/male_old_breath.wav",
+	]
+	for natural_voice_path: String in natural_voice_paths:
+		assert(ResourceLoader.exists(natural_voice_path, "AudioStream"), "every natural NPC voice must import as an audio stream")
 	var box := DialogueBox.new()
 	root.add_child(box)
 	await process_frame

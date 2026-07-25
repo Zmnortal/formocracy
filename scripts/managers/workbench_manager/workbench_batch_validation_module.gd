@@ -6,24 +6,36 @@ signal finished
 const MACHINE_TEXTURE := preload("res://assets/concepts/endday_validation/validation_machine_topdown_concept.png")
 const MACHINE_INTAKE_FOREGROUND_TEXTURE := preload("res://assets/concepts/endday_validation/validation_machine_intake_foreground.png")
 const MACHINE_LIGHTS_TEXTURE := preload("res://assets/concepts/endday_validation/validation_machine_lights.png")
+const INSPECTION_DESK_TEXTURE := preload("res://assets/concepts/endday_validation/validation_inspection_desk_background.png")
 const RAIL_MACHINE_CAP_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_machine_cap.png")
 const RAIL_MIDDLE_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_middle.png")
 const RAIL_BOTTOM_CAP_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_bottom_cap.png")
 const DOCUMENT_BAG_TEXTURE := preload("res://assets/documents/envelopes/bureau_envelope_closed.png")
 
 const DESIGN_SIZE := Vector2(1280, 720)
-const MACHINE_POSITION := Vector2(390, -86)
-const MACHINE_SIZE := Vector2(500, 500)
-const DOCUMENT_CLIP_Y := 278.0
-const DOCUMENT_BAG_SIZE := Vector2(94, 144)
-const BELT_ENTRY_POSITION := Vector2(593, 242)
-const MACHINE_INGEST_POSITION := Vector2(593, -152)
+const MACHINE_POSITION := Vector2(490, -78)
+const MACHINE_SIZE := Vector2(300, 300)
+const DOCUMENT_CLIP_Y := 118.0
+const DOCUMENT_BAG_SIZE := Vector2(84, 128)
+const BELT_STAGING_POSITION := Vector2(605, 182)
+const MACHINE_INGEST_POSITION := Vector2(605, -100)
+const ARCHIVE_SLOT_POSITIONS: Array[Vector2] = [
+	Vector2(238, 438),
+	Vector2(425, 438),
+	Vector2(622, 438),
+	Vector2(813, 438),
+	Vector2(1005, 438),
+]
+const WAITING_ZONE_Y := 272.0
+const WAITING_ZONE_CENTER_X := 640.0
+const WAITING_ZONE_SPACING := 200.0
 
 var root: Node2D
 var overlay: Control
-var archive_strip: ScrollContainer
-var archive_row: HBoxContainer
+var archive_strip: Control
+var archive_row: Control
 var document_clip: Control
+var desk_background: TextureRect
 var machine_body: TextureRect
 var machine_intake_foreground: TextureRect
 var machine_lights: TextureRect
@@ -31,6 +43,7 @@ var rail_machine_cap: TextureRect
 var active_document_bag: TextureRect
 var capacity_label: Label
 var capacity_meter: ProgressBar
+var selection_label: Label
 var instruction_label: Label
 var machine_state_label: Label
 var confirm_button: Button
@@ -66,79 +79,60 @@ func _build_validation_view() -> void:
 	_build_status_panels()
 	_build_archive_queue()
 
-	# 保留旧测试与调试入口；实际玩家流程在装满容量后自动确认。
-	confirm_button = Button.new()
-	confirm_button.name = "HiddenBatchConfirm"
-	confirm_button.visible = false
-	confirm_button.pressed.connect(confirm)
-	overlay.add_child(confirm_button)
 
-
-# 用低对比网格、中央设备基座和侧边操作区构成独立验收机房。
+# 以完整的行政检验桌底图建立空间，让选择位、待送区与机器成为同一件装置。
 func _build_floor() -> void:
 	var floor := ColorRect.new()
 	floor.name = "ValidationFloor"
-	floor.color = Color("0b0e0c")
+	floor.color = Color("070907")
 	floor.size = DESIGN_SIZE
 	floor.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay.add_child(floor)
 
+	desk_background = _add_texture(
+		"ValidationInspectionDesk",
+		INSPECTION_DESK_TEXTURE,
+		Vector2.ZERO,
+		DESIGN_SIZE,
+		1
+	)
+	desk_background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+
 	var vignette := ColorRect.new()
 	vignette.name = "ValidationFloorTint"
-	vignette.color = Color(0.01, 0.015, 0.012, 0.22)
+	vignette.color = Color(0.005, 0.008, 0.006, 0.12)
 	vignette.size = DESIGN_SIZE
 	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vignette.z_index = 1
+	vignette.z_index = 2
 	overlay.add_child(vignette)
 
-	for x: int in range(0, 1281, 128):
-		var vertical := ColorRect.new()
-		vertical.color = Color("363a3333")
-		vertical.position = Vector2(x, 0)
-		vertical.size = Vector2(1, 720)
-		vertical.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vertical.z_index = 1
-		overlay.add_child(vertical)
-	for y: int in range(0, 721, 120):
-		var horizontal := ColorRect.new()
-		horizontal.color = Color("363a3333")
-		horizontal.position = Vector2(0, y)
-		horizontal.size = Vector2(1280, 1)
-		horizontal.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		horizontal.z_index = 1
-		overlay.add_child(horizontal)
 
-	var machine_bay := Panel.new()
-	machine_bay.name = "ValidationMachineBay"
-	machine_bay.position = Vector2(334, 10)
-	machine_bay.size = Vector2(612, 526)
-	machine_bay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	machine_bay.z_index = 2
-	machine_bay.add_theme_stylebox_override(
-		"panel",
-		WorkbenchUI.style_box(Color("1116119c"), 2, Color("4e544554"), 1)
-	)
-	overlay.add_child(machine_bay)
-	WorkbenchUI.add_text(machine_bay, "REALITY VALIDATION CHAMBER · 12-B", 9, Color("6f7663"), Vector2(18, 12), Vector2(300, 18))
-
-	for x_position: float in [326.0, 946.0]:
-		var boundary := ColorRect.new()
-		boundary.color = Color("b38b3e80")
-		boundary.position = Vector2(x_position, 20)
-		boundary.size = Vector2(2, 506)
-		boundary.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		boundary.z_index = 2
-		overlay.add_child(boundary)
-
-
-# 轨道三件套保持独立，当前视口内按 2 px 重叠消除接缝。
+# 轨道缩短到桌面待送区与机器之间，避免像一条穿过整张页面的装饰线。
 func _build_rail() -> void:
-	rail_machine_cap = _add_texture("ValidationRailMachineCap", RAIL_MACHINE_CAP_TEXTURE, Vector2(558, 270), Vector2(164, 238), 3)
-	_add_texture("ValidationRailMiddle", RAIL_MIDDLE_TEXTURE, Vector2(558, 474), Vector2(164, 278), 3)
-	_add_texture("ValidationRailBottomCap", RAIL_BOTTOM_CAP_TEXTURE, Vector2(558, 610), Vector2(164, 346), 3)
+	rail_machine_cap = _add_texture(
+		"ValidationRailMachineCap",
+		RAIL_MACHINE_CAP_TEXTURE,
+		Vector2(595, 148),
+		Vector2(90, 112),
+		6
+	)
+	_add_texture(
+		"ValidationRailMiddle",
+		RAIL_MIDDLE_TEXTURE,
+		Vector2(595, 230),
+		Vector2(90, 52),
+		6
+	)
+	_add_texture(
+		"ValidationRailBottomCap",
+		RAIL_BOTTOM_CAP_TEXTURE,
+		Vector2(595, 258),
+		Vector2(90, 42),
+		6
+	)
 
 
-# 机器主体、状态灯与入口前景使用相同画布和原点。
+# 机器只露出必要的入口体量，视觉重点留给桌面上的玩家选择。
 func _build_machine() -> void:
 	machine_body = _add_texture("ValidationMachineBody", MACHINE_TEXTURE, MACHINE_POSITION, MACHINE_SIZE, 10)
 	machine_lights = _add_texture("ValidationMachineLights", MACHINE_LIGHTS_TEXTURE, MACHINE_POSITION, MACHINE_SIZE, 24)
@@ -158,152 +152,155 @@ func _build_document_clip() -> void:
 	overlay.add_child(document_clip)
 
 
-# 左侧解释程序，右侧集中配额、机器状态与离开操作。
+# 信息被压缩进墙上的铭牌、机械计数器与右侧纸质清单，不再悬浮遮挡轨道。
 func _build_status_panels() -> void:
 	var title_panel := Panel.new()
 	title_panel.name = "ValidationTitlePanel"
-	title_panel.position = Vector2(26, 22)
-	title_panel.size = Vector2(282, 70)
+	title_panel.position = Vector2(66, 28)
+	title_panel.size = Vector2(224, 52)
 	title_panel.z_index = 50
-	title_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("0a0f0cf2"), 2, Color("777047"), 1))
+	title_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("856a3bdc"), 3, Color("c2a15a"), 2))
 	overlay.add_child(title_panel)
-	WorkbenchUI.add_text(title_panel, "日终送验", 24, Color("e4d6a4"), Vector2(16, 8), Vector2(180, 31))
-	WorkbenchUI.add_text(title_panel, "END-OF-DAY VALIDATION", 8, Color("8d927b"), Vector2(17, 43), Vector2(220, 15))
+	var title := WorkbenchUI.add_text(title_panel, "日终送验", 22, Color("211a0e"), Vector2.ZERO, title_panel.size)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	var capacity_panel := Panel.new()
 	capacity_panel.name = "ValidationCapacityPanel"
-	capacity_panel.position = Vector2(972, 22)
-	capacity_panel.size = Vector2(282, 70)
+	capacity_panel.position = Vector2(84, 96)
+	capacity_panel.size = Vector2(202, 58)
 	capacity_panel.z_index = 50
-	capacity_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("0a0f0cf2"), 2, Color("777047"), 1))
+	capacity_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("171913e8"), 2, Color("6e6243"), 1))
 	overlay.add_child(capacity_panel)
-	WorkbenchUI.add_text(capacity_panel, "今日机器额度", 9, Color("8d927b"), Vector2(14, 8), Vector2(120, 16))
-	capacity_label = WorkbenchUI.add_text(capacity_panel, "", 15, Color("dfbd62"), Vector2(14, 25), Vector2(254, 24))
+	WorkbenchUI.add_text(capacity_panel, "今日送验额度", 8, Color("8f8a72"), Vector2(12, 7), Vector2(92, 16))
+	capacity_label = WorkbenchUI.add_text(capacity_panel, "", 14, Color("dfbd62"), Vector2(85, 6), Vector2(104, 22))
 	capacity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	capacity_meter = ProgressBar.new()
 	capacity_meter.name = "ValidationCapacityMeter"
-	capacity_meter.position = Vector2(14, 53)
-	capacity_meter.size = Vector2(254, 7)
+	capacity_meter.position = Vector2(12, 38)
+	capacity_meter.size = Vector2(178, 8)
 	capacity_meter.show_percentage = false
 	capacity_meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	capacity_meter.add_theme_stylebox_override("background", WorkbenchUI.style_box(Color("161b16"), 1, Color("4e503f"), 1))
 	capacity_meter.add_theme_stylebox_override("fill", WorkbenchUI.style_box(Color("b99843"), 1, Color("d5bb67"), 0))
 	capacity_panel.add_child(capacity_meter)
 
-	var protocol_panel := Panel.new()
-	protocol_panel.name = "ValidationProtocolPanel"
-	protocol_panel.position = Vector2(26, 110)
-	protocol_panel.size = Vector2(282, 420)
-	protocol_panel.z_index = 45
-	protocol_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("0b100ceb"), 2, Color("4f5544"), 1))
-	overlay.add_child(protocol_panel)
-	WorkbenchUI.add_text(protocol_panel, "送验程序", 15, Color("cfc59e"), Vector2(18, 18), Vector2(180, 24))
-	WorkbenchUI.add_text(protocol_panel, "PROCEDURE / 03 STEPS", 8, Color("69705e"), Vector2(18, 43), Vector2(180, 14))
-	_add_protocol_step(protocol_panel, "01", "选择已盖章档案", "点击底部文件袋，将其送上轨道。", 78)
-	_add_protocol_step(protocol_panel, "02", "机器吞入", "文件袋进入机器后不可撤回。", 162)
-	_add_protocol_step(protocol_panel, "03", "结束本日", "离开时统一写入现实效力。", 246)
-	var rule_line := ColorRect.new()
-	rule_line.color = Color("6d6340")
-	rule_line.position = Vector2(18, 337)
-	rule_line.size = Vector2(246, 1)
-	rule_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	protocol_panel.add_child(rule_line)
-	var rule_label := WorkbenchUI.add_text(protocol_panel, "仅接收已盖章档案\n送验无最低数量 · 不得超过上限", 10, Color("9f9678"), Vector2(18, 351), Vector2(246, 48))
-	rule_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-
-	var operation_panel := Panel.new()
-	operation_panel.name = "ValidationOperationPanel"
-	operation_panel.position = Vector2(972, 110)
-	operation_panel.size = Vector2(282, 420)
-	operation_panel.z_index = 50
-	operation_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("0b100cf2"), 2, Color("5f624b"), 1))
-	overlay.add_child(operation_panel)
-	WorkbenchUI.add_text(operation_panel, "机器状态", 10, Color("777d69"), Vector2(18, 18), Vector2(120, 18))
-	var status_marker := ColorRect.new()
-	status_marker.name = "MachineStatusMarker"
-	status_marker.color = Color("c49b42")
-	status_marker.position = Vector2(18, 50)
-	status_marker.size = Vector2(4, 54)
-	status_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	operation_panel.add_child(status_marker)
-	machine_state_label = WorkbenchUI.add_text(operation_panel, "现实验收机待机", 16, Color("dfc477"), Vector2(34, 48), Vector2(226, 56))
+	var checklist_title := WorkbenchUI.add_text(overlay, "送验清单", 12, Color("4a3d27"), Vector2(1000, 34), Vector2(144, 20))
+	checklist_title.z_index = 50
+	var checklist_items := WorkbenchUI.add_text(
+		overlay,
+		"1  公民序号\n2  档案编号\n3  封装完好\n4  未超上限",
+		8,
+		Color("51432b"),
+		Vector2(1000, 68),
+		Vector2(144, 78)
+	)
+	checklist_items.z_index = 50
+	machine_state_label = WorkbenchUI.add_text(
+		overlay,
+		"现实验收机待机",
+		9,
+		Color("3f3421"),
+		Vector2(1000, 154),
+		Vector2(144, 24)
+	)
+	machine_state_label.z_index = 50
 	machine_state_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	var operation_line := ColorRect.new()
-	operation_line.color = Color("414638")
-	operation_line.position = Vector2(18, 124)
-	operation_line.size = Vector2(246, 1)
-	operation_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	operation_panel.add_child(operation_line)
-	WorkbenchUI.add_text(operation_panel, "当前指令", 9, Color("777d69"), Vector2(18, 145), Vector2(120, 17))
-	instruction_label = WorkbenchUI.add_text(operation_panel, "选择一个文件袋，装入中央轨道", 13, Color("ded5b5"), Vector2(18, 171), Vector2(246, 78))
+	instruction_label = WorkbenchUI.add_text(
+		overlay,
+		"从下方编号位选择档案，确认后依次送入。",
+		7,
+		Color("493c27"),
+		Vector2(1000, 182),
+		Vector2(144, 42)
+	)
+	instruction_label.z_index = 50
 	instruction_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+
+
+# 文件袋直接落在桌垫编号位上；选中后整袋移动至待送区，形成可见的空间状态。
+func _build_archive_queue() -> void:
+	archive_strip = Control.new()
+	archive_strip.name = "ArchiveStrip"
+	archive_strip.position = Vector2.ZERO
+	archive_strip.size = DESIGN_SIZE
+	archive_strip.mouse_filter = Control.MOUSE_FILTER_PASS
+	archive_strip.z_index = 40
+	overlay.add_child(archive_strip)
+
+	archive_row = Control.new()
+	archive_row.name = "ArchiveRow"
+	archive_row.position = Vector2.ZERO
+	archive_row.size = DESIGN_SIZE
+	archive_row.mouse_filter = Control.MOUSE_FILTER_PASS
+	archive_strip.add_child(archive_row)
+	for slot_index: int in ARCHIVE_SLOT_POSITIONS.size():
+		var fixed_slot_number := WorkbenchUI.add_text(
+			archive_strip,
+			"%d" % (slot_index + 1),
+			13,
+			Color("81765d"),
+			ARCHIVE_SLOT_POSITIONS[slot_index] + Vector2(5, 171),
+			Vector2(140, 20)
+		)
+		fixed_slot_number.name = "ArchiveSlotNumber%d" % (slot_index + 1)
+		fixed_slot_number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		fixed_slot_number.z_index = 42
+
+	WorkbenchUI.add_text(archive_strip, "待送区", 9, Color("8e8058"), Vector2(599, 330), Vector2(82, 18))
+	selection_label = WorkbenchUI.add_text(
+		archive_strip,
+		"00 份",
+		14,
+		Color("d6ba68"),
+		Vector2(594, 348),
+		Vector2(92, 28)
+	)
+	selection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	WorkbenchUI.add_text(
+		archive_strip,
+		"点击文件袋加入待送区 · 再次点击撤回",
+		9,
+		Color("918a70"),
+		Vector2(442, 674),
+		Vector2(394, 20)
+	)
 
 	leave_button = Button.new()
 	leave_button.name = "LeaveValidationButton"
-	leave_button.text = "离开送验间"
-	leave_button.position = Vector2(18, 338)
-	leave_button.size = Vector2(246, 62)
+	leave_button.text = "直接离开"
+	leave_button.position = Vector2(1080, 404)
+	leave_button.size = Vector2(166, 40)
 	leave_button.z_index = 52
 	leave_button.focus_mode = Control.FOCUS_ALL
 	leave_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	leave_button.add_theme_font_size_override("font_size", 17)
-	leave_button.add_theme_color_override("font_color", Color("e7d9ac"))
+	leave_button.add_theme_font_size_override("font_size", 12)
+	leave_button.add_theme_color_override("font_color", Color("a8a58f"))
 	leave_button.add_theme_color_override("font_hover_color", Color("fff0b7"))
-	leave_button.add_theme_stylebox_override("normal", WorkbenchUI.style_box(Color("171d17"), 2, Color("817848"), 1))
-	leave_button.add_theme_stylebox_override("hover", WorkbenchUI.style_box(Color("2b3327"), 2, Color("d1b65f"), 2))
-	leave_button.add_theme_stylebox_override("pressed", WorkbenchUI.style_box(Color("353c2c"), 2, Color("f0d67d"), 2))
+	leave_button.add_theme_stylebox_override("normal", WorkbenchUI.style_box(Color("171711e8"), 2, Color("4f4b38"), 1))
+	leave_button.add_theme_stylebox_override("hover", WorkbenchUI.style_box(Color("2b2a20f2"), 2, Color("a98d4d"), 2))
+	leave_button.add_theme_stylebox_override("pressed", WorkbenchUI.style_box(Color("353326"), 2, Color("d3b565"), 2))
 	leave_button.pressed.connect(_on_leave_pressed)
-	operation_panel.add_child(leave_button)
+	archive_strip.add_child(leave_button)
 
-
-# 底部队列只负责选择，运输时会生成同尺寸的独立文件袋实体。
-func _build_archive_queue() -> void:
-	var archive_panel := Panel.new()
-	archive_panel.name = "ArchiveLoadingDesk"
-	archive_panel.position = Vector2(26, 548)
-	archive_panel.size = Vector2(1228, 166)
-	archive_panel.z_index = 40
-	archive_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("080d0af7"), 2, Color("777047"), 1))
-	overlay.add_child(archive_panel)
-	var queue_header := ColorRect.new()
-	queue_header.name = "ArchiveQueueHeader"
-	queue_header.color = Color("171d16")
-	queue_header.position = Vector2(1, 1)
-	queue_header.size = Vector2(1226, 30)
-	queue_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	archive_panel.add_child(queue_header)
-	WorkbenchUI.add_text(archive_panel, "待送验档案", 11, Color("d1c69e"), Vector2(16, 7), Vector2(120, 18))
-	WorkbenchUI.add_text(archive_panel, "点击文件袋送入中央轨道", 9, Color("767c69"), Vector2(942, 8), Vector2(260, 16))
-
-	archive_strip = ScrollContainer.new()
-	archive_strip.name = "ArchiveStrip"
-	archive_strip.position = Vector2(14, 32)
-	archive_strip.size = Vector2(1200, 130)
-	archive_strip.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	archive_strip.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	archive_panel.add_child(archive_strip)
-
-	archive_row = HBoxContainer.new()
-	archive_row.name = "ArchiveRow"
-	archive_row.custom_minimum_size = Vector2(1192, 126)
-	archive_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	archive_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	archive_row.add_theme_constant_override("separation", 18)
-	archive_strip.add_child(archive_row)
-
-
-func _add_protocol_step(parent: Control, number: String, title: String, copy: String, y_position: float) -> void:
-	var number_label := WorkbenchUI.add_text(parent, number, 17, Color("b99a50"), Vector2(18, y_position), Vector2(40, 28))
-	number_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var divider := ColorRect.new()
-	divider.color = Color("4b4f40")
-	divider.position = Vector2(64, y_position + 3)
-	divider.size = Vector2(1, 50)
-	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(divider)
-	WorkbenchUI.add_text(parent, title, 12, Color("d2c8a8"), Vector2(79, y_position), Vector2(180, 22))
-	var copy_label := WorkbenchUI.add_text(parent, copy, 9, Color("818775"), Vector2(79, y_position + 26), Vector2(178, 34))
-	copy_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	confirm_button = Button.new()
+	confirm_button.name = "ConfirmValidationButton"
+	confirm_button.text = "确认送验"
+	confirm_button.position = Vector2(1080, 330)
+	confirm_button.size = Vector2(166, 62)
+	confirm_button.z_index = 52
+	confirm_button.focus_mode = Control.FOCUS_ALL
+	confirm_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	confirm_button.add_theme_font_size_override("font_size", 15)
+	confirm_button.add_theme_color_override("font_color", Color("20180c"))
+	confirm_button.add_theme_color_override("font_hover_color", Color("090a06"))
+	confirm_button.add_theme_color_override("font_disabled_color", Color("64675a"))
+	confirm_button.add_theme_stylebox_override("normal", WorkbenchUI.style_box(Color("a67732"), 4, Color("d0a253"), 3))
+	confirm_button.add_theme_stylebox_override("hover", WorkbenchUI.style_box(Color("c99a49"), 4, Color("f0c66f"), 3))
+	confirm_button.add_theme_stylebox_override("pressed", WorkbenchUI.style_box(Color("8e622b"), 4, Color("d9aa58"), 3))
+	confirm_button.add_theme_stylebox_override("disabled", WorkbenchUI.style_box(Color("292a23e8"), 4, Color("47483d"), 2))
+	confirm_button.pressed.connect(confirm)
+	archive_strip.add_child(confirm_button)
 
 
 func _add_texture(node_name: String, texture: Texture2D, texture_position: Vector2, texture_size: Vector2, texture_z_index: int) -> TextureRect:
@@ -337,6 +334,7 @@ func open() -> void:
 	var pending_archives := _get_pending_archives()
 	for archive: Dictionary in pending_archives:
 		_add_archive_bag(archive)
+	_update_archive_layout(false)
 	overlay.visible = true
 	overlay.modulate = Color.WHITE
 	machine_lights.visible = false
@@ -346,22 +344,24 @@ func open() -> void:
 	_refresh()
 
 
-# 为待验档案生成竖向文件袋按钮。
+# 为待验档案生成桌面上的实体文件袋；按钮本身不再表现为卡片。
 func _add_archive_bag(archive: Dictionary) -> void:
 	var archive_id := WorkdayContext.read_string(archive, "archive_id")
 	var applicant := WorkdayContext.read_string(archive, "applicant", "身份受限")
 	var decision := WorkdayContext.read_string(archive, "decision", "未决")
 	var waiting_days := WorkdayContext.read_int(archive, "waiting_days")
+	var slot_index := archive_order.size()
 	var button := Button.new()
 	button.name = archive_id
-	button.custom_minimum_size = Vector2(116, 126)
-	button.pivot_offset = Vector2(58, 63)
-	button.flat = true
+	button.position = _archive_home_position(slot_index)
+	button.size = Vector2(150, 196)
+	button.pivot_offset = Vector2(75, 88)
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	button.add_theme_stylebox_override("normal", WorkbenchUI.style_box(Color("11150f00"), 0, Color("766c4300"), 0))
-	button.add_theme_stylebox_override("hover", WorkbenchUI.style_box(Color("293127c0"), 3, Color("b8a15c"), 2))
-	button.add_theme_stylebox_override("pressed", WorkbenchUI.style_box(Color("34382bc0"), 3, Color("dcc46e"), 2))
+	button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("disabled", StyleBoxEmpty.new())
 	button.pressed.connect(_on_archive_pressed.bind(archive_id, button))
 	button.mouse_entered.connect(_animate_archive_hover.bind(button, true))
 	button.mouse_exited.connect(_animate_archive_hover.bind(button, false))
@@ -371,34 +371,123 @@ func _add_archive_bag(archive: Dictionary) -> void:
 	bag.name = "DocumentBag"
 	bag.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bag.texture = DOCUMENT_BAG_TEXTURE
-	bag.position = Vector2(23, 0)
-	bag.size = Vector2(70, 107)
+	bag.position = Vector2(33, 0)
+	bag.size = DOCUMENT_BAG_SIZE
 	bag.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	bag.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bag.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	button.add_child(bag)
 
-	var id_label := WorkbenchUI.add_text(button, archive_id, 8, Color("d3c59a"), Vector2(3, 91), Vector2(110, 16))
+	var id_label := WorkbenchUI.add_text(button, archive_id, 9, Color("cfbf91"), Vector2(5, 132), Vector2(140, 18))
 	id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var decision_color := Color("91b28b") if decision == "批准" else Color("c98277")
-	var detail_label := WorkbenchUI.add_text(button, "%s · %s · %d日" % [applicant, decision, waiting_days], 8, decision_color, Vector2(2, 108), Vector2(112, 16))
+	var detail_label := WorkbenchUI.add_text(
+		button,
+		"%s · %s%s" % [applicant, decision, " · 等待%d日" % waiting_days if waiting_days > 0 else ""],
+		8,
+		decision_color,
+		Vector2(4, 152),
+		Vector2(142, 26)
+	)
+	detail_label.name = "ArchiveDetail"
 	detail_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	detail_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	detail_label.clip_text = true
+	var selected_badge := Panel.new()
+	selected_badge.name = "SelectedBadge"
+	selected_badge.position = Vector2(55, 76)
+	selected_badge.size = Vector2(50, 20)
+	selected_badge.rotation = -0.08
+	selected_badge.visible = false
+	selected_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	selected_badge.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color("7f251fcf"), 1, Color("c25b49"), 2))
+	button.add_child(selected_badge)
+	var selected_text := WorkbenchUI.add_text(selected_badge, "已选", 8, Color("f1b19d"), Vector2.ZERO, selected_badge.size)
+	selected_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	selected_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	archive_order.append(archive_id)
 	buttons[archive_id] = button
 
 
-# 点击后生成运输实体；只有文件袋完全吞入时才计入本批送验。
+# 点击只切换本批选择；确认之前机器与轨道都不会启动。
 func _on_archive_pressed(archive_id: String, button: Button) -> void:
-	if ingesting or finishing or archive_id in selected_ids:
+	if ingesting or finishing:
+		return
+	if archive_id in selected_ids:
+		selected_ids.erase(archive_id)
+		_set_archive_button_selected(button, false)
+		_update_archive_layout()
+		_refresh()
 		return
 	if selected_ids.size() >= _current_batch_limit():
+		instruction_label.text = "今日最多选择 %d 份；请先取消一份" % _current_batch_limit()
 		return
-	ingesting = true
+	selected_ids.append(archive_id)
+	_set_archive_button_selected(button, true)
+	_update_archive_layout()
+	_refresh()
+
+
+func _set_archive_button_selected(button: Button, selected: bool) -> void:
+	button.set_meta("selected_for_validation", selected)
+	var badge := button.get_node_or_null("SelectedBadge") as Panel
+	if badge != null:
+		badge.visible = selected
+	var detail_label := button.get_node_or_null("ArchiveDetail") as Label
+	if detail_label != null:
+		detail_label.visible = not selected
+	button.z_index = 47 if selected else 41
+	button.modulate = Color(1.12, 1.03, 0.82, 1.0) if selected else Color.WHITE
+
+
+func _archive_home_position(slot_index: int) -> Vector2:
+	if slot_index < ARCHIVE_SLOT_POSITIONS.size():
+		return ARCHIVE_SLOT_POSITIONS[slot_index]
+	return ARCHIVE_SLOT_POSITIONS[-1] + Vector2((slot_index - ARCHIVE_SLOT_POSITIONS.size() + 1) * 12, 0)
+
+
+func _waiting_position(selected_index: int, selected_count: int) -> Vector2:
+	var total_width := float(maxi(0, selected_count - 1)) * WAITING_ZONE_SPACING
+	var center_x := WAITING_ZONE_CENTER_X - total_width * 0.5 + float(selected_index) * WAITING_ZONE_SPACING
+	return Vector2(center_x - 61.5, WAITING_ZONE_Y)
+
+
+# 每次选择变化都重排桌面：选中档案进入待送区，取消后回到原编号位。
+func _update_archive_layout(animate: bool = true) -> void:
+	for slot_index: int in archive_order.size():
+		var archive_id := archive_order[slot_index]
+		var button := buttons.get(archive_id) as Button
+		if button == null or not is_instance_valid(button):
+			continue
+		var selected_index := selected_ids.find(archive_id)
+		var target_position := (
+			_waiting_position(selected_index, selected_ids.size())
+			if selected_index >= 0
+			else _archive_home_position(slot_index)
+		)
+		var target_scale := Vector2(0.82, 0.82) if selected_index >= 0 else Vector2.ONE
+		if not animate:
+			button.position = target_position
+			button.scale = target_scale
+			continue
+		var tween := root.create_tween()
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(button, "position", target_position, 0.24)
+		tween.parallel().tween_property(button, "scale", target_scale, 0.24)
+
+
+# 将一份已确认档案从选择卡放到轨道下端，再向上吞入机器。
+func _animate_selected_archive(archive_id: String, sequence_index: int, sequence_total: int) -> void:
+	var button := buttons.get(archive_id) as Button
+	if button == null:
+		return
 	in_flight_archive_id = archive_id
-	button.disabled = true
-	var global_start := button.global_position + (button.size - DOCUMENT_BAG_SIZE) * 0.5
-	button.visible = false
+	machine_state_label.text = "正在送入 %02d / %02d" % [sequence_index + 1, sequence_total]
+	instruction_label.text = "%s 正沿轨道进入机器。" % archive_id
+	var bag_visual := button.get_node("DocumentBag") as TextureRect
+	var bag_center := bag_visual.global_position + bag_visual.size * button.scale * 0.5
+	var global_start := bag_center - DOCUMENT_BAG_SIZE * 0.5
 	active_document_bag = TextureRect.new()
 	active_document_bag.name = "ActiveDocumentBag"
 	active_document_bag.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -411,73 +500,61 @@ func _on_archive_pressed(archive_id: String, button: Button) -> void:
 	active_document_bag.pivot_offset = DOCUMENT_BAG_SIZE * 0.5
 	active_document_bag.scale = Vector2.ONE
 	document_clip.add_child(active_document_bag)
-
-	_refresh()
-	machine_state_label.text = "轨道装载中 · %s" % archive_id
-	instruction_label.text = "文件袋正在送往验收机"
+	button.visible = false
 	machine_lights.visible = true
 	machine_lights.modulate = Color(1.0, 0.72, 0.42, 0.72)
-	Sfx.start_conveyor()
 
-	var load_tween := root.create_tween()
-	load_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
-	load_tween.tween_property(active_document_bag, "position", BELT_ENTRY_POSITION, 0.28)
-	await load_tween.finished
+	var place_tween := root.create_tween()
+	place_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	place_tween.tween_property(active_document_bag, "position", BELT_STAGING_POSITION, 0.26)
+	await place_tween.finished
+	await root.get_tree().create_timer(0.10).timeout
 
-	machine_state_label.text = "文件袋吞入中 · %s" % archive_id
 	var light_tween := root.create_tween()
-	light_tween.set_loops(4)
+	light_tween.set_loops(3)
 	light_tween.tween_property(machine_lights, "modulate:a", 1.0, 0.10)
 	light_tween.tween_property(machine_lights, "modulate:a", 0.52, 0.10)
 	var ingest_tween := root.create_tween()
-	ingest_tween.set_trans(Tween.TRANS_LINEAR)
-	ingest_tween.tween_property(active_document_bag, "position", MACHINE_INGEST_POSITION, 0.82)
+	ingest_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	ingest_tween.tween_property(active_document_bag, "position", MACHINE_INGEST_POSITION, 0.62)
 	await ingest_tween.finished
 	light_tween.kill()
-	Sfx.stop_conveyor()
 
 	if is_instance_valid(active_document_bag):
 		active_document_bag.queue_free()
 	active_document_bag = null
-	selected_ids.append(archive_id)
 	in_flight_archive_id = ""
 	buttons.erase(archive_id)
 	button.queue_free()
-	ingesting = false
 	_send_secretary_pick_comment(archive_id)
-	machine_lights.modulate = Color(1.0, 0.82, 0.52, 0.72)
-	machine_state_label.text = "文件袋已吞入 · %s" % archive_id
-	instruction_label.text = "该档案已进入机器，不得撤回"
-	_refresh()
-	await root.get_tree().create_timer(0.24).timeout
-	if not finishing:
-		machine_lights.visible = false
-		_refresh()
 
 
-# 离开按钮负责主动结束送验；零件直接离开，有已送入档案时先完成验收。
+# 离开不会提交尚未确认的选择；只有“确认送验”会启动机器。
 func _on_leave_pressed() -> void:
 	if ingesting or finishing:
 		return
-	if selected_ids.is_empty():
-		finishing = true
-		leave_button.disabled = true
-		instruction_label.text = "本日未送验档案，正在离开"
-		machine_state_label.text = "送验结束"
-		overlay.visible = false
-		finished.emit()
-		return
-	await confirm(false)
+	selected_ids.clear()
+	finishing = true
+	leave_button.disabled = true
+	confirm_button.disabled = true
+	instruction_label.text = "本日没有确认送验档案"
+	machine_state_label.text = "送验结束"
+	overlay.visible = false
+	finished.emit()
 
 
 # 队列悬停只抬起待选文件袋，不影响运输实体。
 func _animate_archive_hover(button: Button, hovered: bool) -> void:
 	if ingesting or finishing or button.disabled:
 		return
+	var selected := bool(button.get_meta("selected_for_validation", false))
+	var resting_color := Color(1.07, 1.03, 0.86, 1.0) if selected else Color.WHITE
+	var resting_scale := Vector2(0.82, 0.82) if selected else Vector2.ONE
+	var hover_scale := resting_scale * 1.045
 	var tween := root.create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "scale", Vector2(1.035, 1.035) if hovered else Vector2.ONE, 0.10)
-	tween.parallel().tween_property(button, "modulate", Color(1.08, 1.05, 0.92, 1.0) if hovered else Color.WHITE, 0.10)
+	tween.tween_property(button, "scale", hover_scale if hovered else resting_scale, 0.10)
+	tween.parallel().tween_property(button, "modulate", Color(1.12, 1.08, 0.93, 1.0) if hovered else resting_color, 0.10)
 
 
 # 自动选择前 N 个待验案件，供测试和调试跳过逐袋动画。
@@ -489,30 +566,35 @@ func select_first_up_to_capacity() -> void:
 		var button := buttons.get(archive_id) as Button
 		if button == null:
 			continue
-		button.disabled = true
-		button.visible = false
+		_set_archive_button_selected(button, true)
+	_update_archive_layout()
 	_refresh()
 
 
-# 验收已吞入的文件袋，并沿用现有现实回执与日报跳转。
+# 锁定玩家选择，依次播放上轨吞入动画，最后统一写入现实效力。
 func confirm(skip_animation: bool = false) -> void:
 	if finishing or selected_ids.is_empty() or ingesting:
 		return
+	var submitted_archives := _get_selected_archives()
+	var confirmed_ids := selected_ids.duplicate()
 	finishing = true
+	ingesting = true
 	leave_button.disabled = true
-	instruction_label.text = "验收机正在写入现实效力"
-	machine_state_label.text = "整批验收中"
+	confirm_button.disabled = true
+	for button_value: Variant in buttons.values():
+		var archive_button := button_value as Button
+		if archive_button != null:
+			archive_button.disabled = true
+	instruction_label.text = "选择已锁定，正在把文件袋放上轨道"
+	machine_state_label.text = "批次确认 · %02d 份" % confirmed_ids.size()
 	machine_lights.visible = true
-	machine_lights.modulate = Color(0.68, 1.0, 0.62, 0.82)
+	machine_lights.modulate = Color(1.0, 0.76, 0.38, 0.82)
 	if not skip_animation:
 		Sfx.start_conveyor()
-		var pulse := root.create_tween()
-		pulse.set_loops(2)
-		pulse.tween_property(machine_lights, "modulate:a", 1.0, 0.12)
-		pulse.tween_property(machine_lights, "modulate:a", 0.58, 0.12)
-		await pulse.finished
+		for index: int in confirmed_ids.size():
+			await _animate_selected_archive(confirmed_ids[index], index, confirmed_ids.size())
 		Sfx.stop_conveyor()
-	var submitted_archives := _get_selected_archives()
+	ingesting = false
 	if not WorkdayState.manager.validate_archive_batch(selected_ids):
 		finishing = false
 		open()
@@ -521,8 +603,9 @@ func confirm(skip_animation: bool = false) -> void:
 	_send_validation_receipts(submitted_archives)
 	instruction_label.text = "本批文件袋已取得现实效力"
 	machine_state_label.text = "验收完成"
+	machine_lights.modulate = Color(0.68, 1.0, 0.62, 0.86)
 	if not skip_animation:
-		await root.get_tree().create_timer(0.38).timeout
+		await root.get_tree().create_timer(0.55).timeout
 	overlay.visible = false
 	finished.emit()
 
@@ -600,26 +683,28 @@ func _refresh() -> void:
 	var pending_archives := _get_pending_archives()
 	var pending_count := pending_archives.size()
 	var batch_limit := _current_batch_limit()
-	var loaded_count := selected_ids.size() + (1 if ingesting else 0)
-	var selectable_count := maxi(0, pending_count - loaded_count)
-	capacity_label.text = "%02d 已送入 / %02d 上限 / %02d 可选" % [loaded_count, batch_limit, selectable_count]
+	var selected_count := selected_ids.size()
+	capacity_label.text = "%02d / %02d" % [selected_count, batch_limit]
 	capacity_meter.max_value = maxi(1, batch_limit)
-	capacity_meter.value = mini(loaded_count, batch_limit)
+	capacity_meter.value = mini(selected_count, batch_limit)
+	selection_label.text = "%02d 份" % selected_count
 	leave_button.disabled = ingesting or finishing
+	confirm_button.disabled = ingesting or finishing or selected_count == 0
+	confirm_button.text = "确认送验 · %02d" % selected_count
 	if ingesting or finishing:
 		return
 	if batch_limit <= 0:
 		machine_state_label.text = "今日送验额度为零"
-		instruction_label.text = "今日不可送验档案；点击右侧“离开送验间”"
-	elif selected_ids.size() >= batch_limit:
-		machine_state_label.text = "今日送验已达上限"
-		instruction_label.text = "无法继续送入；点击右侧“离开送验间”结算"
-	elif pending_count <= selected_ids.size():
-		machine_state_label.text = "没有更多待验档案"
-		instruction_label.text = "可点击右侧“离开送验间”结束本日"
+		instruction_label.text = "今日不可选择档案，可以直接离开。"
+	elif selected_count >= batch_limit:
+		machine_state_label.text = "已达到今日上限"
+		instruction_label.text = "请确认本批，或点击待送区中的文件袋撤回。"
+	elif pending_count <= selected_count and selected_count > 0:
+		machine_state_label.text = "可选档案已全部加入"
+		instruction_label.text = "请核对待送区中的文件袋，然后确认送验。"
 	elif selected_ids.is_empty():
 		machine_state_label.text = "现实验收机待机"
-		instruction_label.text = "可送验 0–%d 个；选择任意文件袋，或直接离开" % mini(batch_limit, pending_count)
+		instruction_label.text = "请从下方编号位选择 0–%d 份已盖章档案。" % mini(batch_limit, pending_count)
 	else:
-		machine_state_label.text = "已送入 %d 个文件袋" % selected_ids.size()
-		instruction_label.text = "还可送入 %d 个；也可以直接离开" % (batch_limit - selected_ids.size())
+		machine_state_label.text = "待送 %d 份" % selected_count
+		instruction_label.text = "还可选择 %d 份；确认后机器才会启动。" % (batch_limit - selected_count)

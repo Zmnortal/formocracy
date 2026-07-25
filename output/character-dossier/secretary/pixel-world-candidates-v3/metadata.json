@@ -1,0 +1,45 @@
+{
+  "entity_id": "SEC-00",
+  "entity_name": "秘书",
+  "set_id": "secretary-pixel-world-candidates-v3",
+  "purpose": "非 Furry 卡通吉祥物的复杂像素风母版候选",
+  "pixel_spec": {
+    "logical_size": "64x96",
+    "game_size": "512x768",
+    "upscale": "8x nearest-neighbor",
+    "palette": "16–20 colors per sprite",
+    "background": "transparent"
+  },
+  "design_rules": [
+    "保持大头、圆身、短手短脚的卡通动物结构",
+    "不使用人身猫头、真人比例、手指或完整人类制服",
+    "通过行政配件、有限色盘和像素抖色融入衡川世界",
+    "复杂度高于 NES 头像，但保持旧时代游戏 Sprite 的克制"
+  ],
+  "candidates": [
+    {
+      "number": 1,
+      "name": "批准显示形象",
+      "logical_file": "01-approved-display-logical-64x96.png",
+      "game_file": "01-approved-display-game-512x768.png"
+    },
+    {
+      "number": 2,
+      "name": "窗口文书",
+      "logical_file": "02-window-clerk-logical-64x96.png",
+      "game_file": "02-window-clerk-game-512x768.png"
+    },
+    {
+      "number": 3,
+      "name": "档案吉祥物",
+      "logical_file": "03-archive-mascot-logical-64x96.png",
+      "game_file": "03-archive-mascot-game-512x768.png"
+    },
+    {
+      "number": 4,
+      "name": "闭馆广播",
+      "logical_file": "04-after-hours-broadcast-logical-64x96.png",
+      "game_file": "04-after-hours-broadcast-game-512x768.png"
+    }
+  ]
+}

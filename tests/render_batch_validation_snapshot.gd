@@ -35,11 +35,16 @@ func run() -> void:
 		quit(0)
 		return
 	var first_button := module.buttons.get("ARCHIVE-00001") as Button
-	assert(first_button != null, "first archive document bag must exist")
+	var second_button := module.buttons.get("ARCHIVE-00002") as Button
+	assert(first_button != null and second_button != null, "snapshot document bags must exist")
 	first_button.pressed.emit()
-	await create_timer(1.42).timeout
+	second_button.pressed.emit()
 	await process_frame
-	assert(not module.leave_button.disabled, "the rendered leave action must be available after ingestion")
+	assert(module.selected_ids.size() == 2, "snapshot must show a visible multi-selection")
+	assert(not module.confirm_button.disabled, "snapshot must show the explicit confirm action")
+	assert(module.active_document_bag == null, "selection snapshot must precede machine animation")
+	await process_frame
+	await RenderingServer.frame_post_draw
 	var image := root.get_viewport().get_texture().get_image()
 	assert(image.save_png(SNAPSHOT_PATH) == OK, "batch validation screenshot must be saved")
 	print("FORMOCRACY_BATCH_RENDER_OK %s" % SNAPSHOT_PATH)

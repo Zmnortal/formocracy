@@ -28,11 +28,16 @@ func run() -> void:
 	assert(module.selected_ids.is_empty(), "nothing should be preselected")
 	assert(not module.leave_button.disabled, "leave must be enabled with zero selected archives")
 
+	var stamped_button := module.buttons.get("ARCHIVE-00001") as Button
+	assert(stamped_button != null, "stamped archive must be selectable")
+	stamped_button.pressed.emit()
+	await process_frame
+	assert(module.selected_ids == ["ARCHIVE-00001"], "player may stage a selection before deciding to leave")
 	module.leave_button.pressed.emit()
 	await process_frame
 	await process_frame
-	assert(current_scene.name == "DailyReport", "leaving with zero selected archives must open the daily report")
-	assert(state.manager.get_pending_archives().size() == 2, "leaving without validation must preserve every pending archive")
+	assert(current_scene.name == "DailyReport", "leaving without confirmation must open the daily report")
+	assert(state.manager.get_pending_archives().size() == 2, "leaving without confirmation must preserve every pending archive")
 	assert(WorkdayContext.read_string(state.archived_cases[0], "status") == "ARCHIVED", "the unselected stamped archive must remain pending")
 	assert(WorkdayContext.read_string(state.archived_cases[1], "status") == "ARCHIVED", "the unstamped archive must remain pending")
 	print("FORMOCRACY_BATCH_VALIDATION_ZERO_EXIT_TEST_OK")

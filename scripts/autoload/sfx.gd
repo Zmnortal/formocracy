@@ -14,7 +14,6 @@ const STREAMS := {
 	"start": preload("res://assets/audio/sfx/special_start.wav"),
 	"call_bell": preload("res://assets/audio/sfx/external/call_bell_cc0.wav"),
 	"call_intercom": preload("res://assets/audio/sfx/external/call_intercom_noise.wav"),
-	"dialogue_tick": preload("res://assets/audio/sfx/dialogue_type_tick.wav"),
 }
 
 # 各音效的默认音量（分贝），未列出的按 0 dB 播放。
@@ -28,17 +27,16 @@ const DEFAULT_VOLUME_DB := {
 	"start": -6.0,
 	"call_bell": -7.0,
 	"call_intercom": -12.0,
-	"dialogue_tick": -15.0,
 }
 
 const VOICE_STREAMS := {
-	"PERSON-LIN": preload("res://assets/audio/sfx/people_male_young.wav"),
-	"PERSON-ZHOU": preload("res://assets/audio/sfx/people_male_old.wav"),
-	"PERSON-XU": preload("res://assets/audio/sfx/people_female_young.wav"),
+	"PERSON-LIN": preload("res://assets/audio/sfx/voices_natural/male_young_hesitation.wav"),
+	"PERSON-ZHOU": preload("res://assets/audio/sfx/voices_natural/male_young_hesitation.wav"),
+	"PERSON-XU": preload("res://assets/audio/sfx/voices_natural/female_young_breath.wav"),
 }
 const VOICE_FALLBACKS := [
-	preload("res://assets/audio/sfx/people_male_average.wav"),
-	preload("res://assets/audio/sfx/people_female_old.wav"),
+	preload("res://assets/audio/sfx/voices_natural/male_old_breath.wav"),
+	preload("res://assets/audio/sfx/voices_natural/female_old_sigh.wav"),
 ]
 
 const AMBIENCE_STREAM := preload("res://assets/audio/sfx/background_whitenoise_talk.mp3")
@@ -61,6 +59,7 @@ var voice_player: AudioStreamPlayer
 var typewriter_deadline := 0.0
 var voice_fallback_index := 0
 var last_voice_person_id := ""
+var voice_play_count := 0
 var ambience_tween: Tween
 
 
@@ -91,7 +90,7 @@ func _ready() -> void:
 
 	voice_player = AudioStreamPlayer.new()
 	voice_player.name = "NpcVoice"
-	voice_player.volume_db = -9.0
+	voice_player.volume_db = -10.0
 	add_child(voice_player)
 
 
@@ -127,7 +126,7 @@ func play(sound_name: String, volume_offset_db: float = 0.0, pitch: float = 1.0)
 		return
 
 
-# 播放一次短促人物拟声；配置路径无效时按人物 ID 或备用声线降级。
+# 每句 NPC 台词开始时播放一次自然短音；配置路径无效时按人物 ID 或自然声线降级。
 func play_voice(person_id: String, configured_path: String = "") -> void:
 	if _is_muted():
 		return
@@ -146,6 +145,7 @@ func play_voice(person_id: String, configured_path: String = "") -> void:
 	voice_player.stream = stream
 	voice_player.pitch_scale = 1.0
 	last_voice_person_id = person_id
+	voice_play_count += 1
 	voice_player.play()
 
 
@@ -240,11 +240,6 @@ func typewriter_tick() -> void:
 	if not typewriter_player.playing:
 		var length: float = typewriter_player.stream.get_length()
 		typewriter_player.play(randf_range(0.0, maxf(length - 1.0, 0.0)))
-
-
-# 对话框每吐出一个字符播放一次短促机械击键，轻微变调避免连续重复过于僵硬。
-func dialogue_tick() -> void:
-	play("dialogue_tick", 0.0, randf_range(0.94, 1.07))
 
 
 # 超过 linger 时间后自动停止打字机音效。

@@ -1,4 +1,5 @@
 import {
+  cp,
   copyFile,
   mkdir,
   readdir,
@@ -29,6 +30,7 @@ const dossierSourcePath = join(
   "character-dossier",
   "formocracy-character-dossier-v2.html",
 );
+const secretarySourceDirectory = join(dirname(dossierSourcePath), "secretary");
 const ontologyPath = join(projectRoot, "data", "ontology", "people.json");
 
 const resourcePath = (value) => {
@@ -127,7 +129,7 @@ function portableDossierHtml(sourceHtml, dossierPeople, start, end) {
   html = html
     .replace("<title>衡川市第十二区人物档案 V2</title>", "<title>FORMOCRACY 人物素材库</title>")
     .replace("CHARACTER DOSSIER · V2", "CHARACTER ASSET LIBRARY")
-    .replace("EDITION 02 · 20 PAGES", "OFFLINE PACKAGE · 18 CHARACTERS");
+    .replace("EDITION 02 · 21 PAGES", "OFFLINE PACKAGE · 18 CHARACTERS + SECRETARY");
   return html;
 }
 
@@ -336,6 +338,9 @@ async function main() {
     extracted.end,
   );
   await writeFile(join(stagingDirectory, "index.html"), portableHtml, "utf8");
+  await cp(secretarySourceDirectory, join(stagingDirectory, "secretary"), {
+    recursive: true,
+  });
 
   const contactSheetSource = join(projectRoot, "tmp", "avatar-audit", "nes-all-18-v2.png");
   await copyRequired(contactSheetSource, join(stagingDirectory, "contact-sheet.png"));
@@ -352,6 +357,7 @@ async function main() {
       standard_portraits: true,
       animation_frames: true,
       voice_sfx: true,
+      secretary_dossier: true,
       offline_html: true,
     },
     characters,
@@ -361,13 +367,14 @@ async function main() {
   const totalFrames = characters.reduce((sum, character) => sum + character.frame_count, 0);
   const readme = `# FORMOCRACY 人物素材库
 
-打开 \`index.html\` 可离线浏览 18 位人物的统合档案。
+打开 \`index.html\` 可离线浏览 18 位人物与特殊叙事实体“秘书”的统合档案。
 
 ## 目录结构
 
 - \`index.html\`：统合人物档案，无需服务器。
 - \`manifest.json\`：全包机器可读清单。
 - \`contact-sheet.png\`：18 位人物 8-bit 头像总览。
+- \`secretary/\`：秘书四态 128×128 蒙版、透明高分辨率图、源图与原始预览页。
 - \`SHA256SUMS.txt\`：包内文件完整性校验。
 - \`characters/<人物 slug>/\`：每位人物的独立素材目录。
 

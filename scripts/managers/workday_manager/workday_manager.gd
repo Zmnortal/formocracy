@@ -14,6 +14,7 @@ const DeskLayoutModule := preload("res://scripts/managers/workday_manager/workda
 const ConfigGateway := preload("res://scripts/managers/workday_manager/workday_config_gateway.gd")
 const DU_CHUNMEI_CASE_ID := "CASE-S-M52-D5"
 const DU_CHUNMEI_EVENT_DAY := 6
+const CAMPAIGN_LAST_DAY := 7
 
 var _state: WorkdayContext
 var _config: WorkdayConfigGateway
@@ -62,7 +63,7 @@ func begin_next_day() -> void:
 	_settlement.settle_current_day()
 	_archive.age_pending_archives()
 	_evaluate_campaign_events(completed_day)
-	if ConfigDatabase.is_final_workday(completed_day):
+	if completed_day >= CAMPAIGN_LAST_DAY:
 		complete_campaign()
 		return
 	_state.day_number += 1

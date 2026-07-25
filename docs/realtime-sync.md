@@ -16,7 +16,7 @@ bun run dev --filter=@repo/hono-server-template
 http://localhost:3000/viewer/adventurex-demo
 ```
 
-再从 Godot 编辑器启动游戏。游戏默认向 `http://127.0.0.1:3000` 的 `adventurex-demo` 房间发布状态。秘书和 NPC 发言时，浏览器会同步显示角色名和台词。
+再从 Godot 编辑器启动游戏。游戏默认向 `http://127.0.0.1:3000` 的 `adventurex-demo` 房间发布状态。秘书和 NPC 发言时，浏览器会同步显示角色名和台词。秘书的正式叙事定义见 [`docs/narrative/secretary.md`](narrative/secretary.md)。
 
 ## 连接云端
 

@@ -14,8 +14,8 @@
     "color": "b8683d",
     "character_ids": ["PERSON-XU", "PERSON-DU", "PERSON-ZHOU", "PERSON-SONG"],
     "case_ids": ["CASE-S-M31-D2", "CASE-S-R09-D3", "CASE-S-F09-D4", "CASE-S-M52-D5"],
-    "variables": ["xu_health_state", "clock_anomaly_level", "song_cooperation", "du_priority_status", "du_resource_reserved"],
-    "premise": "医院时间、验收机时间和资源优先级都曾被人工调整，而合法程序持续伤害同一批人。"
+    "variables": ["xu_health_state", "clock_anomaly_level", "song_cooperation", "du_priority_status", "du_resource_reserved", "du_death_registered"],
+    "premise": "医院时间、验收机时间和资源优先级都曾被人工调整；如果杜春梅的 M-52 未在第六夜前真正生效，她会在第七日被登记死亡。"
   },
   {
     "id": "STORY-POLLUTION-ARCHIVE",

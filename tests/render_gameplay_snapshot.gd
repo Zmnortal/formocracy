@@ -25,7 +25,15 @@ func run() -> void:
 		print("FORMOCRACY_RENDER_SNAPSHOT_OK (skipped on headless display)")
 		quit(0)
 		return
-	await create_timer(0.25).timeout
+	# 晨间广播会先压低大厅环境声；等待真正出现秘书台词再截屏，
+	# 避免把尚未开始播报的空工作台误当成简报快照。
+	for _frame in 180:
+		var box: DialogueBox = current_scene.manager.dialogue_box
+		if box.visible and (box.dialogue_label.visible_characters == -1 or box.dialogue_label.visible_characters >= 12):
+			break
+		await process_frame
+	assert(current_scene.manager.dialogue_box.visible, "daily briefing dialogue must appear before its snapshot")
+	assert(current_scene.manager.dialogue_box.speaker_label.text == "秘书", "daily briefing snapshot must visibly identify the secretary")
 	var briefing_image := root.get_viewport().get_texture().get_image()
 	assert(not briefing_image.is_empty(), "daily briefing must produce a rendered frame")
 	assert(briefing_image.save_png(BRIEFING_SNAPSHOT_PATH) == OK, "daily briefing screenshot must be saved")

@@ -1,0 +1,55 @@
+{
+  "entity_id": "SEC-00",
+  "entity_name": "秘书",
+  "set_id": "secretary-game-style-candidates-v1",
+  "purpose": "主游戏全身人物母版候选；不是 8-bit 头像候选",
+  "style_references": {
+    "identity": "../candidate-3-alpha.png",
+    "game_art": [
+      "../../../../assets/characters/applicants/person_wei/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_li/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_tang/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_he/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_luo/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_song/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+      "../../../../assets/characters/applicants/person_ye/fullbody_frames_20/01_queue_idle_neutral_fullbody.png"
+    ]
+  },
+  "output_spec": {
+    "format": "PNG",
+    "width": 512,
+    "height": 768,
+    "background": "transparent",
+    "pose": "front-facing full-body queue idle"
+  },
+  "candidates": [
+    {
+      "number": 1,
+      "name": "正式程序秘书",
+      "direction": "最标准的行政制服，最适合作为默认母版",
+      "file": "01-formal-procedural-game-512x768.png",
+      "source_file": "01-formal-procedural-chroma.png"
+    },
+    {
+      "number": 2,
+      "name": "外勤文书秘书",
+      "direction": "旧式长外套与文件包，最像会穿行于不同部门的引导者",
+      "file": "02-field-clerk-game-512x768.png",
+      "source_file": "02-field-clerk-chroma.png"
+    },
+    {
+      "number": 3,
+      "name": "档案室秘书",
+      "direction": "文件夹、旧钥匙与暖色针织外套，叙事感最强",
+      "file": "03-archive-room-game-512x768.png",
+      "source_file": "03-archive-room-chroma.png"
+    },
+    {
+      "number": 4,
+      "name": "闭馆后秘书",
+      "direction": "内部通讯接收器与深色工作制服，神秘感最强",
+      "file": "04-after-hours-game-512x768.png",
+      "source_file": "04-after-hours-chroma.png"
+    }
+  ]
+}

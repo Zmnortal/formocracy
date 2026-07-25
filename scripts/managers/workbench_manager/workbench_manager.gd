@@ -12,6 +12,7 @@ const SubmissionModule := preload("res://scripts/managers/workbench_manager/work
 const CallBellModule := preload("res://scripts/managers/workbench_manager/workbench_call_bell_module.gd")
 const BriefingModule := preload("res://scripts/managers/workbench_manager/workbench_briefing_module.gd")
 const BriefingDirector := preload("res://scripts/managers/workbench_manager/workbench_briefing_director.gd")
+const SecretaryVoice := preload("res://scripts/narrative/secretary_voice.gd")
 const NpcPerformanceModule := preload("res://scripts/managers/workbench_manager/workbench_npc_performance_module.gd")
 const FilingCabinetModule := preload("res://scripts/managers/workbench_manager/workbench_filing_cabinet_module.gd")
 const CalendarModule := preload("res://scripts/managers/workbench_manager/workbench_calendar_module.gd")
@@ -288,11 +289,12 @@ func _on_call_bell() -> void:
 		workday_started = true
 	flow_state = "CALLING"
 	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
+	var secretary_line := SecretaryVoice.call_next()
 	if bridge != null:
-		bridge.call("secretary_line", "下一位。")
-	GameStateSync.speaker_started("INTERNAL-BROADCAST", "内部广播", "system", "下一位。", "calling", {"day": WorkdayState.day_number})
-	desk.status_label.text = "内部广播：下一位。"
-	await dialogue_box.play_line("内部广播", "下一位。", "broadcast")
+		bridge.call("secretary_line", secretary_line)
+	GameStateSync.speaker_started(SecretaryVoice.ID, SecretaryVoice.NAME, SecretaryVoice.KIND, secretary_line, "calling", {"day": WorkdayState.day_number})
+	desk.status_label.text = "%s：%s" % [SecretaryVoice.NAME, secretary_line]
+	await dialogue_box.play_line(SecretaryVoice.NAME, secretary_line, SecretaryVoice.KIND)
 	dialogue_box.close()
 	GameStateSync.speaker_stopped("calling")
 	if flow_state != "CALLING":

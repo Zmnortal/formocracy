@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "SECRETARY-SEC-00",
+  "display_name": "秘书",
+  "english_name": "THE SECRETARY",
+  "classification": "interface_entity",
+  "file_number": "CRA-S/SEC-00",
+  "status": "身份未登记 / 持续在线",
+  "functions": [
+    "项目吉祥物",
+    "玩家流程引导者",
+    "世界内叙事接口",
+    "不可靠的陪伴者"
+  ],
+  "known_channels": [
+    "内部广播",
+    "眼镜端",
+    "无署名便笺",
+    "玩家直接搭话"
+  ],
+  "known_access": [
+    "当天晨报",
+    "部分工作记录",
+    "玩家已经作出的历史决定"
+  ],
+  "avatar": {
+    "description": "衡川行政系统内经批准的像素卡通猫显示形象；保持卡通动物结构，不代表真实身体。",
+    "default_state": "approved_display",
+    "briefing_state": "reference",
+    "canonical_sprite": {
+      "design": "pixel-world-candidates-v3/01-approved-display",
+      "logical_size": "64x96",
+      "logical_file": "secretary-default-logical-64x96.png",
+      "game_size": "512x768",
+      "game_file": "secretary-default-game-512x768.png",
+      "palette_colors": 19,
+      "scaling": "8x nearest-neighbor",
+      "background": "transparent"
+    },
+    "states": [
+      {
+        "id": "approved_display",
+        "label": "批准显示形象",
+        "logical_sprite": "secretary-default-logical-64x96.png",
+        "game_sprite": "secretary-default-game-512x768.png"
+      },
+      {
+        "id": "explain",
+        "label": "端正讲解",
+        "mask_128": "candidate-1-128.png",
+        "transparent_source": "candidate-1-alpha.png",
+        "chroma_source": "candidate-1-source.png"
+      },
+      {
+        "id": "hesitate",
+        "label": "迟疑接待",
+        "mask_128": "candidate-2-128.png",
+        "transparent_source": "candidate-2-alpha.png",
+        "chroma_source": "candidate-2-source.png"
+      },
+      {
+        "id": "idle",
+        "label": "程序待机",
+        "mask_128": "candidate-3-128.png",
+        "transparent_source": "candidate-3-alpha.png",
+        "chroma_source": "candidate-3-source.png"
+      },
+      {
+        "id": "reference",
+        "label": "查阅规则",
+        "mask_128": "candidate-4-128.png",
+        "transparent_source": "candidate-4-alpha.png",
+        "chroma_source": "candidate-4-source.png"
+      }
+    ]
+  },
+  "mystery_contract": {
+    "unresolved": [
+      "真实姓名、性别、年龄、物种与真实外貌",
+      "所属部门与雇佣关系",
+      "不同媒介背后是否为同一个发言者",
+      "帮助、观察或训练玩家的真实目的"
+    ],
+    "avatar_disclaimer": "猫形头像只建立稳定的界面识别，不构成真实身份或物种证明。"
+  },
+  "quote": "您可以叫我秘书。这里没有第二位愿意承认这个称呼的人。"
+}

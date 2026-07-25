@@ -47,11 +47,14 @@ func run() -> void:
 	assert(map.end_overlay.visible, "the end-of-night sequence must black out the map")
 	assert(map.forms_button.disabled and map.ration_button.disabled and map.home_button.disabled, "all map input must lock during blackout")
 	assert(state.day_number == 2, "night dialogue must wait indefinitely for manual input")
+	assert(map.end_dialogue_lines[-1].speaker == "秘书", "nightly broadcast must be visibly spoken by the secretary")
+	assert(map.end_dialogue_lines[-1].text.contains("表格"), "nightly secretary line must keep a small amount of warmth and wit")
 	for line_index in map.end_dialogue_lines.size():
 		map.dialogue_box.reveal_current_line()
 		map.dialogue_box._handle_manual_advance()
 		await process_frame
 	assert(state.day_number == 3, "manual confirmation of the dialogue sequence must advance to the next day")
+	assert(map.dialogue_box.speaker_label.text == "秘书", "the personal review receipt must be delivered by the secretary")
 	assert(bridge.last_emitted_event.type == "secretary_line", "the final central broadcast must be sent to the glasses")
 	assert(bridge.last_emitted_event.text.contains("第 03 工作日"), "glasses broadcast must include the new workday")
 	assert(state.evening_actions_remaining == 2, "advancing the day must immediately restore evening actions")

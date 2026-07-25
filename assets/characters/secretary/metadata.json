@@ -1,0 +1,18 @@
+{
+  "id": "SECRETARY-SEC-00",
+  "display_name": "秘书",
+  "classification": "interface_entity",
+  "selected_design": "pixel-world-candidates-v3/01-approved-display",
+  "default_sprite": "res://assets/characters/secretary/secretary-default-game-512x768.png",
+  "logical_sprite": "res://assets/characters/secretary/secretary-default-logical-64x96.png",
+  "logical_size": "64x96",
+  "output_size": "512x768",
+  "scaling": "nearest-neighbor",
+  "background": "transparent",
+  "design_contract": [
+    "非 Furry 卡通猫形象",
+    "保持大头、圆身、短手短脚",
+    "不使用真人比例或完整人类制服",
+    "以衡川行政配色与像素细节融入主游戏世界"
+  ]
+}

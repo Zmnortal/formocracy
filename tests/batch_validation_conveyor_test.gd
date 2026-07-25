@@ -17,7 +17,7 @@ func run() -> void:
 		state.manager.record_case_result(case_data, "批准", [], 5.0, case_data.document_ids)
 	var unstamped_case: Dictionary = config.get_gameplay_case("CASE-G-D1-01")
 	state.manager.record_case_result(unstamped_case, "", ["漏盖章"], 5.0, unstamped_case.document_ids)
-	state.machine_capacity = 1
+	state.machine_capacity = 2
 
 	var error := change_scene_to_file("res://scenes/batch_validation.tscn")
 	assert(error == OK, "standalone batch validation scene must open")
@@ -29,6 +29,7 @@ func run() -> void:
 	assert(current_scene.get_node_or_null("Desk") == null, "standalone validation scene must not retain workbench desk nodes")
 	assert(module.overlay.visible, "batch validation view must open")
 	assert(module.overlay.has_node("ValidationFloor"), "validation view must build its floor independently")
+	assert(module.overlay.has_node("ValidationInspectionDesk"), "validation view must use the selected inspection-desk composition")
 	assert(module.overlay.has_node("ValidationMachineBody"), "validation machine must be an independent asset")
 	assert(module.overlay.has_node("ValidationMachineLights"), "machine lights must be an independent overlay")
 	assert(module.overlay.has_node("ValidationMachineIntakeForeground"), "machine intake foreground must be independent")
@@ -42,6 +43,11 @@ func run() -> void:
 		"machine intake must use the approved foreground asset"
 	)
 	assert(module.rail_machine_cap.texture.resource_path == "res://assets/concepts/endday_validation/validation_rail_machine_cap.png", "rail must use the approved split asset")
+	assert(
+		module.desk_background.texture.resource_path
+		== "res://assets/concepts/endday_validation/validation_inspection_desk_background.png",
+		"the selected visual direction must be backed by the inspection-desk asset"
+	)
 	assert(module.archive_row.get_child_count() == 3, "only stamped pending archives may appear in the validation scene")
 	assert(not module.buttons.has("ARCHIVE-00004"), "an unstamped archive must remain outside the validation machine")
 	assert(module.leave_button.visible and not module.leave_button.disabled, "the player must be able to leave without loading a bag")
@@ -49,32 +55,47 @@ func run() -> void:
 
 	var first_button := module.buttons.get("ARCHIVE-00001") as Button
 	var second_button := module.buttons.get("ARCHIVE-00002") as Button
-	assert(first_button != null and second_button != null, "stamped document bag buttons must be addressable")
+	var third_button := module.buttons.get("ARCHIVE-00003") as Button
+	assert(first_button != null and second_button != null and third_button != null, "stamped document bag buttons must be addressable")
+	var first_home_position := first_button.position
+	first_button.pressed.emit()
+	await create_timer(0.30).timeout
+	assert(not module.ingesting, "clicking a document bag must only select it")
+	assert(module.in_flight_archive_id.is_empty(), "selection must not place a bag on the rail")
+	assert(module.active_document_bag == null, "selection must not create a transport bag")
+	assert(module.selected_ids == ["ARCHIVE-00001"], "one click must select exactly one document bag")
+	assert(not module.confirm_button.disabled, "a non-empty selection must enable explicit confirmation")
+	assert((first_button.get_node("SelectedBadge") as Panel).visible, "selected card must visibly identify the player's choice")
+	assert(first_button.position.y < first_home_position.y, "a selected document bag must move physically into the upper waiting zone")
+	first_button.pressed.emit()
+	await create_timer(0.30).timeout
+	assert(module.selected_ids.is_empty(), "clicking a selected card again must cancel it")
+	assert(module.confirm_button.disabled, "an empty selection must disable confirmation")
+	assert(first_button.position.is_equal_approx(first_home_position), "cancelling a selection must return the bag to its numbered desk slot")
 	first_button.pressed.emit()
 	await process_frame
-	assert(module.ingesting, "clicking a document bag must start the rail transport")
-	assert(module.in_flight_archive_id == "ARCHIVE-00001", "the clicked bag must become the in-flight archive")
-	assert(module.active_document_bag != null, "rail transport must use an independent document bag")
-	assert(module.active_document_bag.scale == Vector2.ONE, "the bag must not shrink while it moves")
-	var transport_size: Vector2 = module.active_document_bag.size
-	await create_timer(0.50).timeout
-	assert(module.active_document_bag != null, "the bag must remain visible while travelling on the rail")
-	assert(module.active_document_bag.scale == Vector2.ONE, "the bag must keep its scale during ingestion")
-	assert(module.active_document_bag.size.is_equal_approx(transport_size), "the bag must keep its physical size during ingestion (%s -> %s)" % [transport_size, module.active_document_bag.size])
-	await create_timer(0.90).timeout
-	assert(module.selected_ids == ["ARCHIVE-00001"], "one click must ingest exactly one document bag")
-	assert(current_scene.name == "BatchValidation", "reaching the upper limit must not force the player to leave")
-	assert(not module.leave_button.disabled, "the leave action must be available at the daily limit")
 	second_button.pressed.emit()
 	await process_frame
-	assert(not module.ingesting, "the machine must reject bags beyond the daily upper limit")
-	assert(module.selected_ids == ["ARCHIVE-00001"], "the upper limit must prevent an extra bag from being selected")
+	assert(module.selected_ids == ["ARCHIVE-00001", "ARCHIVE-00002"], "player must be able to build a multi-file batch")
+	third_button.pressed.emit()
+	await process_frame
+	assert(module.selected_ids == ["ARCHIVE-00001", "ARCHIVE-00002"], "the upper limit must reject an extra selection")
 
-	module.leave_button.pressed.emit()
-	await create_timer(2.0).timeout
-	assert(current_scene.name == "DailyReport", "the explicit leave action must open the daily report")
-	assert(state.manager.get_pending_archives().size() == 3, "unselected and unstamped archives must remain in the backlog")
-	assert(WorkdayContext.read_string(state.archived_cases[0], "status") == "EFFECTIVE", "ingested archive must gain reality effect")
+	module.confirm_button.pressed.emit()
+	await process_frame
+	assert(module.ingesting, "confirmation must start the rail transport")
+	assert(module.in_flight_archive_id == "ARCHIVE-00001", "the first confirmed bag must become in-flight")
+	assert(module.active_document_bag != null, "confirmation must create an independent transport bag")
+	assert(module.active_document_bag.scale == Vector2.ONE, "the bag must not shrink while it moves")
+	var transport_size: Vector2 = module.active_document_bag.size
+	await create_timer(0.20).timeout
+	assert(module.active_document_bag != null, "the bag must remain visible while being placed on the rail")
+	assert(module.active_document_bag.size.is_equal_approx(transport_size), "the bag must keep its physical size during ingestion")
+	await create_timer(3.0).timeout
+	assert(current_scene.name == "DailyReport", "confirmed animation must finish at the daily report")
+	assert(state.manager.get_pending_archives().size() == 2, "unselected and unstamped archives must remain in the backlog")
+	assert(WorkdayContext.read_string(state.archived_cases[0], "status") == "EFFECTIVE", "confirmed archive must gain reality effect")
+	assert(WorkdayContext.read_string(state.archived_cases[1], "status") == "EFFECTIVE", "every archive in the confirmed batch must gain reality effect")
 	assert(WorkdayContext.read_string(state.archived_cases[2], "status") == "ARCHIVED", "unselected archive must remain archived")
 	assert(WorkdayContext.read_string(state.archived_cases[3], "status") == "ARCHIVED", "unstamped archive must remain archived")
 	print("FORMOCRACY_BATCH_VALIDATION_CONVEYOR_TEST_OK")

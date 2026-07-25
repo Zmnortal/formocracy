@@ -56,13 +56,24 @@
       "desk":{"texture":"res://assets/documents/types/residence/desk.png","size":[600,465]},
       "inspection":{"texture":"res://assets/documents/types/residence/inspection.png","size":[600,885]}
     },
-    "title_position":[100,218],"title_size":[400,38],"code_position":[430,796],
+    "title_position":[220,72],"title_size":[330,38],"code_position":[150,805],
+    "prefill":{
+      "house_no":"17-4",
+      "district":"第十二区",
+      "registered_at":"灾害前 74-03-16",
+      "occupancy":"长期居住",
+      "issuer":"第十二区街区办",
+      "valid":"有效 / 正式片区章"
+    },
     "fields":{
-      "address":{"label":"核准住所","position":[88,316],"size":[424,184],"font_size":16},
-      "valid":{"label":"证明状态","position":[96,548],"size":[408,34],"font_size":13},
-      "name":{"label":"登记人","position":[96,592],"size":[408,34],"font_size":13},
-      "issuer":{"label":"签发辖区","position":[96,636],"size":[408,34],"font_size":13},
-      "expires":{"label":"有效期限","position":[96,680],"size":[408,34],"font_size":13}
+      "address":{"label":"登记住址","position":[110,205],"size":[400,75],"font_size":16},
+      "house_no":{"label":"房号","position":[110,300],"size":[400,45],"font_size":15},
+      "name":{"label":"住户名册登记人","position":[110,365],"size":[400,42],"font_size":14},
+      "district":{"label":"片区","position":[160,450],"size":[340,34],"font_size":13},
+      "registered_at":{"label":"登记日期","position":[160,500],"size":[340,34],"font_size":13},
+      "valid":{"label":"盖章","position":[160,550],"size":[340,34],"font_size":13},
+      "occupancy":{"label":"居住性质","position":[190,610],"size":[300,70],"font_size":13},
+      "issuer":{"label":"名册签发","position":[145,760],"size":[245,34],"font_size":12}
     }
   },
   {

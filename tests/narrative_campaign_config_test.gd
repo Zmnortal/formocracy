@@ -75,6 +75,19 @@ func run() -> void:
 	assert(general_slots == 24 and story_slots == 11, "seven-day slot mix must be 24 general and 11 story cases")
 	assert(multi_line_story_cases == 11, "all eleven story cases must use multi-line key NPC dialogue")
 
+	var daily_dialogue: Variant = JSON.parse_string(
+		FileAccess.get_file_as_string("res://data/narrative/daily_dialogue.json")
+	)
+	assert(daily_dialogue is Dictionary, "daily dialogue registry must load")
+	for day_value: Variant in daily_dialogue.get("days", []):
+		assert(day_value is Dictionary, "daily dialogue day must be a dictionary")
+		for period in ["daytime", "evening"]:
+			for line_value: Variant in day_value.get(period, []):
+				assert(line_value is Dictionary, "daily dialogue entry must be a dictionary")
+				if String(line_value.get("scene", "")).contains("广播") or String(line_value.get("scene", "")).contains("简报"):
+					assert(line_value.get("speaker", "") == "秘书", "all registered broadcasts must be spoken by the secretary")
+					assert(String(line_value.get("tone", "")).contains("温度"), "secretary broadcast registry must preserve the warm-but-controlled tone")
+
 	state.day_number = 1
 	assert(director.start_gameplay_workday(), "day one queue must build from configured slots")
 	var first_queue: Array[String] = director.gameplay_case_ids.duplicate()

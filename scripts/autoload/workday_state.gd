@@ -8,6 +8,7 @@ const SaveSystem := preload("res://scripts/save/save_system.gd")
 const WorkdayManagerScript := preload("res://scripts/managers/workday_manager/workday_manager.gd")
 const DEFAULT_SAVE_PATH := SaveSchema.DEFAULT_PATH
 const SAVE_TREE_VERSION := SaveSchema.CURRENT_VERSION
+const CAMPAIGN_LAST_DAY := 7
 
 var save_system: FormocracySaveSystem:
 	get:
@@ -188,7 +189,7 @@ func get_resume_phase() -> String:
 	if read_bool(narrative_flags, "trial_completed"):
 		return "trial_complete"
 	if (
-		day_number == ConfigDatabase.get_last_workday_day()
+		day_number == CAMPAIGN_LAST_DAY
 		and read_bool(narrative_flags, "du_chunmei_deceased")
 		and not read_bool(narrative_flags, "du_chunmei_notice_seen")
 	):

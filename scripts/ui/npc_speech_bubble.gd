@@ -2,7 +2,7 @@ class_name NpcSpeechBubble
 extends Panel
 
 # 主玩法 NPC 专用气泡。
-# 与底部对话框共享逐字节奏与击键音，但不阻塞操作，并在约五秒后自动淡出。
+# 与底部对话框共享无机械音的逐字节奏，但不阻塞操作，并在约五秒后自动淡出。
 
 signal finished
 
@@ -132,7 +132,7 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-# 按统一速度逐字显示，并为每个非空白字符播放短促击键音。
+# 按统一速度逐字显示；人物自然短音由演出模块在每句开始时仅播放一次。
 func _process(delta: float) -> void:
 	if not typing or not visible:
 		return
@@ -142,11 +142,6 @@ func _process(delta: float) -> void:
 	if target_count <= old_count:
 		return
 	dialogue_label.visible_characters = target_count
-	for index in range(old_count, target_count):
-		if not full_text[index].strip_edges().is_empty():
-			var sfx := get_node_or_null("/root/Sfx")
-			if sfx != null:
-				sfx.call("dialogue_tick")
 	if target_count >= full_text.length():
 		dialogue_label.visible_characters = -1
 		typing = false

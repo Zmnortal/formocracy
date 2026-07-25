@@ -3,6 +3,8 @@ extends RefCounted
 
 signal finished
 
+const SECRETARY := preload("res://scripts/narrative/secretary_voice.gd")
+
 var root: Node2D
 var dialogue_box: DialogueBox
 var token := 0
@@ -30,8 +32,8 @@ func play(lines: Array[String]) -> void:
 	for line in lines:
 		if current_token != token:
 			return
-		GameStateSync.speaker_started("SECRETARY", "内部广播 / 来源未登记", "secretary", line, "secretary_briefing", {"day": WorkdayState.day_number})
-		await dialogue_box.play_line("内部广播 / 来源未登记", line, "broadcast")
+		GameStateSync.speaker_started(SECRETARY.ID, SECRETARY.NAME, SECRETARY.KIND, line, "secretary_briefing", {"day": WorkdayState.day_number})
+		await dialogue_box.play_line(SECRETARY.NAME, line, SECRETARY.KIND)
 	if current_token != token:
 		return
 	playing = false

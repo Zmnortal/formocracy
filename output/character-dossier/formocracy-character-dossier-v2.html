@@ -9,7 +9,7 @@
     叙事角色：创作设定档案，不是游戏内 UI。
     阅读距离：桌面与打印阅读约 0.5–1 米。
     视觉温度：行政冷静，人物主色保留个体温度。
-    容量：封面 + 身份索引 + 18 张人物页，共 20 页。
+    容量：封面 + 身份索引 + 18 张人物页 + 1 张特殊实体页，共 21 页。
   -->
   <style>
     :root{--paper:#f2eee4;--ink:#24231f;--muted:#7f7a72;--line:#b8b1a5;--green:#526858;--red:#963d38}
@@ -92,6 +92,25 @@
     .doc p{font-size:7.8px;line-height:1.5}
     .risk{margin-top:2mm;border:1px solid rgba(150,61,56,.55);padding:2.5mm 3mm;background:rgba(150,61,56,.055);font-size:8px;line-height:1.55}
     .risk b{color:var(--red)}
+    .secretary{--accent:#2f8150}
+    .secretary .char-head{border-color:#2f8150}
+    .secretary .portrait{height:66mm;position:relative;align-items:center;background:
+      repeating-linear-gradient(0deg,transparent 0 3px,rgba(47,129,80,.06) 3px 4px),
+      radial-gradient(circle at 50% 45%,rgba(47,129,80,.18),transparent 54%),#101b14}
+    .secretary .portrait:after{content:"APPROVED DISPLAY IMAGE";position:absolute;left:3mm;bottom:2.5mm;color:#75b98d;font:700 5.5px/1 ui-monospace,monospace;letter-spacing:.12em}
+    .secretary-hero{display:block;width:54mm;height:54mm;object-fit:contain;filter:drop-shadow(0 0 2mm rgba(89,203,125,.32));image-rendering:pixelated}
+    .secretary-states{display:grid;grid-template-columns:repeat(4,1fr);gap:1mm;margin-top:3mm}
+    .secretary-state{margin:0;border:1px solid #8d877e;background:#111d15;padding:1.2mm 1mm 1mm;text-align:center}
+    .secretary-state i{display:block;width:100%;height:16mm;background:#78c992;image-rendering:pixelated;
+      -webkit-mask:var(--state) center/contain no-repeat;mask:var(--state) center/contain no-repeat}
+    .secretary-state figcaption{margin-top:.7mm;color:#a8b4aa;font:700 4.7px/1.2 ui-monospace,monospace;letter-spacing:.04em}
+    .secretary-note{margin-top:3mm;border:1px solid #768d7d;background:rgba(47,129,80,.08);padding:2.6mm;font:7.5px/1.55 "Songti SC",serif}
+    .secretary-note b{display:block;margin-bottom:1mm;font:800 6px/1 ui-monospace,monospace;letter-spacing:.1em;color:#2f8150}
+    .secretary-note a{display:inline-block;margin-top:1mm;color:#2f8150;font:800 5.5px/1 ui-monospace,monospace;letter-spacing:.08em;text-decoration:none;border-bottom:1px solid #2f8150}
+    .mystery-list{margin:0;padding-left:5mm;font:8.4px/1.65 "Songti SC",serif}
+    .mystery-list li{margin-bottom:1.2mm}
+    .matrix tr.secretary-row td{background:rgba(47,129,80,.08);border-top:2px solid #2f8150}
+    .matrix tr.secretary-row td:first-child:after{content:"特殊实体";display:block;margin-top:.6mm;color:#2f8150;font:700 5px/1 ui-monospace,monospace;letter-spacing:.08em}
     .quote{position:absolute;left:82mm;right:16mm;bottom:17mm;border-left:4px solid var(--accent);padding-left:4mm;font:italic 10px/1.6 "Songti SC",serif;color:#4f4b45}
     @page{size:A4;margin:0}
     @media print{html,body{background:transparent}.page{margin:0;box-shadow:none}}
@@ -122,20 +141,20 @@ const people=[
 ];
 const avatarPath=p=>`../../assets/characters/portraits_8bit/${p.id.toLowerCase().replaceAll("-","_")}.png`;
 const standardPortraitPath=p=>`../../assets/characters/portraits_standard/${p.id.toLowerCase().replaceAll("-","_")}.png`;
-const colors=people.map((p,i)=>`<i style="--c:${p.color};--h:${5+(i%5)*2}mm"></i>`).join("");
+const colors=people.map((p,i)=>`<i style="--c:${p.color};--h:${5+(i%5)*2}mm"></i>`).join("")+`<i style="--c:#2f8150;--h:10mm"></i>`;
 const cover=`<section class="page cover">
   <div class="cover-top"><div><div class="eyebrow">HENGCHUAN MUNICIPAL ARCHIVE / INTERNAL</div><div class="eyebrow">DISTRICT 12 / CAST RECORD</div></div><div class="seal">身份制度<br>增补版</div></div>
-  <div class="cover-title"><h1>第十二区<br>人物档案</h1><div class="en">CHARACTER DOSSIER · V2</div><p class="edition">18 名人物的身份、居住与证明材料增补。人格色彩仍属于人物；行政代码只描述他们此刻被制度如何分类。</p></div>
-  <div><div class="spectrum">${colors}</div><div class="cover-note"><p>中央现实管理局 · 衡川市第十二区受理处<br>创作设定资料 / 不作为正式证件</p><div class="eyebrow">EDITION 02 · 20 PAGES</div></div></div>
-  <div class="folio"><span>FORMOCRACY / HENGCHUAN</span><span>01 / 20</span></div>
+  <div class="cover-title"><h1>第十二区<br>人物档案</h1><div class="en">CHARACTER DOSSIER · V2</div><p class="edition">18 名人物与 1 名特殊叙事实体的身份、居住及证明材料增补。人格色彩属于人物；“秘书”的猫形化身只代表经批准的显示身份。</p></div>
+  <div><div class="spectrum">${colors}</div><div class="cover-note"><p>中央现实管理局 · 衡川市第十二区受理处<br>创作设定资料 / 不作为正式证件</p><div class="eyebrow">EDITION 02 · 21 PAGES</div></div></div>
+  <div class="folio"><span>FORMOCRACY / HENGCHUAN</span><span>01 / 21</span></div>
 </section>`;
 const rows=people.map(p=>`<tr><td>${p.name}</td><td>${p.status}</td><td>${p.code}</td><td>${p.actual}</td><td>${p.risk}</td></tr>`).join("");
 const index=`<section class="page index">
   <div class="eyebrow">00 / IDENTITY INDEX</div><h2>行政身份索引</h2>
-  <p class="index-intro">本市身份证明回答“是否属于衡川市”，居住证明回答“现在由哪个区负责”。同一个人物可以拥有合法身份，却因实际住所、签发辖区或当天政策而无法完成眼前的事项。</p>
-  <table class="matrix"><thead><tr><th>人物</th><th>行政身份</th><th>代码</th><th>实际住所</th><th>主要政策风险</th></tr></thead><tbody>${rows}</tbody></table>
+  <p class="index-intro">本市身份证明回答“是否属于衡川市”，居住证明回答“现在由哪个区负责”。同一个人物可以拥有合法身份，却因实际住所、签发辖区或当天政策而无法完成眼前的事项。特殊实体“秘书”不参与普通人物身份统计。</p>
+  <table class="matrix"><thead><tr><th>人物</th><th>行政身份</th><th>代码</th><th>实际住所</th><th>主要政策风险</th></tr></thead><tbody>${rows}<tr class="secretary-row"><td>秘书</td><td>身份未登记 / 界面实体</td><td>SEC-00</td><td>内部广播、眼镜端与无署名便笺</td><td>猫形头像属于显示化身，不得据此推定真实身份或物种。</td></tr></tbody></table>
   <div class="legend"><div><b>D12 / HC-X / HC-T</b>本区、本市外区、本市临居</div><div><b>DOM / INT</b>外市人员与境外人员</div><div><b>UNK</b>记录冲突、注销或旧制身份</div></div>
-  <div class="folio"><span>FORMOCRACY / IDENTITY MATRIX</span><span>02 / 20</span></div>
+  <div class="folio"><span>FORMOCRACY / IDENTITY MATRIX</span><span>02 / 21</span></div>
 </section>`;
 const pages=people.map((p,i)=>`<section class="page character" style="--accent:${p.color}">
   <header class="char-head"><div><div class="eyebrow">${p.file} / ${p.id}</div><h2>${p.name}</h2><div class="latin">${p.latin}</div></div><div class="age"><strong>${p.age}</strong><span>AGE / 年龄</span></div></header>
@@ -161,9 +180,41 @@ const pages=people.map((p,i)=>`<section class="page character" style="--accent:$
     </article>
   </div>
   <blockquote class="quote">“${p.quote}”</blockquote>
-  <div class="folio"><span>${p.file} / CONFIDENTIAL</span><span>${String(i+3).padStart(2,"0")} / 20</span></div>
+  <div class="folio"><span>${p.file} / CONFIDENTIAL</span><span>${String(i+3).padStart(2,"0")} / 21</span></div>
 </section>`).join("");
-document.getElementById("dossier").innerHTML=cover+index+pages;
+const secretaryPage=`<section class="page character secretary">
+  <header class="char-head"><div><div class="eyebrow">CRA-S/SEC-00 / INTERFACE ENTITY</div><h2>秘书</h2><div class="latin">THE SECRETARY</div></div><div class="age"><strong>—</strong><span>AGE / 未登记</span></div></header>
+  <div class="char-body">
+    <aside>
+      <figure class="portrait"><img class="secretary-hero" src="secretary/secretary-default-game-512x768.png" alt="秘书批准显示像素卡通形象"></figure>
+      <div class="secretary-states">
+        <figure class="secretary-state"><i style="--state:url('secretary/candidate-1-128.png')"></i><figcaption>讲解</figcaption></figure>
+        <figure class="secretary-state"><i style="--state:url('secretary/candidate-2-128.png')"></i><figcaption>迟疑</figcaption></figure>
+        <figure class="secretary-state"><i style="--state:url('secretary/candidate-3-128.png')"></i><figcaption>待机</figcaption></figure>
+        <figure class="secretary-state"><i style="--state:url('secretary/candidate-4-128.png')"></i><figcaption>查阅</figcaption></figure>
+      </div>
+      <div class="id-mini"><p><b>FUNCTION / 职能</b>项目吉祥物、流程引导者、世界内叙事接口</p><p><b>DISPLAY / 显示形象</b>衡川行政像素卡通猫 / 经批准的默认界面化身</p><p><b>REGISTRY / 登记状态</b>未发现可核验雇佣或身份记录</p></div>
+      <div class="secretary-note"><b>DISPLAY DISCLAIMER / 显示声明</b>该猫形图像仅用于建立稳定的界面识别，不构成秘书真实外貌、物种、身体或所属机构的证明。<br><a href="secretary/metadata.json">OPEN METADATA.JSON</a></div>
+    </aside>
+    <article class="copy">
+      <p class="who">一个以职位代替姓名、以猫形化身代替面孔的陪伴者。它熟悉管理局流程，也记得玩家已经看过的新闻和做过的决定，却从不说明自己替谁工作。</p>
+      <section class="section"><div class="section-title"><b>01</b><h3>叙事定位 / NARRATIVE FUNCTION</h3></div><p class="story">“秘书”同时是 FORMOCRACY 的吉祥物、玩家流程引导者与不可靠的陪伴者。它先提供可执行信息，再补充一句不完全必要的观察；它可以表现出耐心、轻微幽默和个人偏好，但不会被明确证实为普通人、人工智能或制度本身。</p></section>
+      <section class="section"><div class="section-title"><b>02</b><h3>可确认记录 / VERIFIED OBSERVATIONS</h3></div>
+        <div class="status-card"><div class="status-top"><b>身份未登记 / 持续在线</b><span class="status-code">SEC-00</span></div>
+          <div class="status-grid"><div><b>NAME / 名称</b><span>秘书；职位称呼，不是公开姓名</span></div><div><b>AFFILIATION / 所属</b><span>未登记；从不回答“是谁的秘书”</span></div><div><b>CHANNELS / 出现媒介</b><span>内部广播、眼镜端、便笺、直接搭话</span></div><div><b>KNOWLEDGE / 已知权限</b><span>晨报、部分工作记录与历史决定</span></div></div>
+        </div>
+        <div class="docs"><div class="doc"><b>界面化身记录 / AVATAR</b><p>四态猫形蒙版：讲解、迟疑、待机、查阅。默认使用“程序待机”，简报优先使用“查阅规则”。</p></div><div class="doc res"><b>雇佣证明 / EMPLOYMENT</b><p>未发现签发机关、所属部门、雇佣日期、工资记录或可确认真实姓名。</p></div></div>
+        <div class="risk"><b>设定边界：</b>猫形头像可以被稳定复用，但任何人物与文书都不得把它当作真实身体的证据。不同媒介背后是否为同一个发言者，也保持未知。</div>
+      </section>
+      <section class="section"><div class="section-title"><b>03</b><h3>未解问题 / UNRESOLVED</h3></div>
+        <ul class="mystery-list"><li>它是在帮助玩家、观察玩家，还是训练一名更合格的职员？</li><li>“我们”指秘书与玩家、某个部门，还是整套行政系统？</li><li>由谁批准了这只猫作为显示形象？</li></ul>
+      </section>
+    </article>
+  </div>
+  <blockquote class="quote">“您可以叫我秘书。这里没有第二位愿意承认这个称呼的人。”</blockquote>
+  <div class="folio"><span>CRA-S/SEC-00 / CLASSIFICATION PENDING</span><span>21 / 21</span></div>
+</section>`;
+document.getElementById("dossier").innerHTML=cover+index+pages+secretaryPage;
 </script>
 </body>
 </html>
