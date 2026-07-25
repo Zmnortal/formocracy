@@ -66,8 +66,8 @@ func register_item(
 
 # 注销指定桌面实体。
 func unregister_item(item_id: String) -> void:
-	var removed: Control = items.get(item_id)
-	if removed == active_item:
+	var removed: Variant = items.get(item_id)
+	if not is_instance_valid(active_item) or (is_instance_valid(removed) and removed == active_item):
 		active_item = null
 	items.erase(item_id)
 
@@ -104,10 +104,11 @@ func _begin_press(item: Control, local_position: Vector2) -> void:
 		return
 	var active_tween: Tween
 	var tween_value: Variant = item.get_meta("desk_motion_tween") if item.has_meta("desk_motion_tween") else null
-	if tween_value is Tween:
+	if is_instance_valid(tween_value) and tween_value is Tween:
 		active_tween = tween_value
 	if is_instance_valid(active_tween):
 		active_tween.kill()
+	item.remove_meta("desk_motion_tween")
 	item.set_meta("desk_pressed", true)
 	item.set_meta("desk_dragging", false)
 	item.set_meta("desk_press_position", local_position)
@@ -146,14 +147,22 @@ func _move_pressed_item(item: Control, event: InputEventMouseMotion) -> void:
 # 从所有已注册且可见的桌面物件中返回指针命中的最前绘制项。
 func _frontmost_item_at_global(global_point: Vector2) -> Control:
 	var frontmost: Control
-	for value: Variant in items.values():
+	var stale_item_ids: Array[String] = []
+	for item_id: String in items:
+		var value: Variant = items[item_id]
+		if not is_instance_valid(value):
+			stale_item_ids.append(item_id)
+			continue
 		if not value is Control:
+			stale_item_ids.append(item_id)
 			continue
 		var candidate := value as Control
 		if not _is_pointer_inside_item(candidate, global_point):
 			continue
 		if not is_instance_valid(frontmost) or _is_drawn_in_front_of(candidate, frontmost):
 			frontmost = candidate
+	for item_id: String in stale_item_ids:
+		items.erase(item_id)
 	return frontmost
 
 
@@ -306,6 +315,7 @@ func _horizontal_limits(target_y: float, visual_size: Vector2) -> Vector2:
 
 # 完成一次落桌：更新层级、保存布局、播放反馈并触发物件回调。
 func _finalize_settle(item: Control) -> void:
+	item.remove_meta("desk_motion_tween")
 	item.z_index = next_resting_layer
 	next_resting_layer += 1
 	var item_id := WorkdayContext.stringify_value(item.get_meta("desk_item_id", ""))

@@ -66,6 +66,9 @@ func run() -> void:
 	await create_timer(0.25).timeout
 	assert(in_bounds_item.position.is_equal_approx(released_position), "an item released fully inside DeskBounds must settle exactly where the player left it")
 	assert(manager.get_desk_item_layout("in_bounds_item").has("position"), "in-bounds placement must persist without a gravity fall")
+	controller._begin_press(in_bounds_item, Vector2(10, 10))
+	controller._end_press(in_bounds_item)
+	assert(not in_bounds_item.has_meta("desk_motion_tween"), "a completed motion tween must not leave a freed object in item metadata")
 
 	var restored := Control.new()
 	restored.size = item.size
@@ -108,6 +111,17 @@ func run() -> void:
 	overlap_release.global_position = overlap_press.global_position
 	controller._on_item_input(overlap_release, back_item)
 	assert(not WorkdayContext.to_bool(front_item.get_meta("desk_pressed")), "release must finish the item selected by the centralized frontmost resolver")
+
+	var stale_item := Control.new()
+	stale_item.position = front_item.position
+	stale_item.size = front_item.size
+	scene_root.add_child(stale_item)
+	controller.register_item(stale_item, "freed_previous_case_document")
+	stale_item.queue_free()
+	await process_frame
+	var live_hit := controller._frontmost_item_at_global(scene_root.to_global(front_item.position + Vector2(24, 24)))
+	assert(live_hit == front_item, "a freed previous-case item must be pruned before frontmost hit testing")
+	assert(not controller.items.has("freed_previous_case_document"), "stale desk registrations must be removed during hit testing")
 
 	print("FORMOCRACY_DESK_ITEM_PHYSICS_TEST_OK")
 	quit(0)

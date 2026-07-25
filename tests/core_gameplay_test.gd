@@ -198,6 +198,16 @@ func run() -> void:
 
 	var database := root.get_node("ConfigDatabase")
 	var incomplete_case: Dictionary = database.call("get_gameplay_case", "CASE-002")
+	var previous_case_item_ids: Array[String] = manager.input.registered_case_item_ids.duplicate()
+	presenter.start_case(incomplete_case)
+	manager.input.bind_case(presenter)
+	await process_frame
+	for previous_item_id: String in previous_case_item_ids:
+		if previous_item_id == "case_envelope":
+			continue
+		assert(not manager.desk_items.items.has(previous_item_id), "starting a second applicant must unregister the previous case document")
+	for registered_value: Variant in manager.desk_items.items.values():
+		assert(is_instance_valid(registered_value), "the second applicant must not inherit freed desk-item references")
 	var workday_manager: Variant = state.get("manager")
 	workday_manager.record_case_result(incomplete_case, "", ["漏盖章", "遗漏材料"], 12.0, [])
 	assert(WorkdayContext.read_array(state.records[1], "procedure_errors").size() == 2, "incomplete operation must still submit and record errors")

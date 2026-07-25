@@ -766,10 +766,9 @@ func _kill_document_tween(document: DocumentView) -> void:
 	if not document.has_meta("document_inspection_tween"):
 		return
 	var tween_value: Variant = document.get_meta("document_inspection_tween")
-	if tween_value is Tween:
+	if is_instance_valid(tween_value) and tween_value is Tween:
 		var tween: Tween = tween_value
-		if is_instance_valid(tween):
-			tween.kill()
+		tween.kill()
 	document.remove_meta("document_inspection_tween")
 
 

@@ -14,6 +14,7 @@ var envelope_dragging := false
 var envelope_in_machine_zone := false
 var envelope_preview_tween: Tween
 var drag_response_multiplier := 1.0
+var registered_case_item_ids: Array[String] = []
 
 
 # 保存节点引用并读取缺水状态下的拖拽响应系数。
@@ -26,6 +27,7 @@ func _init(owner_root: Node2D, owner_desk: DeskNodes, item_controller: DeskItemC
 
 # 为当前案件的表单、文件袋和材料连接输入事件。
 func bind_case(presenter: WorkbenchCasePresenter) -> void:
+	_unbind_previous_case()
 	envelope_dragging = false
 	envelope_in_machine_zone = false
 	for document in presenter.all_document_views:
@@ -35,15 +37,17 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 		document.add_to_group("debug_interaction_zone")
 		document.set_meta("debug_zone_label", "主表单" if document.document_id == presenter.primary_document_id else "证明材料")
 		if desk_items != null:
+			var item_id := "case_document_%s" % document.document_id
 			desk_items.register_item(
 				document,
-				"case_document_%s" % document.document_id,
+				item_id,
 				presenter.open_document.bind(document.document_id),
 				_on_document_drag_motion.bind(presenter),
 				_on_document_settled.bind(presenter),
 				_prepare_document_drop.bind(presenter),
 				_can_begin_document_interaction.bind(presenter)
 			)
+			registered_case_item_ids.append(item_id)
 		else:
 			if document.document_id == presenter.primary_document_id:
 				document.gui_input.connect(_on_form_input.bind(presenter))
@@ -57,8 +61,19 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 		presenter.envelope.set_meta("debug_zone_label", "文件袋：点击进入查验层")
 		if desk_items != null:
 			desk_items.register_item(presenter.envelope, "case_envelope", presenter.expand_envelope_billboard, _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter))
+			registered_case_item_ids.append("case_envelope")
 		else:
 			presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
+
+
+# 新案件绑定前注销上一案的短生命周期物件，避免控制器持有已释放的文件节点。
+func _unbind_previous_case() -> void:
+	if desk_items == null:
+		registered_case_item_ids.clear()
+		return
+	for item_id: String in registered_case_item_ids:
+		desk_items.unregister_item(item_id)
+	registered_case_item_ids.clear()
 
 
 # 表单落定后若覆盖在打开的文件袋上则装袋。
