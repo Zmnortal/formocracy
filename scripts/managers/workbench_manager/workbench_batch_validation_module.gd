@@ -10,7 +10,7 @@ const INSPECTION_DESK_TEXTURE := preload("res://assets/concepts/endday_validatio
 const RAIL_MACHINE_CAP_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_machine_cap.png")
 const RAIL_MIDDLE_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_middle.png")
 const RAIL_BOTTOM_CAP_TEXTURE := preload("res://assets/concepts/endday_validation/validation_rail_bottom_cap.png")
-const DOCUMENT_BAG_TEXTURE := preload("res://assets/documents/envelopes/bureau_envelope_closed.png")
+const DOCUMENT_BAG_TEXTURE := preload("res://assets/documents/envelopes/bureau_validation_sleeve.png")
 
 const DESIGN_SIZE := Vector2(1280, 720)
 const MACHINE_POSITION := Vector2(490, -78)
@@ -20,15 +20,17 @@ const DOCUMENT_BAG_SIZE := Vector2(84, 128)
 const BELT_STAGING_POSITION := Vector2(605, 182)
 const MACHINE_INGEST_POSITION := Vector2(605, -100)
 const ARCHIVE_SLOT_POSITIONS: Array[Vector2] = [
-	Vector2(238, 438),
-	Vector2(425, 438),
-	Vector2(622, 438),
-	Vector2(813, 438),
-	Vector2(1005, 438),
+	Vector2(212, 443),
+	Vector2(379, 443),
+	Vector2(547, 443),
+	Vector2(713, 443),
+	Vector2(861, 443),
 ]
 const WAITING_ZONE_Y := 272.0
 const WAITING_ZONE_CENTER_X := 640.0
 const WAITING_ZONE_SPACING := 200.0
+const WAITING_DROP_RECT := Rect2(412, 214, 456, 216)
+const DRAG_START_THRESHOLD := 7.0
 
 var root: Node2D
 var overlay: Control
@@ -46,6 +48,7 @@ var capacity_meter: ProgressBar
 var selection_label: Label
 var instruction_label: Label
 var machine_state_label: Label
+var waiting_drop_target: Panel
 var confirm_button: Button
 var leave_button: Button
 var selected_ids: Array[String] = []
@@ -54,6 +57,11 @@ var buttons: Dictionary = {}
 var in_flight_archive_id := ""
 var ingesting := false
 var finishing := false
+var dragging_button: Button
+var dragging_archive_id := ""
+var drag_pointer_offset := Vector2.ZERO
+var drag_start_position := Vector2.ZERO
+var drag_moved := false
 
 
 # 初始化独立的俯视日终送验视图。
@@ -234,6 +242,20 @@ func _build_archive_queue() -> void:
 	archive_row.size = DESIGN_SIZE
 	archive_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	archive_strip.add_child(archive_row)
+
+	waiting_drop_target = Panel.new()
+	waiting_drop_target.name = "ValidationWaitingDropTarget"
+	waiting_drop_target.position = WAITING_DROP_RECT.position
+	waiting_drop_target.size = WAITING_DROP_RECT.size
+	waiting_drop_target.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	waiting_drop_target.z_index = 40
+	waiting_drop_target.visible = false
+	waiting_drop_target.add_theme_stylebox_override(
+		"panel",
+		WorkbenchUI.style_box(Color("a98d4d18"), 5, Color("a98d4d"), 2)
+	)
+	archive_strip.add_child(waiting_drop_target)
+
 	for slot_index: int in ARCHIVE_SLOT_POSITIONS.size():
 		var fixed_slot_number := WorkbenchUI.add_text(
 			archive_strip,
@@ -259,7 +281,7 @@ func _build_archive_queue() -> void:
 	selection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	WorkbenchUI.add_text(
 		archive_strip,
-		"点击文件袋加入待送区 · 再次点击撤回",
+		"按住文件袋向上拖入待送区 · 拖回编号位可撤回",
 		9,
 		Color("918a70"),
 		Vector2(442, 674),
@@ -326,6 +348,7 @@ func open() -> void:
 	in_flight_archive_id = ""
 	ingesting = false
 	finishing = false
+	_clear_archive_drag_state()
 	if is_instance_valid(active_document_bag):
 		active_document_bag.queue_free()
 	active_document_bag = null
@@ -357,12 +380,12 @@ func _add_archive_bag(archive: Dictionary) -> void:
 	button.size = Vector2(150, 196)
 	button.pivot_offset = Vector2(75, 88)
 	button.focus_mode = Control.FOCUS_NONE
-	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.mouse_default_cursor_shape = Control.CURSOR_DRAG
 	button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 	button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 	button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
 	button.add_theme_stylebox_override("disabled", StyleBoxEmpty.new())
-	button.pressed.connect(_on_archive_pressed.bind(archive_id, button))
+	button.gui_input.connect(_on_archive_gui_input.bind(archive_id, button))
 	button.mouse_entered.connect(_animate_archive_hover.bind(button, true))
 	button.mouse_exited.connect(_animate_archive_hover.bind(button, false))
 	archive_row.add_child(button)
@@ -410,21 +433,125 @@ func _add_archive_bag(archive: Dictionary) -> void:
 	buttons[archive_id] = button
 
 
-# 点击只切换本批选择；确认之前机器与轨道都不会启动。
-func _on_archive_pressed(archive_id: String, button: Button) -> void:
+# 文件袋只响应抓取与放置；普通点击不会改变选择。
+func _on_archive_gui_input(event: InputEvent, archive_id: String, button: Button) -> void:
 	if ingesting or finishing:
 		return
-	if archive_id in selected_ids:
-		selected_ids.erase(archive_id)
-		_set_archive_button_selected(button, false)
+	if event is InputEventMouseButton:
+		var mouse_event := event as InputEventMouseButton
+		if mouse_event.button_index != MOUSE_BUTTON_LEFT:
+			return
+		if mouse_event.pressed:
+			_begin_archive_drag(archive_id, button)
+		else:
+			_finish_archive_drag()
+		button.accept_event()
+		return
+	if event is InputEventMouseMotion and dragging_button == button:
+		_move_archive_drag()
+		button.accept_event()
+
+
+func _begin_archive_drag(archive_id: String, button: Button) -> void:
+	if not is_instance_valid(button) or button.disabled:
+		return
+	dragging_button = button
+	dragging_archive_id = archive_id
+	drag_start_position = button.position
+	drag_pointer_offset = button.position - archive_row.get_local_mouse_position()
+	drag_moved = false
+	button.set_meta("being_dragged", true)
+	button.z_index = 70
+	button.modulate = Color(1.14, 1.09, 0.93, 1.0)
+	var resting_scale := Vector2(0.82, 0.82) if archive_id in selected_ids else Vector2.ONE
+	button.scale = resting_scale * 1.06
+	waiting_drop_target.visible = true
+	_set_waiting_drop_highlight(false)
+	instruction_label.text = "把文件袋放入上方待送区；松手后才会加入本批。"
+
+
+func _move_archive_drag() -> void:
+	if not is_instance_valid(dragging_button):
+		_clear_archive_drag_state()
+		return
+	var pointer_position := archive_row.get_local_mouse_position()
+	var next_position := pointer_position + drag_pointer_offset
+	next_position.x = clampf(next_position.x, 18.0, DESIGN_SIZE.x - dragging_button.size.x - 18.0)
+	next_position.y = clampf(next_position.y, 112.0, DESIGN_SIZE.y - dragging_button.size.y - 12.0)
+	dragging_button.position = next_position
+	if next_position.distance_to(drag_start_position) >= DRAG_START_THRESHOLD:
+		drag_moved = true
+	_set_waiting_drop_highlight(_is_dragging_over_waiting_zone())
+
+
+func _finish_archive_drag() -> void:
+	if not is_instance_valid(dragging_button):
+		_clear_archive_drag_state()
+		return
+	var archive_id := dragging_archive_id
+	var button := dragging_button
+	var dropped_in_waiting_zone := _is_dragging_over_waiting_zone()
+	var should_commit := drag_moved
+	_clear_archive_drag_state()
+	if should_commit:
+		_commit_archive_drop(archive_id, dropped_in_waiting_zone)
+	else:
+		_set_archive_button_selected(button, archive_id in selected_ids)
 		_update_archive_layout()
 		_refresh()
+
+
+func _is_dragging_over_waiting_zone() -> bool:
+	if not is_instance_valid(dragging_button):
+		return false
+	var bag_center := dragging_button.position + dragging_button.size * dragging_button.scale * 0.5
+	return WAITING_DROP_RECT.has_point(bag_center)
+
+
+func _set_waiting_drop_highlight(active: bool) -> void:
+	if not is_instance_valid(waiting_drop_target):
 		return
-	if selected_ids.size() >= _current_batch_limit():
-		instruction_label.text = "今日最多选择 %d 份；请先取消一份" % _current_batch_limit()
+	waiting_drop_target.add_theme_stylebox_override(
+		"panel",
+		WorkbenchUI.style_box(
+			Color("c4a04e30") if active else Color("a98d4d14"),
+			5,
+			Color("efd27a") if active else Color("8f7b49"),
+			3 if active else 2
+		)
+	)
+
+
+func _clear_archive_drag_state() -> void:
+	if is_instance_valid(dragging_button):
+		dragging_button.set_meta("being_dragged", false)
+	dragging_button = null
+	dragging_archive_id = ""
+	drag_pointer_offset = Vector2.ZERO
+	drag_start_position = Vector2.ZERO
+	drag_moved = false
+	if is_instance_valid(waiting_drop_target):
+		waiting_drop_target.visible = false
+
+
+# 把抓取结果写入本批选择；放在待送区即加入，拖回下方即撤回。
+func _commit_archive_drop(archive_id: String, dropped_in_waiting_zone: bool) -> void:
+	if ingesting or finishing or not buttons.has(archive_id):
 		return
-	selected_ids.append(archive_id)
-	_set_archive_button_selected(button, true)
+	var button := buttons.get(archive_id) as Button
+	if button == null:
+		return
+	if dropped_in_waiting_zone:
+		if archive_id not in selected_ids:
+			if selected_ids.size() >= _current_batch_limit():
+				instruction_label.text = "今日最多选择 %d 份；请先拖回一份" % _current_batch_limit()
+				_set_archive_button_selected(button, false)
+				_update_archive_layout()
+				return
+			selected_ids.append(archive_id)
+	else:
+		selected_ids.erase(archive_id)
+	_set_archive_button_selected(button, archive_id in selected_ids)
 	_update_archive_layout()
 	_refresh()
 
@@ -545,7 +672,7 @@ func _on_leave_pressed() -> void:
 
 # 队列悬停只抬起待选文件袋，不影响运输实体。
 func _animate_archive_hover(button: Button, hovered: bool) -> void:
-	if ingesting or finishing or button.disabled:
+	if ingesting or finishing or button.disabled or dragging_button == button:
 		return
 	var selected := bool(button.get_meta("selected_for_validation", false))
 	var resting_color := Color(1.07, 1.03, 0.86, 1.0) if selected else Color.WHITE
@@ -698,13 +825,13 @@ func _refresh() -> void:
 		instruction_label.text = "今日不可选择档案，可以直接离开。"
 	elif selected_count >= batch_limit:
 		machine_state_label.text = "已达到今日上限"
-		instruction_label.text = "请确认本批，或点击待送区中的文件袋撤回。"
+		instruction_label.text = "请确认本批，或把待送区文件袋拖回下方撤回。"
 	elif pending_count <= selected_count and selected_count > 0:
 		machine_state_label.text = "可选档案已全部加入"
 		instruction_label.text = "请核对待送区中的文件袋，然后确认送验。"
 	elif selected_ids.is_empty():
 		machine_state_label.text = "现实验收机待机"
-		instruction_label.text = "请从下方编号位选择 0–%d 份已盖章档案。" % mini(batch_limit, pending_count)
+		instruction_label.text = "请从下方编号位向上抓取 0–%d 份已盖章档案。" % mini(batch_limit, pending_count)
 	else:
 		machine_state_label.text = "待送 %d 份" % selected_count
 		instruction_label.text = "还可选择 %d 份；确认后机器才会启动。" % (batch_limit - selected_count)

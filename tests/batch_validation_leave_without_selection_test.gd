@@ -30,7 +30,7 @@ func run() -> void:
 
 	var stamped_button := module.buttons.get("ARCHIVE-00001") as Button
 	assert(stamped_button != null, "stamped archive must be selectable")
-	stamped_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00001", true)
 	await process_frame
 	assert(module.selected_ids == ["ARCHIVE-00001"], "player may stage a selection before deciding to leave")
 	module.leave_button.pressed.emit()

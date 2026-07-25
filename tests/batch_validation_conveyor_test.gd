@@ -59,25 +59,34 @@ func run() -> void:
 	assert(first_button != null and second_button != null and third_button != null, "stamped document bag buttons must be addressable")
 	var first_home_position := first_button.position
 	first_button.pressed.emit()
+	await process_frame
+	assert(module.selected_ids.is_empty(), "a plain click must not select a document bag")
+	module._begin_archive_drag("ARCHIVE-00001", first_button)
+	assert(module.waiting_drop_target.visible, "grabbing a bag must reveal the waiting-zone drop affordance")
+	first_button.position = Vector2(565, 250)
+	module.drag_moved = true
+	assert(module._is_dragging_over_waiting_zone(), "the upper tray must accept a dragged document bag")
+	module._finish_archive_drag()
+	assert(not module.waiting_drop_target.visible, "releasing a bag must clear the temporary drop affordance")
 	await create_timer(0.30).timeout
-	assert(not module.ingesting, "clicking a document bag must only select it")
+	assert(not module.ingesting, "staging a document bag must not start the machine")
 	assert(module.in_flight_archive_id.is_empty(), "selection must not place a bag on the rail")
 	assert(module.active_document_bag == null, "selection must not create a transport bag")
-	assert(module.selected_ids == ["ARCHIVE-00001"], "one click must select exactly one document bag")
+	assert(module.selected_ids == ["ARCHIVE-00001"], "dropping in the waiting zone must select exactly one document bag")
 	assert(not module.confirm_button.disabled, "a non-empty selection must enable explicit confirmation")
 	assert((first_button.get_node("SelectedBadge") as Panel).visible, "selected card must visibly identify the player's choice")
 	assert(first_button.position.y < first_home_position.y, "a selected document bag must move physically into the upper waiting zone")
-	first_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00001", false)
 	await create_timer(0.30).timeout
-	assert(module.selected_ids.is_empty(), "clicking a selected card again must cancel it")
+	assert(module.selected_ids.is_empty(), "dragging a selected bag back down must cancel it")
 	assert(module.confirm_button.disabled, "an empty selection must disable confirmation")
 	assert(first_button.position.is_equal_approx(first_home_position), "cancelling a selection must return the bag to its numbered desk slot")
-	first_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00001", true)
 	await process_frame
-	second_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00002", true)
 	await process_frame
 	assert(module.selected_ids == ["ARCHIVE-00001", "ARCHIVE-00002"], "player must be able to build a multi-file batch")
-	third_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00003", true)
 	await process_frame
 	assert(module.selected_ids == ["ARCHIVE-00001", "ARCHIVE-00002"], "the upper limit must reject an extra selection")
 

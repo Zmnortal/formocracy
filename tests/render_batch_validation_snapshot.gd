@@ -37,8 +37,8 @@ func run() -> void:
 	var first_button := module.buttons.get("ARCHIVE-00001") as Button
 	var second_button := module.buttons.get("ARCHIVE-00002") as Button
 	assert(first_button != null and second_button != null, "snapshot document bags must exist")
-	first_button.pressed.emit()
-	second_button.pressed.emit()
+	module._commit_archive_drop("ARCHIVE-00001", true)
+	module._commit_archive_drop("ARCHIVE-00002", true)
 	await process_frame
 	assert(module.selected_ids.size() == 2, "snapshot must show a visible multi-selection")
 	assert(not module.confirm_button.disabled, "snapshot must show the explicit confirm action")
