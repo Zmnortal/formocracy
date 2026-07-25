@@ -58,4 +58,5 @@ theme/custom="res://themes/pixel_theme.tres"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
 "#åºæ¯åæ¢å¯è½åºç°ä¸å¸§æ²¡æä»»ä½CanvasItemçæ¸å±é´éã#é»è®¤æ¸å±è²å¿é¡»åºå®ä¸ºçº¯é»ï¼å¦åä¸»èåè¿å¥è®°å½é¡µæ¶ä¼äº§çåå¸§ç½/ç°éªãenvironment/defaults/default_clear_color"=Color(0, 0, 0, 1)

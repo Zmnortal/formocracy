@@ -43,6 +43,11 @@ func run() -> void:
 	var map = current_scene
 	assert(map.kiosk_button != null, "evening map must expose an independent newspaper kiosk location")
 	assert(map.LOCATION_NAMES.has("LOCATION-NEWSSTAND"), "kiosk must participate in map routing")
+	var kiosk_button_size: Vector2 = map.kiosk_button.size
+	map.kiosk_button.mouse_entered.emit()
+	await process_frame
+	assert(map.kiosk_button.scale == Vector2.ONE, "location hover must not scale or crop the button")
+	assert(map.kiosk_button.size == kiosk_button_size, "location hover must preserve the button rectangle")
 
 	print("FORMOCRACY_NEWSPAPER_KIOSK_FLOW_TEST_OK")
 	quit(0)

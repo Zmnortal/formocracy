@@ -17,7 +17,7 @@ TEST_SCRIPTS := \
 	tests/save_tree_migration_test.gd \
 	tests/save_resume_flow_test.gd
 
-.PHONY: setup lint format format-check typecheck test quality animation-lab
+.PHONY: setup lint format format-check typecheck test quality animation-lab package-macos
 
 setup:
 	$(UV) sync --dev
@@ -61,3 +61,8 @@ animation-lab:
 		echo "NPC animation lab: http://127.0.0.1:4173/tools/npc-animation-lab/"; \
 		python3 -m http.server 4173 --bind 127.0.0.1; \
 	fi
+
+package-macos:
+	mkdir -p build/macos
+	$(GODOT) --headless --path . --export-release "macOS" build/macos/Formocracy.app
+	ditto -c -k --sequesterRsrc --keepParent build/macos/Formocracy.app build/Formocracy-macOS.zip

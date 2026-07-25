@@ -104,11 +104,7 @@ func _show_newspaper_selection() -> void:
 	location_label.text = "06:24  /  职员宿舍 12-C"
 	for child in newspaper_selector.get_children():
 		child.queue_free()
-	var heading := _make_newspaper_label(
-		"今天送到门口的报纸 · 只能精读一份",
-		24,
-		Color("ded5b8")
-	)
+	var heading := _make_newspaper_label("今天送到门口的报纸 · 只能精读一份", 24, Color("ded5b8"))
 	heading.position = Vector2(0, 0)
 	heading.size = Vector2(1192, 42)
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -159,11 +155,7 @@ func _build_newspaper_card(item: Dictionary) -> Panel:
 	stripe.size = Vector2(242, 5)
 	card.add_child(stripe)
 
-	var tagline := _make_newspaper_label(
-		_wrap_card_text(WorkdayContext.read_string(item, "tagline"), 15),
-		11,
-		Color("5b5547")
-	)
+	var tagline := _make_newspaper_label(_wrap_card_text(WorkdayContext.read_string(item, "tagline"), 15), 11, Color("5b5547"))
 	tagline.position = Vector2(18, 70)
 	tagline.size = Vector2(242, 46)
 	tagline.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
@@ -178,11 +170,7 @@ func _build_newspaper_card(item: Dictionary) -> Panel:
 	headline.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	card.add_child(headline)
 
-	var teaser := _make_newspaper_label(
-		_wrap_card_text(WorkdayContext.read_string(issue, "teaser"), 15),
-		13,
-		Color("4d493d")
-	)
+	var teaser := _make_newspaper_label(_wrap_card_text(WorkdayContext.read_string(issue, "teaser"), 15), 13, Color("4d493d"))
 	teaser.position = Vector2(20, 222)
 	teaser.size = Vector2(238, 70)
 	teaser.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
@@ -240,11 +228,7 @@ func _show_newspaper(item: Dictionary = {}) -> void:
 	newspaper_style.shadow_size = 13
 	newspaper_style.shadow_offset = Vector2(9, 10)
 	newspaper.add_theme_stylebox_override("panel", newspaper_style)
-	dialogue_box.show_line(
-		_player_speaker(),
-		WorkdayContext.read_string(issue, "reflection", "今天的报纸没有更多说明。"),
-		"player"
-	)
+	dialogue_box.show_line(_player_speaker(), WorkdayContext.read_string(issue, "reflection", "今天的报纸没有更多说明。"), "player")
 	_publish_phase()
 
 
@@ -255,6 +239,7 @@ func advance_sequence() -> void:
 	match phase:
 		"newspaper":
 			if WorkdayState.manager.mark_newspaper_read(WorkdayContext.read_string(selected_newspaper, "id")):
+				_send_secretary_daybrief()
 				_show_departure_prompt()
 		"departure_prompt":
 			_show_walk(0)
@@ -273,6 +258,42 @@ func _show_departure_prompt() -> void:
 	phase = "departure_prompt"
 	dialogue_box.show_line(_player_speaker(), "时间已经不早了，该去上班了。", "player")
 	_publish_phase()
+
+
+# 将当天精读报纸与既往档案决策整理成眼镜端约定的数据结构。
+func _send_secretary_daybrief() -> void:
+	var bridge := get_tree().root.get_node_or_null("RealityBridge")
+	if bridge == null or selected_newspaper.is_empty():
+		return
+	var issue := WorkdayContext.read_dictionary(selected_newspaper, "issue")
+	var newspaper: Array[Dictionary] = [
+		{
+			"headline": WorkdayContext.read_string(issue, "headline", "本日无公开头条"),
+			"body": WorkdayContext.read_string(issue, "article", WorkdayContext.read_string(issue, "teaser")),
+		}
+	]
+	var decisions: Array[Dictionary] = []
+	var first_archive_index := maxi(0, WorkdayState.archived_cases.size() - 12)
+	for index: int in range(first_archive_index, WorkdayState.archived_cases.size()):
+		var archive: Dictionary = WorkdayState.archived_cases[index]
+		var raw_decision := WorkdayContext.read_string(archive, "decision")
+		var normalized_decision := "held"
+		if raw_decision == "批准":
+			normalized_decision = "approved"
+		elif raw_decision == "驳回":
+			normalized_decision = "rejected"
+		(
+			decisions
+			. append(
+				{
+					"formId": WorkdayContext.read_string(archive, "case_id"),
+					"title": WorkdayContext.read_string(archive, "request", WorkdayContext.read_string(archive, "applicant", "未登记事项")),
+					"decision": normalized_decision,
+					"day": WorkdayContext.read_int(archive, "archived_day"),
+				}
+			)
+		)
+	bridge.call("secretary_daybrief", WorkdayState.day_number, newspaper, decisions)
 
 
 # 复用已经确认的中性腿部侧视图；停顿拍同步停止脚步声。
@@ -427,11 +448,7 @@ func _flash_slide() -> void:
 
 # 对外同步当前晨间阶段，方便眼镜端和自动化测试识别。
 func _publish_phase() -> void:
-	GameStateSync.scene_changed(
-		"pre_work_sequence",
-		phase,
-		{"day": WorkdayState.day_number, "walk_index": walk_index}
-	)
+	GameStateSync.scene_changed("pre_work_sequence", phase, {"day": WorkdayState.day_number, "walk_index": walk_index})
 
 
 # 行走拍持续播放循环脚步声。

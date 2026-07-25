@@ -157,12 +157,10 @@ func _build_end_dialogue_box() -> void:
 	dialogue_box.advance_requested.connect(_advance_end_dialogue)
 
 
-# 为地点按钮绑定点击移动与悬停缩放动画。
+# 为地点按钮绑定点击移动。悬停只使用 Theme 中的颜色与边框样式，不改变尺寸。
 func _connect_location_button(button: Button, location_id: String) -> void:
 	button.pressed.connect(func(): select_location(location_id))
-	button.mouse_entered.connect(func(): _animate_button_hover(button, true))
-	button.mouse_exited.connect(func(): _animate_button_hover(button, false))
-	button.pivot_offset = button.size * 0.5
+	button.scale = Vector2.ONE
 
 
 # 为场景内所有按钮统一挂接点击与悬停音效。
@@ -176,15 +174,6 @@ func _attach_button_sounds(node: Node) -> void:
 		)
 	for child in node.get_children():
 		_attach_button_sounds(child)
-
-
-# 播放按钮悬停时的缩放动画。
-func _animate_button_hover(button: Button, hovered: bool) -> void:
-	if moving or button.disabled:
-		return
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "scale", Vector2(1.035, 1.035) if hovered else Vector2.ONE, 0.1)
 
 
 # 处理地点选择：沿路线移动玩家棋子并抵达目标地点。
@@ -212,22 +201,19 @@ func select_location(location_id: String) -> void:
 	moving = false
 	_show_arrival_card(location_id)
 	_refresh_map_state()
-	if auto_open_location_scenes and location_id == LOCATION_FORM_SHOP:
-		get_tree().change_scene_to_file("res://scenes/form_shop.tscn")
-		return
-	if auto_open_location_scenes and location_id == LOCATION_FORMS:
-		get_tree().change_scene_to_file("res://scenes/central_forms_scene.tscn")
-		return
-	if auto_open_location_scenes and location_id == LOCATION_RATION:
-		get_tree().change_scene_to_file("res://scenes/ration_depot_scene.tscn")
-		return
-	if auto_open_location_scenes and location_id == LOCATION_HOME:
-		get_tree().change_scene_to_file("res://scenes/home_12c_scene.tscn")
-		return
-	if auto_open_location_scenes and location_id == LOCATION_NEWSSTAND:
-		get_tree().change_scene_to_file("res://scenes/newspaper_kiosk.tscn")
-		return
-	if WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
+	var location_scene_path: String = (
+		{
+			LOCATION_FORM_SHOP: "res://scenes/form_shop.tscn",
+			LOCATION_FORMS: "res://scenes/central_forms_scene.tscn",
+			LOCATION_RATION: "res://scenes/ration_depot_scene.tscn",
+			LOCATION_HOME: "res://scenes/home_12c_scene.tscn",
+			LOCATION_NEWSSTAND: "res://scenes/newspaper_kiosk.tscn",
+		}
+		. get(location_id, "")
+	)
+	if auto_open_location_scenes and not location_scene_path.is_empty():
+		get_tree().change_scene_to_file(location_scene_path)
+	elif WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
 		_start_end_of_night_sequence()
 
 
@@ -475,11 +461,7 @@ func _refresh_purchase_ui() -> void:
 	if total_blank + pending <= 0:
 		dossier_contents.text = "档案袋内没有个人表单。"
 	else:
-		dossier_contents.text = (
-			"居民饮水配额领取申请\nR-01 / 空白 × %d / 待处理 × %d\n\n"
-			% [owned, pending]
-			+ "报刊订阅通行申请\nS-01 / 空白 × %d / 送交地点：第十二区报刊亭" % newspaper_blank
-		)
+		dossier_contents.text = ("居民饮水配额领取申请\nR-01 / 空白 × %d / 待处理 × %d\n\n" % [owned, pending] + "报刊订阅通行申请\nS-01 / 空白 × %d / 送交地点：第十二区报刊亭" % newspaper_blank)
 
 
 # 在配给站购买空白饮水表并播放入袋动画。

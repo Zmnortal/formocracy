@@ -39,6 +39,8 @@ func play(lines: Array[String]) -> void:
 	GameStateSync.speaker_stopped("waiting_for_call")
 	Sfx.stop_voice()
 	Sfx.restore_work_ambience()
+	if bridge != null:
+		bridge.call("secretary_briefing_chat", WorkdayState.day_number)
 	finished.emit()
 
 

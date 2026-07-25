@@ -46,7 +46,7 @@ func _ready() -> void:
 	enabled = WorkdayContext.to_bool(ProjectSettings.get_setting("debug/developer_console_enabled", true), true)
 	if not enabled:
 		return
-	build_ui()
+	_build_ui()
 	get_viewport().size_changed.connect(fit_to_window)
 	fit_to_window()
 	append_output("FORMOCRACY DEV CONSOLE READY")
@@ -59,14 +59,14 @@ func _ready() -> void:
 # 工厂方法：创建并返回一个 StyleBoxFlat。
 # 用于统一控制台各控件（面板、按钮、终端背景等）的背景色、边框色、边框宽度与圆角半径，减少重复代码。
 # color 为背景色；border_color 为边框色；border 为四边边框宽度；radius 为四角圆角半径。
-func make_box(color: Color, border_color: Color, border := 2, radius := 3) -> StyleBoxFlat:
+func _make_box(color: Color, border_color: Color, border := 2, radius := 3) -> StyleBoxFlat:
 	return UI.make_box(color, border_color, border, radius)
 
 
 # 构建控制台完整 UI。
 # 依次创建根 Control、DEV 入口按钮、黑色半透明遮罩、中央面板、标题、关闭按钮、场景选择下拉框、工作日设置 SpinBox、状态标签、
 # 测试数据预设选择、快捷操作按钮、RichTextLabel 命令输出区以及 LineEdit 命令输入框，并为各交互控件绑定回调。
-func build_ui() -> void:
+func _build_ui() -> void:
 	root_control = Control.new()
 	root_control.position = Vector2.ZERO
 	root_control.size = Vector2(1280, 720)
@@ -118,7 +118,7 @@ func build_ui() -> void:
 	close_button.pressed.connect(toggle_console)
 	console_panel.add_child(close_button)
 
-	create_section_label("场景与状态", Vector2(28, 68))
+	_create_section_label("场景与状态", Vector2(28, 68))
 	scene_selector = OptionButton.new()
 	scene_selector.position = Vector2(28, 100)
 	scene_selector.size = Vector2(250, 40)
@@ -137,7 +137,7 @@ func build_ui() -> void:
 	scene_selector.add_item("现实验收设施预览")
 	scene_selector.set_item_metadata(6, VALIDATION_SCENE)
 	console_panel.add_child(scene_selector)
-	var switch_button := create_button("立即切换", Vector2(292, 100), Vector2(126, 40))
+	var switch_button := _create_button("立即切换", Vector2(292, 100), Vector2(126, 40))
 	switch_button.pressed.connect(_on_switch_scene)
 
 	day_selector = SpinBox.new()
@@ -148,7 +148,7 @@ func build_ui() -> void:
 	day_selector.value = WorkdayState.day_number
 	day_selector.prefix = "工作日 "
 	console_panel.add_child(day_selector)
-	var set_day_button := create_button("设置", Vector2(220, 156), Vector2(92, 40))
+	var set_day_button := _create_button("设置", Vector2(220, 156), Vector2(92, 40))
 	set_day_button.pressed.connect(_on_set_day)
 
 	level_selector = OptionButton.new()
@@ -166,9 +166,9 @@ func build_ui() -> void:
 	seed_selector.value = -1
 	seed_selector.prefix = "种子 "
 	console_panel.add_child(seed_selector)
-	var start_level_button := create_button("启动关卡", Vector2(674, 156), Vector2(130, 40))
+	var start_level_button := _create_button("启动关卡", Vector2(674, 156), Vector2(130, 40))
 	start_level_button.pressed.connect(_on_start_level)
-	var reload_config_button := create_button("重载配置", Vector2(816, 156), Vector2(130, 40))
+	var reload_config_button := _create_button("重载配置", Vector2(816, 156), Vector2(130, 40))
 	reload_config_button.pressed.connect(_on_reload_config)
 
 	status_label = Label.new()
@@ -177,14 +177,14 @@ func build_ui() -> void:
 	UI.style_label(status_label, 17)
 	console_panel.add_child(status_label)
 
-	create_section_label("测试数据与快捷操作", Vector2(28, 222))
+	_create_section_label("测试数据与快捷操作", Vector2(28, 222))
 	preset_selector = OptionButton.new()
 	preset_selector.position = Vector2(28, 254)
 	preset_selector.size = Vector2(250, 40)
 	for item: String in ["空日报", "全部批准", "全部驳回", "批准与驳回混合"]:
 		preset_selector.add_item(item)
 	console_panel.add_child(preset_selector)
-	var apply_preset := create_button("应用并打开日报", Vector2(292, 254), Vector2(188, 40))
+	var apply_preset := _create_button("应用并打开日报", Vector2(292, 254), Vector2(188, 40))
 	apply_preset.pressed.connect(_on_apply_preset)
 	glass_event_selector = OptionButton.new()
 	glass_event_selector.name = "GlassEventSelector"
@@ -198,29 +198,34 @@ func build_ui() -> void:
 		{"label": "每日结算", "id": "report"},
 		{"label": "后果回流", "id": "consequence"},
 		{"label": "内部广播", "id": "broadcast"},
+		{"label": "秘书晨报谈资", "id": "secretary_daybrief"},
+		{"label": "秘书到岗闲聊", "id": "secretary_briefing_chat"},
+		{"label": "秘书选件评论", "id": "secretary_pick_comment"},
+		{"label": "秘书搭话开始", "id": "secretary_chat_start"},
+		{"label": "秘书搭话结束", "id": "secretary_chat_stop"},
 	]
 	for event_data: Dictionary in glass_events:
 		glass_event_selector.add_item(WorkdayContext.read_string(event_data, "label"))
 		glass_event_selector.set_item_metadata(glass_event_selector.item_count - 1, WorkdayContext.read_string(event_data, "id"))
 	console_panel.add_child(glass_event_selector)
-	glass_test_button = create_button("发送眼镜事件", Vector2(724, 254), Vector2(248, 40))
+	glass_test_button = _create_button("发送眼镜事件", Vector2(724, 254), Vector2(248, 40))
 	glass_test_button.name = "GlassTestButton"
 	glass_test_button.pressed.connect(send_selected_glass_event)
 
-	var fill_button := create_button("填充三件测试申请", Vector2(28, 310), Vector2(210, 40))
+	var fill_button := _create_button("填充三件测试申请", Vector2(28, 310), Vector2(210, 40))
 	fill_button.pressed.connect(_fill_mixed_test_records)
-	var clear_button := create_button("清空当日记录", Vector2(250, 310), Vector2(172, 40))
+	var clear_button := _create_button("清空当日记录", Vector2(250, 310), Vector2(172, 40))
 	clear_button.pressed.connect(clear_records)
-	var next_button := create_button("进入下一工作日", Vector2(434, 310), Vector2(184, 40))
+	var next_button := _create_button("进入下一工作日", Vector2(434, 310), Vector2(184, 40))
 	next_button.pressed.connect(next_day)
-	var reload_button := create_button("重载当前场景", Vector2(630, 310), Vector2(170, 40))
+	var reload_button := _create_button("重载当前场景", Vector2(630, 310), Vector2(170, 40))
 	reload_button.pressed.connect(reload_scene)
-	collision_button = create_button("", Vector2(812, 310), Vector2(160, 40))
+	collision_button = _create_button("", Vector2(812, 310), Vector2(160, 40))
 	collision_button.name = "CollisionDebugButton"
 	collision_button.pressed.connect(toggle_collision_debug)
 	refresh_collision_button()
 
-	create_section_label("Credit 调试", Vector2(28, 370))
+	_create_section_label("Credit 调试", Vector2(28, 370))
 	credit_selector = SpinBox.new()
 	credit_selector.name = "CreditSelector"
 	credit_selector.position = Vector2(28, 400)
@@ -230,18 +235,18 @@ func build_ui() -> void:
 	credit_selector.value = WorkdayState.political_credit
 	credit_selector.prefix = "政治信用 "
 	console_panel.add_child(credit_selector)
-	var credit_minus_ten := create_button("−10", Vector2(232, 400), Vector2(76, 40))
+	var credit_minus_ten := _create_button("−10", Vector2(232, 400), Vector2(76, 40))
 	credit_minus_ten.pressed.connect(func(): adjust_credit(-10))
-	var credit_minus_one := create_button("−1", Vector2(320, 400), Vector2(76, 40))
+	var credit_minus_one := _create_button("−1", Vector2(320, 400), Vector2(76, 40))
 	credit_minus_one.pressed.connect(func(): adjust_credit(-1))
-	var credit_set := create_button("设为输入值", Vector2(408, 400), Vector2(132, 40))
+	var credit_set := _create_button("设为输入值", Vector2(408, 400), Vector2(132, 40))
 	credit_set.pressed.connect(set_credit_from_selector)
-	var credit_plus_one := create_button("+1", Vector2(552, 400), Vector2(76, 40))
+	var credit_plus_one := _create_button("+1", Vector2(552, 400), Vector2(76, 40))
 	credit_plus_one.pressed.connect(func(): adjust_credit(1))
-	var credit_plus_ten := create_button("+10", Vector2(640, 400), Vector2(76, 40))
+	var credit_plus_ten := _create_button("+10", Vector2(640, 400), Vector2(76, 40))
 	credit_plus_ten.pressed.connect(func(): adjust_credit(10))
 
-	create_section_label("命令终端", Vector2(28, 458))
+	_create_section_label("命令终端", Vector2(28, 458))
 	output = RichTextLabel.new()
 	output.position = Vector2(28, 488)
 	output.size = Vector2(944, 92)
@@ -250,7 +255,7 @@ func build_ui() -> void:
 	output.add_theme_color_override("default_color", Color("9fbd72"))
 	output.add_theme_font_override("normal_font", UI.PIXEL_FONT)
 	output.add_theme_font_size_override("normal_font_size", 15)
-	output.add_theme_stylebox_override("normal", make_box(Color("030604"), Color("36472d"), 1, 1))
+	output.add_theme_stylebox_override("normal", _make_box(Color("030604"), Color("36472d"), 1, 1))
 	console_panel.add_child(output)
 	command_input = LineEdit.new()
 	command_input.placeholder_text = "输入命令，例如：scene report"
@@ -265,7 +270,7 @@ func build_ui() -> void:
 
 # 在控制台面板指定位置创建一个 400x26 的分区说明标签。
 # 使用统一的暗绿色字体，用于对控制台不同功能区进行文字分组。
-func create_section_label(text: String, at: Vector2) -> void:
+func _create_section_label(text: String, at: Vector2) -> void:
 	var label := Label.new()
 	label.text = text
 	label.position = at
@@ -276,7 +281,7 @@ func create_section_label(text: String, at: Vector2) -> void:
 
 # 在控制台面板指定位置创建按钮并返回引用。
 # text 为按钮文字；at 为按钮左上角坐标；dimensions 为按钮宽高。返回的引用可继续连接 pressed 等信号。
-func create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
+func _create_button(text: String, at: Vector2, dimensions: Vector2) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.position = at
@@ -331,6 +336,20 @@ func send_glass_event(event_id: String) -> void:
 			RealityBridge.consequence("昨日工作后果", "行政罚款：-80\n政治信用：-2\n系统评价：受到关注", "warning")
 		"broadcast":
 			RealityBridge.secretary_line("下一位。")
+		"secretary_daybrief":
+			RealityBridge.secretary_daybrief(
+				WorkdayState.day_number,
+				[{"headline": "第七码头供水恢复", "body": "仍有多户居民等待新的用水许可。"}],
+				[{"formId": "CASE-001", "title": "共同居住申请", "decision": "approved", "day": maxi(1, WorkdayState.day_number - 1)}]
+			)
+		"secretary_briefing_chat":
+			RealityBridge.secretary_briefing_chat(WorkdayState.day_number)
+		"secretary_pick_comment":
+			RealityBridge.secretary_pick_comment("CASE-002", "供水配额复核", "add", 1, "该档案已经等待 2 日")
+		"secretary_chat_start":
+			RealityBridge.secretary_chat_start()
+		"secretary_chat_stop":
+			RealityBridge.secretary_chat_stop()
 		_:
 			append_output("未知眼镜事件：%s" % event_id)
 			return
@@ -512,7 +531,7 @@ func fill_test_records(mode: String = "mixed") -> void:
 		var decision := "批准"
 		if mode == "rejected" or (mode == "mixed" and i == 1):
 			decision = "驳回"
-			WorkdayState.manager.record_case_result(samples[i], decision)
+		WorkdayState.manager.record_case_result(samples[i], decision)
 	append_output("已填充测试数据：%s" % mode)
 	refresh_status()
 

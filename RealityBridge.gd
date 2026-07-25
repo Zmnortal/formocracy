@@ -8,9 +8,10 @@ signal glass_connected
 signal glass_disconnected
 signal reality_event_emitted(type: String, data: Dictionary)
 
-const DEFAULT_HOST := "172.20.10.3"
+const DEFAULT_HOST := "10.68.7.188"
 const DEFAULT_PORT := 8777
 const RECONNECT_INTERVAL := 2.0
+const SECRETARY_DAYBRIEF_LEAD_SECONDS := 2.5
 
 var last_emitted_event: Dictionary = {}
 
@@ -20,6 +21,10 @@ var _ws := WebSocketPeer.new()
 var _connected := false
 var _pending: Array[String] = []
 var _reconnect_left := 0.0
+var _secretary_chat_recording := false
+var _secretary_daybrief_sent_at_msec := -1
+var _secretary_briefing_chat_pending := false
+var _pending_secretary_briefing_day := 0
 
 
 # 初始化主机、端口并建立 WebSocket 连接。
@@ -78,6 +83,21 @@ func _process(delta: float) -> void:
 			_reconnect_left = RECONNECT_INTERVAL
 
 
+# 全局按住 T 与眼镜秘书搭话；只处理未被表单输入框消费的按键事件。
+func _unhandled_input(event: InputEvent) -> void:
+	if not event is InputEventKey:
+		return
+	var key_event := event as InputEventKey
+	if key_event.physical_keycode != KEY_T:
+		return
+	if key_event.pressed:
+		if key_event.echo or _secretary_chat_recording:
+			return
+		secretary_chat_start()
+	elif _secretary_chat_recording:
+		secretary_chat_stop()
+
+
 # 返回当前是否已连接到 GLASS 服务。
 func is_connected_to_glass() -> bool:
 	return _connected
@@ -133,6 +153,75 @@ func secretary_react(phase: String, parcel_no: int, weight: int, dest: String, d
 # 发送秘书台词事件到 GLASS。
 func secretary_line(text: String) -> void:
 	emit_reality_event("secretary_line", {"text": text})
+
+
+# 将当天晨报和玩家过往决策发送给眼镜端，供秘书后台整理谈资，不触发朗读。
+func secretary_daybrief(day: int, newspaper: Array, decisions: Array = []) -> void:
+	_secretary_daybrief_sent_at_msec = Time.get_ticks_msec()
+	emit_reality_event(
+		"secretary_daybrief",
+		{
+			"day": day,
+			"newspaper": newspaper,
+			"decisions": decisions,
+		}
+	)
+
+
+# 玩家到岗后让秘书基于已准备的晨报谈资发起闲聊。
+# 即使场景提前调用，也会在桥内保证 daybrief 至少留出约 2.5 秒网络往返时间。
+func secretary_briefing_chat(day: int = 0) -> void:
+	_pending_secretary_briefing_day = day
+	if _secretary_briefing_chat_pending:
+		return
+	_secretary_briefing_chat_pending = true
+	_dispatch_secretary_briefing_chat_when_ready()
+
+
+# 定时回调每次都会重新核对最近一次 daybrief；若谈资刚被刷新，则继续等待。
+func _dispatch_secretary_briefing_chat_when_ready() -> void:
+	var wait_seconds := 0.0
+	if _secretary_daybrief_sent_at_msec >= 0:
+		var elapsed_seconds := (Time.get_ticks_msec() - _secretary_daybrief_sent_at_msec) / 1000.0
+		wait_seconds = SECRETARY_DAYBRIEF_LEAD_SECONDS - elapsed_seconds
+	if wait_seconds > 0.0:
+		get_tree().create_timer(wait_seconds).timeout.connect(_dispatch_secretary_briefing_chat_when_ready, CONNECT_ONE_SHOT)
+		return
+	_secretary_briefing_chat_pending = false
+	var data := {}
+	if _pending_secretary_briefing_day > 0:
+		data["day"] = _pending_secretary_briefing_day
+	emit_reality_event("secretary_briefing_chat", data)
+
+
+# 玩家加入或撤出日终候选档案时，让秘书结合客观提示进行评论。
+func secretary_pick_comment(form_id: String, title: String, action: String, remaining_slots: int = -1, fact_hint: String = "") -> void:
+	var data := {
+		"formId": form_id,
+		"title": title,
+		"action": action,
+	}
+	if remaining_slots >= 0:
+		data["remainingSlots"] = remaining_slots
+	if not fact_hint.is_empty():
+		data["factHint"] = fact_hint
+	emit_reality_event("secretary_pick_comment", data)
+
+
+# 按住说话键时打断秘书朗读，并通知眼镜端开始录音。
+func secretary_chat_start() -> void:
+	if _secretary_chat_recording:
+		return
+	_secretary_chat_recording = true
+	emit_reality_event("secretary_chat_start")
+
+
+# 松开说话键时通知眼镜端停止录音并生成多轮对话回复。
+func secretary_chat_stop() -> void:
+	if not _secretary_chat_recording:
+		return
+	_secretary_chat_recording = false
+	emit_reality_event("secretary_chat_stop")
 
 
 # 发送 NPC 台词事件到 GLASS，可附带性别、年龄与头像信息。

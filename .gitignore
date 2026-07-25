@@ -2,4 +2,5 @@
 .godot/
 .venv/
 /android/
+/build/
 .DS_Store

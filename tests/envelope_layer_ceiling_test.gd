@@ -28,21 +28,12 @@ func run() -> void:
 		if not child_node is CanvasItem:
 			continue
 		var child := child_node as CanvasItem
-		assert(
-			manager.desk_items._effective_z_index(child) < DeskItemController.HELD_LAYER,
-			"envelope child %s must remain strictly below 999" % child.name
-		)
-	assert(
-		manager.desk_items._effective_z_index(presenter.envelope_front_cover) <= 997,
-		"the envelope cover must leave layer 998 free for the next ordinary desk item"
-	)
+		assert(manager.desk_items._effective_z_index(child) < DeskItemController.HELD_LAYER, "envelope child %s must remain strictly below 999" % child.name)
+	assert(manager.desk_items._effective_z_index(presenter.envelope_front_cover) <= 997, "the envelope cover must leave layer 998 free for the next ordinary desk item")
 	for thumbnail_value: Variant in presenter.thumbnail_by_id.values():
 		var thumbnail := thumbnail_value as Button
 		assert(thumbnail.z_index == 0, "pocket previews must use scene order instead of adding their slot to Z-index")
-		assert(
-			manager.desk_items._effective_z_index(thumbnail) < DeskItemController.HELD_LAYER,
-			"nested pocket previews must also remain strictly below 999"
-		)
+		assert(manager.desk_items._effective_z_index(thumbnail) < DeskItemController.HELD_LAYER, "nested pocket previews must also remain strictly below 999")
 
 	# 透明封皮拖拽区即使先收到 Godot GUI 事件，也必须把按下交给真正位于
 	# 最前面的桌面物件，不能因为场景树创建顺序而抢走表单交互。
@@ -55,6 +46,7 @@ func run() -> void:
 	presenter.envelope_drag_handle.position = Vector2(48, 278)
 	presenter.envelope_drag_handle.size = Vector2(405, 310)
 	presenter.envelope_drag_handle.visible = true
+	assert(not presenter.envelope_drag_handle.call("_has_point", Vector2(200, -100)), "the lower drag handle must not claim the upper flap outside its own rectangle")
 	front_document.position = presenter.envelope.position + presenter.envelope_drag_handle.position + Vector2(20, 20)
 	manager.desk_items.focus_item(front_document)
 	var overlap_point: Vector2 = front_document.get_global_transform() * Vector2(10, 10)

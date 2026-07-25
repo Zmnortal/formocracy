@@ -6,6 +6,8 @@ var hit_test: Callable
 
 
 func _has_point(point: Vector2) -> bool:
+	if not Rect2(Vector2.ZERO, size).has_point(point):
+		return false
 	if hit_test.is_valid():
 		return WorkdayContext.to_bool(hit_test.call(self, point))
-	return Rect2(Vector2.ZERO, size).has_point(point)
+	return true

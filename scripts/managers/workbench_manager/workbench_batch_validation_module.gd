@@ -348,6 +348,7 @@ func _on_archive_pressed(archive_id: String, button: Button) -> void:
 	buttons.erase(archive_id)
 	button.queue_free()
 	ingesting = false
+	_send_secretary_pick_comment(archive_id)
 	machine_lights.modulate = Color(1.0, 0.82, 0.52, 0.72)
 	machine_state_label.text = "文件袋已吞入 · %s" % archive_id
 	instruction_label.text = "该档案已进入机器，不得撤回"
@@ -446,6 +447,32 @@ func _get_selected_archives() -> Array[Dictionary]:
 		if WorkdayContext.read_string(archive, "archive_id") in selected_ids:
 			selected.append(archive.duplicate(true))
 	return selected
+
+
+# 文件袋完成吞入后，把这次不可撤回的选择交给眼镜秘书评论。
+func _send_secretary_pick_comment(archive_id: String) -> void:
+	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
+	if bridge == null:
+		return
+	for archive: Dictionary in _get_pending_archives():
+		if WorkdayContext.read_string(archive, "archive_id") != archive_id:
+			continue
+		var errors := WorkdayContext.read_array(archive, "procedure_errors")
+		var waiting_days := WorkdayContext.read_int(archive, "waiting_days")
+		var fact_parts: Array[String] = []
+		if not errors.is_empty():
+			fact_parts.append("程序记录存在 %d 项异常" % errors.size())
+		if waiting_days > 0:
+			fact_parts.append("该档案已等待 %d 日" % waiting_days)
+		bridge.call(
+			"secretary_pick_comment",
+			WorkdayContext.read_string(archive, "case_id", archive_id),
+			WorkdayContext.read_string(archive, "request", WorkdayContext.read_string(archive, "applicant", "未登记档案")),
+			"add",
+			maxi(0, _current_batch_limit() - selected_ids.size()),
+			"；".join(fact_parts)
+		)
+		return
 
 
 func _send_validation_receipts(archives: Array[Dictionary]) -> void:
