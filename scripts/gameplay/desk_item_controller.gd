@@ -72,6 +72,8 @@ func register_item(
 # 注销指定桌面实体。
 func unregister_item(item_id: String) -> void:
 	var removed: Variant = items.get(item_id)
+	if is_instance_valid(removed) and removed is Control:
+		_set_item_selected(removed as Control, false)
 	if not is_instance_valid(active_item) or (is_instance_valid(removed) and removed == active_item):
 		active_item = null
 	if not is_instance_valid(focused_item) or (is_instance_valid(removed) and removed == focused_item):
@@ -83,6 +85,9 @@ func unregister_item(item_id: String) -> void:
 func _on_item_input(event: InputEvent, item: Control) -> void:
 	if event is InputEventMouseButton:
 		var mouse_button: InputEventMouseButton = event
+		if mouse_button.pressed and mouse_button.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+			_adjust_selected_item_zoom(mouse_button)
+			return
 		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
 			return
 		if mouse_button.pressed:
@@ -217,6 +222,9 @@ func _anchor_grab_point(item: Control, grab_local_position: Vector2, pointer_glo
 func _focus_item(item: Control) -> void:
 	var ordered_items := _stack_items_except(item)
 	focused_item = item
+	for value: Variant in items.values():
+		if is_instance_valid(value) and value is Control:
+			_set_item_selected(value as Control, value == item)
 	item.z_index = HELD_LAYER
 	item.set_meta("desk_resting_layer", HELD_LAYER)
 	_persist_item_layer(item, HELD_LAYER)
@@ -234,6 +242,24 @@ func focus_item(item: Control) -> void:
 	if not is_instance_valid(item):
 		return
 	_focus_item(item)
+
+
+# 仅当滚轮位于当前选中材料内部时，才转发中心缩放命令。
+func _adjust_selected_item_zoom(event: InputEventMouseButton) -> void:
+	if not is_instance_valid(focused_item):
+		return
+	var target := _frontmost_item_at_global(event.global_position)
+	if target != focused_item or not target.has_method("adjust_user_zoom"):
+		return
+	var direction := 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1
+	if WorkdayContext.to_bool(target.call("adjust_user_zoom", direction)):
+		root.get_viewport().set_input_as_handled()
+
+
+# 桌面控制器保持通用；只有实现 set_selected() 的材料会绘制选中反馈。
+func _set_item_selected(item: Control, selected: bool) -> void:
+	if item.has_method("set_selected"):
+		item.call("set_selected", selected)
 
 
 # 返回除当前选中项外的桌面堆栈，并保持它们原有的前后顺序。

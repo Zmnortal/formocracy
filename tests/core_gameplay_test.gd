@@ -39,8 +39,13 @@ func run() -> void:
 	assert(desk.has_node("FilingCabinet") and desk.has_node("WallCalendar"), "remaining office props must stay as independent scene nodes")
 	assert(not desk.has_node("NumberMachine"), "the retired reputation counter must not remain on the desk")
 	assert(
-		desk.has_node("ServiceWindowForeground") and desk.has_node("ServiceWindowGlass") and desk.has_node("WorktableForeground"),
-		"service window, glass, and worktable must be independent foreground layers"
+		(
+			desk.has_node("NpcExitForegroundOccluder")
+			and desk.has_node("ServiceWindowForeground")
+			and desk.has_node("ServiceWindowGlass")
+			and desk.has_node("WorktableForeground")
+		),
+		"exit occluder, service window, glass, and worktable must be independent foreground layers"
 	)
 	var worktable := desk.get_node("WorktableForeground") as TextureRect
 	var desk_bounds := desk.get_node("DeskBounds") as Control
@@ -56,8 +61,13 @@ func run() -> void:
 	assert(WorkdayContext.to_float(worktable_material.get_shader_parameter("bottom_inset")) > 0.0, "the narrower edge must retain an inset inside the expanded bounds")
 	var service_window := desk.get_node("ServiceWindowForeground") as CanvasItem
 	var service_glass := desk.get_node("ServiceWindowGlass") as CanvasItem
+	var exit_occluder := desk.get_node("NpcExitForegroundOccluder") as TextureRect
+	var wall_clock := desk.get_node("InstitutionalWallClock") as CanvasItem
 	assert(service_window.z_index > manager.npc_performance.actor_layer.z_index, "NPC must render behind the service-window frame")
 	assert(service_glass.z_index > manager.npc_performance.actor_layer.z_index, "NPC must render behind the protective glass tint")
+	assert(exit_occluder.z_index > manager.npc_performance.actor_layer.z_index, "departing NPCs must pass behind the baked left wall and column")
+	assert(exit_occluder.texture is AtlasTexture and (exit_occluder.texture as AtlasTexture).region == Rect2(0, 0, 370, 720), "exit occluder must reuse the exact left-side pixels from the gameplay background")
+	assert(wall_clock.z_index > exit_occluder.z_index, "the independent wall clock must remain visible in front of the exit occluder")
 	assert(manager.npc_performance.actor_layer.z_index >= 0 and manager.presenter.envelope.z_index > background.z_index, "interactive NPCs and envelope must render over the background")
 	var presenter: Variant = manager.presenter
 	assert(not presenter.envelope_opened, "delivered envelope must start sealed")

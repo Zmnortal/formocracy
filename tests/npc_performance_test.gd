@@ -29,6 +29,48 @@ func run() -> void:
 		main.manager.npc_performance._dialogue_lines({"greeting": ["第一句", "", "第二句"]}, "greeting") == ["第一句", "第二句"],
 		"story dialogue arrays must preserve order and ignore empty lines",
 	)
+	assert(main.manager.npc_performance._waiting_phase_key(0) == "waiting_public", "the first waiting stage must use public-facing character lines")
+	assert(main.manager.npc_performance._waiting_phase_key(2) == "waiting_personal", "the second waiting stage must reveal personal character lines")
+	assert(main.manager.npc_performance._waiting_phase_key(4) == "waiting_identity", "the third waiting stage must reveal identity conflicts")
+	assert(main.manager.npc_performance._waiting_phase_key(6) == "waiting_story", "later waiting stages must reveal story hints")
+	var sampled_waiting_lines: Dictionary = {}
+	main.manager.npc_performance.waiting_dialogue_seen.clear()
+	main.manager.npc_performance.waiting_dialogue_index = 0
+	for dialogue_index in 20:
+		main.manager.npc_performance.waiting_dialogue_index = dialogue_index
+		var waiting_line: String = main.manager.npc_performance._next_waiting_dialogue_line({})
+		assert(not waiting_line.is_empty(), "the current existing NPC must expose all twenty daily chatter lines")
+		assert(not sampled_waiting_lines.has(waiting_line), "staged waiting dialogue must not repeat within the same case")
+		sampled_waiting_lines[waiting_line] = true
+	assert(sampled_waiting_lines.size() == 20, "the existing NPC idle chatter pool must provide twenty unique lines")
+	var current_case_backup: Dictionary = main.manager.npc_performance.current_case
+	var general_case: Dictionary = current_case_backup.duplicate(true)
+	general_case["content_kind"] = "general"
+	main.manager.npc_performance.current_case = general_case
+	main.manager.npc_performance.waiting_dialogue_seen.clear()
+	var approval_sequence: Array[String] = main.manager.npc_performance._case_or_profile_dialogue_lines(
+		{"approved": ["案件批准结果"]},
+		"approved",
+	)
+	assert(approval_sequence.size() == 2, "approval flow must append one character-specific reaction")
+	assert(approval_sequence[0] == "案件批准结果", "case-specific approval information must remain first")
+	assert(approval_sequence[1] != "案件批准结果", "the appended approval line must come from the character profile")
+	main.manager.npc_performance.current_case = current_case_backup
+	var story_approval_sequence: Array[String] = main.manager.npc_performance._case_or_profile_dialogue_lines(
+		{"approved": ["关键结果一", "关键结果二"]},
+		"approved",
+	)
+	assert(story_approval_sequence == ["关键结果一", "关键结果二"], "story decisions must retain their original dialogue and timing")
+	main.manager.npc_performance.current_case = {"person": {"id": "PERSON-WITHOUT-PROFILE"}}
+	main.manager.npc_performance.waiting_dialogue_seen.clear()
+	main.manager.npc_performance.waiting_dialogue_index = 0
+	assert(
+		main.manager.npc_performance._next_waiting_dialogue_line({"waiting": "旧案件等待台词"}) == "旧案件等待台词",
+		"cases without a character profile must retain their legacy waiting dialogue",
+	)
+	main.manager.npc_performance.current_case = current_case_backup
+	main.manager.npc_performance.waiting_dialogue_seen.clear()
+	main.manager.npc_performance.waiting_dialogue_index = 0
 
 	assert(main.manager.npc_performance.state == "GREETING", "first NPC must begin directly at the counter")
 	assert(is_instance_valid(main.manager.npc_performance.current_actor), "current NPC actor must be visible")
@@ -101,9 +143,14 @@ func run() -> void:
 	)
 	var worktable := main.get_node("WorktableForeground")
 	var service_window := main.get_node("ServiceWindowForeground")
+	var exit_occluder := main.get_node("NpcExitForegroundOccluder")
 	assert(
 		main.manager.npc_performance.actor_layer.z_index < service_window.z_index and service_window.z_index < worktable.z_index,
 		"NPC, service window, and worktable must form the requested back-to-front stack"
+	)
+	assert(
+		main.manager.npc_performance.actor_layer.z_index < exit_occluder.z_index,
+		"the full-body NPC must pass behind the independent left-wall exit occluder"
 	)
 	assert(main.manager.npc_performance.actor_layer.get_parent() == main, "the renderer must keep the full-body actor uncut and rely on foreground assets")
 	assert(main.manager.npc_performance.queue_case_ids.slice(0, 2) == ["CASE-002", "CASE-003"], "queue actors must retain the fixed day-one gameplay identities")

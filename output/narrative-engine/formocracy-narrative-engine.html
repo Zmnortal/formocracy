@@ -1,0 +1,2745 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FORMOCRACY · 七日叙事控制台</title>
+  <style>
+    :root {
+      --paper: #e8e0cf;
+      --paper-deep: #d9cfbb;
+      --paper-light: #f4eedf;
+      --ink: #171713;
+      --muted: #6f685c;
+      --line: #9b907d;
+      --red: #9b2c23;
+      --red-dark: #661d18;
+      --amber: #a86b16;
+      --green: #426148;
+      --blue: #3d5665;
+      --shadow: rgba(35, 29, 20, 0.18);
+      --mono: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+      --serif: "Songti SC", "Noto Serif CJK SC", "STSong", serif;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: #282720;
+      color: var(--ink);
+    }
+
+    body {
+      font-family: var(--serif);
+      overflow: hidden;
+    }
+
+    button { font: inherit; }
+
+    .shell {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      width: 100%;
+      min-height: 100vh;
+      padding: 18px;
+      background: #282720;
+    }
+
+    .shell::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .23;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+    }
+
+    .masthead {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(430px, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      padding: 18px 22px 16px;
+      border: 1px solid #5a554a;
+      border-bottom: 4px double var(--ink);
+      background: var(--paper);
+      box-shadow: 0 10px 24px rgba(0,0,0,.24);
+    }
+
+    .eyebrow,
+    .stamp,
+    .metric-label,
+    .status-chip,
+    .node-day,
+    .node-id,
+    .lane-code,
+    .panel-kicker,
+    .legend,
+    .decision-button,
+    .impact-day,
+    .risk-meta,
+    .footer-note {
+      font-family: var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 2.4vw, 40px);
+      line-height: .98;
+      letter-spacing: -.04em;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 9px 0 0;
+      color: #554f45;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .head-right {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(82px, auto));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .view-switch {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--ink);
+    }
+
+    .view-button {
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      cursor: pointer;
+    }
+
+    .view-button + .view-button { border-left: 1px solid var(--ink); }
+
+    .view-button.is-active {
+      background: var(--ink);
+      color: var(--paper-light);
+    }
+
+    .metric {
+      min-width: 92px;
+      padding: 9px 11px;
+      border-left: 1px solid var(--line);
+    }
+
+    .metric-value {
+      display: block;
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .metric-label {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.3;
+    }
+
+    .workspace {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      min-height: 0;
+      border: 1px solid #5a554a;
+      border-top: 0;
+      background: var(--paper-deep);
+      box-shadow: 0 16px 38px rgba(0,0,0,.28);
+    }
+
+    .map-section {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-right: 1px solid var(--ink);
+    }
+
+    .map-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 49px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-light);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-mark {
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .legend-mark.implemented { border-left: 4px solid var(--green); }
+    .legend-mark.design {
+      height: 0;
+      border: 0;
+      border-top: 2px dashed var(--red);
+      background: transparent;
+    }
+
+    .focus-note {
+      margin: 0;
+      font-size: 12px;
+      color: #4b453c;
+    }
+
+    .focus-note strong { color: var(--red-dark); }
+
+    .map-scroll {
+      min-height: 0;
+      overflow: auto;
+      scrollbar-color: #867b68 var(--paper-deep);
+    }
+
+    .narrative-map {
+      --label-column: 178px;
+      --day-column: 138px;
+      position: relative;
+      display: grid;
+      grid-template-columns: var(--label-column) repeat(7, var(--day-column));
+      grid-template-rows: 58px repeat(4, 147px);
+      width: calc(var(--label-column) + 7 * var(--day-column));
+      min-height: 646px;
+      isolation: isolate;
+      background-color: var(--paper);
+    }
+
+    .day-head,
+    .corner-head,
+    .lane-head,
+    .map-cell {
+      position: relative;
+      border-right: 1px solid rgba(91,80,62,.27);
+      border-bottom: 1px solid rgba(91,80,62,.29);
+    }
+
+    .corner-head {
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      grid-column: 1;
+      grid-row: 1;
+      border-right-color: var(--ink);
+      background: #d3c8b3;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .day-head {
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: rgba(244,238,223,.91);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .day-head strong {
+      font-size: 21px;
+      letter-spacing: -.07em;
+    }
+
+    .day-head[data-day="3"] {
+      color: var(--red-dark);
+      box-shadow: inset 0 -4px 0 var(--red);
+    }
+
+    .lane-head {
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 15px 17px;
+      border-right-color: var(--ink);
+      background: rgba(217,207,187,.95);
+    }
+
+    .lane-code {
+      color: var(--red);
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .lane-title {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.16;
+    }
+
+    .lane-subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .map-cell { z-index: 0; }
+    .map-cell.day-three { background: rgba(155,44,35,.035); }
+
+    .causal-lines {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .causal-path {
+      fill: none;
+      stroke: rgba(112,86,64,.36);
+      stroke-width: 1.5;
+      stroke-dasharray: 5 5;
+      vector-effect: non-scaling-stroke;
+      transition: stroke .18s ease, stroke-width .18s ease, opacity .18s ease;
+    }
+
+    .causal-path.is-active {
+      stroke: var(--red);
+      stroke-width: 3;
+      stroke-dasharray: 0;
+      filter: drop-shadow(0 1px 0 rgba(255,255,255,.7));
+    }
+
+    .case-node {
+      position: relative;
+      z-index: 2;
+      align-self: center;
+      justify-self: center;
+      width: 118px;
+      min-height: 96px;
+      padding: 9px 9px 8px;
+      border: 1px solid #615846;
+      border-left: 5px solid var(--green);
+      background: rgba(246,240,226,.97);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 3px 4px 0 rgba(81,69,50,.16);
+      transition: transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+
+    .case-node:hover,
+    .case-node:focus-visible {
+      transform: translateY(-2px);
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    .case-node.is-selected {
+      border-color: var(--red-dark);
+      border-left-color: var(--red);
+      background: #fff8e8;
+      box-shadow: 5px 6px 0 rgba(102,29,24,.22);
+    }
+
+    .case-node.is-downstream {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 2px rgba(168,107,22,.18), 3px 4px 0 rgba(81,69,50,.16);
+    }
+
+    .case-node.is-muted { opacity: .43; }
+
+    .case-node.has-outcome::after {
+      content: attr(data-outcome);
+      position: absolute;
+      right: -7px;
+      bottom: -7px;
+      padding: 3px 5px 2px;
+      border: 1px solid currentColor;
+      background: var(--paper-light);
+      color: var(--red-dark);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+      transform: rotate(-3deg);
+    }
+
+    .node-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      color: var(--muted);
+    }
+
+    .node-day,
+    .node-id {
+      font-size: 7px;
+      font-weight: 800;
+    }
+
+    .node-title {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .node-npc {
+      display: block;
+      margin-top: 7px;
+      color: var(--red-dark);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .node-form {
+      display: block;
+      margin-top: 3px;
+      overflow: hidden;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 7px;
+      line-height: 1.25;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 6px;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .map-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 45px;
+      padding: 8px 14px;
+      border-top: 1px solid var(--line);
+      background: #d3c8b3;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 8px;
+      line-height: 1.45;
+    }
+
+    .reset-button {
+      flex: none;
+      padding: 7px 10px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .reset-button:hover,
+    .reset-button:focus-visible {
+      background: var(--ink);
+      color: var(--paper-light);
+    }
+
+    .inspector {
+      min-height: 0;
+      overflow-y: auto;
+      background: var(--paper-light);
+      scrollbar-color: #867b68 var(--paper-deep);
+    }
+
+    .panel-block {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-kicker {
+      margin: 0 0 8px;
+      color: var(--red);
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .case-heading {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -.025em;
+    }
+
+    .case-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .meta-tag {
+      padding: 3px 6px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 800;
+    }
+
+    .case-summary {
+      margin: 11px 0 0;
+      color: #514a40;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .decision-button {
+      min-height: 42px;
+      padding: 8px 5px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .decision-button:hover,
+    .decision-button:focus-visible { background: #e4d9c4; }
+
+    .decision-button.is-active {
+      border-color: var(--red-dark);
+      background: var(--red-dark);
+      color: #fff6e5;
+    }
+
+    .decision-hint {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .direct-result {
+      margin: 0;
+      padding-left: 18px;
+      color: #3f3a32;
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .direct-result li + li { margin-top: 6px; }
+
+    .impact-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .impact-item {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 9px;
+      padding: 9px;
+      border-left: 3px solid var(--amber);
+      background: #e5dbc7;
+    }
+
+    .impact-day {
+      color: var(--red-dark);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .impact-copy strong {
+      display: block;
+      font-size: 11px;
+    }
+
+    .impact-copy span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .empty-state {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .risk-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 30px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .risk-name {
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .risk-track {
+      height: 7px;
+      border: 1px solid #827664;
+      background: #d0c4ae;
+    }
+
+    .risk-fill {
+      height: 100%;
+      width: 50%;
+      background: var(--blue);
+      transition: width .25s ease, background .25s ease;
+    }
+
+    .risk-value {
+      font-family: var(--mono);
+      font-size: 9px;
+      text-align: right;
+    }
+
+    .ending-card {
+      margin-top: 12px;
+      padding: 10px 11px;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .ending-card strong {
+      display: block;
+      color: var(--red-dark);
+      font-size: 13px;
+    }
+
+    .ending-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .risk-meta {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 8px;
+      line-height: 1.45;
+    }
+
+    .dialogue-workspace {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 180px minmax(600px, 1fr) 330px;
+      min-height: 0;
+      border: 1px solid #5a554a;
+      border-top: 0;
+      background: var(--paper-deep);
+      box-shadow: 0 16px 38px rgba(0,0,0,.28);
+    }
+
+    .day-ledger,
+    .dialogue-registry {
+      min-height: 0;
+      overflow-y: auto;
+      background: #d3c8b3;
+    }
+
+    .day-ledger {
+      border-right: 1px solid var(--ink);
+    }
+
+    .dialogue-registry {
+      border-left: 1px solid var(--ink);
+      background: var(--paper-light);
+    }
+
+    .ledger-head,
+    .registry-head {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .06em;
+    }
+
+    .day-list {
+      display: grid;
+      padding: 8px;
+      gap: 6px;
+    }
+
+    .day-button {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 8px;
+      min-height: 62px;
+      padding: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .day-button:hover,
+    .day-button:focus-visible {
+      border-color: var(--line);
+      background: rgba(244,238,223,.45);
+    }
+
+    .day-button.is-active {
+      border-color: var(--red-dark);
+      background: var(--paper-light);
+      box-shadow: inset 4px 0 0 var(--red);
+    }
+
+    .day-number {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.08em;
+    }
+
+    .day-copy {
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .day-copy strong {
+      overflow: hidden;
+      font-size: 11px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .day-copy span {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 7px;
+    }
+
+    .dialogue-editor {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      background: var(--paper);
+    }
+
+    .dialogue-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--ink);
+      background: var(--paper-light);
+    }
+
+    .dialogue-title-wrap { min-width: 0; }
+
+    .dialogue-title-wrap .panel-kicker { margin-bottom: 4px; }
+
+    .dialogue-day-title {
+      margin: 0;
+      overflow: hidden;
+      font-size: 20px;
+      line-height: 1.1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .draft-state {
+      flex: none;
+      padding: 5px 8px;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .draft-state.is-dirty {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .period-columns {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    .period-column {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .period-column + .period-column { border-left: 1px solid var(--ink); }
+
+    .period-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #ddd2bd;
+    }
+
+    .period-title {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-weight: 900;
+    }
+
+    .period-title small {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 8px;
+    }
+
+    .add-line-button {
+      padding: 6px 8px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .add-line-button:hover,
+    .add-line-button:focus-visible {
+      background: var(--ink);
+      color: var(--paper-light);
+    }
+
+    .dialogue-lines {
+      min-height: 0;
+      overflow-y: auto;
+      padding: 10px;
+      scrollbar-color: #867b68 var(--paper-deep);
+    }
+
+    .line-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(92px, .7fr) minmax(92px, .7fr) minmax(82px, .55fr);
+      gap: 7px;
+      margin-bottom: 9px;
+      padding: 11px;
+      border: 1px solid #8f826e;
+      border-left: 4px solid var(--green);
+      background: rgba(246,240,226,.96);
+      box-shadow: 2px 3px 0 rgba(81,69,50,.12);
+    }
+
+    .line-card[data-status="draft"] { border-left-color: var(--amber); }
+
+    .field {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .field-wide { grid-column: 1 / -1; }
+
+    .field label {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: .06em;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      border-bottom: 1px solid #978b78;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 11px;
+    }
+
+    .field input,
+    .field select {
+      height: 28px;
+      padding: 4px 2px;
+    }
+
+    .field textarea {
+      min-height: 64px;
+      padding: 7px 2px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: 0;
+      border-bottom-color: var(--red);
+      box-shadow: 0 1px 0 var(--red);
+    }
+
+    .line-footer {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 7px;
+    }
+
+    .delete-line {
+      border: 0;
+      background: transparent;
+      color: var(--red-dark);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .registry-section {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .registry-section .panel-kicker { margin-bottom: 10px; }
+
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .coverage-card {
+      padding: 9px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .coverage-card strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 20px;
+    }
+
+    .coverage-card span {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .registry-actions {
+      display: grid;
+      gap: 7px;
+    }
+
+    .registry-button {
+      min-height: 34px;
+      padding: 7px 9px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .registry-button.primary {
+      background: var(--ink);
+      color: var(--paper-light);
+    }
+
+    .registry-button.danger {
+      border-color: var(--red-dark);
+      color: var(--red-dark);
+    }
+
+    .registry-button:hover,
+    .registry-button:focus-visible { box-shadow: inset 0 0 0 2px var(--amber); }
+
+    .registry-note,
+    .registry-status {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .registry-status {
+      min-height: 33px;
+      padding: 8px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+    }
+
+    .registry-status.is-error { border-left-color: var(--red); }
+
+    @media (max-width: 1050px) {
+      body { overflow: auto; }
+      .shell { min-height: 100vh; padding: 10px; }
+      .masthead {
+        grid-template-columns: 1fr;
+        gap: 13px;
+      }
+      .head-right { justify-content: start; }
+      .workspace {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      .map-section {
+        min-height: 690px;
+        border-right: 0;
+        border-bottom: 1px solid var(--ink);
+      }
+      .inspector { overflow: visible; }
+      .dialogue-workspace {
+        grid-template-columns: 150px minmax(620px, 1fr);
+        min-height: 760px;
+        overflow-x: auto;
+      }
+      .dialogue-registry {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--ink);
+        border-left: 0;
+        overflow: visible;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .masthead { padding: 14px; }
+      .head-right { grid-template-columns: repeat(3, 1fr); }
+      .metric { min-width: 0; padding: 7px; }
+      .metric-value { font-size: 19px; }
+      .map-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .focus-note { font-size: 11px; }
+      .panel-block { padding: 14px; }
+      .view-switch { margin-bottom: 3px; }
+      .dialogue-workspace {
+        display: block;
+        min-height: 0;
+        overflow: visible;
+      }
+      .day-ledger {
+        overflow: hidden;
+        border-right: 0;
+        border-bottom: 1px solid var(--ink);
+      }
+      .day-list {
+        grid-auto-flow: column;
+        grid-auto-columns: 150px;
+        overflow-x: auto;
+      }
+      .period-columns {
+        display: block;
+        overflow: visible;
+      }
+      .period-column { min-height: 520px; }
+      .period-column + .period-column {
+        border-top: 1px solid var(--ink);
+        border-left: 0;
+      }
+      .dialogue-registry {
+        border-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">FORMOCRACY / NARRATIVE OPERATIONS ENGINE / OFFLINE DESK</p>
+        <h1>七日叙事控制台</h1>
+        <p class="subtitle">在“因果图”推演批准、驳回与未发生的后果；在“昼夜文案”统一维护每天白天和晚上的场景台词。</p>
+      </div>
+      <div class="head-right" aria-label="叙事配置概览">
+        <nav class="view-switch" aria-label="引擎模式">
+          <button class="view-button is-active" data-view="causality" type="button">因果图 / CAUSALITY</button>
+          <button class="view-button" data-view="dialogue" type="button">昼夜文案 / COPY DESK</button>
+        </nav>
+        <div class="metric">
+          <span class="metric-value">11/11</span>
+          <span class="metric-label">剧情案件已接入</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">0</span>
+          <span class="metric-label">条件分支已接入</span>
+        </div>
+        <div class="metric">
+          <span class="metric-value">07</span>
+          <span class="metric-label">叙事工作日</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace" id="causalityView">
+      <section class="map-section" aria-label="七日叙事矩阵">
+        <div class="map-toolbar">
+          <p class="focus-note"><strong>当前示例：</strong>第三天发生、被驳回或未发生，会怎样改变后四天？</p>
+          <div class="legend" aria-label="图例">
+            <span class="legend-item"><i class="legend-mark implemented"></i> 案件已接入</span>
+            <span class="legend-item"><i class="legend-mark design"></i> 因果边为设计推演</span>
+          </div>
+        </div>
+
+        <div class="map-scroll" id="mapScroll">
+          <div class="narrative-map" id="narrativeMap" data-testid="narrative-map">
+            <div class="corner-head">STORYLINE / DAY</div>
+            <svg class="causal-lines" id="causalLines" aria-hidden="true">
+              <defs>
+                <marker id="arrowNeutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#776d5f"></path>
+                </marker>
+                <marker id="arrowActive" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#9b2c23"></path>
+                </marker>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <div class="map-footer">
+          <p class="footer-note">READING RULE / 绿色左边框＝运行时案件存在 · 红色因果线＝依据叙事文档的可实现推演 · 选择会保留并累计到结局指标</p>
+          <button class="reset-button" id="resetButton" type="button">清空全部推演</button>
+        </div>
+      </section>
+
+      <aside class="inspector" aria-live="polite">
+        <section class="panel-block">
+          <p class="panel-kicker" id="selectedKicker">DAY 03 / STORY CASE</p>
+          <h2 class="case-heading" id="selectedTitle">失踪月份</h2>
+          <div class="case-meta" id="selectedMeta"></div>
+          <p class="case-summary" id="selectedSummary"></p>
+        </section>
+
+        <section class="panel-block">
+          <p class="panel-kicker">01 / 选择本案结果</p>
+          <div class="decision-row" role="group" aria-label="案件结果">
+            <button class="decision-button" data-outcome="approved" type="button">批准</button>
+            <button class="decision-button" data-outcome="rejected" type="button">驳回</button>
+            <button class="decision-button" data-outcome="missing" type="button">未发生</button>
+          </div>
+          <p class="decision-hint">“未发生”用于检查某条剧情被跳过、未排期或未触发时，后续会失去什么。</p>
+        </section>
+
+        <section class="panel-block">
+          <p class="panel-kicker">02 / 立即发生</p>
+          <ul class="direct-result" id="directResult">
+            <li>选择一个结果，查看人物与状态变化。</li>
+          </ul>
+        </section>
+
+        <section class="panel-block">
+          <p class="panel-kicker">03 / 后续问题</p>
+          <div class="impact-list" id="impactList">
+            <p class="empty-state">选择结果后，这里会列出受影响的后续案件。</p>
+          </div>
+        </section>
+
+        <section class="panel-block">
+          <p class="panel-kicker">04 / 七日结局倾向</p>
+          <div class="risk-list" id="riskList"></div>
+          <div class="ending-card">
+            <strong id="endingTitle">尚未形成结局倾向</strong>
+            <span id="endingCopy">对案件做出选择后，四项指标会累计变化。</span>
+          </div>
+          <p class="risk-meta" id="riskMeta">0 个案件已参与推演 · 50 为中性基线</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="dialogue-workspace" id="dialogueView" hidden>
+      <aside class="day-ledger">
+        <div class="ledger-head">七日文案目录 / DAYS</div>
+        <nav class="day-list" id="dayList" aria-label="选择工作日"></nav>
+      </aside>
+
+      <section class="dialogue-editor">
+        <header class="dialogue-toolbar">
+          <div class="dialogue-title-wrap">
+            <p class="panel-kicker" id="dialogueDayKicker">DAY 01 / COPY REGISTER</p>
+            <h2 class="dialogue-day-title" id="dialogueDayTitle">申请表本身</h2>
+          </div>
+          <span class="draft-state" id="draftState">项目基线</span>
+        </header>
+
+        <div class="period-columns">
+          <section class="period-column" aria-label="白天文案">
+            <header class="period-head">
+              <div class="period-title">白天 <small id="daytimeCount">0 LINES</small></div>
+              <button class="add-line-button" data-period="daytime" type="button">＋ 添加白天台词</button>
+            </header>
+            <div class="dialogue-lines" id="daytimeLines"></div>
+          </section>
+
+          <section class="period-column" aria-label="夜间文案">
+            <header class="period-head">
+              <div class="period-title">夜晚 <small id="eveningCount">0 LINES</small></div>
+              <button class="add-line-button" data-period="evening" type="button">＋ 添加夜间台词</button>
+            </header>
+            <div class="dialogue-lines" id="eveningLines"></div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="dialogue-registry">
+        <div class="registry-head">文案登记 / REGISTRY</div>
+        <section class="registry-section">
+          <p class="panel-kicker">01 / 当前覆盖</p>
+          <div class="coverage-grid">
+            <div class="coverage-card"><strong id="totalDialogueCount">0</strong><span>全部台词</span></div>
+            <div class="coverage-card"><strong id="draftDialogueCount">0</strong><span>待接入草案</span></div>
+            <div class="coverage-card"><strong id="implementedDialogueCount">0</strong><span>已在游戏出现</span></div>
+            <div class="coverage-card"><strong id="coveredDaysCount">0/7</strong><span>昼夜完整天数</span></div>
+          </div>
+        </section>
+
+        <section class="registry-section">
+          <p class="panel-kicker">02 / 保存与移交</p>
+          <div class="registry-actions">
+            <button class="registry-button primary" id="exportDialogueButton" type="button">导出 daily_dialogue.json</button>
+            <button class="registry-button" id="copyDialogueButton" type="button">复制完整 JSON</button>
+            <button class="registry-button" id="importDialogueButton" type="button">导入 JSON 草稿</button>
+            <button class="registry-button danger" id="resetDialogueButton" type="button">恢复项目基线</button>
+            <input id="importDialogueInput" type="file" accept="application/json,.json" hidden>
+          </div>
+        </section>
+
+        <section class="registry-section">
+          <p class="panel-kicker">03 / 当前状态</p>
+          <p class="registry-status" id="registryStatus">项目基线已载入。编辑会自动保存在本浏览器。</p>
+        </section>
+
+        <section class="registry-section">
+          <p class="panel-kicker">04 / 数据边界</p>
+          <p class="registry-note">“已接入”表示原文可追溯到现有 JSON 或 GDScript；“草案”只在本编辑台维护。离线页面不会静默覆盖项目文件，确认后请用导出的 JSON 替换 <code>data/narrative/daily_dialogue.json</code>。</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script id="dailyDialogueSeed" type="application/json">{
+  "schema_version": 1,
+  "id": "FORMOCRACY-DAILY-DIALOGUE",
+  "description": "七日昼夜文案登记表。implemented 表示文案已存在于当前游戏配置或脚本；draft 表示为后续接入准备的叙事草案。",
+  "days": [
+    {
+      "day": 1,
+      "title": "申请表本身",
+      "daytime": [
+        {
+          "id": "D01-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "铅字有些晕。只有“恢复受理”四个字印得很重。"
+        },
+        {
+          "id": "D01-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "简单事项只核验当日有效申请表。"
+        },
+        {
+          "id": "D01-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "林默",
+          "tone": "克制",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-001",
+          "text": "申请人是我和沈青禾。她今天没能来。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D01-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "scripts/scenes/after_work_corridor.gd",
+          "text": "最后一份的居住证明，日期是几号。"
+        },
+        {
+          "id": "D01-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "日常",
+          "status": "implemented",
+          "source": "data/ontology/proprietors.json",
+          "text": "表我可以发，能不能拿到东西要看你自己怎么填。"
+        },
+        {
+          "id": "D01-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "她今天没有来。可她的名字已经在我的桌上出现过了。"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "title": "申请人与身份证明",
+      "daytime": [
+        {
+          "id": "D02-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "报纸说这是一次“轻微调整”。"
+        },
+        {
+          "id": "D02-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "医疗回执以验收机记录时点判断有效期。"
+        },
+        {
+          "id": "D02-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "许桥",
+          "tone": "焦急",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-M31-D2",
+          "text": "我的伤不会替验收机多等二十三分钟。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D02-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "二十三分钟不算很久。对一张回执来说。"
+        },
+        {
+          "id": "D02-NIGHT-002",
+          "scene": "中央表单处",
+          "speaker": "何老板",
+          "tone": "讥讽",
+          "status": "implemented",
+          "source": "scripts/scenes/central_forms_scene.gd",
+          "text": "机器没坏。它只是不认可你放进去的东西。"
+        },
+        {
+          "id": "D02-NIGHT-003",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "title": "身份、住所与辖区",
+      "daytime": [
+        {
+          "id": "D03-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "同一座城，被折成了十二个不同的地址。"
+        },
+        {
+          "id": "D03-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "杜春梅",
+          "tone": "固执",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-R09-D3",
+          "text": "机器不记得他，不等于我也该忘。"
+        },
+        {
+          "id": "D03-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "沈青禾",
+          "tone": "坦白",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-X14-D3",
+          "text": "那三个月我们住在第七码头附近。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D03-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "一个名字消失了。三个月也消失了。机器今晚仍然准时。"
+        },
+        {
+          "id": "D03-NIGHT-002",
+          "scene": "宿舍 12C",
+          "speaker": "邻室职员",
+          "tone": "随口",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "码头那边以前有夜班车。后来路线图先被收走了。"
+        },
+        {
+          "id": "D03-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "如果今天没看见那几个月，第六天还会有人把它们带回来吗？"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "title": "区外、外市与境外人员",
+      "daytime": [
+        {
+          "id": "D04-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "最小的一栏，写着最长的一串例外。"
+        },
+        {
+          "id": "D04-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "境外文件必须附认证译文；北陆互惠今日暂停，紧急维修令除外。"
+        },
+        {
+          "id": "D04-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "宋铎",
+          "tone": "冷静",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-F09-D4",
+          "text": "机器不会自己改时间。它只执行一次被授权的同步。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D04-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "机器没有说谎。它只是替某个人准确地说了一次谎。"
+        },
+        {
+          "id": "D04-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "提醒",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "时间写错还能划掉。人被划掉以后，表上就干净了。"
+        },
+        {
+          "id": "D04-NIGHT-003",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "所有职员返回登记住所。"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "title": "公共急件与稀缺资源",
+      "daytime": [
+        {
+          "id": "D05-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "“有限”后面没有写具体是多少。"
+        },
+        {
+          "id": "D05-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "孟秋兰",
+          "tone": "急迫",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-P44-D5",
+          "text": "先给我水。你们愿不愿承认日期，可以以后再说。"
+        },
+        {
+          "id": "D05-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "杜春梅",
+          "tone": "疲惫",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-M52-D5",
+          "text": "它却不记得一个人断药以后会怎样。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D05-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "最后一个位置还在纸上。它已经同时属于两个人。"
+        },
+        {
+          "id": "D05-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "冷淡",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "水和药都能编号。缺的那一份不能。"
+        },
+        {
+          "id": "D05-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "如果明天有人来问档案，今天这张检测单还能算见过吗？"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "title": "异常附件与封存证据",
+      "daytime": [
+        {
+          "id": "D06-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "不许销毁，也不许查看。报纸没有解释两者之间的空白。"
+        },
+        {
+          "id": "D06-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "林默",
+          "tone": "坦白",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-R12-D6",
+          "text": "那三个月我在维护一条不存在的夜间线路。"
+        },
+        {
+          "id": "D06-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "孟秋兰",
+          "tone": "克制",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-A73-D6",
+          "text": "我只要看见一次他的名字。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D06-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "今天看见的名字，明天可能又会被一枚章盖住。"
+        },
+        {
+          "id": "D06-NIGHT-002",
+          "scene": "中央表单处",
+          "speaker": "何老板",
+          "tone": "提醒",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "封存不是把门锁上。是让所有人同意门后面什么都没有。"
+        },
+        {
+          "id": "D06-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "邻室职员",
+          "tone": "低声",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "明天中央验收的人会来。今晚最好别把灯开太久。"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "title": "程序正确与公共伤害",
+      "daytime": [
+        {
+          "id": "D07-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "今天的报纸像一份提前印好的结算单。"
+        },
+        {
+          "id": "D07-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "顾原",
+          "tone": "承担",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-S18-D7",
+          "text": "我签过第一次修改。今天这一次，轮到您签。"
+        },
+        {
+          "id": "D07-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "魏岚",
+          "tone": "审视",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-V01-D7",
+          "text": "您决定的是，合法性要让谁先活下去。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D07-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "最后一枚章落下以后，桌面终于空了。"
+        },
+        {
+          "id": "D07-NIGHT-002",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "所有职员返回登记住所。"
+        },
+        {
+          "id": "D07-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "结算",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "记录会留下我做了什么。它不会替我解释为什么。"
+        }
+      ]
+    }
+  ]
+}</script>
+  <script>
+    (() => {
+      "use strict";
+
+      const cloneJson = value => JSON.parse(JSON.stringify(value));
+      const dialogueSeed = JSON.parse(document.getElementById("dailyDialogueSeed").textContent);
+      const dialogueStorageKey = "formocracy.narrative-engine.daily-dialogue.v1";
+      let dialogueData = loadDialogueDraft();
+      let selectedDialogueDay = 1;
+
+      const lanes = [
+        { id: 1, code: "STORY-01", title: "共同居住", subtitle: "失踪月份 / 夜间排队证据" },
+        { id: 2, code: "STORY-02", title: "时间与生存资源", subtitle: "被改动的 23 分钟 / 配给优先级" },
+        { id: 3, code: "STORY-03", title: "污染与封存档案", subtitle: "提前发生的污染 / 失踪工人名单" },
+        { id: 4, code: "STORY-04", title: "最后一枚章", subtitle: "程序完整与公共伤害的最终冲突" }
+      ];
+
+      const outcomeNames = {
+        approved: "已批准",
+        rejected: "已驳回",
+        missing: "未发生"
+      };
+
+      const cases = [
+        {
+          id: "CASE-001", day: 1, lane: 1, npc: "林默", form: "R-12",
+          title: "共同居住初审",
+          summary: "林第一次提交共同居住申请。这个决定控制她的住处稳定、对制度的信任，以及后续是否愿意继续调查。",
+          outcomes: {
+            approved: {
+              direct: ["林的住处暂时稳定，信任提高。", "异常月份可能被当作一般填写问题，没有立即进入调查。"],
+              impacts: [
+                ["CASE-S-X14-D3", "沈晴雯更像是在补充确认；冲突降低，但异常证据可能变薄。"],
+                ["CASE-S-R12-D6", "林仍会回来，但携带的夜间排队证据更少。"]
+              ],
+              axes: [-1, 1, 0, 2]
+            },
+            rejected: {
+              direct: ["林的居住状态恶化，对窗口信任下降。", "她会开始保存更多票据和夜间排队痕迹。"],
+              impacts: [
+                ["CASE-S-X14-D3", "第三天对缺失月份的追问更尖锐。"],
+                ["CASE-S-R12-D6", "第六天带回更完整材料，但合作意愿降低。"]
+              ],
+              axes: [1, -1, 1, -1]
+            },
+            missing: {
+              direct: ["共同居住线没有入口。", "林不会建立与窗口的初始关系。"],
+              impacts: [
+                ["CASE-S-X14-D3", "跨区迁入案失去前置人物关系。"],
+                ["CASE-S-R12-D6", "夜间排队证据不会形成。"],
+                ["CASE-S-S18-D7", "档案解封线失去一条市民旁证。"]
+              ],
+              axes: [0, -1, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-M31-D2", day: 2, lane: 2, npc: "许桥", form: "M-31",
+          title: "错位的就医时间",
+          summary: "徐诚的就医时间与系统记录相差 23 分钟。这里决定你是否先相信机器，还是先保住人和人证。",
+          outcomes: {
+            approved: {
+              direct: ["徐诚及时得到处理，人证进入记录。", "窗口承担一次程序越界风险。"],
+              impacts: [
+                ["CASE-S-F09-D4", "宋岚的维护记录可以与人证相互印证。"],
+                ["CASE-S-V01-D7", "最终重分类有了时间异常依据。"]
+              ],
+              axes: [-1, 2, 1, 1]
+            },
+            rejected: {
+              direct: ["系统时间被视为唯一事实。", "徐诚的伤情恶化，人证可信度随之下降。"],
+              impacts: [
+                ["CASE-S-F09-D4", "宋岚必须独自证明机器曾被校时。"],
+                ["CASE-S-V01-D7", "第七天缺少挑战系统记录的先例。"]
+              ],
+              axes: [1, -2, -1, -1]
+            },
+            missing: {
+              direct: ["23 分钟异常没有被任何人提出。"],
+              impacts: [
+                ["CASE-S-F09-D4", "维护记录成为孤证。"],
+                ["CASE-S-V01-D7", "最终案件无法建立时间被操纵的链条。"]
+              ],
+              axes: [0, -1, -2, 0]
+            }
+          }
+        },
+        {
+          id: "CASE-S-R09-D3", day: 3, lane: 2, npc: "杜春梅", form: "R-09",
+          title: "无名者配给代理",
+          summary: "杜衡替一个名字从系统里消失的人申请配给代理。这个名字将连接慢性病资源、档案索引和最后的资源冲突。",
+          outcomes: {
+            approved: {
+              direct: ["失踪者姓名以代理关系被保留下来。", "杜衡相信窗口仍能保护具体的人。"],
+              impacts: [
+                ["CASE-S-M52-D5", "慢性病优先级有了明确对象，不再只是抽象数字。"],
+                ["CASE-S-A73-D6", "可用姓名反查封存档案索引。"],
+                ["CASE-S-V01-D7", "最终资源券冲突变成可见的人与人冲突。"]
+              ],
+              axes: [-1, 1, 2, 1]
+            },
+            rejected: {
+              direct: ["无名者继续被系统抹去。", "杜衡对窗口失去信任。"],
+              impacts: [
+                ["CASE-S-M52-D5", "资源申请仍会出现，但缺少失踪者背景。"],
+                ["CASE-S-A73-D6", "孟秋兰只能凭模糊线索查档。"],
+                ["CASE-S-V01-D7", "最后的资源竞争看起来更像普通排位。"]
+              ],
+              axes: [1, -1, -1, -1]
+            },
+            missing: {
+              direct: ["“名字被删除”这条桥梁完全缺失。"],
+              impacts: [
+                ["CASE-S-M52-D5", "杜衡的需求显得突然且孤立。"],
+                ["CASE-S-A73-D6", "档案线缺少可检索姓名。"],
+                ["CASE-S-V01-D7", "最终选择失去具体受害者重量。"]
+              ],
+              axes: [0, -1, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-X14-D3", day: 3, lane: 1, npc: "沈青禾", form: "X-14",
+          title: "失踪月份",
+          summary: "沈晴雯提交跨区迁入材料，其中几个月在系统里不存在。它连接林的共同居住复审、夜间排队证据和第七天的封档争议。",
+          outcomes: {
+            approved: {
+              direct: ["缺失月份进入正式记录。", "沈与林的信任提高，但窗口承担解释异常的责任。"],
+              impacts: [
+                ["CASE-S-R12-D6", "林可把夜间排队记录与缺失月份对齐。"],
+                ["CASE-S-S18-D7", "工厂档案之外出现独立的时间旁证。"],
+                ["CASE-S-V01-D7", "最终重分类获得一条市民记录依据。"]
+              ],
+              axes: [-1, 1, 2, 2]
+            },
+            rejected: {
+              direct: ["跨区迁入仍不稳定。", "沈与林认为窗口在保护系统缺口，合作度下降。"],
+              impacts: [
+                ["CASE-S-R12-D6", "林会带更重的材料回来，但更难说服。"],
+                ["CASE-S-S18-D7", "第七天仍可质疑封档，却少了可信的民间时间轴。"],
+                ["CASE-S-V01-D7", "最终决定更依赖官僚材料。"]
+              ],
+              axes: [1, -1, 0, -2]
+            },
+            missing: {
+              direct: ["失踪月份从未被揭开。", "共同居住线在第三天断裂。"],
+              impacts: [
+                ["CASE-S-R12-D6", "夜间排队证据没有明确要证明的异常。"],
+                ["CASE-S-S18-D7", "封档案缺少外部时间旁证。"],
+                ["CASE-S-V01-D7", "最终案件失去重分类证据。"]
+              ],
+              axes: [0, -1, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-F09-D4", day: 4, lane: 2, npc: "宋铎", form: "F-09",
+          title: "被校准的时钟",
+          summary: "宋岚的外籍专家许可附带一份维护记录：机器时间曾被人为同步。这是证明系统并不中立的技术证据。",
+          outcomes: {
+            approved: {
+              direct: ["维护附件进入卷宗。", "宋岚愿意继续解释校时细节。"],
+              impacts: [
+                ["CASE-S-S18-D7", "封存工厂的时间记录可被技术证据挑战。"],
+                ["CASE-S-V01-D7", "最终案件具备重分类理由。"]
+              ],
+              axes: [0, 1, 2, 1]
+            },
+            rejected: {
+              direct: ["维护记录被视为与许可无关。", "宋岚停止主动合作。"],
+              impacts: [
+                ["CASE-S-S18-D7", "工厂官方时间轴保持优势。"],
+                ["CASE-S-V01-D7", "只能用人证挑战系统。"]
+              ],
+              axes: [1, -1, -2, -1]
+            },
+            missing: {
+              direct: ["没有技术人员说明机器被调整。"],
+              impacts: [
+                ["CASE-S-S18-D7", "封档时间轴几乎无法反驳。"],
+                ["CASE-S-V01-D7", "重分类缺少技术依据。"]
+              ],
+              axes: [0, -1, -2, 0]
+            }
+          }
+        },
+        {
+          id: "CASE-S-P44-D5", day: 5, lane: 3, npc: "孟秋兰", form: "P-44",
+          title: "提前发生的污染",
+          summary: "孟秋兰的污染救济材料显示污染比官方记录更早发生。批准与否决定幸存者证词能否与封存档案会合。",
+          outcomes: {
+            approved: {
+              direct: ["紧急救济生效，早期污染证词进入记录。", "孟秋兰愿意继续追查失踪的儿子。"],
+              impacts: [
+                ["CASE-S-A73-D6", "解封档案有了明确时间与姓名目标。"],
+                ["CASE-S-S18-D7", "重新封存会直接压住一条已登记证据。"]
+              ],
+              axes: [-1, 2, 2, 2]
+            },
+            rejected: {
+              direct: ["即时生存问题没有解决。", "早期污染被标记为材料矛盾。"],
+              impacts: [
+                ["CASE-S-A73-D6", "查档诉求更急迫，但可信度降低。"],
+                ["CASE-S-S18-D7", "工厂可将证词描述为未核实。"]
+              ],
+              axes: [1, -2, -1, -2]
+            },
+            missing: {
+              direct: ["污染线从档案问题开始，没有幸存者入口。"],
+              impacts: [
+                ["CASE-S-A73-D6", "开档只剩程序争议。"],
+                ["CASE-S-S18-D7", "是否封存不再对应眼前受害者。"]
+              ],
+              axes: [0, -2, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-M52-D5", day: 5, lane: 2, npc: "杜春梅", form: "M-52",
+          title: "慢性病优先级",
+          summary: "杜衡请求为慢性病患者预留资源。若批准，这份资源将与第七天魏清源的合法材料直接竞争。",
+          outcomes: {
+            approved: {
+              direct: ["杜衡的资源被预留，眼前伤害降低。", "最后一张资源券的余量被提前占用。"],
+              impacts: [
+                ["CASE-S-V01-D7", "两个都合法的人将竞争同一份资源。"]
+              ],
+              axes: [-1, 2, 0, 1]
+            },
+            rejected: {
+              direct: ["程序配额保持整齐。", "杜衡承担健康恶化，信任下降。"],
+              impacts: [
+                ["CASE-S-V01-D7", "魏清源的批准更容易，但代价被移到画面外。"]
+              ],
+              axes: [2, -2, 0, -1]
+            },
+            missing: {
+              direct: ["最终资源冲突失去前置对象。"],
+              impacts: [
+                ["CASE-S-V01-D7", "最后一案只剩普通合规判断。"]
+              ],
+              axes: [0, -1, -1, 0]
+            }
+          }
+        },
+        {
+          id: "CASE-S-R12-D6", day: 6, lane: 1, npc: "林默", form: "R-12",
+          title: "夜间队列复审",
+          summary: "林带着新的共同居住材料回来，夜间排队票据能把市民时间线与机器记录对齐。",
+          outcomes: {
+            approved: {
+              direct: ["夜间排队记录被正式采信。", "林的居住问题得到阶段性解决。"],
+              impacts: [
+                ["CASE-S-S18-D7", "封存十年的说法遭遇一条外部时间证据。"],
+                ["CASE-S-V01-D7", "重分类具备市民侧依据。"]
+              ],
+              axes: [-1, 1, 2, 2]
+            },
+            rejected: {
+              direct: ["票据被排除在有效材料之外。", "林停止补充证据。"],
+              impacts: [
+                ["CASE-S-S18-D7", "工厂卷宗重新占据唯一解释权。"],
+                ["CASE-S-V01-D7", "最终只能在现有分类中二选一。"]
+              ],
+              axes: [1, -1, -2, -2]
+            },
+            missing: {
+              direct: ["共同居住线没有提供最终旁证。"],
+              impacts: [
+                ["CASE-S-S18-D7", "污染与封档线失去跨线印证。"],
+                ["CASE-S-V01-D7", "没有市民侧时间证据。"]
+              ],
+              axes: [0, -1, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-A73-D6", day: 6, lane: 3, npc: "孟秋兰", form: "A-73",
+          title: "封存档案解封",
+          summary: "孟秋兰要求打开封存档案，寻找失踪工人名单。它决定第七天的重新封存究竟是例行程序还是主动掩盖。",
+          outcomes: {
+            approved: {
+              direct: ["档案被有限解封，失踪工人姓名得到确认。", "复制与公开仍受到限制。"],
+              impacts: [
+                ["CASE-S-S18-D7", "重新封存将压住一份已经被看见的名单。"]
+              ],
+              axes: [-1, 1, 2, 2]
+            },
+            rejected: {
+              direct: ["档案保持封存。", "孟秋兰无法确认儿子是否在名单中。"],
+              impacts: [
+                ["CASE-S-S18-D7", "第七天更像一次没有目击者的例行封档。"]
+              ],
+              axes: [1, -2, -2, -2]
+            },
+            missing: {
+              direct: ["没有直接当事人尝试查看档案。"],
+              impacts: [
+                ["CASE-S-S18-D7", "重新封存几乎不会遇到叙事阻力。"]
+              ],
+              axes: [0, -1, -2, -1]
+            }
+          }
+        },
+        {
+          id: "CASE-S-S18-D7", day: 7, lane: 3, npc: "顾原", form: "S-18",
+          title: "再封存十年",
+          summary: "顾承晖要求把工厂档案重新封存十年。这一刻决定证据是进入公共审查，还是从系统里再次消失。",
+          outcomes: {
+            approved: {
+              direct: ["档案重新封存，短期程序压力下降。", "失踪工人和早期污染证据退出公共视野。"],
+              impacts: [
+                ["CASE-S-V01-D7", "最终盖章发生在证据链已经被关闭的环境中。"]
+              ],
+              axes: [2, -2, -3, -2]
+            },
+            rejected: {
+              direct: ["档案进入公开复核。", "窗口承担重大监督与程序风险。"],
+              impacts: [
+                ["CASE-S-V01-D7", "最终资源决定必须回应已经公开的伤害。"]
+              ],
+              axes: [-2, 2, 3, 2]
+            },
+            missing: {
+              direct: ["档案既未公开，也没有再次封存。", "核心冲突停留在未解决状态。"],
+              impacts: [
+                ["CASE-S-V01-D7", "最终决定缺少明确的证据状态。"]
+              ],
+              axes: [0, -1, -1, 0]
+            }
+          }
+        },
+        {
+          id: "CASE-S-V01-D7", day: 7, lane: 4, npc: "魏岚", form: "V-01",
+          title: "最后一枚章",
+          summary: "魏清源的材料完全合法，但资源可能已被杜衡预留。这是程序完整、公共伤害、证据完整和人物信任的最终汇合点。",
+          outcomes: {
+            approved: {
+              direct: ["合法材料按原分类通过。", "若杜衡已获预留资源，系统会把代价转嫁给另一个具体的人。"],
+              impacts: [],
+              axes: [2, -1, 0, -1]
+            },
+            rejected: {
+              direct: ["你拒绝按现有分类盖下最后一枚章。", "公共异议被明确表达，但程序断裂。"],
+              impacts: [],
+              axes: [-2, 1, 1, 1]
+            },
+            missing: {
+              direct: ["七日结束时没有最终决断。", "冲突被留给下一轮系统处理。"],
+              impacts: [],
+              axes: [-1, -1, -1, -1]
+            }
+          }
+        }
+      ];
+
+      const edges = [
+        ["CASE-001", "CASE-S-X14-D3"],
+        ["CASE-001", "CASE-S-R12-D6"],
+        ["CASE-S-X14-D3", "CASE-S-R12-D6"],
+        ["CASE-S-X14-D3", "CASE-S-S18-D7"],
+        ["CASE-S-M31-D2", "CASE-S-F09-D4"],
+        ["CASE-S-M31-D2", "CASE-S-V01-D7"],
+        ["CASE-S-R09-D3", "CASE-S-M52-D5"],
+        ["CASE-S-R09-D3", "CASE-S-A73-D6"],
+        ["CASE-S-R09-D3", "CASE-S-V01-D7"],
+        ["CASE-S-F09-D4", "CASE-S-S18-D7"],
+        ["CASE-S-F09-D4", "CASE-S-V01-D7"],
+        ["CASE-S-P44-D5", "CASE-S-A73-D6"],
+        ["CASE-S-P44-D5", "CASE-S-S18-D7"],
+        ["CASE-S-M52-D5", "CASE-S-V01-D7"],
+        ["CASE-S-R12-D6", "CASE-S-S18-D7"],
+        ["CASE-S-R12-D6", "CASE-S-V01-D7"],
+        ["CASE-S-A73-D6", "CASE-S-S18-D7"],
+        ["CASE-S-S18-D7", "CASE-S-V01-D7"]
+      ];
+
+      const riskAxes = [
+        { key: "procedure", name: "程序完整" },
+        { key: "safety", name: "公共安全" },
+        { key: "evidence", name: "证据完整" },
+        { key: "trust", name: "人物信任" }
+      ];
+
+      const map = document.getElementById("narrativeMap");
+      const svg = document.getElementById("causalLines");
+      const selectedTitle = document.getElementById("selectedTitle");
+      const selectedKicker = document.getElementById("selectedKicker");
+      const selectedMeta = document.getElementById("selectedMeta");
+      const selectedSummary = document.getElementById("selectedSummary");
+      const directResult = document.getElementById("directResult");
+      const impactList = document.getElementById("impactList");
+      const riskList = document.getElementById("riskList");
+      const endingTitle = document.getElementById("endingTitle");
+      const endingCopy = document.getElementById("endingCopy");
+      const riskMeta = document.getElementById("riskMeta");
+      const resetButton = document.getElementById("resetButton");
+      const decisionButtons = [...document.querySelectorAll(".decision-button")];
+      const causalityView = document.getElementById("causalityView");
+      const dialogueView = document.getElementById("dialogueView");
+      const viewButtons = [...document.querySelectorAll(".view-button")];
+      const dayList = document.getElementById("dayList");
+      const dialogueDayKicker = document.getElementById("dialogueDayKicker");
+      const dialogueDayTitle = document.getElementById("dialogueDayTitle");
+      const draftState = document.getElementById("draftState");
+      const daytimeLines = document.getElementById("daytimeLines");
+      const eveningLines = document.getElementById("eveningLines");
+      const daytimeCount = document.getElementById("daytimeCount");
+      const eveningCount = document.getElementById("eveningCount");
+      const totalDialogueCount = document.getElementById("totalDialogueCount");
+      const draftDialogueCount = document.getElementById("draftDialogueCount");
+      const implementedDialogueCount = document.getElementById("implementedDialogueCount");
+      const coveredDaysCount = document.getElementById("coveredDaysCount");
+      const registryStatus = document.getElementById("registryStatus");
+      const exportDialogueButton = document.getElementById("exportDialogueButton");
+      const copyDialogueButton = document.getElementById("copyDialogueButton");
+      const importDialogueButton = document.getElementById("importDialogueButton");
+      const importDialogueInput = document.getElementById("importDialogueInput");
+      const resetDialogueButton = document.getElementById("resetDialogueButton");
+      const addLineButtons = [...document.querySelectorAll(".add-line-button")];
+
+      const caseById = new Map(cases.map(item => [item.id, item]));
+      const scenario = new Map();
+      let selectedId = "CASE-S-X14-D3";
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function validateDialogueData(value) {
+        if (!value || typeof value !== "object" || !Array.isArray(value.days)) {
+          throw new Error("缺少 days 数组。");
+        }
+        if (value.days.length !== 7) {
+          throw new Error("文案文件必须恰好包含 7 天。");
+        }
+        const ids = new Set();
+        value.days.forEach((day, dayIndex) => {
+          if (Number(day.day) !== dayIndex + 1) {
+            throw new Error(`第 ${dayIndex + 1} 项的 day 编号不连续。`);
+          }
+          ["daytime", "evening"].forEach(period => {
+            if (!Array.isArray(day[period])) {
+              throw new Error(`第 ${day.day} 天缺少 ${period} 数组。`);
+            }
+            day[period].forEach((line, lineIndex) => {
+              if (!line || typeof line !== "object" || !String(line.id || "").trim()) {
+                throw new Error(`第 ${day.day} 天 ${period} 第 ${lineIndex + 1} 条缺少 ID。`);
+              }
+              if (ids.has(line.id)) throw new Error(`文案 ID 重复：${line.id}`);
+              ids.add(line.id);
+              if (!["implemented", "draft"].includes(line.status)) {
+                throw new Error(`文案 ${line.id} 的 status 无效。`);
+              }
+              if (!String(line.text || "").trim()) {
+                throw new Error(`文案 ${line.id} 的正文为空。`);
+              }
+            });
+          });
+        });
+        return true;
+      }
+
+      function loadDialogueDraft() {
+        try {
+          const raw = window.localStorage.getItem(dialogueStorageKey);
+          if (!raw) return cloneJson(dialogueSeed);
+          const parsed = JSON.parse(raw);
+          validateDialogueData(parsed);
+          return parsed;
+        } catch (error) {
+          console.warn("Unable to load dialogue draft:", error);
+          return cloneJson(dialogueSeed);
+        }
+      }
+
+      function persistDialogue(message = "编辑已自动保存到本浏览器。") {
+        window.localStorage.setItem(dialogueStorageKey, JSON.stringify(dialogueData));
+        setRegistryStatus(message);
+        renderDialogueSummary();
+        renderDayList();
+      }
+
+      function setRegistryStatus(message, isError = false) {
+        registryStatus.textContent = message;
+        registryStatus.classList.toggle("is-error", isError);
+      }
+
+      function dialogueIsDirty() {
+        return JSON.stringify(dialogueData) !== JSON.stringify(dialogueSeed);
+      }
+
+      function selectedDialogueRecord() {
+        return dialogueData.days.find(day => Number(day.day) === selectedDialogueDay);
+      }
+
+      function renderDayList() {
+        dayList.innerHTML = dialogueData.days.map(day => {
+          const draftCount = [...day.daytime, ...day.evening]
+            .filter(line => line.status === "draft").length;
+          return `
+            <button class="day-button${day.day === selectedDialogueDay ? " is-active" : ""}" data-dialogue-day="${day.day}" type="button">
+              <span class="day-number">0${day.day}</span>
+              <span class="day-copy">
+                <strong>${escapeHtml(day.title)}</strong>
+                <span>昼 ${day.daytime.length} / 夜 ${day.evening.length} / 草案 ${draftCount}</span>
+              </span>
+            </button>
+          `;
+        }).join("");
+
+        dayList.querySelectorAll(".day-button").forEach(button => {
+          button.addEventListener("click", () => {
+            selectedDialogueDay = Number(button.dataset.dialogueDay);
+            renderDialogueDesk();
+          });
+        });
+      }
+
+      function lineCard(line, period) {
+        const statusOptions = [
+          ["implemented", "已接入"],
+          ["draft", "草案"]
+        ].map(([value, label]) =>
+          `<option value="${value}"${line.status === value ? " selected" : ""}>${label}</option>`
+        ).join("");
+        return `
+          <article class="line-card" data-line-id="${escapeHtml(line.id)}" data-period="${period}" data-status="${line.status}">
+            <div class="field">
+              <label>场景 / SCENE</label>
+              <input data-field="scene" value="${escapeHtml(line.scene)}" aria-label="场景">
+            </div>
+            <div class="field">
+              <label>说话人 / SPEAKER</label>
+              <input data-field="speaker" value="${escapeHtml(line.speaker)}" aria-label="说话人">
+            </div>
+            <div class="field">
+              <label>状态 / STATUS</label>
+              <select data-field="status" aria-label="接入状态">${statusOptions}</select>
+            </div>
+            <div class="field">
+              <label>语气 / TONE</label>
+              <input data-field="tone" value="${escapeHtml(line.tone)}" aria-label="语气">
+            </div>
+            <div class="field" style="grid-column:span 2">
+              <label>来源 / SOURCE</label>
+              <input data-field="source" value="${escapeHtml(line.source)}" aria-label="来源">
+            </div>
+            <div class="field field-wide">
+              <label>台词 / COPY</label>
+              <textarea data-field="text" aria-label="台词正文">${escapeHtml(line.text)}</textarea>
+            </div>
+            <div class="line-footer">
+              <span>${escapeHtml(line.id)} · <b data-char-count>${String(line.text || "").length}</b> 字</span>
+              <button class="delete-line" type="button">删除本条</button>
+            </div>
+          </article>
+        `;
+      }
+
+      function bindLineCards(container, period) {
+        container.querySelectorAll(".line-card").forEach(card => {
+          const lineId = card.dataset.lineId;
+          const day = selectedDialogueRecord();
+          const line = day[period].find(item => item.id === lineId);
+          card.querySelectorAll("[data-field]").forEach(field => {
+            const eventName = field.tagName === "SELECT" ? "change" : "input";
+            field.addEventListener(eventName, () => {
+              line[field.dataset.field] = field.value;
+              if (field.dataset.field === "status") card.dataset.status = field.value;
+              if (field.dataset.field === "text") {
+                card.querySelector("[data-char-count]").textContent = String(field.value.length);
+              }
+              persistDialogue();
+            });
+          });
+          card.querySelector(".delete-line").addEventListener("click", () => {
+            day[period] = day[period].filter(item => item.id !== lineId);
+            persistDialogue(`已删除 ${lineId}，可通过“恢复项目基线”撤销。`);
+            renderDialogueDesk();
+          });
+        });
+      }
+
+      function renderDialoguePeriod(period, container, countLabel) {
+        const day = selectedDialogueRecord();
+        container.innerHTML = day[period].length
+          ? day[period].map(line => lineCard(line, period)).join("")
+          : '<p class="empty-state">本时段暂无文案。点击上方按钮添加第一条。</p>';
+        countLabel.textContent = `${day[period].length} LINES`;
+        bindLineCards(container, period);
+      }
+
+      function renderDialogueSummary() {
+        const allLines = dialogueData.days.flatMap(day => [...day.daytime, ...day.evening]);
+        const drafts = allLines.filter(line => line.status === "draft").length;
+        const implemented = allLines.filter(line => line.status === "implemented").length;
+        const covered = dialogueData.days.filter(day => day.daytime.length && day.evening.length).length;
+        totalDialogueCount.textContent = String(allLines.length);
+        draftDialogueCount.textContent = String(drafts);
+        implementedDialogueCount.textContent = String(implemented);
+        coveredDaysCount.textContent = `${covered}/7`;
+        const dirty = dialogueIsDirty();
+        draftState.textContent = dirty ? "浏览器草稿已修改" : "项目基线";
+        draftState.classList.toggle("is-dirty", dirty);
+      }
+
+      function renderDialogueDesk() {
+        const day = selectedDialogueRecord();
+        dialogueDayKicker.textContent = `DAY 0${day.day} / COPY REGISTER`;
+        dialogueDayTitle.textContent = day.title;
+        renderDayList();
+        renderDialoguePeriod("daytime", daytimeLines, daytimeCount);
+        renderDialoguePeriod("evening", eveningLines, eveningCount);
+        renderDialogueSummary();
+      }
+
+      function addDialogueLine(period) {
+        const day = selectedDialogueRecord();
+        const prefix = period === "daytime" ? "DAY" : "NIGHT";
+        const suffix = Date.now().toString(36).slice(-5).toUpperCase();
+        day[period].push({
+          id: `D0${day.day}-${prefix}-${suffix}`,
+          scene: period === "daytime" ? "B-07 窗口" : "宿舍 12C",
+          speaker: "待定",
+          tone: "待定",
+          status: "draft",
+          source: "narrative-engine",
+          text: "在这里填写新的台词。"
+        });
+        persistDialogue(`已为第 ${day.day} 天${period === "daytime" ? "白天" : "夜晚"}添加一条草案。`);
+        renderDialogueDesk();
+        const container = period === "daytime" ? daytimeLines : eveningLines;
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function dialogueJson() {
+        return `${JSON.stringify(dialogueData, null, 2)}\n`;
+      }
+
+      function exportDialogueJson() {
+        const blob = new Blob([dialogueJson()], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "daily_dialogue.json";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        setRegistryStatus("daily_dialogue.json 已导出。");
+      }
+
+      async function copyDialogueJson() {
+        const value = dialogueJson();
+        const legacyCopy = () => {
+          const area = document.createElement("textarea");
+          area.value = value;
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          const copied = document.execCommand("copy");
+          area.remove();
+          if (!copied) throw new Error("浏览器拒绝剪贴板写入");
+        };
+        try {
+          if (navigator.clipboard?.writeText) {
+            try {
+              await navigator.clipboard.writeText(value);
+            } catch {
+              legacyCopy();
+            }
+          } else {
+            legacyCopy();
+          }
+          setRegistryStatus("完整 JSON 已复制到剪贴板。");
+        } catch (error) {
+          setRegistryStatus(`复制失败：${error.message}`, true);
+        }
+      }
+
+      function switchEngineView(view) {
+        const dialogueActive = view === "dialogue";
+        causalityView.hidden = dialogueActive;
+        dialogueView.hidden = !dialogueActive;
+        viewButtons.forEach(button => {
+          const active = button.dataset.view === view;
+          button.classList.toggle("is-active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+        if (dialogueActive) renderDialogueDesk();
+        else requestAnimationFrame(() => {
+          const chosen = scenario.get(selectedId);
+          drawEdges(chosen ? reachableFrom(selectedId) : new Set());
+        });
+      }
+
+      function buildMap() {
+        for (let day = 1; day <= 7; day += 1) {
+          const head = document.createElement("div");
+          head.className = "day-head";
+          head.dataset.day = String(day);
+          head.style.gridColumn = String(day + 1);
+          head.style.gridRow = "1";
+          head.innerHTML = `<span>DAY</span><strong>0${day}</strong>`;
+          map.appendChild(head);
+        }
+
+        lanes.forEach((lane, index) => {
+          const row = index + 2;
+          const label = document.createElement("div");
+          label.className = "lane-head";
+          label.style.gridColumn = "1";
+          label.style.gridRow = String(row);
+          label.innerHTML = `
+            <span class="lane-code">${lane.code}</span>
+            <span class="lane-title">${lane.title}</span>
+            <span class="lane-subtitle">${lane.subtitle}</span>
+          `;
+          map.appendChild(label);
+
+          for (let day = 1; day <= 7; day += 1) {
+            const cell = document.createElement("div");
+            cell.className = `map-cell${day === 3 ? " day-three" : ""}`;
+            cell.style.gridColumn = String(day + 1);
+            cell.style.gridRow = String(row);
+            map.appendChild(cell);
+          }
+        });
+
+        cases.forEach(item => {
+          const node = document.createElement("button");
+          node.type = "button";
+          node.id = `node-${item.id}`;
+          node.className = "case-node";
+          node.dataset.caseId = item.id;
+          node.style.gridColumn = String(item.day + 1);
+          node.style.gridRow = String(item.lane + 1);
+          node.setAttribute("aria-label", `第${item.day}天 ${item.npc} ${item.title}`);
+          node.innerHTML = `
+            <span class="node-top">
+              <span class="node-day">D0${item.day}</span>
+              <span class="node-id">${item.id.replace("CASE-S-", "").replace("CASE-", "")}</span>
+            </span>
+            <span class="node-title">${item.title}</span>
+            <span class="node-npc">${item.npc}</span>
+            <span class="node-form">${item.form} · 已接入</span>
+          `;
+          node.addEventListener("click", () => {
+            selectedId = item.id;
+            render();
+          });
+          map.appendChild(node);
+        });
+      }
+
+      function reachableFrom(startId) {
+        const found = new Set();
+        const queue = [startId];
+        while (queue.length) {
+          const current = queue.shift();
+          edges.forEach(([from, to]) => {
+            if (from === current && !found.has(to)) {
+              found.add(to);
+              queue.push(to);
+            }
+          });
+        }
+        return found;
+      }
+
+      function drawEdges(activeIds) {
+        svg.querySelectorAll(".causal-path").forEach(path => path.remove());
+        const mapRect = map.getBoundingClientRect();
+
+        edges.forEach(([from, to], index) => {
+          const fromNode = document.getElementById(`node-${from}`);
+          const toNode = document.getElementById(`node-${to}`);
+          if (!fromNode || !toNode) return;
+          const a = fromNode.getBoundingClientRect();
+          const b = toNode.getBoundingClientRect();
+          const x1 = a.right - mapRect.left;
+          const y1 = a.top + a.height / 2 - mapRect.top;
+          const x2 = b.left - mapRect.left;
+          const y2 = b.top + b.height / 2 - mapRect.top;
+          const span = Math.max(36, (x2 - x1) * .46);
+          const isActive = activeIds.has(to) && (from === selectedId || activeIds.has(from));
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", `M ${x1} ${y1} C ${x1 + span} ${y1}, ${x2 - span} ${y2}, ${x2} ${y2}`);
+          path.setAttribute("class", `causal-path${isActive ? " is-active" : ""}`);
+          path.setAttribute("marker-end", isActive ? "url(#arrowActive)" : "url(#arrowNeutral)");
+          path.dataset.edge = String(index);
+          svg.appendChild(path);
+        });
+      }
+
+      function renderInspector(item) {
+        const chosen = scenario.get(item.id);
+        const result = chosen ? item.outcomes[chosen] : null;
+        selectedKicker.textContent = `DAY 0${item.day} / STORY CASE / ${item.id}`;
+        selectedTitle.textContent = item.title;
+        selectedSummary.textContent = item.summary;
+        selectedMeta.innerHTML = `
+          <span class="meta-tag">${item.npc}</span>
+          <span class="meta-tag">${item.form}</span>
+          <span class="status-chip">● 已接入游戏排期</span>
+        `;
+
+        decisionButtons.forEach(button => {
+          const isActive = button.dataset.outcome === chosen;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+
+        if (!result) {
+          directResult.innerHTML = "<li>选择一个结果，查看人物与状态变化。</li>";
+          impactList.innerHTML = '<p class="empty-state">选择结果后，这里会列出受影响的后续案件。</p>';
+          return;
+        }
+
+        directResult.innerHTML = result.direct.map(line => `<li>${line}</li>`).join("");
+        if (!result.impacts.length) {
+          impactList.innerHTML = '<p class="empty-state">这是终点案件，没有更晚的节点；结果会直接进入结局倾向。</p>';
+          return;
+        }
+
+        impactList.innerHTML = result.impacts.map(([targetId, effect]) => {
+          const target = caseById.get(targetId);
+          return `
+            <article class="impact-item">
+              <span class="impact-day">DAY 0${target.day}</span>
+              <div class="impact-copy">
+                <strong>${target.title} · ${target.npc}</strong>
+                <span>${effect}</span>
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function calculateScores() {
+        const values = [50, 50, 50, 50];
+        scenario.forEach((outcome, id) => {
+          const item = caseById.get(id);
+          item.outcomes[outcome].axes.forEach((delta, index) => {
+            values[index] += delta * 8;
+          });
+        });
+        return values.map(value => Math.max(8, Math.min(92, value)));
+      }
+
+      function renderRisks() {
+        const scores = calculateScores();
+        riskList.innerHTML = riskAxes.map((axis, index) => {
+          const value = scores[index];
+          const color = value < 36 ? "var(--red)" : value > 66 ? "var(--green)" : "var(--blue)";
+          return `
+            <div class="risk-row">
+              <span class="risk-name">${axis.name}</span>
+              <div class="risk-track"><div class="risk-fill" style="width:${value}%;background:${color}"></div></div>
+              <span class="risk-value">${value}</span>
+            </div>
+          `;
+        }).join("");
+
+        const count = scenario.size;
+        riskMeta.textContent = `${count} 个案件已参与推演 · 50 为中性基线`;
+        if (!count) {
+          endingTitle.textContent = "尚未形成结局倾向";
+          endingCopy.textContent = "对案件做出选择后，四项指标会累计变化。";
+          return;
+        }
+
+        const [procedure, safety, evidence, trust] = scores;
+        if (procedure >= 66 && safety < 42) {
+          endingTitle.textContent = "模型执行者";
+          endingCopy.textContent = "流程保持完整，但公共伤害被排除在盖章逻辑之外。";
+        } else if (evidence >= 66 && trust >= 60 && procedure < 50) {
+          endingTitle.textContent = "公共异议者";
+          endingCopy.textContent = "你保护证据和具体的人，同时公开承担程序冲突。";
+        } else if (safety >= 60 && procedure >= 46 && evidence >= 50) {
+          endingTitle.textContent = "谨慎修复者";
+          endingCopy.textContent = "你在不完全打碎程序的前提下，把伤害和证据带回系统。";
+        } else if (trust >= 66 && procedure < 38) {
+          endingTitle.textContent = "失控的善意";
+          endingCopy.textContent = "人物愿意相信你，但缺少足够程序结构承接这些决定。";
+        } else {
+          endingTitle.textContent = "未稳定的中间态";
+          endingCopy.textContent = "四项价值仍在拉扯；继续推演后续案件才能看出方向。";
+        }
+      }
+
+      function render() {
+        const selected = caseById.get(selectedId);
+        const activeIds = reachableFrom(selectedId);
+        const chosen = scenario.get(selectedId);
+        const explicitImpacts = new Set(chosen ? selected.outcomes[chosen].impacts.map(([id]) => id) : []);
+
+        cases.forEach(item => {
+          const node = document.getElementById(`node-${item.id}`);
+          const isSelected = item.id === selectedId;
+          const isDownstream = explicitImpacts.has(item.id);
+          const isMuted = chosen && !isSelected && !activeIds.has(item.id);
+          node.classList.toggle("is-selected", isSelected);
+          node.classList.toggle("is-downstream", isDownstream);
+          node.classList.toggle("is-muted", Boolean(isMuted));
+          const nodeOutcome = scenario.get(item.id);
+          node.classList.toggle("has-outcome", Boolean(nodeOutcome));
+          if (nodeOutcome) node.dataset.outcome = outcomeNames[nodeOutcome];
+          else delete node.dataset.outcome;
+        });
+
+        renderInspector(selected);
+        renderRisks();
+        requestAnimationFrame(() => drawEdges(chosen ? activeIds : new Set()));
+      }
+
+      decisionButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          scenario.set(selectedId, button.dataset.outcome);
+          render();
+        });
+      });
+
+      resetButton.addEventListener("click", () => {
+        scenario.clear();
+        selectedId = "CASE-S-X14-D3";
+        render();
+      });
+
+      viewButtons.forEach(button => {
+        button.addEventListener("click", () => switchEngineView(button.dataset.view));
+      });
+
+      addLineButtons.forEach(button => {
+        button.addEventListener("click", () => addDialogueLine(button.dataset.period));
+      });
+
+      exportDialogueButton.addEventListener("click", exportDialogueJson);
+      copyDialogueButton.addEventListener("click", copyDialogueJson);
+      importDialogueButton.addEventListener("click", () => importDialogueInput.click());
+      importDialogueInput.addEventListener("change", async () => {
+        const file = importDialogueInput.files?.[0];
+        if (!file) return;
+        try {
+          const imported = JSON.parse(await file.text());
+          validateDialogueData(imported);
+          dialogueData = cloneJson(imported);
+          persistDialogue(`已导入 ${file.name}，并保存为本浏览器草稿。`);
+          renderDialogueDesk();
+        } catch (error) {
+          setRegistryStatus(`导入失败：${error.message}`, true);
+        } finally {
+          importDialogueInput.value = "";
+        }
+      });
+
+      resetDialogueButton.addEventListener("click", () => {
+        if (!window.confirm("恢复项目基线会清除本浏览器内的全部文案修改。继续吗？")) return;
+        dialogueData = cloneJson(dialogueSeed);
+        window.localStorage.removeItem(dialogueStorageKey);
+        renderDialogueDesk();
+        setRegistryStatus("已恢复项目基线。");
+      });
+
+      window.addEventListener("resize", () => {
+        if (!dialogueView.hidden) return;
+        const chosen = scenario.get(selectedId);
+        drawEdges(chosen ? reachableFrom(selectedId) : new Set());
+      });
+
+      buildMap();
+      render();
+      renderDialogueDesk();
+    })();
+  </script>
+</body>
+</html>

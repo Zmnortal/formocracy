@@ -310,11 +310,11 @@ func _apply_reading_grid(item: Dictionary) -> void:
 func _apply_label_grid(label: Label, values: Array) -> void:
 	if values.size() < 5:
 		return
-	label.position = Vector2(float(values[0]), float(values[1]))
-	label.size = Vector2(float(values[2]), float(values[3]))
 	label.add_theme_font_size_override("font_size", int(values[4]))
 	label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	label.clip_text = true
+	label.position = Vector2(float(values[0]), float(values[1]))
+	label.size = Vector2(float(values[2]), float(values[3]))
 
 
 # 正文在最接近中点的句末处分栏，避免半句话被机械截断到另一栏。

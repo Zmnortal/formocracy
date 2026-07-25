@@ -20,7 +20,9 @@ func run() -> void:
 	var menu = packed.instantiate()
 	root.add_child(menu)
 	await process_frame
+	assert(ProjectSettings.get_setting("application/config/name") == "表面政治", "project title must use the current Chinese game name")
 	assert(RenderingServer.get_default_clear_color() == Color.BLACK, "scene transition clear frames must always be black")
+	assert(menu.get_node("CentralMenu/ChineseTitle").text == "表面政治", "main menu must display the current Chinese game name")
 	assert(menu.start_button.text == "游戏开始", "main menu must expose game start")
 	assert(menu.exit_button.text == "退出游戏", "main menu must expose exit")
 	assert(menu.start_button.get_theme_font_size("font_size") == 45, "main menu typography must use the enlarged presentation scale")

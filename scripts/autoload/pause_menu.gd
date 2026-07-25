@@ -11,6 +11,7 @@ const UI := preload("res://scripts/ui/bureau_ui.gd")
 const ALLOWED_SCENES := [
 	"res://main.tscn",
 	"res://scenes/pre_work_sequence.tscn",
+	"res://scenes/batch_validation.tscn",
 	"res://scenes/daily_report.tscn",
 	"res://scenes/after_work_corridor.tscn",
 	"res://scenes/evening_map.tscn",

@@ -12,6 +12,13 @@ const VISUAL_POCKET := "pocket"
 const VISUAL_DESK := "desk"
 const VISUAL_INSPECTION := "inspection"
 const HERO_FIELDS := ["request", "subject", "reason", "summary", "resource", "scope", "adjustment"]
+const NATIVE_TITLE_FONT_SIZE := 30
+const NATIVE_CASE_CODE_FONT_SIZE := 18
+const NATIVE_FIELD_FONT_MULTIPLIER := 1.4
+const NATIVE_FIELD_FONT_MINIMUM := 20
+const USER_ZOOM_MIN := 0.8
+const USER_ZOOM_MAX := 1.8
+const USER_ZOOM_STEP := 0.1
 
 var document_id := ""
 var document_type_id := ""
@@ -25,6 +32,8 @@ var fallback_background_path := ""
 var content_layer: Control
 var stamp_layer: Control
 var chrome: DocumentChrome
+var selection_outline: Panel
+var user_zoom := 1.0
 
 
 # 根据文件数据、类型布局与人员信息构建文件外观：底图、标题、案件编号与各字段文本。
@@ -74,6 +83,7 @@ func configure(document_data: Dictionary, type_data: Dictionary, person_data: Di
 	stamp_layer.size = inspection_size
 	stamp_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(stamp_layer)
+	_build_selection_outline()
 	apply_visual_state(VISUAL_INSPECTION)
 
 
@@ -82,13 +92,13 @@ func _build_native_inspection(document_data: Dictionary, type_data: Dictionary, 
 	var title_position := _vector(type_data.get("title_position", [44, 60]), Vector2(44, 60))
 	var title_size := _vector(type_data.get("title_size", [490, 42]), Vector2(490, 42))
 	var title_fallback := WorkdayContext.read_string(type_data, "name", "正式文件")
-	var title := WorkbenchUI.add_text(content_layer, WorkdayContext.read_string(document_data, "title", title_fallback), 22, WorkbenchUI.COLORS.ink, title_position, title_size)
+	var title := WorkbenchUI.add_text(content_layer, WorkdayContext.read_string(document_data, "title", title_fallback), NATIVE_TITLE_FONT_SIZE, WorkbenchUI.COLORS.ink, title_position, title_size)
 	title.name = "DocumentTitle"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.set_meta("document_font_role", "title")
 
 	var code_position := _vector(type_data.get("code_position", [520, 62]), Vector2(520, 62))
-	var code_label := WorkbenchUI.add_text(content_layer, _short_case_code(case_code), 12, Color("565647"), code_position, Vector2(120, 28))
+	var code_label := WorkbenchUI.add_text(content_layer, _short_case_code(case_code), NATIVE_CASE_CODE_FONT_SIZE, Color("565647"), code_position, Vector2(120, 28))
 	code_label.name = "DocumentCaseCode"
 	code_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_add_portrait(type_data, person_data)
@@ -101,9 +111,9 @@ func _build_native_inspection(document_data: Dictionary, type_data: Dictionary, 
 		var position := _vector(layout.get("position", [72, 132 + fallback_index * 52]), Vector2(72, 132 + fallback_index * 52))
 		var dimensions := _vector(layout.get("size", [500, 42]), Vector2(500, 42))
 		var label := WorkdayContext.read_string(layout, "label", field_name)
-		var field_value := WorkbenchUI.add_text(
-			content_layer, "%s：%s" % [label, _format_value(values[raw_field_name])], WorkdayContext.read_int(layout, "font_size", 16), WorkbenchUI.COLORS.ink, position, dimensions
-		)
+		var configured_font_size := WorkdayContext.read_int(layout, "font_size", 16)
+		var readable_font_size := maxi(NATIVE_FIELD_FONT_MINIMUM, roundi(float(configured_font_size) * NATIVE_FIELD_FONT_MULTIPLIER))
+		var field_value := WorkbenchUI.add_text(content_layer, "%s：%s" % [label, _format_value(values[raw_field_name])], readable_font_size, WorkbenchUI.COLORS.ink, position, dimensions)
 		field_value.name = "DocumentField_%s" % field_name
 		field_value.set_meta("document_font_role", "native_field")
 		fallback_index += 1
@@ -290,6 +300,8 @@ func _short_case_code(case_code: String) -> String:
 func apply_visual_state(state: String) -> void:
 	var next_state := state if [VISUAL_DESK, VISUAL_INSPECTION].has(state) else VISUAL_INSPECTION
 	visual_state = next_state
+	user_zoom = 1.0
+	set_meta("desk_user_zoom", user_zoom)
 	var next_size := visual_size(next_state)
 	size = next_size
 	pivot_offset = size / 2.0
@@ -300,6 +312,59 @@ func apply_visual_state(state: String) -> void:
 	content_layer.scale = state_scale
 	content_layer.visible = next_state == VISUAL_INSPECTION
 	stamp_layer.scale = state_scale
+	if is_instance_valid(selection_outline):
+		selection_outline.size = size
+
+
+# 构建材料选中框。边框属于文件自身，缩放和拖动时会始终贴合真实纸张边缘。
+func _build_selection_outline() -> void:
+	selection_outline = Panel.new()
+	selection_outline.name = "SelectionOutline"
+	selection_outline.position = Vector2.ZERO
+	selection_outline.size = size
+	selection_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# 与材料父节点处于同一层，避免选中框把整体有效层级推过抓取上限 999。
+	selection_outline.z_index = 0
+	selection_outline.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 2, Color("f1d06d"), 6))
+	selection_outline.visible = false
+	add_child(selection_outline)
+
+
+# 显示或隐藏该材料的选中边框。
+func set_selected(selected: bool) -> void:
+	if is_instance_valid(selection_outline):
+		selection_outline.visible = selected
+	set_meta("document_selected", selected)
+
+
+# 围绕材料视觉中心调整用户缩放，并同步桌面控制器使用的稳定比例。
+func adjust_user_zoom(direction: int) -> bool:
+	if direction == 0 or not visible:
+		return false
+	var next_zoom := clampf(user_zoom + USER_ZOOM_STEP * signi(direction), USER_ZOOM_MIN, USER_ZOOM_MAX)
+	next_zoom = snappedf(next_zoom, USER_ZOOM_STEP)
+	if is_equal_approx(next_zoom, user_zoom):
+		return false
+
+	var visual_center_global := get_global_transform() * (size * 0.5)
+	var stored_base_value: Variant = get_meta("desk_base_scale", scale)
+	var stored_base_scale: Vector2 = scale
+	if stored_base_value is Vector2:
+		stored_base_scale = stored_base_value as Vector2
+	var canonical_scale: Vector2 = stored_base_scale / maxf(user_zoom, 0.001)
+	var next_scale: Vector2 = canonical_scale * next_zoom
+	user_zoom = next_zoom
+	set_meta("desk_user_zoom", user_zoom)
+	set_meta("desk_base_scale", next_scale)
+	scale = next_scale
+
+	# 兼容查验态中心枢轴与桌面态左上枢轴：缩放后把视觉中心校正回原位置。
+	var parent_canvas := get_parent() as CanvasItem
+	if is_instance_valid(parent_canvas):
+		var parent_inverse := parent_canvas.get_global_transform().affine_inverse()
+		var adjusted_center_global := get_global_transform() * (size * 0.5)
+		position += parent_inverse * visual_center_global - parent_inverse * adjusted_center_global
+	return true
 
 
 # 返回某一物理状态的独立纹理；旧配置缺少三态定义时退回通用背景。
@@ -331,11 +396,7 @@ func _add_portrait(type_data: Dictionary, person_data: Dictionary, override_posi
 	portrait.texture = portrait_texture
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	portrait.texture_filter = (
-		CanvasItem.TEXTURE_FILTER_LINEAR
-		if not WorkdayContext.read_string(person_data, "standard_portrait_texture").is_empty()
-		else CanvasItem.TEXTURE_FILTER_NEAREST
-	)
+	portrait.texture_filter = (CanvasItem.TEXTURE_FILTER_LINEAR if not WorkdayContext.read_string(person_data, "standard_portrait_texture").is_empty() else CanvasItem.TEXTURE_FILTER_NEAREST)
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	portrait.clip_contents = true
 	portrait.modulate = Color(0.48, 0.45, 0.36, 0.82)

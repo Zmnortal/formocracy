@@ -37,12 +37,13 @@ func run() -> void:
 			assert(desk.manager.call_bell.available, "completed case must wait for the call bell")
 			desk.manager.call_bell.trigger(true)
 			await process_frame
-	assert(current_scene.name == "Main", "third processed case must remain at the workbench for batch validation")
-	assert(current_scene.manager.batch_validation.overlay.visible, "day end must open the finite-capacity validation tray")
+	assert(current_scene.name == "BatchValidation", "third processed case must switch to the standalone validation scene")
+	assert(current_scene.module.overlay.visible, "day end must open the finite-capacity validation scene")
+	assert(current_scene.module.overlay.get_parent() == current_scene, "validation view must not remain attached to the workbench")
 	assert(state.manager.get_pending_archives().size() == state.target_case_count, "all processed cases must enter the unlimited archive backlog")
 	assert(state.machine_capacity == 4, "day-one machine capacity must come from level configuration")
-	current_scene.manager.batch_validation.select_first_up_to_capacity()
-	current_scene.manager.batch_validation.confirm(true)
+	current_scene.module.select_first_up_to_capacity()
+	current_scene.module.confirm(true)
 	await process_frame
 	assert(bridge.last_emitted_event.type == "reality_receipt", "batch validation must send reality receipts to the glasses")
 	assert(bridge.last_emitted_event.body.contains("档案已取得现实效力"), "glasses receipt must describe the validation outcome")

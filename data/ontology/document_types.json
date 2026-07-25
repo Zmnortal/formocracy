@@ -10,22 +10,22 @@
     },
     "title_position":[54,106],"title_size":[532,44],"code_position":[474,82],
     "prefill":{
-      "filing_unit":"第十二区居住配置处",
-      "submitted_at":"第 01 工作日 08:40",
-      "submission_channel":"窗口递交 / 原件核验",
-      "archive_class":"R-12 / 待形式审查"
+      "filing_unit":"第十二区配置处",
+      "submitted_at":"D01 08:40",
+      "submission_channel":"窗口 / 原件",
+      "archive_class":"R-12 / 待审"
     },
     "fields":{
-      "request":{"label":"申请事项","position":[58,176],"size":[524,72],"font_size":16},
-      "address":{"label":"事项地址","position":[58,262],"size":[248,44],"font_size":14},
-      "name":{"label":"申请人","position":[334,262],"size":[248,44],"font_size":14},
-      "citizen_id":{"label":"公民序号","position":[58,316],"size":[248,42],"font_size":13},
-      "signed":{"label":"申请签署","position":[334,316],"size":[248,42],"font_size":13},
-      "filing_unit":{"label":"受理单位","position":[58,386],"size":[248,42],"font_size":13},
-      "submitted_at":{"label":"递交时间","position":[334,386],"size":[248,42],"font_size":13},
-      "submission_channel":{"label":"递交方式","position":[58,442],"size":[248,42],"font_size":13},
-      "archive_class":{"label":"档案分类","position":[334,442],"size":[248,42],"font_size":13},
-      "note":{"label":"补充说明","position":[58,706],"size":[524,70],"font_size":13}
+      "request":{"label":"申请事项","position":[58,155],"size":[524,170],"font_size":16},
+      "address":{"label":"事项地址","position":[58,375],"size":[248,38],"font_size":11},
+      "name":{"label":"申请人","position":[334,375],"size":[248,38],"font_size":11},
+      "citizen_id":{"label":"公民序号","position":[58,420],"size":[248,38],"font_size":11},
+      "signed":{"label":"申请签署","position":[334,420],"size":[248,38],"font_size":11},
+      "filing_unit":{"label":"受理","position":[58,465],"size":[248,38],"font_size":11},
+      "submitted_at":{"label":"递交","position":[334,465],"size":[248,38],"font_size":11},
+      "submission_channel":{"label":"方式","position":[58,510],"size":[248,38],"font_size":11},
+      "archive_class":{"label":"档案","position":[334,510],"size":[248,38],"font_size":11},
+      "note":{"label":"补充说明","position":[58,590],"size":[524,140],"font_size":13}
     }
   },
   {
@@ -56,13 +56,13 @@
       "desk":{"texture":"res://assets/documents/types/residence/desk.png","size":[600,465]},
       "inspection":{"texture":"res://assets/documents/types/residence/inspection.png","size":[600,885]}
     },
-    "title_position":[172,68],"title_size":[370,38],"code_position":[470,806],
+    "title_position":[100,218],"title_size":[400,38],"code_position":[430,796],
     "fields":{
-      "address":{"label":"核准住所","position":[76,268],"size":[448,52],"font_size":15},
-      "valid":{"label":"证明状态","position":[76,338],"size":[448,42],"font_size":14},
-      "name":{"label":"登记人","position":[76,398],"size":[448,42],"font_size":14},
-      "issuer":{"label":"签发辖区","position":[76,468],"size":[448,40],"font_size":13},
-      "expires":{"label":"有效期限","position":[76,522],"size":[448,36],"font_size":13}
+      "address":{"label":"核准住所","position":[88,316],"size":[424,184],"font_size":16},
+      "valid":{"label":"证明状态","position":[96,548],"size":[408,34],"font_size":13},
+      "name":{"label":"登记人","position":[96,592],"size":[408,34],"font_size":13},
+      "issuer":{"label":"签发辖区","position":[96,636],"size":[408,34],"font_size":13},
+      "expires":{"label":"有效期限","position":[96,680],"size":[408,34],"font_size":13}
     }
   },
   {

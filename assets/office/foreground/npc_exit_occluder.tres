@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/office/background/service_hall_light.png" id="1_background"]
+
+[resource]
+atlas = ExtResource("1_background")
+region = Rect2(0, 0, 370, 720)
+filter_clip = true

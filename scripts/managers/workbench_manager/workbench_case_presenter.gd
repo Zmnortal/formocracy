@@ -690,12 +690,13 @@ func _settle_inspection_document(document_id: String) -> void:
 	if WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) != "INSPECTION":
 		return
 	_kill_document_tween(document)
-	document.set_meta("desk_base_scale", DOCUMENT_INSPECTION_SCALE)
+	# 查验层内只回正材料，不应抹掉玩家通过滚轮选择的阅读倍率。
+	var inspection_scale := _read_document_vector(document, "desk_base_scale", DOCUMENT_INSPECTION_SCALE)
 	bring_document_to_front(document_id)
 	var settle := _replace_document_tween(document)
 	settle.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	settle.tween_property(document, "rotation", 0.0, 0.12)
-	settle.parallel().tween_property(document, "scale", DOCUMENT_INSPECTION_SCALE, 0.12)
+	settle.parallel().tween_property(document, "scale", inspection_scale, 0.12)
 	_refresh_inspection_dismiss_layer()
 
 

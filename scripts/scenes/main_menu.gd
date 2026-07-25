@@ -284,7 +284,7 @@ func build_scene() -> void:
 	title.add_theme_color_override("font_outline_color", Color("#070b0c"))
 	center_column.add_child(title)
 	title_transition_nodes.append(title)
-	var chinese_title := make_label("纸面政治", 42, Color("#e4dec9"))
+	var chinese_title := make_label("表面政治", 42, Color("#e4dec9"))
 	chinese_title.name = "ChineseTitle"
 	center_column.add_child(chinese_title)
 	title_transition_nodes.append(chinese_title)

@@ -12,11 +12,6 @@ func run() -> void:
 	var state := root.get_node("WorkdayState")
 	var config := root.get_node("ConfigDatabase")
 	state.reset_for_tests()
-	var error := change_scene_to_file("res://main.tscn")
-	assert(error == OK, "main scene must open")
-	await process_frame
-	await process_frame
-
 	for case_id: String in ["CASE-001", "CASE-002", "CASE-003"]:
 		var case_data: Dictionary = config.get_gameplay_case(case_id)
 		state.manager.record_case_result(case_data, "批准", [], 5.0, case_data.document_ids)
@@ -24,9 +19,14 @@ func run() -> void:
 	state.manager.record_case_result(unstamped_case, "", ["漏盖章"], 5.0, unstamped_case.document_ids)
 	state.machine_capacity = 1
 
-	var module = current_scene.manager.batch_validation
-	module.open()
+	var error := change_scene_to_file("res://scenes/batch_validation.tscn")
+	assert(error == OK, "standalone batch validation scene must open")
 	await process_frame
+	await process_frame
+	var module = current_scene.module
+	assert(current_scene.name == "BatchValidation", "validation must replace the workbench scene")
+	assert(module.overlay.get_parent() == current_scene, "validation view must belong only to its standalone scene")
+	assert(current_scene.get_node_or_null("Desk") == null, "standalone validation scene must not retain workbench desk nodes")
 	assert(module.overlay.visible, "batch validation view must open")
 	assert(module.overlay.has_node("ValidationFloor"), "validation view must build its floor independently")
 	assert(module.overlay.has_node("ValidationMachineBody"), "validation machine must be an independent asset")
@@ -42,8 +42,8 @@ func run() -> void:
 		"machine intake must use the approved foreground asset"
 	)
 	assert(module.rail_machine_cap.texture.resource_path == "res://assets/concepts/endday_validation/validation_rail_machine_cap.png", "rail must use the approved split asset")
-	assert(module.archive_row.get_child_count() == 4, "every pending archive must appear regardless of stamp or envelope contents")
-	assert(module.buttons.has("ARCHIVE-00004"), "an unstamped archive must remain freely selectable for final validation")
+	assert(module.archive_row.get_child_count() == 3, "only stamped pending archives may appear in the validation scene")
+	assert(not module.buttons.has("ARCHIVE-00004"), "an unstamped archive must remain outside the validation machine")
 	assert(module.leave_button.visible and not module.leave_button.disabled, "the player must be able to leave without loading a bag")
 	assert(module.selected_ids.is_empty(), "no archive should be loaded before player input")
 
@@ -63,7 +63,7 @@ func run() -> void:
 	assert(module.active_document_bag.size.is_equal_approx(transport_size), "the bag must keep its physical size during ingestion (%s -> %s)" % [transport_size, module.active_document_bag.size])
 	await create_timer(0.90).timeout
 	assert(module.selected_ids == ["ARCHIVE-00001"], "one click must ingest exactly one document bag")
-	assert(current_scene.name == "Main", "reaching the upper limit must not force the player to leave")
+	assert(current_scene.name == "BatchValidation", "reaching the upper limit must not force the player to leave")
 	assert(not module.leave_button.disabled, "the leave action must be available at the daily limit")
 	second_button.pressed.emit()
 	await process_frame

@@ -517,6 +517,26 @@ func get_workday_for_day(day_number: int) -> Dictionary:
 	return ordered[0].duplicate(true) if day_number < WorkdayContext.read_int(ordered[0], "day_number", 1) else ordered[-1].duplicate(true)
 
 
+# 返回内容包声明的最后一个工作日序号；配置缺失时回退到已加载工作日的最大值。
+func get_last_workday_day() -> int:
+	var last_workday_id := WorkdayContext.read_string(content_pack, "last_workday_id")
+	var configured := get_workday(last_workday_id)
+	if not configured.is_empty():
+		return maxi(1, WorkdayContext.read_int(configured, "day_number", 7))
+	var last_day := 1
+	for workday_value: Variant in _ontology_table("workdays").values():
+		if workday_value is Dictionary:
+			@warning_ignore("unsafe_cast")
+			var workday: Dictionary = workday_value
+			last_day = maxi(last_day, WorkdayContext.read_int(workday, "day_number", 1))
+	return last_day
+
+
+# 判断当前日期是否已经抵达七日内容包的硬终局。
+func is_final_workday(day_number: int) -> bool:
+	return day_number >= get_last_workday_day()
+
+
 # 返回内容包声明的默认工作日。
 func get_default_workday_id() -> String:
 	return WorkdayContext.read_string(content_pack, "default_workday_id", "WORKDAY-001")

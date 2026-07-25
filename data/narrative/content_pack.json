@@ -13,6 +13,7 @@
     "locations": "res://data/ontology/locations.json",
     "personal_forms": "res://data/ontology/personal_forms.json",
     "proprietors": "res://data/ontology/proprietors.json",
+    "character_dialogues": "res://data/narrative/character_dialogues.json",
     "cases_v2": "res://data/narrative/demo_cases.json",
     "workdays": "res://data/narrative/demo_workdays.json",
     "storylines": "res://data/narrative/storylines.json"

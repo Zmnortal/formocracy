@@ -127,6 +127,7 @@ func start_new_game() -> void:
 	newspaper_subscriptions.clear()
 	newspaper_read_history.clear()
 	last_newspaper_submission_result.clear()
+	narrative_flags.clear()
 	active_checkpoint_id = ""
 	resume_loaded = false
 	persistence_enabled = true
@@ -168,6 +169,7 @@ func _capture_state() -> Dictionary:
 		"newspaper_subscriptions": newspaper_subscriptions,
 		"newspaper_read_history": newspaper_read_history,
 		"last_newspaper_submission_result": last_newspaper_submission_result,
+		"narrative_flags": narrative_flags,
 	}
 
 
@@ -183,6 +185,14 @@ func create_checkpoint(completed_day: int) -> bool:
 
 # 根据已恢复的状态决定返回晨间读报、工作台、日报还是下班地图。
 func get_resume_phase() -> String:
+	if read_bool(narrative_flags, "trial_completed"):
+		return "trial_complete"
+	if (
+		day_number == ConfigDatabase.get_last_workday_day()
+		and read_bool(narrative_flags, "du_chunmei_deceased")
+		and not read_bool(narrative_flags, "du_chunmei_notice_seen")
+	):
+		return "du_chunmei_death_notice"
 	if records.is_empty() and read_string(newspaper_read_history, str(day_number)).is_empty():
 		return "pre_work"
 	if records.size() < target_case_count:
@@ -226,6 +236,7 @@ func _apply_state(state: Dictionary) -> void:
 	newspaper_subscriptions = read_dictionary(state, "newspaper_subscriptions")
 	newspaper_read_history = read_dictionary(state, "newspaper_read_history")
 	last_newspaper_submission_result = read_dictionary(state, "last_newspaper_submission_result")
+	narrative_flags = read_dictionary(state, "narrative_flags")
 
 
 # 测试与调试辅助方法。
@@ -263,5 +274,6 @@ func reset_for_tests() -> void:
 	newspaper_subscriptions.clear()
 	newspaper_read_history.clear()
 	last_newspaper_submission_result.clear()
+	narrative_flags.clear()
 	resume_loaded = false
 	persistence_enabled = false

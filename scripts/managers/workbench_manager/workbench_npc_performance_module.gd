@@ -19,6 +19,22 @@ const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animat
 const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
 const UI := preload("res://scripts/ui/bureau_ui.gd")
 const STORY_MARKER_NAME := "StoryDebugMarker"
+const WAITING_DIALOGUE_PHASES: Array[String] = [
+	"waiting_public",
+	"waiting_personal",
+	"waiting_identity",
+	"waiting_story",
+]
+const IDLE_CHATTER_KEYS: Array[String] = [
+	"waiting_public",
+	"waiting_personal",
+	"waiting_identity",
+	"waiting_story",
+	"greeting",
+	"delivery",
+]
+const WAITING_LINES_PER_PHASE := 2
+const DEFAULT_WAITING_REPEAT_SECONDS := 7.0
 const EXISTING_ACTOR_SCALE_MULTIPLIER := 1.3
 const GLOBAL_ACTOR_SCALE_ADJUSTMENT := 1.2
 const FRONT_ACTOR_SCALE_MULTIPLIER := EXISTING_ACTOR_SCALE_MULTIPLIER * GLOBAL_ACTOR_SCALE_ADJUSTMENT
@@ -57,7 +73,8 @@ var speech_bubble: NpcSpeechBubble
 var state := "IDLE"
 var current_case: Dictionary = {}
 var performance_token := 0
-var waiting_line_shown := false
+var waiting_dialogue_index := 0
+var waiting_dialogue_seen: Dictionary = {}
 var skip_requested := false
 var micro_expression_rng := RandomNumberGenerator.new()
 var departure_in_progress := false
@@ -88,7 +105,8 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	var token := performance_token
 	_stop_audio()
 	current_case = case_data
-	waiting_line_shown = false
+	waiting_dialogue_index = 0
+	waiting_dialogue_seen.clear()
 	skip_requested = false
 	departure_in_progress = false
 	var case_id := WorkdayContext.read_string(case_data, "case_id")
@@ -111,7 +129,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	state = "GREETING"
 	_play_action("idle")
 	var dialogue := WorkdayContext.read_dictionary(case_data, "dialogue")
-	await _say_sequence(_dialogue_lines(dialogue, "greeting", "您好，我来办理事项。"), token)
+	await _say_sequence(_case_or_profile_dialogue_lines(dialogue, "greeting", "您好，我来办理事项。"), token)
 	if token != performance_token:
 		return
 	state = "DELIVERING"
@@ -123,7 +141,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	if token != performance_token:
 		return
 	Sfx.play("ui_switch", -5.0, 0.82)
-	await _say_sequence(_dialogue_lines(dialogue, "delivery", "材料都在这里。"), token)
+	await _say_sequence(_case_or_profile_dialogue_lines(dialogue, "delivery", "材料都在这里。"), token)
 	if token != performance_token:
 		return
 	delivery_finished.emit()
@@ -136,15 +154,23 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	_schedule_micro_expressions(token)
 
 
-# 延迟后在等待状态下播放一次催促台词。
+# 延迟后按人物台词库的公开身份、私人状态、身份矛盾与剧情暗示阶段循环说话。
 func _schedule_waiting_line(token: int) -> void:
 	var dialogue := WorkdayContext.read_dictionary(current_case, "dialogue")
 	var delay := WorkdayContext.read_float(dialogue, "waiting_delay_seconds", 8.0)
-	await root.get_tree().create_timer(delay).timeout
-	if token != performance_token or state != "WAITING" or waiting_line_shown:
-		return
-	waiting_line_shown = true
-	await _say_sequence(_dialogue_lines(dialogue, "waiting"), token)
+	var repeat_delay := WorkdayContext.read_float(dialogue, "waiting_repeat_seconds", DEFAULT_WAITING_REPEAT_SECONDS)
+	while token == performance_token and state == "WAITING" and not skip_requested:
+		await root.get_tree().create_timer(delay).timeout
+		if token != performance_token or state != "WAITING" or skip_requested:
+			return
+		var line := _next_waiting_dialogue_line(dialogue)
+		if line.is_empty():
+			return
+		await _say(line, token)
+		if token != performance_token or state != "WAITING" or skip_requested:
+			return
+		waiting_dialogue_index += 1
+		delay = repeat_delay
 
 
 # 在等待状态下按随机间隔循环播放微表情动画。
@@ -215,7 +241,7 @@ func react_and_leave(decision: String, promote_next := true) -> void:
 	_play_action(emotional_idle)
 	var line_key := "approved" if approved else "rejected"
 	var dialogue := WorkdayContext.read_dictionary(current_case, "dialogue")
-	await _say_sequence(_dialogue_lines(dialogue, line_key, "我知道了。"), token)
+	await _say_sequence(_case_or_profile_dialogue_lines(dialogue, line_key, "我知道了。"), token)
 	if token != performance_token:
 		return
 	await _walk_current_actor_out(exit_action, token)
@@ -337,6 +363,69 @@ func _dialogue_lines(dialogue: Dictionary, key: String, fallback := "") -> Array
 	if not line.is_empty():
 		lines.append(line)
 	return lines
+
+
+# 案件台词优先；普通案件的审批结果追加人物反应，关键剧情保持原节奏，其余人物台词进入日常闲聊池。
+func _case_or_profile_dialogue_lines(dialogue: Dictionary, key: String, fallback := "") -> Array[String]:
+	var case_lines := _dialogue_lines(dialogue, key)
+	var profile_lines := _dialogue_lines(_current_character_dialogue_profile(), key)
+	var is_story_case := WorkdayContext.read_string(current_case, "content_kind") == "story"
+	if key in ["approved", "rejected"] and not is_story_case:
+		var reaction_line := _pick_unseen_dialogue_line(profile_lines)
+		if not reaction_line.is_empty():
+			case_lines.append(reaction_line)
+	if not case_lines.is_empty():
+		return case_lines
+	return profile_lines if not profile_lines.is_empty() else _dialogue_lines({}, key, fallback)
+
+
+# 返回当前人物的结构化长期台词库；未配置时返回空字典以兼容旧案件。
+func _current_character_dialogue_profile() -> Dictionary:
+	var person := WorkdayContext.read_dictionary(current_case, "person")
+	var person_id := WorkdayContext.read_string(person, "id")
+	if person_id.is_empty():
+		return {}
+	return ConfigDatabase.get_ontology("character_dialogues", person_id)
+
+
+# 每两次等待发言推进一层，进入剧情暗示后保持在最后一层。
+func _waiting_phase_key(dialogue_index: int) -> String:
+	if WAITING_DIALOGUE_PHASES.is_empty():
+		return ""
+	var phase_index := mini(
+		floori(float(maxi(dialogue_index, 0)) / float(WAITING_LINES_PER_PHASE)),
+		WAITING_DIALOGUE_PHASES.size() - 1,
+	)
+	return WAITING_DIALOGUE_PHASES[phase_index]
+
+
+# 从当前等待层级抽取未说过的台词；之后继续使用问候与递件内容作为日常闲聊，旧案件回退原 waiting 字段。
+func _next_waiting_dialogue_line(case_dialogue: Dictionary) -> String:
+	var profile := _current_character_dialogue_profile()
+	var phase_key := _waiting_phase_key(waiting_dialogue_index)
+	var line := _pick_unseen_dialogue_line(_dialogue_lines(profile, phase_key))
+	if not line.is_empty():
+		return line
+	var idle_chatter_lines: Array[String] = []
+	for key: String in IDLE_CHATTER_KEYS:
+		idle_chatter_lines.append_array(_dialogue_lines(profile, key))
+	line = _pick_unseen_dialogue_line(idle_chatter_lines)
+	if not line.is_empty():
+		return line
+	return _pick_unseen_dialogue_line(_dialogue_lines(case_dialogue, "waiting"))
+
+
+# 在同一案件内随机选择一条未出现台词，并立即登记避免重复。
+func _pick_unseen_dialogue_line(lines: Array[String]) -> String:
+	var unseen: Array[String] = []
+	for line: String in lines:
+		if not waiting_dialogue_seen.has(line):
+			unseen.append(line)
+	if unseen.is_empty():
+		return ""
+	var selected := unseen[micro_expression_rng.randi_range(0, unseen.size() - 1)]
+	waiting_dialogue_seen[selected] = true
+	return selected
 
 
 # 逐句播放一个对白阶段；跳过或案件切换会终止整个剩余序列。

@@ -16,6 +16,36 @@ func run() -> void:
 	state.reset_for_tests()
 	assert(database.loaded and database.errors.is_empty(), "narrative content pack must load without errors")
 
+	var character_dialogues: Dictionary = database.ontology.get("character_dialogues", {})
+	var people: Dictionary = database.ontology.get("people", {})
+	assert(character_dialogues.size() == 18, "all eighteen existing people must have a character dialogue profile")
+	assert(character_dialogues.size() == people.size(), "character dialogue profiles must cover the complete people ontology")
+	var dialogue_stage_counts := {
+		"greeting": 3,
+		"delivery": 3,
+		"waiting_public": 4,
+		"waiting_personal": 4,
+		"waiting_identity": 3,
+		"waiting_story": 3,
+		"approved": 3,
+		"rejected": 3,
+	}
+	for person_id_value: Variant in people:
+		var person_id := String(person_id_value)
+		var profile: Dictionary = character_dialogues.get(person_id, {})
+		assert(not profile.is_empty(), "existing person must have a dialogue profile: %s" % person_id)
+		var total_lines := 0
+		for stage_value: Variant in dialogue_stage_counts:
+			var stage := String(stage_value)
+			var lines: Variant = profile.get(stage, [])
+			assert(lines is Array, "character dialogue stage must be an array: %s/%s" % [person_id, stage])
+			assert(lines.size() == int(dialogue_stage_counts[stage]), "character dialogue stage count must match its schema: %s/%s" % [person_id, stage])
+			total_lines += lines.size()
+			for line: Variant in lines:
+				assert(not String(line).strip_edges().is_empty(), "character dialogue must not contain empty lines: %s/%s" % [person_id, stage])
+				assert(String(line).length() <= 36, "character dialogue must fit the compact NPC bubble: %s/%s" % [person_id, stage])
+		assert(total_lines == 26, "every existing person must have exactly twenty-six character lines: %s" % person_id)
+
 	var general_slots := 0
 	var story_slots := 0
 	var multi_line_story_cases := 0

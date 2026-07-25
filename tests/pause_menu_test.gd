@@ -19,6 +19,7 @@ func run() -> void:
 		"the 1280x720 game canvas must stretch across the entire fullscreen window"
 	)
 	assert(pause_menu.is_scene_allowed_path("res://main.tscn"), "main gameplay must allow pause menu")
+	assert(pause_menu.is_scene_allowed_path("res://scenes/batch_validation.tscn"), "standalone batch validation must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/daily_report.tscn"), "daily report must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/after_work_corridor.tscn"), "after-work corridor must allow pause menu")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/evening_map.tscn"), "evening map must allow pause menu")

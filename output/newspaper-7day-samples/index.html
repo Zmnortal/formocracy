@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FORMOCRACY · 7 天报纸样张</title>
+  <style>
+    :root{color-scheme:dark;--ink:#ddd4b8;--muted:#858b7a;--line:#30382f;--panel:#0d110f;--bg:#060806}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(circle at 50% 0,#17201a 0,#090c09 34%,var(--bg) 70%);color:var(--ink);font-family:"Songti SC","Noto Serif CJK SC",serif}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#fff 4px)}
+    .masthead{padding:54px 5vw 36px;border-bottom:1px solid var(--line);background:#080b09e8}
+    .eyebrow{font:700 11px/1.2 ui-monospace,monospace;letter-spacing:.22em;color:#a88852}
+    h1{margin:14px 0 10px;font-size:clamp(30px,5vw,68px);font-weight:500;letter-spacing:.05em}
+    .masthead p{max-width:760px;margin:0;color:var(--muted);line-height:1.8}
+    .day-nav{position:sticky;top:0;z-index:20;display:flex;gap:8px;overflow:auto;padding:12px 5vw;background:#070a08e8;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .day-nav a{flex:0 0 auto;padding:8px 14px;border:1px solid #3f493d;color:#b9bca6;text-decoration:none;font:12px ui-monospace,monospace}
+    .day-nav a:hover{color:#fff;border-color:#a88852;background:#1a1e16}
+    main{width:min(1480px,94vw);margin:auto;padding-bottom:100px}
+    .day-section{padding:70px 0 20px;scroll-margin-top:62px}
+    .day-header{display:grid;grid-template-columns:160px 1fr auto;gap:18px;align-items:end;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .day-header span{color:#a88852;font:12px ui-monospace,monospace;letter-spacing:.14em}
+    .day-header h2{margin:0;font-size:28px;font-weight:500}
+    .day-header p{margin:0;color:var(--muted);font-size:13px}
+    .paper-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;padding-top:24px}
+    .paper-card{min-width:0;background:linear-gradient(180deg,#141814,#0b0e0c);border:1px solid #30372f;box-shadow:0 18px 40px #0008}
+    .paper-open{display:block;width:100%;padding:12px;border:0;background:#020302;cursor:zoom-in}
+    .paper-open img{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;border:1px solid color-mix(in srgb,var(--accent) 54%,#242820)}
+    .paper-open:hover img{filter:brightness(1.08);outline:2px solid var(--accent);outline-offset:-3px}
+    .paper-copy{padding:16px 18px 20px;border-top:3px solid var(--accent)}
+    .paper-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font:10px ui-monospace,monospace;letter-spacing:.08em}
+    .paper-meta span{color:var(--accent)}
+    .paper-copy h3{min-height:3em;margin:12px 0 8px;font-size:17px;line-height:1.5;font-weight:600}
+    .paper-copy p{min-height:3.5em;margin:0;color:#a6aa9b;font-size:12px;line-height:1.7}
+    blockquote{margin:14px 0 0;padding:10px 12px;border-left:2px solid var(--accent);background:#050705;color:#c5bda5;font-size:12px;line-height:1.7}
+    dialog{width:min(820px,92vw);padding:0;border:1px solid #6b674f;background:#070907;color:var(--ink);box-shadow:0 40px 100px #000}
+    dialog::backdrop{background:#000d;backdrop-filter:blur(5px)}
+    .dialog-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);font:12px ui-monospace,monospace}
+    .dialog-bar button{border:1px solid #555b4c;background:#10140f;color:#d9d1b6;padding:7px 12px;cursor:pointer}
+    dialog img{display:block;width:100%;max-height:82vh;object-fit:contain;background:#020302}
+    footer{padding:28px 5vw 46px;border-top:1px solid var(--line);color:#666e61;font:11px ui-monospace,monospace;text-align:center}
+    @media(max-width:1100px){.paper-grid{grid-template-columns:repeat(2,1fr)}.day-header{grid-template-columns:1fr}.day-header p{display:none}}
+    @media(max-width:620px){.paper-grid{grid-template-columns:1fr}.masthead{padding-top:36px}}
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="eyebrow">FORMOCRACY / NEWSPAPER NARRATIVE ARCHIVE</div>
+    <h1>七日新闻叙事样张</h1>
+    <p>共 28 张正式头版：衡川日报、十二区晨讯、衡川行政公报与旧城晚报。所有内容直接来自游戏配置，并使用游戏内安全网格渲染。</p>
+  </header>
+  <nav class="day-nav"><a href="#day-1">第 1 天</a><a href="#day-2">第 2 天</a><a href="#day-3">第 3 天</a><a href="#day-4">第 4 天</a><a href="#day-5">第 5 天</a><a href="#day-6">第 6 天</a><a href="#day-7">第 7 天</a></nav>
+  <main>
+      <section class="day-section" id="day-1">
+        <header class="day-header">
+          <span>WORKDAY / 01</span>
+          <h2>第 1 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-01-hengchuan_daily.png" data-title="衡川日报 · 第 1 天">
+              <img src="images/day-01-hengchuan_daily.png" alt="衡川日报第 1 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 01</b></div>
+              <h3>第十二区综合窗口今日恢复受理</h3>
+              <p>停办十七日后，B-07 工位重新启用。</p>
+              <blockquote>铅字有些晕。只有“恢复受理”四个字印得很重。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-01-district_12_morning.png" data-title="十二区晨讯 · 第 1 天">
+              <img src="images/day-01-district_12_morning.png" alt="十二区晨讯第 1 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 01</b></div>
+              <h3>B-07 窗口外昨夜已有十三人排队</h3>
+              <p>有人带着折叠椅，也有人只带了一只旧文件袋。</p>
+              <blockquote>报纸里的十三个人，七点以后会变成十三份材料。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-01-admin_gazette.png" data-title="衡川行政公报 · 第 1 天">
+              <img src="images/day-01-admin_gazette.png" alt="衡川行政公报第 1 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 01</b></div>
+              <h3>综合受理目录第 7 次临时勘误</h3>
+              <p>B-07 工位恢复时仍应使用旧目录，但附件顺序已变。</p>
+              <blockquote>日报只写恢复受理。公报写了什么东西会被放在最上面。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-01-old_city_evening.png" data-title="旧城晚报 · 第 1 天">
+              <img src="images/day-01-old_city_evening.png" alt="旧城晚报第 1 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 01</b></div>
+              <h3>停办的十七天里，B-07 的灯每晚都亮着</h3>
+              <p>官方说窗口无人值守，但对面住户记得打字声。</p>
+              <blockquote>恢复的究竟是窗口，还是白天？</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-2">
+        <header class="day-header">
+          <span>WORKDAY / 02</span>
+          <h2>第 2 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-02-hengchuan_daily.png" data-title="衡川日报 · 第 2 天">
+              <img src="images/day-02-hengchuan_daily.png" alt="衡川日报第 2 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 02</b></div>
+              <h3>本市身份证明核验范围扩大</h3>
+              <p>多类居民事项今日起增加签发机关核验。</p>
+              <blockquote>报纸说这只是一次“轻微调整”。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-02-district_12_morning.png" data-title="十二区晨讯 · 第 2 天">
+              <img src="images/day-02-district_12_morning.png" alt="十二区晨讯第 2 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 02</b></div>
+              <h3>旧城母亲为孩子补办身份页跑了四个区</h3>
+              <p>每个窗口都承认前一张回执，却没有一个窗口收件。</p>
+              <blockquote>制度没有拒绝她。制度只是让她继续走。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-02-admin_gazette.png" data-title="衡川行政公报 · 第 2 天">
+              <img src="images/day-02-admin_gazette.png" alt="衡川行政公报第 2 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 02</b></div>
+              <h3>身份证明核验细则新增第十二款</h3>
+              <p>临近到期的证件在提交当日仍视为有效。</p>
+              <blockquote>这一行字，也许能替某个人省下一整天。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-02-old_city_evening.png" data-title="旧城晚报 · 第 2 天">
+              <img src="images/day-02-old_city_evening.png" alt="旧城晚报第 2 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 02</b></div>
+              <h3>身份证明的新水印像一扇没有把手的门</h3>
+              <p>旧城印刷工说，那种纹样来自停用多年的档案纸。</p>
+              <blockquote>证明你是谁的纸，也许曾经用来证明谁不该被记住。</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-3">
+        <header class="day-header">
+          <span>WORKDAY / 03</span>
+          <h2>第 3 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-03-hengchuan_daily.png" data-title="衡川日报 · 第 3 天">
+              <img src="images/day-03-hengchuan_daily.png" alt="衡川日报第 3 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 03</b></div>
+              <h3>跨区居住登记进入集中复核</h3>
+              <p>住所、转送记录与家庭关系将被并行核验。</p>
+              <blockquote>同一座城，被折成了十二个不同的地址。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-03-district_12_morning.png" data-title="十二区晨讯 · 第 3 天">
+              <img src="images/day-03-district_12_morning.png" alt="十二区晨讯第 3 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 03</b></div>
+              <h3>桥东巷临时住户收到统一清退通知</h3>
+              <p>通知上的地址，和他们实际居住的门牌差了一位数字。</p>
+              <blockquote>一个写反的数字，足以让七户人家住进纸外。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-03-admin_gazette.png" data-title="衡川行政公报 · 第 3 天">
+              <img src="images/day-03-admin_gazette.png" alt="衡川行政公报第 3 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 03</b></div>
+              <h3>跨区转送记录允许使用封缄副本</h3>
+              <p>窗口不得要求申请人自行拆开原区封袋。</p>
+              <blockquote>有时候遵守规则，意味着不要打开。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-03-old_city_evening.png" data-title="旧城晚报 · 第 3 天">
+              <img src="images/day-03-old_city_evening.png" alt="旧城晚报第 3 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 03</b></div>
+              <h3>十二个区的地图拼在一起，中央少了一条街</h3>
+              <p>每张分区图都完整，合起来却留下细长空白。</p>
+              <blockquote>地址可以被删掉，住在那里的人不会同时消失。</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-4">
+        <header class="day-header">
+          <span>WORKDAY / 04</span>
+          <h2>第 4 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-04-hengchuan_daily.png" data-title="衡川日报 · 第 4 天">
+              <img src="images/day-04-hengchuan_daily.png" alt="衡川日报第 4 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 04</b></div>
+              <h3>临时居住人口登记规则今晨更新</h3>
+              <p>外市与境外申请人须提供有效居留依据。</p>
+              <blockquote>最小的一栏，写着最长的一串例外。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-04-district_12_morning.png" data-title="十二区晨讯 · 第 4 天">
+              <img src="images/day-04-district_12_morning.png" alt="十二区晨讯第 4 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 04</b></div>
+              <h3>翻译志愿者在境外申请窗口外摆起小桌</h3>
+              <p>官方译文排期三周，他们先帮人看懂退件理由。</p>
+              <blockquote>有些翻译不是把一种语言变成另一种，而是把拒绝变成能听懂的拒绝。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-04-admin_gazette.png" data-title="衡川行政公报 · 第 4 天">
+              <img src="images/day-04-admin_gazette.png" alt="衡川行政公报第 4 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 04</b></div>
+              <h3>境外文件认证译文豁免目录公布</h3>
+              <p>三类公共安全急件可先收件后补译。</p>
+              <blockquote>例外藏在最贵、最难买到的那份报纸里。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-04-old_city_evening.png" data-title="旧城晚报 · 第 4 天">
+              <img src="images/day-04-old_city_evening.png" alt="旧城晚报第 4 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 04</b></div>
+              <h3>口岸钟楼比全城慢七分钟</h3>
+              <p>境外申请人的有效期，究竟按哪一只钟结束？</p>
+              <blockquote>两只都正确的钟，制造了一个错误的人。</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-5">
+        <header class="day-header">
+          <span>WORKDAY / 05</span>
+          <h2>第 5 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-05-hengchuan_daily.png" data-title="衡川日报 · 第 5 天">
+              <img src="images/day-05-hengchuan_daily.png" alt="衡川日报第 5 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 05</b></div>
+              <h3>公共资源窗口启用紧急排序</h3>
+              <p>急件可先处理生存需求，再补记异常日期。</p>
+              <blockquote>“有限”后面没有写具体是多少。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-05-district_12_morning.png" data-title="十二区晨讯 · 第 5 天">
+              <img src="images/day-05-district_12_morning.png" alt="十二区晨讯第 5 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 05</b></div>
+              <h3>净水车只在南广场停留四十分钟</h3>
+              <p>有人排到车前时，手里的急件刚刚过期。</p>
+              <blockquote>时间不是在钟上走。它在队伍里走。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-05-admin_gazette.png" data-title="衡川行政公报 · 第 5 天">
+              <img src="images/day-05-admin_gazette.png" alt="衡川行政公报第 5 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 05</b></div>
+              <h3>紧急资源排序采用不可逆占位规则</h3>
+              <p>同一资源位完成盖章后不得转给后续申请。</p>
+              <blockquote>印章落下以前，犹豫是错误；落下以后，犹豫没有意义。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-05-old_city_evening.png" data-title="旧城晚报 · 第 5 天">
+              <img src="images/day-05-old_city_evening.png" alt="旧城晚报第 5 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 05</b></div>
+              <h3>南广场的最后一桶水被写进两份名单</h3>
+              <p>两份名单都有章，只有一只桶。</p>
+              <blockquote>纸面上有两桶水。现实里连一桶都没有留下。</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-6">
+        <header class="day-header">
+          <span>WORKDAY / 06</span>
+          <h2>第 6 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-06-hengchuan_daily.png" data-title="衡川日报 · 第 6 天">
+              <img src="images/day-06-hengchuan_daily.png" alt="衡川日报第 6 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 06</b></div>
+              <h3>事故附件封存办法完成修订</h3>
+              <p>相关附件不得擅自销毁，解封须有授权。</p>
+              <blockquote>不许销毁，也不许查看。中间是一段没有名字的空白。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-06-district_12_morning.png" data-title="十二区晨讯 · 第 6 天">
+              <img src="images/day-06-district_12_morning.png" alt="十二区晨讯第 6 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 06</b></div>
+              <h3>封存仓夜班员称听见旧录音带仍在转动</h3>
+              <p>管理处表示设备早已断电。</p>
+              <blockquote>不存在的声音，为什么需要一条正式提醒？</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-06-admin_gazette.png" data-title="衡川行政公报 · 第 6 天">
+              <img src="images/day-06-admin_gazette.png" alt="衡川行政公报第 6 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 06</b></div>
+              <h3>事故附件双重封存编号启用</h3>
+              <p>新旧编号并存时，以较早生成者追溯责任。</p>
+              <blockquote>痕迹不能消失，只能被新的痕迹包住。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-06-old_city_evening.png" data-title="旧城晚报 · 第 6 天">
+              <img src="images/day-06-old_city_evening.png" alt="旧城晚报第 6 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 06</b></div>
+              <h3>被封存的录音里有人念出明天的编号</h3>
+              <p>编号尚未签发，却准确出现在昨天的磁带里。</p>
+              <blockquote>如果明天已经被盖过章，今天还剩多少选择？</blockquote>
+            </div>
+          </article></div>
+      </section>
+      <section class="day-section" id="day-7">
+        <header class="day-header">
+          <span>WORKDAY / 07</span>
+          <h2>第 7 天 · 四家报纸头版</h2>
+          <p>同一座城市，同一天，四种不同的叙述角度。</p>
+        </header>
+        <div class="paper-grid">
+          <article class="paper-card" style="--accent:#a88948">
+            <button class="paper-open" type="button" data-image="images/day-07-hengchuan_daily.png" data-title="衡川日报 · 第 7 天">
+              <img src="images/day-07-hengchuan_daily.png" alt="衡川日报第 7 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川日报</span><b>DAY 07</b></div>
+              <h3>中央验收强调程序与现实并重</h3>
+              <p>材料有效不代表资源充足。</p>
+              <blockquote>今天的报纸像一份提前印好的结算单。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#b85e45">
+            <button class="paper-open" type="button" data-image="images/day-07-district_12_morning.png" data-title="十二区晨讯 · 第 7 天">
+              <img src="images/day-07-district_12_morning.png" alt="十二区晨讯第 7 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>十二区晨讯</span><b>DAY 07</b></div>
+              <h3>一周内被退回三次的文件袋终于变轻了</h3>
+              <p>不是材料少了，是申请人不再往里面放希望。</p>
+              <blockquote>机器吞掉的是表。人自己收回的是别的东西。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#526f84">
+            <button class="paper-open" type="button" data-image="images/day-07-admin_gazette.png" data-title="衡川行政公报 · 第 7 天">
+              <img src="images/day-07-admin_gazette.png" alt="衡川行政公报第 7 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>衡川行政公报</span><b>DAY 07</b></div>
+              <h3>经办裁量记录成为验收必查附件</h3>
+              <p>程序正确但造成重大损害者必须说明替代方案。</p>
+              <blockquote>最后一天，机器开始要求人解释自己为什么像机器。</blockquote>
+            </div>
+          </article>
+          <article class="paper-card" style="--accent:#75557f">
+            <button class="paper-open" type="button" data-image="images/day-07-old_city_evening.png" data-title="旧城晚报 · 第 7 天">
+              <img src="images/day-07-old_city_evening.png" alt="旧城晚报第 7 天头版样张">
+            </button>
+            <div class="paper-copy">
+              <div class="paper-meta"><span>旧城晚报</span><b>DAY 07</b></div>
+              <h3>有人正在收集所有被退回的空白说明栏</h3>
+              <p>它们看起来什么都没写，却有相同的压痕。</p>
+              <blockquote>没写下来的话，也会留下形状。</blockquote>
+            </div>
+          </article></div>
+      </section></main>
+  <dialog id="preview">
+    <div class="dialog-bar"><span id="preview-title"></span><button type="button">关闭</button></div>
+    <img id="preview-image" alt="报纸大图预览">
+  </dialog>
+  <footer>FORMOCRACY · 第十二区新闻叙事档案 · 28 SAMPLES</footer>
+  <script>
+    const dialog=document.querySelector("#preview");
+    const image=document.querySelector("#preview-image");
+    const title=document.querySelector("#preview-title");
+    document.querySelectorAll(".paper-open").forEach(button=>button.addEventListener("click",()=>{
+      image.src=button.dataset.image;
+      title.textContent=button.dataset.title;
+      dialog.showModal();
+    }));
+    dialog.querySelector("button").addEventListener("click",()=>dialog.close());
+    dialog.addEventListener("click",event=>{if(event.target===dialog)dialog.close()});
+  </script>
+</body>
+</html>

@@ -73,6 +73,7 @@ var end_sequence_step_duration := 1.8
 var end_sequence_fade_duration := 0.65
 var auto_transition_after_end_sequence := true
 var auto_open_location_scenes := true
+var campaign_completed := false
 var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
 var selected_location_id := ""
@@ -605,7 +606,10 @@ func _advance_end_dialogue() -> void:
 		dialogue_box.close()
 		end_sequence_finished.emit()
 		if auto_transition_after_end_sequence:
-			_enter_next_workday()
+			if campaign_completed:
+				_enter_trial_complete()
+			else:
+				_enter_next_workday()
 		return
 	var next_index := end_dialogue_index + 1
 	if next_index < end_dialogue_lines.size():
@@ -618,6 +622,12 @@ func _advance_end_dialogue() -> void:
 func _finish_end_of_night_sequence() -> void:
 	end_dialogue_index = end_dialogue_lines.size()
 	WorkdayState.manager.begin_next_day()
+	campaign_completed = WorkdayContext.read_bool(WorkdayState.narrative_flags, "trial_completed")
+	if campaign_completed:
+		var completion_text := "七日试行期已经结束。\n感谢前来试玩。你的全部裁决已写入时间线。"
+		dialogue_box.show_line("中央现实管理局", completion_text, "system")
+		_send_end_dialogue_to_glass("中央现实管理局", completion_text)
+		return
 	var summary := WorkdayState.manager.get_personal_review_summary()
 	var summary_text := "第 %02d 工作日\n个人申请处理：%s" % [WorkdayState.day_number, summary.result]
 	dialogue_box.show_line("中央现实管理局", summary_text, "system")
@@ -647,9 +657,20 @@ func _resolve_dialogue_speaker(speaker: String) -> String:
 # 切换到主场景进入下一个工作日。
 func _enter_next_workday() -> void:
 	Sfx.play("start")
-	var error := get_tree().change_scene_to_file("res://scenes/pre_work_sequence.tscn")
+	var next_scene := "res://scenes/pre_work_sequence.tscn"
+	if WorkdayState.get_resume_phase() == "du_chunmei_death_notice":
+		next_scene = "res://scenes/du_chunmei_death_notice.tscn"
+	var error := get_tree().change_scene_to_file(next_scene)
 	if error != OK:
 		review_detail_label.text = "进入下一工作日失败：%s" % error_string(error)
+
+
+# 七日结算完成后进入独立感谢试玩页。
+func _enter_trial_complete() -> void:
+	Sfx.play("start")
+	var error := get_tree().change_scene_to_file("res://scenes/trial_complete.tscn")
+	if error != OK:
+		review_detail_label.text = "进入试玩结束页失败：%s" % error_string(error)
 
 
 # 从本体配置填充饮水表单的目录信息。

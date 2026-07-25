@@ -12,20 +12,18 @@ func run() -> void:
 	var state := root.get_node("WorkdayState")
 	var config := root.get_node("ConfigDatabase")
 	state.reset_for_tests()
-	var error := change_scene_to_file("res://main.tscn")
-	assert(error == OK, "main scene must open")
-	await process_frame
-	await process_frame
-
 	var stamped_case: Dictionary = config.get_gameplay_case("CASE-001")
 	var unstamped_case: Dictionary = config.get_gameplay_case("CASE-G-D1-01")
 	state.manager.record_case_result(stamped_case, "批准", [], 5.0, stamped_case.document_ids)
 	state.manager.record_case_result(unstamped_case, "", ["漏盖章"], 5.0, unstamped_case.document_ids)
 	state.machine_capacity = 4
 
-	var module = current_scene.manager.batch_validation
-	module.open()
+	var error := change_scene_to_file("res://scenes/batch_validation.tscn")
+	assert(error == OK, "standalone batch validation scene must open")
 	await process_frame
+	await process_frame
+	var module = current_scene.module
+	assert(current_scene.name == "BatchValidation", "validation must replace the workbench scene")
 	assert(module.archive_row.get_child_count() == 1, "only the stamped archive may appear")
 	assert(module.selected_ids.is_empty(), "nothing should be preselected")
 	assert(not module.leave_button.disabled, "leave must be enabled with zero selected archives")

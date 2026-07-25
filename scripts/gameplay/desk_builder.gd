@@ -12,6 +12,7 @@ const WALL_CLOCK_TEXTURE := preload("res://assets/office/world_props/wall_clock.
 const CLERK_TOOL_CABINET_TEXTURE := preload("res://assets/office/world_props/clerk_tool_cabinet.png")
 const SERVICE_WINDOW_TEXTURE := preload("res://assets/office/service_window/service_counter_pass_through.png")
 const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
+const NPC_EXIT_OCCLUDER_TEXTURE := preload("res://assets/office/foreground/npc_exit_occluder.tres")
 const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
 const ARCHIVE_TRAY_FOREGROUND_TEXTURE := preload("res://assets/office/interactive/archive_tray_foreground.png")
 const DESK_DEFORMATION_SHADER := preload("res://shaders/desk_deformation.gdshader")
@@ -152,7 +153,8 @@ func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_build_filing_cabinet(root, desk)
 	desk.wall_calendar = _add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1062, 74), Vector2(220, 146), -3)
 	desk.wall_calendar.mouse_filter = Control.MOUSE_FILTER_PASS
-	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), -3)
+	# 左侧退场遮挡层位于 NPC 前方；墙钟是独立墙面陈设，必须再位于遮挡层前方。
+	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), 5)
 	_add_prop(root, "ClerkToolCabinet", CLERK_TOOL_CABINET_TEXTURE, Vector2(1018, 254), Vector2(293, 366), 5)
 
 
@@ -196,6 +198,9 @@ func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
 
 # 构建封闭式服务窗口与带梯形形变 Shader 的前景桌面。
 func _build_foreground_architecture(root: Node2D) -> void:
+	# 背景图把左墙和立柱烘焙在同一层。复用背景左侧原始像素作为独立前景裁片，
+	# 让向左退场的完整人物自然走到墙柱后方，同时避免重新绘制产生色差或接缝。
+	_add_prop(root, "NpcExitForegroundOccluder", NPC_EXIT_OCCLUDER_TEXTURE, Vector2.ZERO, Vector2(370, 720), 3)
 	var glass := ColorRect.new()
 	glass.name = "ServiceWindowGlass"
 	glass.position = Vector2(350, 150)

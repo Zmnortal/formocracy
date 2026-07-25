@@ -12,6 +12,8 @@ const NewspaperModule := preload("res://scripts/managers/workday_manager/workday
 const ConsequenceModule := preload("res://scripts/managers/workday_manager/workday_consequence_module.gd")
 const DeskLayoutModule := preload("res://scripts/managers/workday_manager/workday_desk_layout_module.gd")
 const ConfigGateway := preload("res://scripts/managers/workday_manager/workday_config_gateway.gd")
+const DU_CHUNMEI_CASE_ID := "CASE-S-M52-D5"
+const DU_CHUNMEI_EVENT_DAY := 6
 
 var _state: WorkdayContext
 var _config: WorkdayConfigGateway
@@ -59,6 +61,10 @@ func begin_next_day() -> void:
 	var completed_credit_delta := _consequences.get_credit_delta(_state.records)
 	_settlement.settle_current_day()
 	_archive.age_pending_archives()
+	_evaluate_campaign_events(completed_day)
+	if ConfigDatabase.is_final_workday(completed_day):
+		complete_campaign()
+		return
 	_state.day_number += 1
 	_state.records.clear()
 	_state.evening_day_number = _state.day_number
@@ -70,6 +76,44 @@ func begin_next_day() -> void:
 	_consequences.send_due_delayed_consequences()
 	if _state.persistence_enabled:
 		_state.create_checkpoint(completed_day)
+
+
+# 完成七日试玩并保持日数停留在最后一个工作日，避免重复载入第七日内容。
+func complete_campaign() -> void:
+	_settlement.settle_current_day()
+	_state.narrative_flags["trial_completed"] = true
+	_state.narrative_flags["trial_completed_day"] = _state.day_number
+	if _state.persistence_enabled:
+		_state.create_checkpoint(_state.day_number)
+		_state.save_progress()
+
+
+# 在第六夜结算杜春梅的资源申请：只有“批准且机器已验收”才能避免死亡。
+func _evaluate_campaign_events(completed_day: int) -> void:
+	if completed_day != DU_CHUNMEI_EVENT_DAY:
+		return
+	if WorkdayContext.read_bool(_state.narrative_flags, "du_chunmei_event_resolved"):
+		return
+	var latest_archive: Dictionary = {}
+	for archive_value: Variant in _state.archived_cases:
+		if not archive_value is Dictionary:
+			continue
+		@warning_ignore("unsafe_cast")
+		var archive: Dictionary = archive_value
+		if WorkdayContext.read_string(archive, "case_id") == DU_CHUNMEI_CASE_ID:
+			latest_archive = archive
+	var approved_and_effective := (
+		not latest_archive.is_empty()
+		and WorkdayContext.read_string(latest_archive, "decision") == "批准"
+		and WorkdayContext.read_string(latest_archive, "status") == "EFFECTIVE"
+	)
+	_state.narrative_flags["du_chunmei_event_resolved"] = true
+	_state.narrative_flags["du_chunmei_protected"] = approved_and_effective
+	_state.narrative_flags["du_chunmei_deceased"] = not approved_and_effective
+	_state.narrative_flags["du_chunmei_death_day"] = DU_CHUNMEI_EVENT_DAY if not approved_and_effective else 0
+	_state.narrative_flags["du_chunmei_death_reason"] = (
+		"连续用药与净水配额未在第六夜前生效" if not approved_and_effective else ""
+	)
 
 
 # 初始化当前工作日的夜间地图状态。

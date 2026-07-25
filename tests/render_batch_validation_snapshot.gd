@@ -11,11 +11,6 @@ func run() -> void:
 	var state = root.get_node("WorkdayState")
 	var config = root.get_node("ConfigDatabase")
 	state.reset_for_tests()
-	var error := change_scene_to_file("res://main.tscn")
-	assert(error == OK, "main scene must open")
-	await process_frame
-	await process_frame
-	current_scene.manager.briefing.skip()
 	for case_id in [
 		"CASE-001",
 		"CASE-002",
@@ -26,12 +21,15 @@ func run() -> void:
 		var case_data: Dictionary = config.get_gameplay_case(case_id)
 		state.manager.record_case_result(case_data, "批准", [], 5.0, case_data.document_ids)
 	state.machine_capacity = 4
-	current_scene.manager.batch_validation.open()
+	var error := change_scene_to_file("res://scenes/batch_validation.tscn")
+	assert(error == OK, "standalone batch validation scene must open")
 	await process_frame
-	var module = current_scene.manager.batch_validation
+	await process_frame
+	var module = current_scene.module
+	assert(current_scene.name == "BatchValidation", "snapshot must use the standalone validation scene")
 	assert(module.overlay.has_node("ValidationMachineBody"), "snapshot must render the split top-down machine")
 	assert(module.overlay.has_node("ValidationDocumentClip"), "snapshot must render the machine intake clip")
-	assert(module.overlay.has_node("LeaveValidationButton"), "snapshot must render the explicit leave action")
+	assert(module.overlay.find_child("LeaveValidationButton", true, false) != null, "snapshot must render the explicit leave action")
 	if DisplayServer.get_name() == "headless":
 		print("FORMOCRACY_BATCH_RENDER_OK (skipped on headless display)")
 		quit(0)

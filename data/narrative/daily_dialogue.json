@@ -1,0 +1,441 @@
+{
+  "schema_version": 1,
+  "id": "FORMOCRACY-DAILY-DIALOGUE",
+  "description": "七日昼夜文案登记表。implemented 表示文案已存在于当前游戏配置或脚本；draft 表示为后续接入准备的叙事草案。",
+  "days": [
+    {
+      "day": 1,
+      "title": "申请表本身",
+      "daytime": [
+        {
+          "id": "D01-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "铅字有些晕。只有“恢复受理”四个字印得很重。"
+        },
+        {
+          "id": "D01-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "简单事项只核验当日有效申请表。"
+        },
+        {
+          "id": "D01-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "林默",
+          "tone": "克制",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-001",
+          "text": "申请人是我和沈青禾。她今天没能来。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D01-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "scripts/scenes/after_work_corridor.gd",
+          "text": "最后一份的居住证明，日期是几号。"
+        },
+        {
+          "id": "D01-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "日常",
+          "status": "implemented",
+          "source": "data/ontology/proprietors.json",
+          "text": "表我可以发，能不能拿到东西要看你自己怎么填。"
+        },
+        {
+          "id": "D01-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "她今天没有来。可她的名字已经在我的桌上出现过了。"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "title": "申请人与身份证明",
+      "daytime": [
+        {
+          "id": "D02-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "报纸说这是一次“轻微调整”。"
+        },
+        {
+          "id": "D02-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "医疗回执以验收机记录时点判断有效期。"
+        },
+        {
+          "id": "D02-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "许桥",
+          "tone": "焦急",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-M31-D2",
+          "text": "我的伤不会替验收机多等二十三分钟。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D02-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "二十三分钟不算很久。对一张回执来说。"
+        },
+        {
+          "id": "D02-NIGHT-002",
+          "scene": "中央表单处",
+          "speaker": "何老板",
+          "tone": "讥讽",
+          "status": "implemented",
+          "source": "scripts/scenes/central_forms_scene.gd",
+          "text": "机器没坏。它只是不认可你放进去的东西。"
+        },
+        {
+          "id": "D02-NIGHT-003",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "title": "身份、住所与辖区",
+      "daytime": [
+        {
+          "id": "D03-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "同一座城，被折成了十二个不同的地址。"
+        },
+        {
+          "id": "D03-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "杜春梅",
+          "tone": "固执",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-R09-D3",
+          "text": "机器不记得他，不等于我也该忘。"
+        },
+        {
+          "id": "D03-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "沈青禾",
+          "tone": "坦白",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-X14-D3",
+          "text": "那三个月我们住在第七码头附近。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D03-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "一个名字消失了。三个月也消失了。机器今晚仍然准时。"
+        },
+        {
+          "id": "D03-NIGHT-002",
+          "scene": "宿舍 12C",
+          "speaker": "邻室职员",
+          "tone": "随口",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "码头那边以前有夜班车。后来路线图先被收走了。"
+        },
+        {
+          "id": "D03-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "如果今天没看见那几个月，第六天还会有人把它们带回来吗？"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "title": "区外、外市与境外人员",
+      "daytime": [
+        {
+          "id": "D04-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "最小的一栏，写着最长的一串例外。"
+        },
+        {
+          "id": "D04-DAY-002",
+          "scene": "晨间简报",
+          "speaker": "内部广播",
+          "tone": "指令",
+          "status": "implemented",
+          "source": "data/narrative/demo_workdays.json",
+          "text": "境外文件必须附认证译文；北陆互惠今日暂停，紧急维修令除外。"
+        },
+        {
+          "id": "D04-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "宋铎",
+          "tone": "冷静",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-F09-D4",
+          "text": "机器不会自己改时间。它只执行一次被授权的同步。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D04-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "机器没有说谎。它只是替某个人准确地说了一次谎。"
+        },
+        {
+          "id": "D04-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "提醒",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "时间写错还能划掉。人被划掉以后，表上就干净了。"
+        },
+        {
+          "id": "D04-NIGHT-003",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "所有职员返回登记住所。"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "title": "公共急件与稀缺资源",
+      "daytime": [
+        {
+          "id": "D05-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "“有限”后面没有写具体是多少。"
+        },
+        {
+          "id": "D05-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "孟秋兰",
+          "tone": "急迫",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-P44-D5",
+          "text": "先给我水。你们愿不愿承认日期，可以以后再说。"
+        },
+        {
+          "id": "D05-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "杜春梅",
+          "tone": "疲惫",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-M52-D5",
+          "text": "它却不记得一个人断药以后会怎样。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D05-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "最后一个位置还在纸上。它已经同时属于两个人。"
+        },
+        {
+          "id": "D05-NIGHT-002",
+          "scene": "配给处",
+          "speaker": "周姨",
+          "tone": "冷淡",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "水和药都能编号。缺的那一份不能。"
+        },
+        {
+          "id": "D05-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "余波",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "如果明天有人来问档案，今天这张检测单还能算见过吗？"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "title": "异常附件与封存证据",
+      "daytime": [
+        {
+          "id": "D06-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "不许销毁，也不许查看。报纸没有解释两者之间的空白。"
+        },
+        {
+          "id": "D06-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "林默",
+          "tone": "坦白",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-R12-D6",
+          "text": "那三个月我在维护一条不存在的夜间线路。"
+        },
+        {
+          "id": "D06-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "孟秋兰",
+          "tone": "克制",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-A73-D6",
+          "text": "我只要看见一次他的名字。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D06-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "今天看见的名字，明天可能又会被一枚章盖住。"
+        },
+        {
+          "id": "D06-NIGHT-002",
+          "scene": "中央表单处",
+          "speaker": "何老板",
+          "tone": "提醒",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "封存不是把门锁上。是让所有人同意门后面什么都没有。"
+        },
+        {
+          "id": "D06-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "邻室职员",
+          "tone": "低声",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "明天中央验收的人会来。今晚最好别把灯开太久。"
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "title": "程序正确与公共伤害",
+      "daytime": [
+        {
+          "id": "D07-DAY-001",
+          "scene": "晨间报纸",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "implemented",
+          "source": "data/narrative/pre_work_sequence.json",
+          "text": "今天的报纸像一份提前印好的结算单。"
+        },
+        {
+          "id": "D07-DAY-002",
+          "scene": "B-07 窗口",
+          "speaker": "顾原",
+          "tone": "承担",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-S18-D7",
+          "text": "我签过第一次修改。今天这一次，轮到您签。"
+        },
+        {
+          "id": "D07-DAY-003",
+          "scene": "B-07 窗口",
+          "speaker": "魏岚",
+          "tone": "审视",
+          "status": "implemented",
+          "source": "data/narrative/demo_cases.json#CASE-S-V01-D7",
+          "text": "您决定的是，合法性要让谁先活下去。"
+        }
+      ],
+      "evening": [
+        {
+          "id": "D07-NIGHT-001",
+          "scene": "下班走廊",
+          "speaker": "经办员",
+          "tone": "内心",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "最后一枚章落下以后，桌面终于空了。"
+        },
+        {
+          "id": "D07-NIGHT-002",
+          "scene": "夜间广播",
+          "speaker": "走廊广播",
+          "tone": "系统",
+          "status": "implemented",
+          "source": "scripts/scenes/evening_map.gd",
+          "text": "所有职员返回登记住所。"
+        },
+        {
+          "id": "D07-NIGHT-003",
+          "scene": "宿舍 12C",
+          "speaker": "经办员",
+          "tone": "结算",
+          "status": "draft",
+          "source": "narrative-engine",
+          "text": "记录会留下我做了什么。它不会替我解释为什么。"
+        }
+      ]
+    }
+  ]
+}

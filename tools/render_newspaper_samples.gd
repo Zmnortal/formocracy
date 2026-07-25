@@ -37,7 +37,8 @@ func run() -> void:
 			var page := _build_page(publisher, issue, day)
 			viewport.add_child(page)
 			await process_frame
-			await RenderingServer.frame_post_draw
+			await process_frame
+			RenderingServer.force_draw(false)
 			var image := viewport.get_texture().get_image()
 			assert(not image.is_empty(), "rendered newspaper image must not be empty")
 			var filename := "day-%02d-%s.png" % [day, _publisher_slug(publisher)]
@@ -133,8 +134,6 @@ func _make_label(
 	assert(values.size() >= 5, "text grid requires x, y, width, height and font size")
 	var label := Label.new()
 	label.text = text_value
-	label.position = Vector2(float(values[0]), float(values[1]))
-	label.size = Vector2(float(values[2]), float(values[3]))
 	label.add_theme_font_override("font", FONT)
 	label.add_theme_font_size_override("font_size", int(values[4]))
 	label.add_theme_color_override("font_color", color)
@@ -144,6 +143,8 @@ func _make_label(
 	label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	label.clip_text = true
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.position = Vector2(float(values[0]), float(values[1]))
+	label.size = Vector2(float(values[2]), float(values[3]))
 	return label
 
 

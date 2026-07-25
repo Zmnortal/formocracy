@@ -6,6 +6,8 @@ const GAME_SCENE := "res://main.tscn"
 const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
 const DAILY_REPORT_SCENE := "res://scenes/daily_report.tscn"
 const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
+const DEATH_NOTICE_SCENE := "res://scenes/du_chunmei_death_notice.tscn"
+const TRIAL_COMPLETE_SCENE := "res://scenes/trial_complete.tscn"
 const UI := preload("res://scripts/ui/bureau_ui.gd")
 const ENTRANCE_FADE_SECONDS := 0.7
 
@@ -320,6 +322,10 @@ func resume_game() -> void:
 		return
 	Sfx.play("start")
 	match WorkdayState.get_resume_phase():
+		"trial_complete":
+			_change_scene(TRIAL_COMPLETE_SCENE)
+		"du_chunmei_death_notice":
+			_change_scene(DEATH_NOTICE_SCENE)
 		"pre_work":
 			_change_scene(PRE_WORK_SCENE)
 		"daily_report":

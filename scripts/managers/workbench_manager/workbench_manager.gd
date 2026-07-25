@@ -9,7 +9,6 @@ const CaseSequenceModule := preload("res://scripts/managers/workbench_manager/wo
 const InputModule := preload("res://scripts/managers/workbench_manager/workbench_input_module.gd")
 const StampModule := preload("res://scripts/managers/workbench_manager/workbench_stamp_module.gd")
 const SubmissionModule := preload("res://scripts/managers/workbench_manager/workbench_submission_module.gd")
-const BatchValidationModule := preload("res://scripts/managers/workbench_manager/workbench_batch_validation_module.gd")
 const CallBellModule := preload("res://scripts/managers/workbench_manager/workbench_call_bell_module.gd")
 const BriefingModule := preload("res://scripts/managers/workbench_manager/workbench_briefing_module.gd")
 const BriefingDirector := preload("res://scripts/managers/workbench_manager/workbench_briefing_director.gd")
@@ -28,7 +27,6 @@ var npc_performance: WorkbenchNpcPerformanceModule
 var briefing: WorkbenchBriefingModule
 var dialogue_box: DialogueBox
 var call_bell: WorkbenchCallBellModule
-var batch_validation: WorkbenchBatchValidationModule
 var desk_items: DeskItemController
 var filing_cabinet: WorkbenchFilingCabinetModule
 var calendar: WorkbenchCalendarModule
@@ -63,7 +61,6 @@ func start() -> void:
 	npc_performance = NpcPerformanceModule.new(root)
 	briefing = BriefingModule.new(root, dialogue_box)
 	call_bell = CallBellModule.new(root)
-	batch_validation = BatchValidationModule.new(root)
 	desk_items.register_item(desk.slot, "archive_tray")
 	call_bell.enable_desk_movement(desk_items)
 
@@ -77,7 +74,6 @@ func start() -> void:
 	npc_performance.departure_finished.connect(_on_npc_departed)
 	briefing.finished.connect(_on_briefing_finished)
 	call_bell.called.connect(_on_call_bell)
-	batch_validation.finished.connect(_open_daily_report)
 	sequence.day_finished.connect(_on_day_finished)
 
 	root.get_viewport().size_changed.connect(fit_to_window)
@@ -151,7 +147,6 @@ func shutdown() -> void:
 	briefing = null
 	dialogue_box = null
 	call_bell = null
-	batch_validation = null
 	calendar = null
 	filing_cabinet = null
 	desk_items = null
@@ -310,15 +305,16 @@ func _on_day_finished() -> void:
 	_begin_batch_validation()
 
 
-# 锁定召唤铃并打开日终批量送验托盘。
+# 锁定工作台并切换到独立的日终送验场景。
 func _begin_batch_validation() -> void:
 	flow_state = "BATCH_VALIDATION"
 	call_bell.lock()
 	if WorkdayState.manager.get_pending_archives().is_empty():
 		_open_daily_report()
 		return
-	batch_validation.open()
-	desk.status_label.text = "工作时间结束：请从归档与积压中选择有限档案统一送验。"
+	var error: Error = root.get_tree().change_scene_to_file("res://scenes/batch_validation.tscn")
+	if error != OK and is_instance_valid(desk.status_label):
+		desk.status_label.text = "日终送验间无法开启，当前档案已保留。"
 
 
 # 切换到日报场景，失败时保留当前记录并显示提示。
