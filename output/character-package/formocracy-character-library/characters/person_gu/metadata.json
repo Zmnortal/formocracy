@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-GU",
+  "slug": "person_gu",
+  "identity": {
+    "display_name": "顾原",
+    "latin_name": "GU YUAN",
+    "age": 62,
+    "occupation": "夜间装配线领班",
+    "citizen_id": "32-770-16",
+    "queue_label": "A07"
+  },
+  "narrative": {
+    "file_number": "12-D/C07",
+    "role": "回访核心",
+    "summary": "一个把罪疚藏在值班表里的老领班；他申请离开夜班，却握着一份足以改变多人身份的事故名单。",
+    "background": "顾原在夜间装配线工作三十七年。事故当晚，他按命令修改出勤表，让数名失踪工人变成“主动离区”。如今宿舍资格与岗位绑定，他一旦退休，居住证明也会失效。",
+    "quote": "我签过太多夜班表。后来才知道，表上的空格也能埋人。"
+  },
+  "administrative": {
+    "status": "第十二区常住居民",
+    "code": "D12",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区装配厂宿舍 / 4-B",
+    "actual_residence": "第十二区装配厂宿舍 / 4-B",
+    "identity_document": "本市身份证明 32-770-16；有效",
+    "residence_document": "单位居住证明 W12-4-B；离岗即失效",
+    "policy_risk": "调离夜班会提前触发居住证明失效；需先取得退休住房承接单。"
+  },
+  "gameplay": {
+    "administrative_status": "D12",
+    "actor_scale": 0.34,
+    "move_speed": 0.82
+  },
+  "visual": {
+    "colors": {
+      "primary": "#58745E",
+      "secondary": "#859084",
+      "forbidden": "#A94B40"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_gu.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_gu.png",
+    "actor_texture": "res://assets/characters/applicants/person_gu/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_gu/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_old.wav"
+  }
+}

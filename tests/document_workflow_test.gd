@@ -25,11 +25,37 @@ func run() -> void:
 
 	var primary_id: String = presenter.primary_document_id
 	var supporting = presenter.document_panels[0]
+	var primary_preview := presenter.thumbnail_by_id[primary_id] as Button
+	var supporting_preview := presenter.thumbnail_by_id[supporting.document_id] as Button
+	assert(primary_preview.icon.resource_path.ends_with("/application/pocket.png"), "application pocket preview must use its independent cropped asset")
+	assert(supporting_preview.icon.resource_path.ends_with("/identity/pocket.png"), "identity pocket preview must use its independent cropped asset")
 	presenter.open_document(primary_id)
+	assert(
+		main.manager.desk_items._effective_z_index(presenter.form) > main.manager.desk_items._effective_z_index(presenter.envelope_front_cover),
+		"an extracted document must rise above the envelope cover as one atomic group"
+	)
 	presenter.open_document(supporting.document_id)
 	assert(presenter.form.visible and supporting.visible, "multiple documents must remain expanded")
 	presenter.bring_document_to_front(primary_id)
 	assert(presenter.form.z_index > supporting.z_index, "the selected document must be topmost")
+	presenter.collapse_envelope_billboard()
+	await create_timer(0.3).timeout
+	assert(not WorkdayContext.to_bool(presenter.envelope.get_meta("desk_drag_locked")), "an envelope with extracted documents must remain draggable")
+	var envelope_before_drag: Vector2 = presenter.envelope.position
+	main.manager.desk_items._begin_press(presenter.envelope, Vector2(12, 12))
+	assert(WorkdayContext.to_bool(presenter.envelope.get_meta("desk_pressed")), "the envelope must accept a press while documents remain outside")
+	var envelope_drag := InputEventMouseMotion.new()
+	envelope_drag.relative = Vector2(48, 0)
+	envelope_drag.global_position = presenter.envelope.get_meta("desk_press_global_position") + Vector2(60, 0)
+	main.manager.desk_items._move_pressed_item(presenter.envelope, envelope_drag)
+	assert(
+		presenter.envelope.position.x > envelope_before_drag.x + 30.0,
+		"a partially emptied envelope must follow the pointer instead of remaining glued to the desk (%s -> %s)" % [envelope_before_drag, presenter.envelope.position]
+	)
+	main.manager.desk_items._end_press(presenter.envelope)
+	await create_timer(0.2).timeout
+	presenter.expand_envelope_billboard()
+	await create_timer(0.3).timeout
 
 	presenter.apply_stamp("批准", supporting.document_id, Vector2(280, 220))
 	presenter.apply_stamp("驳回", supporting.document_id, Vector2(330, 245))

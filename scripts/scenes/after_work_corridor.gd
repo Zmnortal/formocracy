@@ -8,27 +8,23 @@ const SLIDE_TEXTURES: Array[String] = [
 	"res://assets/office/transitions/after_work_corridor_leg_closeup/corridor_legs_03_stop.png",
 	"res://assets/office/transitions/after_work_corridor_leg_closeup/corridor_legs_04_resume.png",
 ]
-const SLIDE_DURATIONS: Array[float] = [1.35, 2.15, 1.65, 1.35]
 const STOPPED_SLIDE_INDEX := 2
 
 var slide_index := -1
-var playback_generation := 0
 var exiting := false
 var footsteps_active := false
 var monologue_lines: Array[String] = []
+var dialogue_box: DialogueBox
 
 @onready var frame_texture: TextureRect = $FrameTexture
-@onready var monologue_label: Label = $Monologue
-@onready var progress_label: Label = $Progress
-@onready var advance_hint: Label = $AdvanceHint
 @onready var slide_fade: ColorRect = $SlideFade
 @onready var fade: ColorRect = $Fade
 
 
-# 初始化四拍下班播片；它只承接日报与夜间地图，不改变当日数据。
+# 初始化四拍下班播片；每一句都复用统一底部对话框并等待玩家手动推进。
 func _ready() -> void:
 	monologue_lines = _build_monologue_lines()
-	gui_input.connect(_on_gui_input)
+	_build_dialogue_box()
 	get_viewport().size_changed.connect(_fit_to_window)
 	_fit_to_window()
 	fade.visible = true
@@ -39,25 +35,17 @@ func _ready() -> void:
 	intro.finished.connect(func(): fade.visible = false)
 
 
-# Enter、空格或鼠标点击可以提前进入下一拍；即使不操作也会自动播放。
-func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept"):
-		advance_slide()
-		get_viewport().set_input_as_handled()
+# 使用全游戏统一的 DialogueBox；它负责逐字、首击补全和次击推进，绝不自动播放。
+func _build_dialogue_box() -> void:
+	dialogue_box = DialogueBox.new()
+	add_child(dialogue_box)
+	dialogue_box.advance_requested.connect(advance_slide)
 
 
-# 让整张过场画面都可点击推进。
-func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		advance_slide()
-		accept_event()
-
-
-# 提前推进一拍；最后一拍之后自动进入夜间地图。
+# 只有统一对话框发出手动推进信号时才换到下一拍。
 func advance_slide() -> void:
 	if exiting:
 		return
-	playback_generation += 1
 	var next_index := slide_index + 1
 	if next_index >= SLIDE_TEXTURES.size():
 		_finish_transition()
@@ -65,40 +53,25 @@ func advance_slide() -> void:
 	_show_slide(next_index)
 
 
-# 切换当前关键帧、心理活动和脚步节奏，并启动这一拍的自动计时。
-func _show_slide(index: int, schedule_next := true) -> void:
+# 切换当前关键帧、心理活动和脚步节奏；不创建任何自动推进计时器。
+func _show_slide(index: int) -> void:
 	slide_index = clampi(index, 0, SLIDE_TEXTURES.size() - 1)
 	frame_texture.texture = load(SLIDE_TEXTURES[slide_index])
-	monologue_label.text = monologue_lines[slide_index]
-	progress_label.text = "%02d / %02d" % [slide_index + 1, SLIDE_TEXTURES.size()]
 	if slide_index == STOPPED_SLIDE_INDEX:
 		_stop_footsteps()
 	else:
 		_start_footsteps()
-	if monologue_label.text != "……":
-		Sfx.play("dialogue_tick")
+	dialogue_box.show_line(_player_speaker(), monologue_lines[slide_index], "player")
 	_flash_slide()
-	if not schedule_next:
-		return
-	var generation := playback_generation
-	_run_slide_timer(generation, SLIDE_DURATIONS[slide_index])
 
 
-# 每张图使用短促黑场硬切，保留 PPT 播片的顿挫感。
+# 每次手动换图使用短促黑场硬切，保留 PPT 播片的顿挫感。
 func _flash_slide() -> void:
 	slide_fade.visible = true
 	slide_fade.modulate.a = 0.72
 	var flash := create_tween()
 	flash.tween_property(slide_fade, "modulate:a", 0.0, 0.14)
 	flash.finished.connect(func(): slide_fade.visible = false)
-
-
-# 计时器只推进仍属于当前播放代次的帧，避免点击后旧计时器重复跳页。
-func _run_slide_timer(generation: int, duration: float) -> void:
-	await get_tree().create_timer(duration).timeout
-	if exiting or generation != playback_generation:
-		return
-	advance_slide()
 
 
 # 心理活动根据当日后果选择一句残留念头，其余三拍保持麻木的固定节奏。
@@ -114,15 +87,19 @@ func _build_monologue_lines() -> Array[String]:
 	return ["……", memory_line, "再确认一下。", "……"]
 
 
-# 第四拍结束后淡出并进入夜间地图。
+# 心理活动沿用玩家开局输入的名字，不为主角补充任何性别信息。
+func _player_speaker() -> String:
+	return WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
+
+
+# 玩家确认第四拍后才淡出并进入夜间地图。
 func _finish_transition() -> void:
 	if exiting:
 		return
 	exiting = true
-	playback_generation += 1
 	_stop_footsteps()
+	dialogue_box.close()
 	Sfx.play("door")
-	advance_hint.visible = false
 	fade.visible = true
 	fade.modulate.a = 0.0
 	var outro := create_tween()
@@ -132,14 +109,12 @@ func _finish_transition() -> void:
 	if error != OK:
 		exiting = false
 		fade.visible = false
-		advance_hint.visible = true
-		monologue_label.text = "门没有打开。"
+		dialogue_box.show_line("内部提示", "门没有打开。", "warning")
 
 
-# 自动化测试与视觉快照可直接定位某一拍，不启动新的计时器。
+# 自动化测试与视觉快照可直接定位某一拍，但仍通过统一对话框显示文本。
 func show_slide_for_tests(index: int) -> void:
-	playback_generation += 1
-	_show_slide(index, false)
+	_show_slide(index)
 
 
 # 自动化测试跳过淡出，直接验证播片后的夜间地图入口。
@@ -147,8 +122,8 @@ func finish_for_tests() -> void:
 	if exiting:
 		return
 	exiting = true
-	playback_generation += 1
 	_stop_footsteps()
+	dialogue_box.close()
 	get_tree().change_scene_to_file(EVENING_MAP_SCENE)
 
 

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "style": "NES-inspired binary portrait",
+  "logical_size": [32, 32],
+  "output_size": [128, 128],
+  "palette": ["#000000", "#FFFFFF"],
+  "characters": {
+    "PERSON-LIN": "person_lin.png",
+    "PERSON-ZHOU": "person_zhou.png",
+    "PERSON-XU": "person_xu.png",
+    "PERSON-MENG": "person_meng.png",
+    "PERSON-HE": "person_he.png",
+    "PERSON-DU": "person_du.png",
+    "PERSON-GU": "person_gu.png",
+    "PERSON-SHEN": "person_shen.png",
+    "PERSON-TANG": "person_tang.png",
+    "PERSON-LUO": "person_luo.png",
+    "PROPRIETOR-ZHOU": "proprietor_zhou.png",
+    "PROPRIETOR-HE": "proprietor_he.png",
+    "PERSON-FANG": "person_fang.png",
+    "PERSON-LI": "person_li.png",
+    "PERSON-WEI": "person_wei.png",
+    "PERSON-JIANG": "person_jiang.png",
+    "PERSON-SONG": "person_song.png",
+    "PERSON-YE": "person_ye.png"
+  }
+}

@@ -19,10 +19,10 @@ func _configure_scene() -> void:
 		"隔壁楼已经来第三趟了。人没多，表倒是一张不少。",
 	]
 	actions = [
-		{"id": "identity", "label": "出示证件", "side": "left"},
-		{"id": "buy_form", "label": "购买饮水表", "side": "left"},
-		{"id": "collect_water", "label": "领取饮水", "side": "right"},
-		{"id": "collect_food", "label": "领取食品", "side": "right"},
+		{"id": "identity", "label": "出示证件", "description": "让窗口核验住址与配给资格", "side": "left"},
+		{"id": "buy_form", "label": "购买饮水表", "description": "用配给券领取一张空白饮水表", "side": "left"},
+		{"id": "collect_water", "label": "领取饮水", "description": "凭当日有效回执领取饮用水", "side": "right"},
+		{"id": "collect_food", "label": "领取食品", "description": "查询今晚可领取的食品份额", "side": "right"},
 	]
 
 
@@ -40,4 +40,3 @@ func _handle_action(action_id: String) -> void:
 			_show_feedback("没有当日有效领取回执。先去把申请交了。", false)
 		"collect_food":
 			_show_feedback("食品窗口今晚只处理提前登记件。", false)
-

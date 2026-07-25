@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-MENG",
+  "default_animation": "idle",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "frames/02_idle_neutral_a_fullbody.png",
+  "action_contract": {
+    "required": [
+      "idle",
+      "deliver",
+      "happy_react",
+      "happy_idle",
+      "angry_react",
+      "angry_idle",
+      "walk_out_happy",
+      "walk_out_angry"
+    ],
+    "optional": [
+      "queue_idle",
+      "blink",
+      "nervous"
+    ],
+    "max_unique_pngs": 20
+  },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "patterned_brown_purple_headscarf",
+      "mustard_knit_cardigan",
+      "dark_below_knee_skirt",
+      "brown_lace_up_shoes"
+    ],
+    "note": "所有帧完整保留头巾顶部与双脚；长期追索的压力通过护住回执、克制恳求和沉重离场表达，不截断身体。"
+  },
+  "emotion_fallbacks": {
+    "happy": "happy_idle",
+    "angry": "angry_idle"
+  },
+  "micro_expressions": [
+    {
+      "action": "blink",
+      "weight": 55
+    },
+    {
+      "action": "nervous",
+      "weight": 45
+    }
+  ],
+  "micro_expression_cooldown": [
+    2.5,
+    4.5
+  ],
+  "actions": [
+    {
+      "action": "queue_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_neutral_a_fullbody.png",
+        "frames/01_queue_idle_neutral_fullbody.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "blink",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/02_idle_neutral_a_fullbody.png",
+        "frames/03_blink_eyes_closed_fullbody.png",
+        "frames/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "nervous",
+      "fps": 3,
+      "playback": "ONCE",
+      "frames": [
+        "frames/04_nervous_hold_receipt_fullbody.png",
+        "frames/05_nervous_protect_receipt_fullbody.png",
+        "frames/02_idle_neutral_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "deliver",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/06_deliver_prepare_fullbody.png",
+        "frames/07_deliver_offer_fullbody.png",
+        "frames/08_deliver_present_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_react",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/09_approve_surprised_fullbody.png",
+        "frames/10_approve_relief_eyes_closed_fullbody.png",
+        "frames/11_approve_fragile_smile_fullbody.png",
+        "frames/12_approve_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/12_approve_idle_fullbody.png",
+        "frames/11_approve_fragile_smile_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_react",
+      "fps": 4,
+      "playback": "HOLD",
+      "frames": [
+        "frames/13_reject_hurt_fullbody.png",
+        "frames/14_reject_pleading_fullbody.png",
+        "frames/15_reject_resolved_fullbody.png",
+        "frames/16_reject_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/16_reject_idle_fullbody.png",
+        "frames/15_reject_resolved_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_happy",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "frames/17_exit_approved_step_a_fullbody.png",
+        "frames/18_exit_approved_step_b_fullbody.png",
+        "frames/17_exit_approved_step_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_angry",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "frames/19_exit_rejected_step_a_fullbody.png",
+        "frames/20_exit_rejected_step_b_fullbody.png",
+        "frames/19_exit_rejected_step_a_fullbody.png"
+      ]
+    }
+  ]
+}

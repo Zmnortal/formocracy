@@ -38,10 +38,9 @@ func run() -> void:
 	assert(current_scene != null and current_scene.name == "AfterWorkCorridor", "confirming report must enter the after-work corridor")
 	assert(state.day_number == 3, "entering corridor must not advance the day")
 	assert(state.records.size() == 1, "entering corridor must preserve current-day records")
-	current_scene.walk_by(1.0)
-	assert(current_scene.exit_button.visible, "reaching the corridor exit must reveal the leave action")
-	current_scene.leave_corridor()
-	await create_timer(0.5).timeout
+	assert(current_scene.slide_index == 0, "corridor interlude must start on its first slide")
+	current_scene.finish_for_tests()
+	await process_frame
 	await process_frame
 	assert(current_scene != null and current_scene.name == "EveningMap", "leaving the corridor must enter evening map")
 	assert(current_scene.day_label.text.contains("03"), "map must show the current workday")

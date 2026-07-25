@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-HE",
+  "slug": "person_he",
+  "identity": {
+    "display_name": "何芸",
+    "latin_name": "HE YUN",
+    "age": 34,
+    "occupation": "第七码头夜校教师",
+    "citizen_id": "65-331-09",
+    "queue_label": "A05"
+  },
+  "narrative": {
+    "file_number": "12-D/C05",
+    "role": "回访核心",
+    "summary": "一个语气温和、记忆锋利的夜校教师；她把被迁走的学生继续写在点名册里。",
+    "background": "何芸来自泊河市，白天在衡川仓库做统计，晚上教码头工人与孩子阅读。迁移后，管理局要求她删除九名“已转移”学生，她却继续保留姓名。她相信识字能让人看见制度如何改写自己。",
+    "quote": "名字被划掉以后，更需要有人把它念出来。"
+  },
+  "administrative": {
+    "status": "外市人员",
+    "code": "DOM",
+    "origin": "共和国 / 泊河市",
+    "registry": "泊河市南岸区 / 8-11",
+    "actual_residence": "第十二区码头宿舍 / 2-C",
+    "identity_document": "泊河市居民证明 65-331-09；非本市证件",
+    "residence_document": "第十二区临时居留备案 T12-204；剩余 41 日",
+    "policy_risk": "无本市身份证明。夜校照明申请需工作担保；学生名册人数与备案不一致。"
+  },
+  "gameplay": {
+    "administrative_status": "DOM",
+    "actor_scale": 0.36,
+    "move_speed": 0.96
+  },
+  "visual": {
+    "colors": {
+      "primary": "#2F9488",
+      "secondary": "#7A9993",
+      "forbidden": "#A6443D"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_he.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_he.png",
+    "actor_texture": "res://assets/characters/applicants/person_he/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_he/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  }
+}

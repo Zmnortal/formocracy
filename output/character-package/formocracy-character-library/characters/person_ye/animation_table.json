@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "character_id": "DEFAULT-APPLICANT",
+  "default_animation": "idle",
+  "substitute_frames_with_static_actor": true,
+  "static_actor_texture": "frames/02_idle_neutral_a_fullbody.png",
+  "action_contract": {
+    "required": [
+      "idle",
+      "deliver",
+      "happy_react",
+      "happy_idle",
+      "angry_react",
+      "angry_idle",
+      "walk_out_happy",
+      "walk_out_angry"
+    ],
+    "optional": [
+      "queue_idle",
+      "blink",
+      "nervous"
+    ],
+    "max_unique_pngs": 20
+  },
+  "emotion_fallbacks": {
+    "happy": "happy_idle",
+    "angry": "angry_idle"
+  },
+  "micro_expressions": [
+    {
+      "action": "blink",
+      "weight": 50
+    },
+    {
+      "action": "nervous",
+      "weight": 50
+    }
+  ],
+  "micro_expression_cooldown": [
+    2.5,
+    5
+  ],
+  "actions": [
+    {
+      "action": "queue_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-01.png",
+        "frames/frame-00.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-01.png"
+      ]
+    },
+    {
+      "action": "blink",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-04.png",
+        "frames/frame-00.png"
+      ]
+    },
+    {
+      "action": "nervous",
+      "fps": 3,
+      "playback": "ONCE",
+      "frames": [
+        "frames/frame-02.png",
+        "frames/frame-04.png",
+        "frames/frame-05.png"
+      ]
+    },
+    {
+      "action": "deliver",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-01.png",
+        "frames/frame-02.png"
+      ]
+    },
+    {
+      "action": "happy_react",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-01.png",
+        "frames/frame-02.png",
+        "frames/frame-03.png"
+      ]
+    },
+    {
+      "action": "happy_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-01.png",
+        "frames/frame-02.png"
+      ]
+    },
+    {
+      "action": "angry_react",
+      "fps": 4,
+      "playback": "HOLD",
+      "frames": [
+        "frames/frame-05.png",
+        "frames/frame-04.png",
+        "frames/frame-03.png",
+        "frames/frame-02.png"
+      ]
+    },
+    {
+      "action": "angry_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-04.png",
+        "frames/frame-05.png"
+      ]
+    },
+    {
+      "action": "walk_out_happy",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-00.png",
+        "frames/frame-01.png",
+        "frames/frame-00.png"
+      ]
+    },
+    {
+      "action": "walk_out_angry",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "frames/frame-05.png",
+        "frames/frame-04.png",
+        "frames/frame-05.png"
+      ]
+    }
+  ]
+}

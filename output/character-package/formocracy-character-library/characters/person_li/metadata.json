@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-LI",
+  "slug": "person_li",
+  "identity": {
+    "display_name": "黎素",
+    "latin_name": "LI SU",
+    "age": 42,
+    "occupation": "中央档案索引员",
+    "citizen_id": "42-900-17",
+    "queue_label": "B07"
+  },
+  "narrative": {
+    "file_number": "12-N/N04",
+    "role": "城市节点",
+    "summary": "一个在缺页之间寻找连续性的档案员；她拥有本市身份，却仍被出生地反复要求证明忠诚。",
+    "background": "黎素出生于澜岬共和国，青年时期随家庭迁入衡川并取得本市身份。她负责修复被拆分的档案，知道缺页往往不是意外。每逢境外审查收紧，她的出生证明译文都会重新成为必要材料。",
+    "quote": "档案最可怕的不是写错，而是让你永远证明不了它曾经写对。"
+  },
+  "administrative": {
+    "status": "本市外区居民",
+    "code": "HC-X",
+    "origin": "澜岬共和国 / 后取得衡川身份",
+    "registry": "第四区 / 18-7",
+    "actual_residence": "同登记地址",
+    "identity_document": "归化本市身份证明 42-900-17；有效",
+    "residence_document": "第四区居住证明；有效",
+    "policy_risk": "通常与本市居民相同；当日若启用“境外出生复核”，需补原始出生证明认证译文。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-X",
+    "actor_scale": 0.34,
+    "move_speed": 0.92
+  },
+  "visual": {
+    "colors": {
+      "primary": "#7358A6",
+      "secondary": "#9185A5",
+      "forbidden": "#B6663D"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/applicants/person_li/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_li.png",
+    "actor_texture": "res://assets/characters/applicants/person_li/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/person_li/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  }
+}

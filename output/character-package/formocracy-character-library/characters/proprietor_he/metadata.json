@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PROPRIETOR-HE",
+  "slug": "proprietor_he",
+  "identity": {
+    "display_name": "老赫",
+    "latin_name": "OLD HE",
+    "age": 64,
+    "occupation": "旧照相馆经营者",
+    "citizen_id": "09-377-61",
+    "queue_label": "B05"
+  },
+  "narrative": {
+    "file_number": "12-N/N02",
+    "role": "城市节点",
+    "summary": "一个用旧照片保存被改写身份的暗房主人；他认识玩家，却拒绝把答案说完整。",
+    "background": "老赫的照相馆早已停业，后室仍保存旧式身份照与冲印底片。他的公民编号在系统升级时被标记为“已退役”，新证又从未签发。他依靠一张连续居住三十年的旧证明留在第十二区。",
+    "quote": "你们现在用号码证明人。以前，我们至少还肯看一张脸。"
+  },
+  "administrative": {
+    "status": "身份存疑者",
+    "code": "UNK",
+    "origin": "衡川市旧城区（辖区已撤销）",
+    "registry": "旧第二区 / 编码失效",
+    "actual_residence": "第十二区废弃照相馆后室",
+    "identity_document": "旧本市身份记录 09-377-61；编号已退役",
+    "residence_document": "旧制长期居住证明；无机器校验码",
+    "policy_risk": "照片与旧档案能互相印证，但当前系统不承认旧签发机关。必须走人工复核或证人链。"
+  },
+  "gameplay": {
+    "administrative_status": "UNK",
+    "actor_scale": 0.34,
+    "move_speed": 0.76
+  },
+  "visual": {
+    "colors": {
+      "primary": "#932D3E",
+      "secondary": "#7E6668",
+      "forbidden": "#C79A38"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/proprietor_he.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/proprietor_he.png",
+    "actor_texture": "res://assets/characters/applicants/proprietor_he/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/proprietor_he/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_old.wav"
+  }
+}

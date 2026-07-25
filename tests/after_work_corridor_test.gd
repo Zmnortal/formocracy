@@ -7,10 +7,8 @@ func _init() -> void:
 
 func run() -> void:
 	var state := root.get_node_or_null("WorkdayState")
-	var bridge := root.get_node_or_null("RealityBridge")
 	var pause_menu := root.get_node_or_null("PauseMenu")
 	assert(state != null, "WorkdayState autoload must exist")
-	assert(bridge != null, "RealityBridge autoload must exist")
 	assert(pause_menu != null, "PauseMenu autoload must exist")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/after_work_corridor.tscn"), "after-work corridor must allow pause menu")
 	state.reset_for_tests()
@@ -22,26 +20,12 @@ func run() -> void:
 		. records
 		. append(
 			{
-				"code": "LIN-04",
-				"character_id": "PERSON-LIN",
-				"applicant": "林默",
-				"decision": "批准",
-				"effective": true,
-				"procedure_errors": ["遗漏材料"],
-			}
-		)
-	)
-	(
-		state
-		. records
-		. append(
-			{
-				"code": "GEN-04",
+				"code": "ERR-04",
 				"character_id": "PERSON-GENERAL",
 				"applicant": "普通申请人",
 				"decision": "驳回",
 				"effective": false,
-				"procedure_errors": [],
+				"procedure_errors": ["遗漏材料"],
 			}
 		)
 	)
@@ -51,25 +35,32 @@ func run() -> void:
 	await process_frame
 	var corridor = current_scene
 	assert(corridor != null and corridor.name == "AfterWorkCorridor", "corridor must be the current scene")
-	assert(corridor.day_label.text.contains("04"), "corridor must show the current workday")
-	assert(corridor.balance_label.text.contains("023"), "corridor must show the current balance")
-	assert(corridor.echo_label.text.contains("现实生效 01"), "corridor must echo effective submissions")
-	assert(corridor.echo_label.text.contains("等待处理 01"), "corridor must echo pending submissions")
+	assert(corridor.slide_index == 0, "slideshow must start on the first walking frame")
+	assert(corridor.dialogue_box is DialogueBox, "corridor must reuse the shared bottom dialogue box")
+	assert(corridor.dialogue_box.dialogue_label.text == "……", "first frame must begin with an ellipsis")
+	assert(corridor.dialogue_box.state == DialogueBox.DialogueState.TYPING, "first frame must begin with typewriter text")
+	assert(corridor.frame_texture.texture.resource_path.ends_with("corridor_legs_01_step.png"), "first frame must use the approved leg close-up asset")
+	assert(corridor.footsteps_active, "walking frame must play footsteps")
+	var first_slide_index: int = corridor.slide_index
+	await create_timer(0.25).timeout
+	assert(corridor.slide_index == first_slide_index, "corridor slides must never advance on a timer")
+	corridor.dialogue_box.reveal_current_line()
+	assert(corridor.dialogue_box.state == DialogueBox.DialogueState.WAITING_FOR_INPUT, "first input must only complete the current thought")
+	assert(corridor.slide_index == first_slide_index, "revealing a thought must not change the image")
+	corridor.dialogue_box._handle_manual_advance()
+	assert(corridor.slide_index == 1, "second input must manually advance to the memory frame")
 
-	corridor.walk_by(0.26)
-	assert(corridor.speaker_label.text == "走廊广播", "first milestone must be a corridor broadcast")
-	assert(corridor.message_label.text.contains("形式审查 02 件"), "first milestone must report the reviewed count")
-	corridor.walk_by(0.27)
-	assert(corridor.message_label.text.contains("程序错误 01 项"), "second milestone must report procedural errors")
-	corridor.walk_by(0.23)
-	assert(corridor.lin_mo.visible, "Lin Mo must appear when her case was handled today")
-	assert(corridor.speaker_label.text == "林默", "story milestone must identify Lin Mo")
-	assert(corridor.message_label.text.contains("至少今天，它算数"), "approved Lin Mo case must use the approved story echo")
-	corridor.walk_by(-0.5)
-	assert(corridor.speaker_label.text == "林默", "walking backward must not replay completed milestones")
-	corridor.walk_by(0.74)
-	assert(corridor.walk_progress == 1.0, "corridor progress must clamp at the exit")
-	assert(corridor.exit_button.visible, "reaching the exit must reveal the leave action")
-	assert(corridor.distance_label.text == "出口识别完成", "exit distance must resolve into access confirmation")
+	assert(corridor.dialogue_box.dialogue_label.text == "最后一份档案……我是不是漏看了日期。", "procedural errors must become the residual memory line")
+	assert(corridor.frame_texture.texture.resource_path.ends_with("corridor_legs_02_step.png"), "memory frame must use the second walking asset")
+
+	corridor.show_slide_for_tests(2)
+	assert(corridor.dialogue_box.dialogue_label.text == "再确认一下。", "third frame must stop on the re-check thought")
+	assert(not corridor.footsteps_active, "stopped frame must silence footsteps")
+	assert(corridor.frame_texture.texture.resource_path.ends_with("corridor_legs_03_stop.png"), "re-check frame must use the stopped-leg asset")
+
+	corridor.show_slide_for_tests(3)
+	assert(corridor.dialogue_box.dialogue_label.text == "……", "final walking frame must return to an ellipsis")
+	assert(corridor.footsteps_active, "final walking frame must resume footsteps")
+	assert(corridor.frame_texture.texture.resource_path.ends_with("corridor_legs_04_resume.png"), "final frame must use the pushed-in resumed-walk asset")
 	print("FORMOCRACY_AFTER_WORK_CORRIDOR_TEST_OK")
 	quit(0)

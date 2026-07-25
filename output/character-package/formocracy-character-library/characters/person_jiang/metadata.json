@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-JIANG",
+  "slug": "person_jiang",
+  "identity": {
+    "display_name": "蒋森",
+    "latin_name": "JIANG SEN",
+    "age": 39,
+    "occupation": "公共配给站班组长",
+    "citizen_id": "56-330-41",
+    "queue_label": "B09"
+  },
+  "narrative": {
+    "file_number": "12-N/N06",
+    "role": "城市节点",
+    "summary": "一个在有限额度之间调度生活的人；他每天都必须决定谁先被系统判定为“不必要”。",
+    "background": "蒋森来自永川市，受聘整顿第十二区配给站。他知道官方损耗数字不真实，却利用差额维持未登记居民的最低供给。工作合同是他在衡川合法居留的唯一担保。",
+    "quote": "额度永远不够。真正的权力，是决定缺口落到谁身上。"
+  },
+  "administrative": {
+    "status": "外市人员",
+    "code": "DOM",
+    "origin": "共和国 / 永川市",
+    "registry": "永川市河西区 / 3-4",
+    "actual_residence": "第十二区配给站宿舍",
+    "identity_document": "永川市居民证明 56-330-41；非本市证件",
+    "residence_document": "单位担保居留证明 EMP-12-R；剩余 68 日",
+    "policy_risk": "合同一旦中止，居留证明同时失效；部分当日通告不接受单位担保申请家庭事项。"
+  },
+  "gameplay": {
+    "administrative_status": "DOM",
+    "actor_scale": 0.18,
+    "move_speed": 1.02
+  },
+  "visual": {
+    "colors": {
+      "primary": "#829B45",
+      "secondary": "#8D9874",
+      "forbidden": "#A5423A"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 8
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_jiang.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_jiang.png",
+    "actor_texture": "res://assets/characters/dossier/person_jiang/concept.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_average.wav"
+  }
+}

@@ -6,6 +6,7 @@ TEST_SCRIPTS := \
 	tests/workday_manager_boundary_test.gd \
 	tests/save_module_boundary_test.gd \
 	tests/core_gameplay_test.gd \
+	tests/document_visual_states_test.gd \
 	tests/document_repack_and_stamp_test.gd \
 	tests/smoke_test.gd \
 	tests/desk_item_physics_test.gd \

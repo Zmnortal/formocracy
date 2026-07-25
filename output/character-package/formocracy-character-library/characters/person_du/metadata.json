@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-DU",
+  "slug": "person_du",
+  "identity": {
+    "display_name": "杜春梅",
+    "latin_name": "DU CHUNMEI",
+    "age": 69,
+    "occupation": "退休电话接线员",
+    "citizen_id": "11-604-42",
+    "queue_label": "A06"
+  },
+  "narrative": {
+    "file_number": "12-D/C06",
+    "role": "回访核心",
+    "summary": "一个记得太多声音、却开始忘记日期的退休接线员；她的记忆比档案更真实，也更脆弱。",
+    "background": "杜春梅曾在中央交换台工作，能凭呼吸和停顿认出常来电的人。退休后她与儿子周循同住，需要稳定药物与净水。她记得玩家旧身份的内部代号，但药物中断会让年份混在一起。",
+    "quote": "机器记的是号码。我记得号码后面那个人说话时，会不会先叹气。"
+  },
+  "administrative": {
+    "status": "第十二区常住居民",
+    "code": "D12",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区 / 9-1",
+    "actual_residence": "第十二区 / 9-1",
+    "identity_document": "本市退休居民证明 11-604-42；长期有效",
+    "residence_document": "照护型居住证明 R12-9-1；由周循代办",
+    "policy_risk": "代办签名与本人笔迹不同；当日若暂停亲属代办，需诊疗站能力证明。"
+  },
+  "gameplay": {
+    "administrative_status": "D12",
+    "actor_scale": 0.34,
+    "move_speed": 0.78
+  },
+  "visual": {
+    "colors": {
+      "primary": "#945B82",
+      "secondary": "#A4929C",
+      "forbidden": "#D49731"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_du.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_du.png",
+    "actor_texture": "res://assets/characters/applicants/person_du/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_du/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  }
+}

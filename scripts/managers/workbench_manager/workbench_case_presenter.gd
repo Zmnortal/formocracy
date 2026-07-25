@@ -8,10 +8,11 @@ const ENVELOPE_CLOSED := preload("res://assets/documents/envelopes/bureau_envelo
 const ENVELOPE_UNSTRUNG := preload("res://assets/documents/envelopes/bureau_envelope_unstrung.png")
 const ENVELOPE_OPEN_EMPTY := preload("res://assets/documents/envelopes/bureau_envelope_open_empty.png")
 const ENVELOPE_OUTLINE_SHADER := preload("res://shaders/envelope_outline.gdshader")
-const DOCUMENT_INSPECTION_SCALE := Vector2(0.64, 0.64)
+const DOCUMENT_INSPECTION_SCALE := Vector2(0.36, 0.36)
 const DOCUMENT_DESK_SCALE := Vector2(0.36, 0.28)
 const DOCUMENT_PEEK_SCALE := Vector2(0.17, 0.17)
 const DOCUMENT_INSPECTION_POSITION := Vector2(340, 78)
+const DOCUMENT_INSPECTION_RIGHT_BOUND := 748.0
 const ENVELOPE_DESK_SIZE := Vector2(180, 126)
 const ENVELOPE_BILLBOARD_SIZE := Vector2(500, 620)
 const ENVELOPE_DELIVERY_POSITION := Vector2(550, 420)
@@ -36,6 +37,7 @@ const ENVELOPE_REPACK_ZONE := [
 
 var root: Node2D
 var desk: DeskNodes
+var desk_items: DeskItemController
 
 var current_case: Dictionary = {}
 var form: DocumentView
@@ -50,6 +52,7 @@ var envelope_outline_material: ShaderMaterial
 var envelope_front_cover: TextureRect
 var envelope_case_label: Label
 var envelope_flap: Button
+var envelope_drag_handle: Button
 var thumbnail_tray: Panel
 var inspection_dismiss_layer: Control
 var envelope_opened := false
@@ -68,9 +71,10 @@ var case_started_at := 0.0
 
 
 # 初始化案件呈现器，绑定根节点与桌面节点引用。
-func _init(owner_root: Node2D, owner_desk: DeskNodes) -> void:
+func _init(owner_root: Node2D, owner_desk: DeskNodes, item_controller: DeskItemController = null) -> void:
 	root = owner_root
 	desk = owner_desk
+	desk_items = item_controller
 
 
 # 开始展示新案件：清理旧案件、设置申请人信息、创建文档与信封。
@@ -149,7 +153,7 @@ func _create_documents(raw_documents: Array) -> void:
 		var type_data := ConfigDatabase.get_ontology("document_types", WorkdayContext.read_string(document_data, "document_type_id"))
 		var document := DocumentView.new()
 		document.configure(document_data, type_data, WorkdayContext.read_dictionary(current_case, "person"), WorkdayContext.read_string(current_case, "code"))
-		var inspection_position := DOCUMENT_INSPECTION_POSITION + Vector2(index * 24, index * 18)
+		var inspection_position := _inspection_position_for(document, index)
 		document.position = inspection_position
 		document.scale = DOCUMENT_INSPECTION_SCALE
 		document.set_meta("inspection_position", inspection_position)
@@ -172,6 +176,14 @@ func _create_documents(raw_documents: Array) -> void:
 		form = all_document_views[0]
 		form.is_primary = true
 		primary_document_id = form.document_id
+
+
+# 根据每类文件真实长宽比安排查验位置，避免横向卡片遮住桌面右侧印章工具。
+func _inspection_position_for(document: DocumentView, index: int) -> Vector2:
+	var position := DOCUMENT_INSPECTION_POSITION + Vector2(index * 24, index * 18)
+	var pivot_to_right_edge := document.size.x * 0.5 * (1.0 + DOCUMENT_INSPECTION_SCALE.x)
+	position.x = minf(position.x, DOCUMENT_INSPECTION_RIGHT_BOUND - pivot_to_right_edge)
+	return position
 
 
 # 创建并递送案件信封，包含封口按钮、缩略图托盘与案件标签。
@@ -220,7 +232,7 @@ func _create_envelope() -> void:
 	envelope_case_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	envelope_case_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	envelope_case_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope_case_label.z_index = ENVELOPE_CONTENT_OVERLAY_TOP - 1
+	envelope_case_label.z_index = 0
 
 	envelope_flap = Button.new()
 	envelope_flap.name = "EnvelopeUpperOpenHitArea"
@@ -228,7 +240,7 @@ func _create_envelope() -> void:
 	envelope_flap.tooltip_text = "点击圆环或上部封盖拆开文件袋"
 	envelope_flap.disabled = true
 	envelope_flap.visible = false
-	envelope_flap.z_index = ENVELOPE_CONTENT_OVERLAY_TOP
+	envelope_flap.z_index = 0
 	envelope_flap.focus_mode = Control.FOCUS_NONE
 	envelope_flap.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var transparent_button := WorkbenchUI.style_box(Color.TRANSPARENT, 0)
@@ -243,7 +255,7 @@ func _create_envelope() -> void:
 	thumbnail_tray = Panel.new()
 	thumbnail_tray.name = "DocumentPocketContents"
 	thumbnail_tray.visible = false
-	thumbnail_tray.z_index = 1
+	thumbnail_tray.z_index = 0
 	thumbnail_tray.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_tray.clip_contents = true
 	thumbnail_tray.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 0))
@@ -262,9 +274,35 @@ func _create_envelope() -> void:
 	envelope_front_cover.stretch_mode = TextureRect.STRETCH_SCALE
 	envelope_front_cover.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	envelope_front_cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope_front_cover.z_index = ENVELOPE_CONTENT_OVERLAY_TOP - 2
+	envelope_front_cover.z_index = 0
 	envelope_front_cover.visible = false
 	envelope.add_child(envelope_front_cover)
+
+	envelope_drag_handle = Button.new()
+	envelope_drag_handle.name = "EnvelopeDragHandle"
+	envelope_drag_handle.text = ""
+	envelope_drag_handle.tooltip_text = "拖动文件袋"
+	envelope_drag_handle.visible = false
+	envelope_drag_handle.z_index = 0
+	envelope_drag_handle.focus_mode = Control.FOCUS_NONE
+	envelope_drag_handle.mouse_default_cursor_shape = Control.CURSOR_DRAG
+	var drag_handle_style := WorkbenchUI.style_box(Color.TRANSPARENT, 0)
+	envelope_drag_handle.add_theme_stylebox_override("normal", drag_handle_style)
+	envelope_drag_handle.add_theme_stylebox_override("hover", drag_handle_style)
+	envelope_drag_handle.add_theme_stylebox_override("pressed", drag_handle_style)
+	envelope.add_child(envelope_drag_handle)
+	_order_envelope_atomic_layers()
+
+
+# 文件袋对外只占一个 Z-index；内部依靠子节点顺序绘制，禁止封皮越过父级压住抽出的文件。
+func _order_envelope_atomic_layers() -> void:
+	envelope_image.z_index = 0
+	envelope.move_child(envelope_image, 0)
+	envelope.move_child(thumbnail_tray, 1)
+	envelope.move_child(envelope_front_cover, 2)
+	envelope.move_child(envelope_case_label, 3)
+	envelope.move_child(envelope_flap, 4)
+	envelope.move_child(envelope_drag_handle, 5)
 
 
 # 创建查验态标记层；实际袋外点击由主场景的未处理输入接收，避免透明层拦住桌面工具。
@@ -303,8 +341,8 @@ func _create_thumbnails() -> void:
 		thumbnail.size = Vector2(150, 110)
 		thumbnail.pivot_offset = thumbnail.size * 0.5
 		thumbnail.rotation = -0.04
-		thumbnail.z_index = 1
-		thumbnail.icon = document.background.texture
+		thumbnail.z_index = 0
+		thumbnail.icon = document.visual_texture(DocumentView.VISUAL_POCKET)
 		thumbnail.expand_icon = true
 		thumbnail.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		thumbnail.focus_mode = Control.FOCUS_NONE
@@ -349,9 +387,12 @@ func expand_envelope_billboard() -> void:
 	envelope_desk_position = envelope.position
 	inspection_dismiss_layer.visible = true
 	envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope.set_meta("desk_drag_locked", true)
-	envelope.set_meta("context_cursor", CursorManager.Cursor.OPEN_ENVELOPE)
-	envelope.z_index = ENVELOPE_BILLBOARD_LAYER
+	envelope.set_meta("desk_drag_locked", false)
+	envelope.set_meta("context_cursor", CursorManager.Cursor.GRAB)
+	if desk_items != null:
+		desk_items.focus_item(envelope)
+	else:
+		envelope.z_index = ENVELOPE_BILLBOARD_LAYER
 	envelope_image.texture = ENVELOPE_OPEN_EMPTY if envelope_opened else ENVELOPE_CLOSED
 	_layout_billboard_controls()
 	Sfx.play("ui_switch")
@@ -376,10 +417,13 @@ func _show_billboard_immediate() -> void:
 	inspection_dismiss_layer.visible = true
 	envelope.position = ENVELOPE_BILLBOARD_POSITION
 	envelope.size = ENVELOPE_BILLBOARD_SIZE
-	envelope.z_index = ENVELOPE_BILLBOARD_LAYER
+	if desk_items != null:
+		desk_items.focus_item(envelope)
+	else:
+		envelope.z_index = ENVELOPE_BILLBOARD_LAYER
 	envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope.set_meta("desk_drag_locked", true)
-	envelope.set_meta("context_cursor", CursorManager.Cursor.OPEN_ENVELOPE)
+	envelope.set_meta("desk_drag_locked", false)
+	envelope.set_meta("context_cursor", CursorManager.Cursor.GRAB)
 	envelope_image.texture = ENVELOPE_OPEN_EMPTY if envelope_opened else ENVELOPE_CLOSED
 	_layout_billboard_controls()
 
@@ -395,6 +439,9 @@ func _layout_billboard_controls() -> void:
 	envelope_front_cover.position = ENVELOPE_FRONT_POSITION
 	envelope_front_cover.size = ENVELOPE_FRONT_SIZE
 	envelope_front_cover.visible = envelope_opened
+	envelope_drag_handle.position = Vector2(48, 278)
+	envelope_drag_handle.size = Vector2(405, 310)
+	envelope_drag_handle.visible = true
 	thumbnail_tray.position = Vector2(86, 132)
 	thumbnail_tray.size = Vector2(328, 132)
 	_refresh_document_previews()
@@ -409,7 +456,10 @@ func open_envelope() -> void:
 	envelope_opened = true
 	Sfx.play("ui_switch")
 	envelope.visible = true
-	envelope.z_index = ENVELOPE_BILLBOARD_LAYER
+	if desk_items != null:
+		desk_items.focus_item(envelope)
+	else:
+		envelope.z_index = ENVELOPE_BILLBOARD_LAYER
 	next_document_layer = maxi(next_document_layer, ENVELOPE_BILLBOARD_LAYER + ENVELOPE_CONTENT_OVERLAY_TOP)
 	envelope_flap.disabled = true
 	envelope_flap.visible = false
@@ -464,6 +514,7 @@ func open_document(document_id: String) -> void:
 func _extract_document_from_bag(document: DocumentView) -> void:
 	var target_position := _read_document_vector(document, "inspection_position", DOCUMENT_INSPECTION_POSITION)
 	var thumbnail: Button = thumbnail_by_id.get(document.document_id)
+	document.apply_visual_state(DocumentView.VISUAL_INSPECTION)
 	var start_center := target_position + document.size * DOCUMENT_INSPECTION_SCALE * 0.5
 	if is_instance_valid(thumbnail):
 		var preview_center_global := thumbnail.get_global_transform() * (thumbnail.size * 0.5)
@@ -494,6 +545,7 @@ func _raise_document_from_desk(document: DocumentView) -> void:
 	document.set_meta("desk_home_position", document.position)
 	document.set_meta("desk_home_layer", document.z_index)
 	document.set_meta("document_state", "INSPECTION")
+	document.apply_visual_state(DocumentView.VISUAL_INSPECTION)
 	document.pivot_offset = document.size * 0.5
 	document.position = desk_center - document.pivot_offset
 	document.scale = desk_scale
@@ -527,6 +579,7 @@ func lower_raised_documents_to_desk() -> bool:
 func _lower_document_to_saved_desk_position(document: DocumentView) -> void:
 	var home_position := _read_document_vector(document, "desk_home_position", document.position)
 	var home_layer := WorkdayContext.to_int(document.get_meta("desk_home_layer", ENVELOPE_DESK_LAYER + 1))
+	document.apply_visual_state(DocumentView.VISUAL_DESK)
 	var target_center := home_position + document.size * DOCUMENT_DESK_SCALE * 0.5
 	var target_position_with_center_pivot := target_center - document.pivot_offset
 	document.set_meta("document_state", "DESK")
@@ -565,6 +618,7 @@ func place_document_on_desk(document_id: String) -> void:
 	document.set_meta("desk_base_scale", DOCUMENT_DESK_SCALE)
 	document.remove_meta("desk_home_position")
 	document.remove_meta("desk_home_layer")
+	document.apply_visual_state(DocumentView.VISUAL_DESK)
 	document.pivot_offset = Vector2.ZERO
 	document.position = inspection_center - document.size * DOCUMENT_DESK_SCALE * 0.5
 	document.scale = DOCUMENT_DESK_SCALE * 1.025
@@ -580,6 +634,9 @@ func place_document_on_desk(document_id: String) -> void:
 func bring_document_to_front(document_id: String) -> void:
 	var document: DocumentView = document_by_id.get(document_id)
 	if not is_instance_valid(document):
+		return
+	if desk_items != null:
+		desk_items.focus_item(document)
 		return
 	next_document_layer += 1
 	document.z_index = next_document_layer
@@ -668,6 +725,7 @@ func _collapse_to_desk_flat() -> void:
 	envelope_image.texture = ENVELOPE_DESK_SIDE
 	envelope_front_cover.visible = false
 	envelope_flap.visible = false
+	envelope_drag_handle.visible = false
 	thumbnail_tray.visible = false
 	envelope_case_label.position = Vector2(18, 86)
 	envelope_case_label.size = Vector2(144, 30)
@@ -680,11 +738,11 @@ func _collapse_to_desk_flat() -> void:
 	collapse.tween_property(envelope, "rotation", 0.0, ENVELOPE_TRANSITION_DURATION)
 	collapse.tween_property(envelope, "scale", Vector2.ONE, ENVELOPE_TRANSITION_DURATION)
 	await collapse.finished
-	envelope.z_index = ENVELOPE_DESK_LAYER
+	if desk_items == null:
+		envelope.z_index = ENVELOPE_DESK_LAYER
 	envelope.mouse_filter = Control.MOUSE_FILTER_STOP
-	var ready_for_archive := all_documents_packed()
-	envelope.set_meta("desk_drag_locked", not ready_for_archive)
-	envelope.set_meta("context_cursor", CursorManager.Cursor.GRAB if ready_for_archive else CursorManager.Cursor.OPEN_ENVELOPE)
+	envelope.set_meta("desk_drag_locked", false)
+	envelope.set_meta("context_cursor", CursorManager.Cursor.GRAB)
 	envelope_transitioning = false
 	_refresh_inspection_dismiss_layer()
 
@@ -717,16 +775,21 @@ func _refresh_document_previews() -> void:
 
 # 袋口始终只露出最上方两份真实文件；抽走一份后下一份自动补到袋口。
 func _layout_document_preview_slot(thumbnail: Button, slot: int) -> void:
-	thumbnail.size = Vector2(150, 110)
+	var document_id := WorkdayContext.stringify_value(thumbnail.get_meta("document_id"))
+	var document: DocumentView = document_by_id.get(document_id)
+	var pocket_size := Vector2(150, 110)
+	if is_instance_valid(document):
+		pocket_size = document.visual_size(DocumentView.VISUAL_POCKET)
+	thumbnail.size = pocket_size
 	thumbnail.pivot_offset = thumbnail.size * 0.5
 	if slot == 0:
-		thumbnail.position = Vector2(34, 32)
+		thumbnail.position = Vector2(24, 132 - thumbnail.size.y)
 		thumbnail.rotation = -0.04
-		thumbnail.z_index = 1
 	else:
-		thumbnail.position = Vector2(144, 20)
+		thumbnail.position = Vector2(130, 126 - thumbnail.size.y)
 		thumbnail.rotation = 0.035
-		thumbnail.z_index = 2
+	thumbnail.z_index = 0
+	thumbnail_tray.move_child(thumbnail, thumbnail_tray.get_child_count() - 1)
 
 
 # 激活位于查验物件下方的空白点击层。

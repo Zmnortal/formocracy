@@ -109,14 +109,28 @@ func _build_scene() -> void:
 
 func _build_actions() -> void:
 	for action in actions:
+		var side := String(action.get("side", "left"))
+		var direction := -1 if side == "right" else 1
+		var item := Control.new()
+		item.name = "ActionItem"
+		item.custom_minimum_size = Vector2(280, 52)
+		item.clip_contents = false
 		var button := _make_button(String(action.get("label", "未命名操作")))
-		button.custom_minimum_size = Vector2(280, 58)
+		button.name = "ActionButton"
+		button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_attach_paper_tag(
+			button,
+			item,
+			String(action.get("description", "按下后办理这项事务")),
+			direction
+		)
+		item.add_child(button)
 		var action_id := String(action.get("id", ""))
 		button.pressed.connect(func(): _handle_action(action_id))
-		if String(action.get("side", "left")) == "right":
-			right_actions.add_child(button)
+		if side == "right":
+			right_actions.add_child(item)
 		else:
-			left_actions.add_child(button)
+			left_actions.add_child(item)
 
 
 func _make_action_column(at: Vector2) -> VBoxContainer:
@@ -130,12 +144,13 @@ func _make_action_column(at: Vector2) -> VBoxContainer:
 func _make_button(text_value: String) -> Button:
 	var button := Button.new()
 	button.text = text_value
+	button.clip_contents = false
 	button.add_theme_font_override("font", UI.PIXEL_FONT)
-	button.add_theme_font_size_override("font_size", 17)
-	button.add_theme_color_override("font_color", Color("ded8c2"))
-	button.add_theme_color_override("font_hover_color", Color("fff1bd"))
-	button.add_theme_color_override("font_pressed_color", Color("c8c1aa"))
-	button.add_theme_color_override("font_disabled_color", Color("85867d"))
+	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_color_override("font_color", Color("c9c7b8"))
+	button.add_theme_color_override("font_hover_color", Color("e4dfc5"))
+	button.add_theme_color_override("font_pressed_color", Color("c7c9ba"))
+	button.add_theme_color_override("font_disabled_color", Color("777b76"))
 	button.add_theme_color_override("font_outline_color", Color(0.02, 0.025, 0.022, 0.95))
 	button.add_theme_constant_override("outline_size", 3)
 	button.add_theme_constant_override("h_separation", 10)
@@ -150,17 +165,62 @@ func _make_button(text_value: String) -> Button:
 	return button
 
 
+func _attach_paper_tag(button: Button, host: Control, description: String, direction: int) -> void:
+	if description.is_empty():
+		return
+
+	var tag := PanelContainer.new()
+	tag.name = "PaperTag"
+	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tag.custom_minimum_size = Vector2(190, 42)
+	tag.size = Vector2(190, 42)
+
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("d8cfad")
+	paper.border_color = Color("817858")
+	paper.set_border_width_all(2)
+	paper.corner_radius_top_left = 2
+	paper.corner_radius_top_right = 2
+	paper.corner_radius_bottom_left = 2
+	paper.corner_radius_bottom_right = 2
+	paper.shadow_color = Color(0.02, 0.025, 0.02, 0.42)
+	paper.shadow_size = 4
+	paper.content_margin_left = 12
+	paper.content_margin_right = 12
+	paper.content_margin_top = 7
+	paper.content_margin_bottom = 6
+	tag.add_theme_stylebox_override("panel", paper)
+
+	var note := Label.new()
+	note.text = description
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	note.add_theme_font_override("font", UI.PIXEL_FONT)
+	note.add_theme_font_size_override("font_size", 11)
+	note.add_theme_color_override("font_color", Color("393a30"))
+	tag.add_child(note)
+
+	var hidden_x := 82.0 if direction > 0 else 8.0
+	var shown_x := 268.0 if direction > 0 else -178.0
+	tag.position = Vector2(hidden_x, 5)
+	tag.modulate = Color(0.82, 0.8, 0.68, 0.0)
+	tag.set_meta("hidden_position", Vector2(hidden_x, 5))
+	tag.set_meta("shown_position", Vector2(shown_x, 5))
+	button.set_meta("paper_tag", tag)
+	host.add_child(tag)
+
+
 func _make_button_style(texture: Texture2D, pressed_offset := 0.0) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = texture
-	style.texture_margin_left = 28.0
-	style.texture_margin_top = 24.0
-	style.texture_margin_right = 28.0
-	style.texture_margin_bottom = 24.0
-	style.content_margin_left = 28.0
-	style.content_margin_top = 12.0 + pressed_offset
-	style.content_margin_right = 28.0
-	style.content_margin_bottom = 12.0 - pressed_offset
+	style.texture_margin_left = 44.0
+	style.texture_margin_top = 18.0
+	style.texture_margin_right = 18.0
+	style.texture_margin_bottom = 18.0
+	style.content_margin_left = 46.0
+	style.content_margin_top = 10.0 + pressed_offset
+	style.content_margin_right = 18.0
+	style.content_margin_bottom = 10.0 - pressed_offset
 	style.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 	style.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 	return style
@@ -172,7 +232,20 @@ func _animate_button(button: Button, hovered: bool) -> void:
 	button.pivot_offset = button.size * 0.5
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(button, "scale", Vector2(1.025, 1.025) if hovered else Vector2.ONE, 0.09)
+	tween.tween_property(button, "scale", Vector2(1.012, 1.012) if hovered else Vector2.ONE, 0.08)
+	var tag := button.get_meta("paper_tag", null) as PanelContainer
+	if tag == null:
+		return
+	var destination: Vector2 = tag.get_meta("shown_position") if hovered else tag.get_meta("hidden_position")
+	var tag_tween := create_tween().set_parallel(true)
+	tag_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tag_tween.tween_property(tag, "position", destination, 0.16 if hovered else 0.12)
+	tag_tween.tween_property(
+		tag,
+		"modulate",
+		Color(1, 1, 1, 1) if hovered else Color(0.82, 0.8, 0.68, 0.0),
+		0.11
+	)
 
 
 func _make_label(text_value: String, font_size: int, color: Color) -> Label:

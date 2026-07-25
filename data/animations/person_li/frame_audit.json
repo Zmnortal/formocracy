@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-LI",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_li_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_05_magenta.png",
+    "strip_06_10_magenta.png",
+    "strip_11_15_magenta.png",
+    "strip_16_20_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 42,
+    "role": "中央档案索引员",
+    "palette": "鸢尾紫、深炭灰、旧档案棕与认证纸灰白",
+    "markers": [
+      "齐耳深色短发",
+      "克制而敏锐的面容",
+      "带四组盘扣的鸢尾紫档案背心",
+      "深炭灰高领衬衣",
+      "深炭灰长百褶裙",
+      "深色袜与系带鞋",
+      "厚灰棕色档案夹"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "像核对索引规则一样精确克制，偶尔检查模糊认证章、翻译页与缺页交叉索引。",
+    "approved": "先短暂意外，再出现极少见的温和确认，像一页档案终于暂时获得了有效位置。",
+    "rejected": "表情受伤后收紧，展示缺页索引证据并把卷宗护在胸前，以安静但明确的姿态守住记录。"
+  },
+  "prop_ownership": {
+    "thick_archive_folio": "属于黎素本人，是贯穿所有动作的职业与个人识别物。",
+    "missing_page_index_and_certification_pages": "属于黎素保留的交叉索引与出生翻译认证证据，可在紧张、批准、驳回与离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

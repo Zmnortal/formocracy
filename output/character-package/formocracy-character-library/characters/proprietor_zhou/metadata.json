@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PROPRIETOR-ZHOU",
+  "slug": "proprietor_zhou",
+  "identity": {
+    "display_name": "周姨",
+    "latin_name": "AUNT ZHOU",
+    "age": 57,
+    "occupation": "合作供销社表单发行人",
+    "citizen_id": "18-509-33",
+    "queue_label": "B04"
+  },
+  "narrative": {
+    "file_number": "12-N/N01",
+    "role": "城市节点",
+    "summary": "一个把制度漏洞记在旧账本里的供销社经营者；她比系统更早知道谁真正住在这里。",
+    "background": "周姨在第十二区经营表单与生活用品柜台。她不公开伪造材料，却知道哪些表格会在明天停用。旧账本保存着居民搬迁前的地址，是许多争议案件唯一连续记录。",
+    "quote": "表是今天印的，人可不是今天才住进来的。"
+  },
+  "administrative": {
+    "status": "第十二区常住居民",
+    "code": "D12",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区供销社后屋 / 1",
+    "actual_residence": "同登记地址",
+    "identity_document": "本市身份证明 18-509-33；有效",
+    "residence_document": "商住合一证明 R12-S1；长期复核",
+    "policy_risk": "旧账本可证明居住事实，却不是法定居住证明；是否采信取决于当日“替代证据清单”。"
+  },
+  "gameplay": {
+    "administrative_status": "D12",
+    "actor_scale": 0.34,
+    "move_speed": 0.88
+  },
+  "visual": {
+    "colors": {
+      "primary": "#D89B38",
+      "secondary": "#9E8B68",
+      "forbidden": "#486C8E"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/proprietor_zhou.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/proprietor_zhou.png",
+    "actor_texture": "res://assets/characters/applicants/proprietor_zhou/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/proprietor_zhou/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  }
+}

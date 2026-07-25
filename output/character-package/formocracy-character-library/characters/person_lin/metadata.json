@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-LIN",
+  "slug": "person_lin",
+  "identity": {
+    "display_name": "林默",
+    "latin_name": "LIN MO",
+    "age": 28,
+    "occupation": "市政信号维护员",
+    "citizen_id": "74-119-02",
+    "queue_label": "A01"
+  },
+  "narrative": {
+    "file_number": "12-D/C01",
+    "role": "回访核心",
+    "summary": "一个习惯把情绪收进制服口袋里的年轻维修员；他申请与恋人共同生活，却拒绝解释自己曾经消失的三个月。",
+    "background": "林默在第十二区维护信号灯和楼宇警报。一次夜间抢修后，他失踪三个月，回来时只说被临时征调，系统里却没有对应命令。沈青禾愿意与他共同生活，但两人的时间线存在细小差异；这份共同居住申请会把两个人的秘密同时写进档案。",
+    "quote": "住址没有变。我们只是想让档案承认已经发生的生活。"
+  },
+  "administrative": {
+    "status": "第十二区常住居民",
+    "code": "D12",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区 / 17-4",
+    "actual_residence": "第十二区 / 17-4",
+    "identity_document": "本市身份证明 74-119-02；第十二区人口登记所；有效",
+    "residence_document": "居住证明 R12-17-4；第十二区街区办；有效",
+    "policy_risk": "共同居住人沈青禾登记在第七区。当天若要求“双方同区证明”，需增加跨区迁入受理单。"
+  },
+  "gameplay": {
+    "administrative_status": "D12",
+    "actor_scale": 0.32,
+    "move_speed": 1
+  },
+  "visual": {
+    "colors": {
+      "primary": "#3F5FA8",
+      "secondary": "#8797B9",
+      "forbidden": "#D9A441"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_lin.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_lin.png",
+    "actor_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_lin/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_young.wav"
+  }
+}

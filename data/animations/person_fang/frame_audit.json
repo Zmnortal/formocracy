@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-FANG",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_fang_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_idle_nervous_magenta.png",
+    "strip_02_deliver_approve_magenta.png",
+    "strip_03_approve_reject_magenta.png",
+    "strip_04_exit_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill; one isolated non-subject speck removed from the empty gap in strip 02.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 31,
+    "role": "第五诊疗站登记员",
+    "palette": "灰米色、清水青、深石墨灰与旧夹板棕",
+    "markers": [
+      "短而整齐的黑发",
+      "深色方框眼镜",
+      "灰米色及膝医务外套",
+      "清水青领口、袖口与双大口袋",
+      "深色领带与胸袋笔夹",
+      "棕色医务夹板",
+      "深灰直筒裤",
+      "黑色低帮工作鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "精确克制地观察窗口，偶尔核对回执时间、手表与夹板上的手写候诊顺序。",
+    "approved": "先短暂意外，继而露出不张扬的释然，像确认人工记录这次仍能保护病人。",
+    "rejected": "表情受伤后迅速收紧，展示原始候诊顺序并把纸质记录护在胸前，坚定而不失控。"
+  },
+  "prop_ownership": {
+    "brown_medical_clipboard": "属于方澄本人，是所有动作持续使用的职业识别物。",
+    "medical_receipt_and_waiting_order": "属于方澄保留的人工时间证据，可在紧张、批准、驳回与离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

@@ -61,7 +61,6 @@ func start() -> void:
 	briefing = BriefingModule.new(root, dialogue_box)
 	call_bell = CallBellModule.new(root)
 	batch_validation = BatchValidationModule.new(root)
-	desk_items.register_item(desk.number_machine, "number_machine")
 	desk_items.register_item(desk.slot, "archive_tray")
 	call_bell.enable_desk_movement(desk_items)
 

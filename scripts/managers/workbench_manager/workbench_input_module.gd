@@ -62,6 +62,9 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 		if desk_items != null:
 			desk_items.register_item(presenter.envelope, "case_envelope", presenter.expand_envelope_billboard, _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter))
 			registered_case_item_ids.append("case_envelope")
+			if is_instance_valid(presenter.envelope_drag_handle):
+				CursorManager.watch(presenter.envelope_drag_handle, CursorManager.Cursor.GRAB)
+				presenter.envelope_drag_handle.gui_input.connect(_on_envelope_drag_handle_input.bind(presenter))
 		else:
 			presenter.envelope.gui_input.connect(_on_envelope_input.bind(presenter))
 
@@ -202,8 +205,6 @@ func _on_form_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> voi
 func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> void:
 	if not is_instance_valid(presenter.envelope):
 		return
-	if presenter.envelope_opened and not presenter.all_documents_packed():
-		return
 	if event is InputEventMouseButton:
 		var mouse_button: InputEventMouseButton = event
 		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
@@ -215,7 +216,7 @@ func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) ->
 		else:
 			envelope_dragging = false
 			CursorManager.end_drag()
-			if envelope_in_machine_zone and presenter.envelope_on_desk:
+			if envelope_in_machine_zone and presenter.envelope_on_desk and presenter.all_documents_packed():
 				if is_instance_valid(envelope_preview_tween):
 					envelope_preview_tween.kill()
 				presenter.envelope.z_index = 46
@@ -227,10 +228,33 @@ func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) ->
 				presenter.set_envelope_on_desk(presenter.envelope.position.x > 300)
 				if presenter.envelope_on_desk and is_instance_valid(desk.status_label):
 					desk.status_label.text = "文件袋已置于工作台，点击后再按上部圆环或封盖拆开。"
+
+
+# 放大文件袋只让下半部实体封皮承担拖拽，避免透明父矩形挡住文件和图章。
+func _on_envelope_drag_handle_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> void:
+	if desk_items == null or not is_instance_valid(presenter.envelope):
+		return
+	if event is InputEventMouseButton:
+		var mouse_button := event as InputEventMouseButton
+		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
+			return
+		envelope_dragging = mouse_button.pressed
+		if mouse_button.pressed:
+			var local_position := presenter.envelope.get_global_transform().affine_inverse() * mouse_button.global_position
+			desk_items._begin_press(presenter.envelope, local_position)
+		else:
+			desk_items._end_press(presenter.envelope)
+	elif event is InputEventMouseMotion and envelope_dragging:
+		desk_items._move_pressed_item(presenter.envelope, event as InputEventMouseMotion)
 	elif event is InputEventMouseMotion and envelope_dragging:
 		var mouse_motion: InputEventMouseMotion = event
 		presenter.envelope.position += mouse_motion.relative * drag_response_multiplier
-		var entered := presenter.envelope_on_desk and is_instance_valid(desk.archive_drop_zone) and presenter.envelope.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
+		var entered := (
+			presenter.envelope_on_desk
+			and presenter.all_documents_packed()
+			and is_instance_valid(desk.archive_drop_zone)
+			and presenter.envelope.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
+		)
 		if entered != envelope_in_machine_zone:
 			_set_machine_preview(presenter, entered)
 		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered else CursorManager.Cursor.GRABBING)

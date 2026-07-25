@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FORMOCRACY 人物素材库</title>
+  <!--
+    已确认：A4 编辑出版物；旧版保留，本文件为 V2。
+    叙事角色：创作设定档案，不是游戏内 UI。
+    阅读距离：桌面与打印阅读约 0.5–1 米。
+    视觉温度：行政冷静，人物主色保留个体温度。
+    容量：封面 + 身份索引 + 18 张人物页，共 20 页。
+  -->
+  <style>
+    :root{--paper:#f2eee4;--ink:#24231f;--muted:#7f7a72;--line:#b8b1a5;--green:#526858;--red:#963d38}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#1d1e1b;color:var(--ink);font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",sans-serif}
+    body{display:flex;justify-content:center}
+    #dossier{width:210mm}
+    .page{position:relative;width:210mm;height:297mm;overflow:hidden;background:
+      linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.18)),
+      repeating-linear-gradient(0deg,transparent 0 7px,rgba(65,54,37,.018) 8px),
+      var(--paper);page-break-after:always;padding:15mm 16mm 13mm;margin:8mm 0;box-shadow:0 5mm 18mm rgba(0,0,0,.32)}
+    .page:before{content:"";position:absolute;inset:7mm;border:1px solid rgba(58,53,45,.28);pointer-events:none}
+    .folio{position:absolute;left:16mm;right:16mm;bottom:8.5mm;display:flex;justify-content:space-between;padding-top:2.5mm;border-top:1px solid var(--line);font:600 7.5px/1.2 ui-monospace,SFMono-Regular,monospace;letter-spacing:.13em;color:#6d675e}
+    .eyebrow{font:700 8px/1.3 ui-monospace,SFMono-Regular,monospace;letter-spacing:.18em;color:#6d675e;text-transform:uppercase}
+    h1,h2,h3,p{margin:0}
+    h1,h2{font-family:"Songti SC","STSong","Noto Serif CJK SC",serif}
+    .cover{display:grid;grid-template-rows:auto 1fr auto}
+    .cover-top{display:flex;justify-content:space-between;align-items:flex-start}
+    .seal{width:29mm;height:29mm;border:2px solid var(--red);display:grid;place-items:center;transform:rotate(-4deg);color:var(--red);font:800 10px/1.35 ui-monospace,monospace;text-align:center;letter-spacing:.12em}
+    .cover-title{align-self:center;padding:0 9mm}
+    .cover-title h1{font-size:34pt;line-height:1.04;letter-spacing:.08em}
+    .cover-title .en{margin-top:4mm;font:600 12px/1.5 ui-monospace,monospace;letter-spacing:.32em}
+    .cover-title .edition{margin-top:10mm;width:68mm;border-top:3px solid var(--green);padding-top:3mm;font-size:11px;line-height:1.7;color:#58534c}
+    .spectrum{display:grid;grid-template-columns:repeat(18,1fr);gap:1.2mm;height:10mm;align-items:end}
+    .spectrum i{display:block;height:var(--h);background:var(--c)}
+    .cover-note{display:flex;justify-content:space-between;align-items:end;padding:0 9mm 15mm}
+    .cover-note p{max-width:104mm;font-size:10px;line-height:1.75;color:#5e5952}
+    .index h2{font-size:25pt;letter-spacing:.08em;margin-top:2mm}
+    .index-intro{margin:5mm 0 6mm;max-width:145mm;font:11px/1.8 "Songti SC",serif}
+    .matrix{width:100%;border-collapse:collapse;font-size:8.5px}
+    .matrix th,.matrix td{border-bottom:1px solid var(--line);padding:2.15mm 1.5mm;text-align:left;vertical-align:top}
+    .matrix th{font:700 7.5px/1.3 ui-monospace,monospace;letter-spacing:.08em;background:rgba(82,104,88,.08)}
+    .matrix td:nth-child(1){font-weight:800;width:17mm}
+    .matrix td:nth-child(2){width:28mm}
+    .matrix td:nth-child(3){width:24mm}
+    .matrix td:nth-child(4){width:34mm}
+    .legend{margin-top:6mm;display:grid;grid-template-columns:repeat(3,1fr);gap:2mm}
+    .legend div{border-top:2px solid var(--green);padding-top:2mm;font-size:8px;line-height:1.55}
+    .legend b{display:block;font:800 9px/1.2 ui-monospace,monospace;margin-bottom:1mm}
+    .character{--accent:#526858}
+    .char-head{display:grid;grid-template-columns:1fr auto;align-items:end;border-bottom:3px solid var(--accent);padding-bottom:4mm}
+    .char-head h2{font-size:31pt;line-height:1;letter-spacing:.12em;margin-top:1.5mm}
+    .latin{margin-top:2mm;font:700 8px/1 ui-monospace,monospace;letter-spacing:.28em;color:var(--accent)}
+    .age{text-align:right}.age strong{display:block;font:300 29pt/1 ui-monospace,monospace;color:var(--accent)}.age span{font:700 7px/1.2 ui-monospace,monospace;letter-spacing:.12em}
+    .char-body{display:grid;grid-template-columns:59mm 1fr;gap:7mm;margin-top:6mm}
+    .portrait{height:78mm;border:1px solid #8d877e;background:linear-gradient(145deg,rgba(255,255,255,.45),rgba(80,75,68,.06));display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+    .portrait img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+    .avatar-card{height:30mm;margin-top:3mm;border:1px solid #8d877e;display:grid;grid-template-columns:30mm 1fr;background:#fff;overflow:hidden}
+    .avatar-card img{width:30mm;height:30mm;object-fit:contain;image-rendering:pixelated;border-right:1px solid #8d877e}
+    .avatar-card figcaption{padding:3mm 2.6mm;display:flex;flex-direction:column;justify-content:center;gap:1.5mm}
+    .avatar-card b{font:800 7px/1.2 ui-monospace,monospace;letter-spacing:.08em}
+    .avatar-card span{font:700 6.5px/1.45 ui-monospace,monospace;color:#777067}
+    .id-mini{border:1px solid #989186;border-top:5px solid var(--accent);padding:3.3mm;margin-top:3mm}
+    .id-mini p{font-size:8.5px;line-height:1.45;padding:1.4mm 0;border-bottom:1px dotted #b5aea3}
+    .id-mini p:last-child{border:0}.id-mini b{display:block;font:700 6.5px/1.1 ui-monospace,monospace;letter-spacing:.1em;color:#777067;margin-bottom:.8mm}
+    .package-links{margin-top:2.5mm;border-top:1px solid #aaa39a;padding-top:2mm;font-size:7px;line-height:1.5}
+    .package-links b{display:block;font:700 6px/1.3 Arial,sans-serif;letter-spacing:.13em;color:#77716a}
+    .package-links span{display:block;margin-top:1mm}
+    .package-links a{color:var(--accent);text-decoration:none;font-weight:700}
+    .palette{margin-top:3mm;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.4mm}
+    .sw{height:14mm;background:var(--c);padding:2mm;color:#fff;font:700 6.5px/1.35 ui-monospace,monospace;text-shadow:0 1px 2px rgba(0,0,0,.45)}
+    .copy{min-width:0}
+    .who{font:600 13px/1.65 "Songti SC",serif;margin-bottom:4mm}
+    .section{margin-bottom:4mm}
+    .section-title{display:flex;align-items:center;gap:2mm;margin-bottom:2mm}
+    .section-title b{width:7mm;height:7mm;background:var(--accent);color:white;display:grid;place-items:center;font:800 6.5px/1 ui-monospace,monospace}
+    .section-title h3{font-size:9px;letter-spacing:.12em}
+    .story{font:9px/1.72 "Songti SC",serif;text-align:justify}
+    .status-card{border:1px solid #8f897e;background:rgba(255,255,255,.2)}
+    .status-top{display:grid;grid-template-columns:1fr auto;align-items:center;background:#353834;color:#f5f0e5;padding:2.5mm 3mm}
+    .status-top b{font-size:9px;letter-spacing:.08em}.status-code{font:800 8px/1 ui-monospace,monospace;color:#d9c68e}
+    .status-grid{display:grid;grid-template-columns:1fr 1fr}
+    .status-grid div{padding:2.1mm 2.6mm;border-bottom:1px solid #c3bbae;min-height:13mm}
+    .status-grid div:nth-child(odd){border-right:1px solid #c3bbae}
+    .status-grid b{display:block;font:700 6.2px/1.2 ui-monospace,monospace;letter-spacing:.08em;color:#706a62;margin-bottom:1mm}
+    .status-grid span{font-size:8.2px;line-height:1.45}
+    .docs{display:grid;grid-template-columns:1fr 1fr;gap:2mm;margin-top:2mm}
+    .doc{border-top:3px solid var(--green);background:rgba(82,104,88,.09);padding:2.6mm;min-height:25mm}
+    .doc.res{border-color:#947942;background:rgba(148,121,66,.1)}
+    .doc b{display:block;font:800 7px/1.2 ui-monospace,monospace;letter-spacing:.08em;margin-bottom:1.2mm}
+    .doc p{font-size:7.8px;line-height:1.5}
+    .risk{margin-top:2mm;border:1px solid rgba(150,61,56,.55);padding:2.5mm 3mm;background:rgba(150,61,56,.055);font-size:8px;line-height:1.55}
+    .risk b{color:var(--red)}
+    .quote{position:absolute;left:82mm;right:16mm;bottom:17mm;border-left:4px solid var(--accent);padding-left:4mm;font:italic 10px/1.6 "Songti SC",serif;color:#4f4b45}
+    @page{size:A4;margin:0}
+    @media print{html,body{background:transparent}.page{margin:0;box-shadow:none}}
+  </style>
+</head>
+<body>
+<main id="dossier"></main>
+<script>
+const people=[{"id":"PERSON-LIN","file":"12-D/C01","name":"林默","latin":"LIN MO","age":28,"role":"回访核心","occupation":"市政信号维护员","citizen":"74-119-02","color":"#3F5FA8","secondary":"#8797B9","forbidden":"#D9A441","image":"characters/person_lin/concept.png","who":"一个习惯把情绪收进制服口袋里的年轻维修员；他申请与恋人共同生活，却拒绝解释自己曾经消失的三个月。","story":"林默在第十二区维护信号灯和楼宇警报。一次夜间抢修后，他失踪三个月，回来时只说被临时征调，系统里却没有对应命令。沈青禾愿意与他共同生活，但两人的时间线存在细小差异；这份共同居住申请会把两个人的秘密同时写进档案。","origin":"衡川市第十二区","status":"第十二区常住居民","code":"D12","registry":"第十二区 / 17-4","actual":"第十二区 / 17-4","idDoc":"本市身份证明 74-119-02；第十二区人口登记所；有效","resDoc":"居住证明 R12-17-4；第十二区街区办；有效","risk":"共同居住人沈青禾登记在第七区。当天若要求“双方同区证明”，需增加跨区迁入受理单。","quote":"住址没有变。我们只是想让档案承认已经发生的生活。","package_slug":"person_lin"},{"id":"PERSON-ZHOU","file":"12-D/C02","name":"周循","latin":"ZHOU XUN","age":44,"role":"回访核心","occupation":"锅炉与管线维修工","citizen":"20-441-88","color":"#C78238","secondary":"#8E765F","forbidden":"#4E77A8","image":"characters/person_zhou/concept.png","who":"一个把照护责任全部揽在自己身上的维修工；他说话温和，却正在被配给制度一点点耗空。","story":"周循负责住宅区的锅炉和供水阀，与需要持续用水服药的母亲杜春梅同住。街区重编把他的身份地址和实际住所拆成两个编号。他知道配给损耗流向没有登记资格的住户，却不愿举报任何人。","origin":"衡川市第十二区","status":"本市临时居住者","code":"HC-T","registry":"第十二区 / 5-8（旧）","actual":"第十二区 / 9-1","idDoc":"本市身份证明 20-441-88；地址未变更；有效","resDoc":"临时居住证明 R12-9-1；街区重编专用；有效","risk":"身份地址与居住证明不一致。只有当日通告承认“街区重编豁免”时才能通过。","quote":"表上写的是额度，回到家里，就是一个人今天能不能把药咽下去。","package_slug":"person_zhou"},{"id":"PERSON-XU","file":"12-D/C03","name":"许桥","latin":"XU QIAO","age":25,"role":"回访核心","occupation":"区域文件递送员","citizen":"51-004-63","color":"#D35245","secondary":"#9A756E","forbidden":"#74836B","image":"characters/person_xu/concept.png","who":"一个把速度当作尊严的文件递送员；她急着证明自己还能工作，因此把尚未痊愈的伤藏在每一次奔跑里。","story":"许桥登记在第五区，却长期往返第十二区机构。装配线事故中她替唐霁完成紧急送件时受伤，诊疗回执因验收机时钟错误而被判定过期。她害怕病假导致岗位注销，仍不断申请限制时段通行。","origin":"衡川市第五区","status":"本市外区居民","code":"HC-X","registry":"第五区 / 22-6","actual":"第十二区递送站宿舍 / 6-3","idDoc":"本市身份证明 51-004-63；第五区登记处；有效","resDoc":"单位短住证明 U12-6-3；区域递送局；剩余 12 日","risk":"跨区医疗事项需原区转送单；紧急医疗条款可豁免转送单，但不能豁免回执有效期。","quote":"我不是要特殊照顾。我只想在还能走的时候，走到该去的地方。","package_slug":"person_xu"},{"id":"PERSON-MENG","file":"12-D/C04","name":"孟秋兰","latin":"MENG QIULAN","age":48,"role":"回访核心","occupation":"公共食堂配餐员","citizen":"46-208-71","color":"#D6A126","secondary":"#9D8658","forbidden":"#744A78","image":"characters/person_meng/concept.png","who":"一个用重复日常抵抗行政遗忘的母亲；她每天多留一份饭，好像那个被注销的人仍会回来。","story":"孟秋兰在公共食堂工作二十一年。她的儿子在夜间装配线事故后被登记为“主动离区”，随后从户籍和配给名册中消失。她持续替儿子领取食物，用每一张退件回执证明系统曾经承认过这个人。","origin":"衡川市第十二区","status":"第十二区常住居民","code":"D12","registry":"第十二区 / 31-2","actual":"第十二区 / 31-2","idDoc":"本市身份证明 46-208-71；有效","resDoc":"家庭居住证明 R12-31-2；含一名已注销成员","risk":"本人材料完整，风险来自家庭成员编号不存在。批准会触发冒领审查，驳回会切断追索入口。","quote":"只要窗口还肯退给我一张纸，就说明系统里还有地方记得他。","package_slug":"person_meng"},{"id":"PERSON-HE","file":"12-D/C05","name":"何芸","latin":"HE YUN","age":34,"role":"回访核心","occupation":"第七码头夜校教师","citizen":"65-331-09","color":"#2F9488","secondary":"#7A9993","forbidden":"#A6443D","image":"characters/person_he/concept.png","who":"一个语气温和、记忆锋利的夜校教师；她把被迁走的学生继续写在点名册里。","story":"何芸来自泊河市，白天在衡川仓库做统计，晚上教码头工人与孩子阅读。迁移后，管理局要求她删除九名“已转移”学生，她却继续保留姓名。她相信识字能让人看见制度如何改写自己。","origin":"共和国 / 泊河市","status":"外市人员","code":"DOM","registry":"泊河市南岸区 / 8-11","actual":"衡川市第十二区 / 码头宿舍 2-C","idDoc":"泊河市居民证明 65-331-09；非本市证件","resDoc":"第十二区临时居留备案 T12-204；剩余 41 日","risk":"无本市身份证明。夜校照明申请需工作担保；学生名册人数与备案不一致。","quote":"名字被划掉以后，更需要有人把它念出来。","package_slug":"person_he"},{"id":"PERSON-DU","file":"12-D/C06","name":"杜春梅","latin":"DU CHUNMEI","age":69,"role":"回访核心","occupation":"退休电话接线员","citizen":"11-604-42","color":"#945B82","secondary":"#A4929C","forbidden":"#D49731","image":"characters/person_du/concept.png","who":"一个记得太多声音、却开始忘记日期的退休接线员；她的记忆比档案更真实，也更脆弱。","story":"杜春梅曾在中央交换台工作，能凭呼吸和停顿认出常来电的人。退休后她与儿子周循同住，需要稳定药物与净水。她记得玩家旧身份的内部代号，但药物中断会让年份混在一起。","origin":"衡川市第十二区","status":"第十二区常住居民","code":"D12","registry":"第十二区 / 9-1","actual":"第十二区 / 9-1","idDoc":"本市退休居民证明 11-604-42；长期有效","resDoc":"照护型居住证明 R12-9-1；由周循代办","risk":"代办签名与本人笔迹不同；当日若暂停亲属代办，需诊疗站能力证明。","quote":"机器记的是号码。我记得号码后面那个人说话时，会不会先叹气。","package_slug":"person_du"},{"id":"PERSON-GU","file":"12-D/C07","name":"顾原","latin":"GU YUAN","age":62,"role":"回访核心","occupation":"夜间装配线领班","citizen":"32-770-16","color":"#58745E","secondary":"#859084","forbidden":"#A94B40","image":"characters/person_gu/concept.png","who":"一个把罪疚藏在值班表里的老领班；他申请离开夜班，却握着一份足以改变多人身份的事故名单。","story":"顾原在夜间装配线工作三十七年。事故当晚，他按命令修改出勤表，让数名失踪工人变成“主动离区”。如今宿舍资格与岗位绑定，他一旦退休，居住证明也会失效。","origin":"衡川市第十二区","status":"第十二区常住居民","code":"D12","registry":"第十二区 / 装配厂宿舍 4-B","actual":"同登记地址","idDoc":"本市身份证明 32-770-16；有效","resDoc":"单位居住证明 W12-4-B；离岗即失效","risk":"调离夜班会提前触发居住证明失效；需先取得退休住房承接单。","quote":"我签过太多夜班表。后来才知道，表上的空格也能埋人。","package_slug":"person_gu"},{"id":"PERSON-SHEN","file":"12-D/C08","name":"沈青禾","latin":"SHEN QINGHE","age":27,"role":"回访核心","occupation":"印刷合作社校对员","citizen":"74-119-03","color":"#69AC8A","secondary":"#8FA99B","forbidden":"#A74A3D","image":"characters/person_shen/concept.png","who":"一个擅长发现错字的校对员；她正试图让自己与林默的生活先于制度成立。","story":"沈青禾登记在第七区印刷合作社宿舍，却多数夜晚住在林默家。她发现三个月前一批征调令上的日期被统一换过。共同居住申请既是生活选择，也可能让她成为被校正的证人。","origin":"衡川市第七区","status":"本市外区居民","code":"HC-X","registry":"第七区 / 印刷社宿舍 3-A","actual":"第十二区 / 17-4（未归档）","idDoc":"本市身份证明 74-119-03；第七区登记处；有效","resDoc":"第七区居住证明有效；第十二区无正式证明","risk":"申请共同居住时不能用林默的证明代替本人迁入材料。某些日次接受共同居住声明，某些日次不接受。","quote":"错字可以改。被盖过章的日期，就得有人承认它曾经错过。","package_slug":"person_shen"},{"id":"PERSON-TANG","file":"12-D/C09","name":"唐霁","latin":"TANG JI","age":19,"role":"回访核心","occupation":"见习公文投递员","citizen":"03-882-14","color":"#3474D4","secondary":"#7E94B6","forbidden":"#B15A42","image":"characters/person_tang/concept.png","who":"一个仍相信程序会保护人的见习投递员；他尚未明白，正确送达也可能产生错误现实。","story":"唐霁登记在第三区，见习期间住进第十二区投递站。他曾把装配线事故封存袋按时送达监察处，从此许桥的工伤记录开始消失。他不断核对签收时间，想证明自己没有做错。","origin":"衡川市第三区","status":"本市临时居住者","code":"HC-T","registry":"第三区 / 44-9","actual":"第十二区递送站宿舍 / 6-5","idDoc":"本市青年身份证明 03-882-14；有效","resDoc":"见习人员居住证明 I12-6-5；剩余 23 日","risk":"见习单位可撤销担保；一旦投递事故被立案，居住证明同步失效。","quote":"我按规定送到了。可如果规定把错误送到了正确的地方呢？","package_slug":"person_tang"},{"id":"PERSON-LUO","file":"12-D/C10","name":"罗雨棠","latin":"LUO YUTANG","age":32,"role":"回访核心","occupation":"夜班电车售票员","citizen":"87-140-55","color":"#E36F59","secondary":"#A98A84","forbidden":"#4E6B8F","image":"characters/person_luo/concept.png","who":"一个用笑声维持夜班秩序的售票员；她私藏的废票根记录着官方时刻表之外的人。","story":"罗雨棠登记在第九区，夜班线路终点却在第十二区。她会在末班车后睡在调度室，因此持有轮班居住许可。她保存乘客废票根，用路线和时间拼出失踪者最后出现的位置。","origin":"衡川市第九区","status":"本市外区居民","code":"HC-X","registry":"第九区 / 12-8","actual":"第十二区交通调度室（轮班）","idDoc":"本市身份证明 87-140-55；有效","resDoc":"夜班轮住许可 N12-TR；仅工作日有效","risk":"轮住许可不能用于家庭配给。若当日将“实际过夜”视为居住，她会同时归属两个辖区。","quote":"票根不记名字，可它们记得谁在不该有车的晚上到过终点。","package_slug":"person_luo"},{"id":"PROPRIETOR-ZHOU","file":"12-N/N01","name":"周姨","latin":"AUNT ZHOU","age":57,"role":"城市节点","occupation":"合作供销社表单发行人","citizen":"18-509-33","color":"#D89B38","secondary":"#9E8B68","forbidden":"#486C8E","image":"characters/proprietor_zhou/concept.png","who":"一个把制度漏洞记在旧账本里的供销社经营者；她比系统更早知道谁真正住在这里。","story":"周姨在第十二区经营表单与生活用品柜台。她不公开伪造材料，却知道哪些表格会在明天停用。旧账本保存着居民搬迁前的地址，是许多争议案件唯一连续记录。","origin":"衡川市第十二区","status":"第十二区常住居民","code":"D12","registry":"第十二区 / 供销社后屋 1","actual":"同登记地址","idDoc":"本市身份证明 18-509-33；有效","resDoc":"商住合一证明 R12-S1；长期复核","risk":"旧账本可证明居住事实，却不是法定居住证明；是否采信取决于当日“替代证据清单”。","quote":"表是今天印的，人可不是今天才住进来的。","package_slug":"proprietor_zhou"},{"id":"PROPRIETOR-HE","file":"12-N/N02","name":"老赫","latin":"OLD HE","age":64,"role":"城市节点","occupation":"旧照相馆经营者","citizen":"09-377-61","color":"#932D3E","secondary":"#7E6668","forbidden":"#C79A38","image":"characters/proprietor_he/concept.png","who":"一个用旧照片保存被改写身份的暗房主人；他认识玩家，却拒绝把答案说完整。","story":"老赫的照相馆早已停业，后室仍保存旧式身份照与冲印底片。他的公民编号在系统升级时被标记为“已退役”，新证又从未签发。他依靠一张连续居住三十年的旧证明留在第十二区。","origin":"衡川市旧城区（辖区已撤销）","status":"身份存疑者","code":"UNK","registry":"旧第二区 / 编码失效","actual":"第十二区 / 废弃照相馆后室","idDoc":"旧本市身份记录 09-377-61；编号已退役","resDoc":"旧制长期居住证明；无机器校验码","risk":"照片与旧档案能互相印证，但当前系统不承认旧签发机关。必须走人工复核或证人链。","quote":"你们现在用号码证明人。以前，我们至少还肯看一张脸。","package_slug":"proprietor_he"},{"id":"PERSON-FANG","file":"12-N/N03","name":"方澄","latin":"FANG CHENG","age":31,"role":"城市节点","occupation":"第五诊疗站登记员","citizen":"60-214-79","color":"#3FA9A2","secondary":"#7FA5A0","forbidden":"#A84A43","image":"characters/person_fang/concept.png","who":"一个在救人与守规之间不断妥协的登记员；她知道回执过期不等于病人突然康复。","story":"方澄登记并居住在第五区，只因移动诊疗计划频繁进入第十二区。她签发的回执曾因日终验收机时钟错误而在签发前过期，许桥的案件让她开始私下保留纸质副本。","origin":"衡川市第五区","status":"本市外区居民","code":"HC-X","registry":"第五区 / 诊疗站宿舍 2","actual":"第五区；第十二区短期值勤","idDoc":"本市身份证明 60-214-79；有效","resDoc":"第五区单位居住证明；有效","risk":"她作为签发人进入第十二区时无需居住证明，但申请个人事项时仍受跨区规则约束。","quote":"回执会过期，病不会照着日期停下来。","package_slug":"person_fang"},{"id":"PERSON-LI","file":"12-N/N04","name":"黎素","latin":"LI SU","age":42,"role":"城市节点","occupation":"中央档案索引员","citizen":"42-900-17","color":"#7358A6","secondary":"#9185A5","forbidden":"#B6663D","image":"characters/person_li/concept.png","who":"一个在缺页之间寻找连续性的档案员；她拥有本市身份，却仍被出生地反复要求证明忠诚。","story":"黎素出生于澜岬共和国，青年时期随家庭迁入衡川并取得本市身份。她负责修复被拆分的档案，知道缺页往往不是意外。每逢境外审查收紧，她的出生证明译文都会重新成为必要材料。","origin":"澜岬共和国 / 后取得衡川身份","status":"本市外区居民","code":"HC-X","registry":"衡川市第四区 / 18-7","actual":"同登记地址","idDoc":"归化本市身份证明 42-900-17；有效","resDoc":"第四区居住证明；有效","risk":"通常与本市居民相同；当日若启用“境外出生复核”，需补原始出生证明认证译文。","quote":"档案最可怕的不是写错，而是让你永远证明不了它曾经写对。","package_slug":"person_li"},{"id":"PERSON-WEI","file":"12-N/N05","name":"魏岚","latin":"WEI LAN","age":46,"role":"城市节点","occupation":"内部程序监察员","citizen":"23-771-08","color":"#637080","secondary":"#A1574D","forbidden":"#D4A83B","image":"characters/person_wei/concept.png","who":"一个用严格程序保留申诉缝隙的监察员；她看似冷酷，因为公开的同情更容易被撤销。","story":"魏岚由中央监察处派驻第十二区，居住在公务宿舍。她的身份记录部分字段依法遮蔽，这让普通审核规则无法完整核对。她不断追查日终验收机与档案缺页之间的关系。","origin":"衡川市中央行政带","status":"本市临时居住者 / 公务豁免","code":"HC-T","registry":"中央行政带 / 保密","actual":"第十二区公务宿舍 / 12-C","idDoc":"中央公务身份证明 23-771-08；地址字段遮蔽","resDoc":"派驻居住令 GOV-12-C；随任期有效","risk":"不得以字段缺失直接驳回；必须核对当天监察豁免编号是否仍生效。","quote":"程序不是正义。但没有程序，连留下异议的地方都不会有。","package_slug":"person_wei"},{"id":"PERSON-JIANG","file":"12-N/N06","name":"蒋森","latin":"JIANG SEN","age":39,"role":"城市节点","occupation":"公共配给站班组长","citizen":"56-330-41","color":"#829B45","secondary":"#8D9874","forbidden":"#A5423A","image":"characters/person_jiang/concept.png","who":"一个在有限额度之间调度生活的人；他每天都必须决定谁先被系统判定为“不必要”。","story":"蒋森来自永川市，受聘整顿第十二区配给站。他知道官方损耗数字不真实，却利用差额维持未登记居民的最低供给。工作合同是他在衡川合法居留的唯一担保。","origin":"共和国 / 永川市","status":"外市人员","code":"DOM","registry":"永川市河西区 / 3-4","actual":"衡川市第十二区 / 配给站宿舍","idDoc":"永川市居民证明 56-330-41；非本市证件","resDoc":"单位担保居留证明 EMP-12-R；剩余 68 日","risk":"合同一旦中止，居留证明同时失效；部分当日通告不接受单位担保申请家庭事项。","quote":"额度永远不够。真正的权力，是决定缺口落到谁身上。","package_slug":"person_jiang"},{"id":"PERSON-SONG","file":"12-N/N07","name":"宋铎","latin":"SONG DUO","age":52,"role":"城市节点","occupation":"日终验收机房技师","citizen":"31-225-67","color":"#B8683D","secondary":"#91766A","forbidden":"#4C7182","image":"characters/person_song/concept.png","who":"一个来自境外、却维护着衡川行政机器的技师；他的许可允许他修复系统，却不允许他成为系统的一部分。","story":"宋铎是北陆联邦籍工程师，中文名用于衡川工作记录。他参与早期验收机部署，知道机器会接受人工调整的时间与优先级。他持专家许可居住在第十二区，却没有本市身份证明。","origin":"北陆联邦","status":"境外人员","code":"INT","registry":"北陆联邦 / 工程师登记 31-225-67","actual":"衡川市第十二区 / 技师宿舍 1-A","idDoc":"北陆旅行证 + 专家许可 EX-3122567；无本市身份证明","resDoc":"境外专家居住证明 FR-12-1A；剩余 95 日","risk":"办理非工作事项需认证译文和市政担保；北陆互惠条款可能按日暂停。","quote":"机器不会撒谎。它只是忠实执行了有人不愿署名的选择。","package_slug":"person_song"},{"id":"PERSON-YE","file":"12-N/N08","name":"叶蓁","latin":"YE ZHEN","age":36,"role":"城市节点","occupation":"夜间交通调度员","citizen":"70-418-26","color":"#5267BD","secondary":"#7D88AC","forbidden":"#C26A42","image":"characters/person_ye/concept.png","who":"一个掌握真实夜间路线的归市居民；她拥有衡川身份，却因多年境外生活而没有一张当前有效的住所证明。","story":"叶蓁出生在衡川，成年后长期居住于澜岬共和国，最近被调回夜间交通室。她保留有效的本市身份证明，但旧住所已经拆除，临时宿舍证明又在等待盖章。她熟悉境外线路与未进入官方时刻表的夜车。","origin":"衡川市 / 长期旅居澜岬共和国","status":"本市临时居住者","code":"HC-T","registry":"衡川市第六区 / 原址已拆除","actual":"第十二区 / 交通宿舍待核准","idDoc":"本市身份证明 70-418-26；有效；归市标记","resDoc":"临时安置回执；尚未转为居住证明","risk":"她属于本市居民，却无法证明当前归属辖区；不同日次可能被判给第六区或第十二区。","quote":"路线发生过，不等于时刻表会承认它。人也是一样。","package_slug":"person_ye"}];
+const packageDir=p=>`characters/${p.package_slug}`;
+const avatarPath=p=>`${packageDir(p)}/portrait_8bit.png`;
+const colors=people.map((p,i)=>`<i style="--c:${p.color};--h:${5+(i%5)*2}mm"></i>`).join("");
+const cover=`<section class="page cover">
+  <div class="cover-top"><div><div class="eyebrow">HENGCHUAN MUNICIPAL ARCHIVE / INTERNAL</div><div class="eyebrow">DISTRICT 12 / CAST RECORD</div></div><div class="seal">身份制度<br>增补版</div></div>
+  <div class="cover-title"><h1>第十二区<br>人物档案</h1><div class="en">CHARACTER ASSET LIBRARY</div><p class="edition">18 名人物的身份、居住与证明材料增补。人格色彩仍属于人物；行政代码只描述他们此刻被制度如何分类。</p></div>
+  <div><div class="spectrum">${colors}</div><div class="cover-note"><p>中央现实管理局 · 衡川市第十二区受理处<br>创作设定资料 / 不作为正式证件</p><div class="eyebrow">OFFLINE PACKAGE · 18 CHARACTERS</div></div></div>
+  <div class="folio"><span>FORMOCRACY / HENGCHUAN</span><span>01 / 20</span></div>
+</section>`;
+const rows=people.map(p=>`<tr><td>${p.name}</td><td>${p.status}</td><td>${p.code}</td><td>${p.actual}</td><td>${p.risk}</td></tr>`).join("");
+const index=`<section class="page index">
+  <div class="eyebrow">00 / IDENTITY INDEX</div><h2>行政身份索引</h2>
+  <p class="index-intro">本市身份证明回答“是否属于衡川市”，居住证明回答“现在由哪个区负责”。同一个人物可以拥有合法身份，却因实际住所、签发辖区或当天政策而无法完成眼前的事项。</p>
+  <table class="matrix"><thead><tr><th>人物</th><th>行政身份</th><th>代码</th><th>实际住所</th><th>主要政策风险</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="legend"><div><b>D12 / HC-X / HC-T</b>本区、本市外区、本市临居</div><div><b>DOM / INT</b>外市人员与境外人员</div><div><b>UNK</b>记录冲突、注销或旧制身份</div></div>
+  <div class="folio"><span>FORMOCRACY / IDENTITY MATRIX</span><span>02 / 20</span></div>
+</section>`;
+const pages=people.map((p,i)=>`<section class="page character" style="--accent:${p.color}">
+  <header class="char-head"><div><div class="eyebrow">${p.file} / ${p.id}</div><h2>${p.name}</h2><div class="latin">${p.latin}</div></div><div class="age"><strong>${p.age}</strong><span>AGE / 年龄</span></div></header>
+  <div class="char-body">
+    <aside><figure class="portrait"><img src="${p.image}" alt="${p.name}人物立绘"></figure>
+      <figure class="avatar-card"><img src="${avatarPath(p)}" alt="${p.name} 8-bit 头像"><figcaption><b>NES PORTRAIT</b><span>32×32 LOGICAL<br>128×128 PNG · 1-BIT</span></figcaption></figure>
+      <div class="id-mini"><p><b>OCCUPATION / 职业</b>${p.occupation}</p><p><b>ROLE / 叙事层级</b>${p.role}</p><p><b>CITIZEN NO. / 现用编号</b>${p.citizen}</p></div>
+      <div class="package-links"><b>PACKAGE FILES / 独立素材</b>
+        <span><a href="${packageDir(p)}/metadata.json">JSON</a> · <a href="${packageDir(p)}/fullbody.png">FULLBODY</a> · <a href="${packageDir(p)}/animation_table.json">ANIMATION</a></span>
+      </div>
+      <div class="palette"><div class="sw" style="--c:${p.color}">PRIMARY<br>${p.color}</div><div class="sw" style="--c:${p.secondary}">SECONDARY<br>${p.secondary}</div><div class="sw" style="--c:${p.forbidden}">FORBIDDEN<br>${p.forbidden}</div></div>
+    </aside>
+    <article class="copy">
+      <p class="who">${p.who}</p>
+      <section class="section"><div class="section-title"><b>01</b><h3>背景故事 / BACKGROUND</h3></div><p class="story">${p.story}</p></section>
+      <section class="section"><div class="section-title"><b>02</b><h3>行政身份 / ADMINISTRATIVE IDENTITY</h3></div>
+        <div class="status-card"><div class="status-top"><b>${p.status}</b><span class="status-code">${p.code}</span></div>
+          <div class="status-grid"><div><b>ORIGIN / 来源地</b><span>${p.origin}</span></div><div><b>REGISTERED / 登记辖区</b><span>${p.registry}</span></div><div><b>ACTUAL / 实际住所</b><span>${p.actual}</span></div><div><b>WINDOW / 受理理由</b><span>事项、工作或居住后果指向第十二区</span></div></div>
+        </div>
+        <div class="docs"><div class="doc"><b>本市身份证明 / CITY ID</b><p>${p.idDoc}</p></div><div class="doc res"><b>居住证明 / RESIDENCE</b><p>${p.resDoc}</p></div></div>
+        <div class="risk"><b>当日政策风险：</b>${p.risk}</div>
+      </section>
+    </article>
+  </div>
+  <blockquote class="quote">“${p.quote}”</blockquote>
+  <div class="folio"><span>${p.file} / CONFIDENTIAL</span><span>${String(i+3).padStart(2,"0")} / 20</span></div>
+</section>`).join("");
+document.getElementById("dossier").innerHTML=cover+index+pages;
+</script>
+</body>
+</html>

@@ -21,7 +21,10 @@ const FRONT_ACTOR_SCALE_MULTIPLIER := 1.3
 const FRONT_ACTOR_VERTICAL_OFFSET := 70.0
 const FRONT_POSITION := Vector2(620, 338 + FRONT_ACTOR_VERTICAL_OFFSET)
 const DELIVERY_POSITION := Vector2(634, 348 + FRONT_ACTOR_VERTICAL_OFFSET)
-const EXIT_POSITION := Vector2(450, 352 + FRONT_ACTOR_VERTICAL_OFFSET)
+const EXIT_MARGIN := 28.0
+const EXIT_WALK_SPEED := 520.0
+const EXIT_MIN_DURATION := 1.1
+const EXIT_MAX_DURATION := 1.8
 const QUEUE_CENTER := Vector2(570, 330 + FRONT_ACTOR_VERTICAL_OFFSET)
 const QUEUE_ROW_CAPACITY := 4
 const QUEUE_X_OFFSETS: Array[float] = [
@@ -54,6 +57,7 @@ var skip_requested := false
 var micro_expression_rng := RandomNumberGenerator.new()
 var departure_in_progress := false
 var promote_after_departure := true
+var pending_exit_action := "walk_out_angry"
 
 
 # 初始化 NPC 演出控制器并创建人物附近的自动气泡。
@@ -190,6 +194,7 @@ func react_and_leave(decision: String, promote_next := true) -> void:
 	var reaction_action := "happy_react" if approved else "angry_react"
 	var emotional_idle := "happy_idle" if approved else "angry_idle"
 	var exit_action := "walk_out_happy" if approved else "walk_out_angry"
+	pending_exit_action = exit_action
 	var reaction_duration := _play_action(reaction_action)
 	var reaction := root.create_tween().set_parallel(true)
 	reaction.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -206,24 +211,15 @@ func react_and_leave(decision: String, promote_next := true) -> void:
 	await _say(WorkdayContext.read_string(dialogue, line_key, "我知道了。"), token)
 	if token != performance_token:
 		return
-	state = "WALKING_OUT"
-	_play_action(exit_action)
-	Sfx.start_walking()
-	var exit := root.create_tween().set_parallel(true)
-	exit.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	exit.tween_property(current_actor, "position", EXIT_POSITION, 0.58)
-	exit.tween_property(current_actor, "rotation", -0.045, 0.58)
-	exit.tween_property(current_actor, "modulate:a", 0.0, 0.48)
-	await exit.finished
-	Sfx.stop_walking()
-	if token != performance_token:
-		return
-	await _finish_departure(token)
+	await _walk_current_actor_out(exit_action, token)
 
 
 # 跳过当前演出，直接切到等待状态或完成离场。
 func skip_current_performance() -> void:
 	if departure_in_progress or state == "QUEUE_ADVANCING":
+		return
+	# 退场已经开始后不允许跳切；角色必须保持可见并完整走出画面。
+	if state == "WALKING_OUT":
 		return
 	skip_requested = true
 	speech_bubble.close()
@@ -238,9 +234,48 @@ func skip_current_performance() -> void:
 			current_actor.modulate.a = 1.0
 			_play_action("idle")
 			delivery_finished.emit()
-	elif state in ["REACTING", "WALKING_OUT"]:
+	elif state == "REACTING":
 		performance_token += 1
-		_finish_departure(performance_token)
+		_walk_current_actor_out(pending_exit_action, performance_token)
+
+
+# 保持人物完全不透明，按人物当前帧宽度计算左侧屏幕外终点并播放完整步行退场。
+func _walk_current_actor_out(exit_action: String, token: int) -> void:
+	if not is_instance_valid(current_actor):
+		await _finish_departure(token)
+		return
+	state = "WALKING_OUT"
+	current_actor.modulate.a = 1.0
+	_play_action(exit_action)
+	Sfx.start_walking()
+	var target := _fully_offscreen_exit_position(current_actor)
+	var duration := clampf(
+		current_actor.position.distance_to(target) / EXIT_WALK_SPEED,
+		EXIT_MIN_DURATION,
+		EXIT_MAX_DURATION,
+	)
+	var exit := root.create_tween().set_parallel(true)
+	exit.set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	exit.tween_property(current_actor, "position", target, duration)
+	exit.tween_property(current_actor, "rotation", -0.035, duration)
+	await exit.finished
+	Sfx.stop_walking()
+	if token != performance_token:
+		return
+	await _finish_departure(token)
+
+
+# 返回确保人物最右侧也越过画布左边界的中心坐标。
+func _fully_offscreen_exit_position(actor: AnimatedSprite2D) -> Vector2:
+	var frame_width := 512.0
+	if actor.sprite_frames != null and actor.sprite_frames.has_animation(actor.animation):
+		var frame_count := actor.sprite_frames.get_frame_count(actor.animation)
+		if frame_count > 0:
+			var frame_texture := actor.sprite_frames.get_frame_texture(actor.animation, mini(actor.frame, frame_count - 1))
+			if frame_texture != null:
+				frame_width = frame_texture.get_size().x
+	var half_visual_width := frame_width * absf(actor.scale.x) * 0.5
+	return Vector2(-half_visual_width - EXIT_MARGIN, actor.position.y + 10.0)
 
 
 # 停止所有演出与音频，用于场景退出时的清理。

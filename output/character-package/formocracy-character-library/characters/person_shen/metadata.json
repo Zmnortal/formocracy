@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-SHEN",
+  "slug": "person_shen",
+  "identity": {
+    "display_name": "沈青禾",
+    "latin_name": "SHEN QINGHE",
+    "age": 27,
+    "occupation": "印刷合作社校对员",
+    "citizen_id": "74-119-03",
+    "queue_label": "B01"
+  },
+  "narrative": {
+    "file_number": "12-D/C08",
+    "role": "回访核心",
+    "summary": "一个擅长发现错字的校对员；她正试图让自己与林默的生活先于制度成立。",
+    "background": "沈青禾登记在第七区印刷合作社宿舍，却多数夜晚住在林默家。她发现三个月前一批征调令上的日期被统一换过。共同居住申请既是生活选择，也可能让她成为被校正的证人。",
+    "quote": "错字可以改。被盖过章的日期，就得有人承认它曾经错过。"
+  },
+  "administrative": {
+    "status": "本市外区居民",
+    "code": "HC-X",
+    "origin": "衡川市第七区",
+    "registry": "第七区印刷社宿舍 / 3-A",
+    "actual_residence": "第十二区 / 17-4（未归档）",
+    "identity_document": "本市身份证明 74-119-03；第七区登记处；有效",
+    "residence_document": "第七区居住证明有效；第十二区无正式证明",
+    "policy_risk": "申请共同居住时不能用林默的证明代替本人迁入材料。某些日次接受共同居住声明，某些日次不接受。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-X",
+    "actor_scale": 0.34,
+    "move_speed": 0.96
+  },
+  "visual": {
+    "colors": {
+      "primary": "#69AC8A",
+      "secondary": "#8FA99B",
+      "forbidden": "#A74A3D"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_shen.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_shen.png",
+    "actor_texture": "res://assets/characters/applicants/person_shen/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_shen/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  }
+}

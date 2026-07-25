@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-WEI",
+  "slug": "person_wei",
+  "identity": {
+    "display_name": "魏岚",
+    "latin_name": "WEI LAN",
+    "age": 46,
+    "occupation": "内部程序监察员",
+    "citizen_id": "23-771-08",
+    "queue_label": "B08"
+  },
+  "narrative": {
+    "file_number": "12-N/N05",
+    "role": "城市节点",
+    "summary": "一个用严格程序保留申诉缝隙的监察员；她看似冷酷，因为公开的同情更容易被撤销。",
+    "background": "魏岚由中央监察处派驻第十二区，居住在公务宿舍。她的身份记录部分字段依法遮蔽，这让普通审核规则无法完整核对。她不断追查日终验收机与档案缺页之间的关系。",
+    "quote": "程序不是正义。但没有程序，连留下异议的地方都不会有。"
+  },
+  "administrative": {
+    "status": "本市临时居住者 / 公务豁免",
+    "code": "HC-T",
+    "origin": "衡川市中央行政带",
+    "registry": "中央行政带 / 保密",
+    "actual_residence": "第十二区公务宿舍 / 12-C",
+    "identity_document": "中央公务身份证明 23-771-08；地址字段遮蔽",
+    "residence_document": "派驻居住令 GOV-12-C；随任期有效",
+    "policy_risk": "不得以字段缺失直接驳回；必须核对当天监察豁免编号是否仍生效。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-T",
+    "actor_scale": 0.18,
+    "move_speed": 0.98
+  },
+  "visual": {
+    "colors": {
+      "primary": "#637080",
+      "secondary": "#A1574D",
+      "forbidden": "#D4A83B"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 8
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_wei.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_wei.png",
+    "actor_texture": "res://assets/characters/dossier/person_wei/concept.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  }
+}

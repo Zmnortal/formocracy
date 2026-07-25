@@ -111,6 +111,17 @@ func run() -> void:
 	overlap_release.global_position = overlap_press.global_position
 	controller._on_item_input(overlap_release, back_item)
 	assert(not WorkdayContext.to_bool(front_item.get_meta("desk_pressed")), "release must finish the item selected by the centralized frontmost resolver")
+	assert(front_item.z_index == DeskItemController.HELD_LAYER, "clicking an item must keep it at the unique desk focus layer")
+
+	controller._begin_press(in_bounds_item, Vector2(10, 10))
+	assert(in_bounds_item.z_index == DeskItemController.HELD_LAYER, "the newly pressed item must take the desk focus layer immediately")
+	assert(front_item.z_index < in_bounds_item.z_index, "the previous focused item must return below the newly focused item")
+	assert(front_item.z_index == DeskItemController.HELD_LAYER - 1, "the previous top item must move down exactly one stack rank")
+	assert(
+		front_item.z_index == WorkdayContext.to_int(front_item.get_meta("desk_resting_layer")),
+		"the previous focused item must recover its ordinary resting layer"
+	)
+	controller._end_press(in_bounds_item)
 
 	var stale_item := Control.new()
 	stale_item.position = front_item.position

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-FANG",
+  "slug": "person_fang",
+  "identity": {
+    "display_name": "方澄",
+    "latin_name": "FANG CHENG",
+    "age": 31,
+    "occupation": "第五诊疗站登记员",
+    "citizen_id": "60-214-79",
+    "queue_label": "B06"
+  },
+  "narrative": {
+    "file_number": "12-N/N03",
+    "role": "城市节点",
+    "summary": "一个在救人与守规之间不断妥协的登记员；她知道回执过期不等于病人突然康复。",
+    "background": "方澄登记并居住在第五区，只因移动诊疗计划频繁进入第十二区。她签发的回执曾因日终验收机时钟错误而在签发前过期，许桥的案件让她开始私下保留纸质副本。",
+    "quote": "回执会过期，病不会照着日期停下来。"
+  },
+  "administrative": {
+    "status": "本市外区居民",
+    "code": "HC-X",
+    "origin": "衡川市第五区",
+    "registry": "第五区诊疗站宿舍 / 2",
+    "actual_residence": "第五区；第十二区短期值勤",
+    "identity_document": "本市身份证明 60-214-79；有效",
+    "residence_document": "第五区单位居住证明；有效",
+    "policy_risk": "她作为签发人进入第十二区时无需居住证明，但申请个人事项时仍受跨区规则约束。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-X",
+    "actor_scale": 0.34,
+    "move_speed": 1
+  },
+  "visual": {
+    "colors": {
+      "primary": "#3FA9A2",
+      "secondary": "#7FA5A0",
+      "forbidden": "#A84A43"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_fang.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_fang.png",
+    "actor_texture": "res://assets/characters/applicants/person_fang/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/person_fang/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  }
+}

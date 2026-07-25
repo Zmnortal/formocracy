@@ -508,6 +508,92 @@ func run() -> void:
 	for action_name: StringName in old_he_animation.sprite_frames.get_animation_names():
 		assert(old_he_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Old He animation may exceed the global four FPS style limit")
 
+	var fang_animation = library_script.new()
+	assert(fang_animation.load_animation_table("res://data/animations/person_fang/animation_table.json"), "Fang Cheng's production animation table must load")
+	assert(fang_animation.error_messages.is_empty() and fang_animation.warning_messages.is_empty(), "Fang Cheng's production animation table must resolve every generated frame")
+	assert(
+		fang_animation.character_id == "PERSON-FANG" and not fang_animation.substitute_frames_with_static_actor,
+		"Fang Cheng must use her own generated frames instead of the static placeholder"
+	)
+	assert(
+		fang_animation.required_actions == library.required_actions and fang_animation.optional_actions == library.optional_actions and fang_animation.max_unique_pngs == 20,
+		"Fang Cheng must implement the formal eight-core plus three-optional contract"
+	)
+	var fang_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(fang_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Fang Cheng action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = fang_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_fang/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Fang Cheng action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Fang Cheng production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Fang Cheng's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Fang Cheng must leave the golden document bag on the player's desk after delivery")
+			fang_unique_frame_paths[frame_path] = true
+	assert(fang_unique_frame_paths.size() == 20, "Fang Cheng's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_fang_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_fang/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_fang_pngs.append(filename)
+	assert(active_fang_pngs.size() == 20, "Fang Cheng's active animation directory must contain exactly twenty PNG files")
+	for filename in active_fang_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Fang Cheng filename must declare full-body coverage")
+	assert(
+		not fang_animation.has_action("walk_in") and not fang_animation.has_action("arrive") and not fang_animation.has_action("look_aside"),
+		"Fang Cheng must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in fang_animation.sprite_frames.get_animation_names():
+		assert(fang_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Fang Cheng animation may exceed the global four FPS style limit")
+
+	var li_animation = library_script.new()
+	assert(li_animation.load_animation_table("res://data/animations/person_li/animation_table.json"), "Li Su's production animation table must load")
+	assert(li_animation.error_messages.is_empty() and li_animation.warning_messages.is_empty(), "Li Su's production animation table must resolve every generated frame")
+	assert(
+		li_animation.character_id == "PERSON-LI" and not li_animation.substitute_frames_with_static_actor,
+		"Li Su must use her own generated frames instead of the static placeholder"
+	)
+	assert(
+		li_animation.required_actions == library.required_actions and li_animation.optional_actions == library.optional_actions and li_animation.max_unique_pngs == 20,
+		"Li Su must implement the formal eight-core plus three-optional contract"
+	)
+	var li_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(li_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Li Su action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = li_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_li/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Li Su action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Li Su production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Li Su's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Li Su must leave the golden document bag on the player's desk after delivery")
+			li_unique_frame_paths[frame_path] = true
+	assert(li_unique_frame_paths.size() == 20, "Li Su's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_li_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_li/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_li_pngs.append(filename)
+	assert(active_li_pngs.size() == 20, "Li Su's active animation directory must contain exactly twenty PNG files")
+	for filename in active_li_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Li Su filename must declare full-body coverage")
+	assert(
+		not li_animation.has_action("walk_in") and not li_animation.has_action("arrive") and not li_animation.has_action("look_aside"),
+		"Li Su must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in li_animation.sprite_frames.get_animation_names():
+		assert(li_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Li Su animation may exceed the global four FPS style limit")
+
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(exact.get("kind") == "animation" and exact.get("action") == "blink", "an available requested action must resolve to itself")
 	var emotional: Dictionary = library.resolve_action("unmade_happy_departure")

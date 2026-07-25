@@ -17,10 +17,10 @@ func _configure_scene() -> void:
 		"你当然可以再交一次。退件次数不设上限。",
 	]
 	actions = [
-		{"id": "dossier", "label": "打开档案袋", "side": "left"},
-		{"id": "attachments", "label": "补充附件", "side": "left"},
-		{"id": "submit", "label": "提交申请", "side": "right"},
-		{"id": "returns", "label": "查看退件", "side": "right"},
+		{"id": "dossier", "label": "打开档案袋", "description": "核对随身携带的表单与证明", "side": "left"},
+		{"id": "attachments", "label": "补充附件", "description": "向受理窗口递交缺失的材料", "side": "left"},
+		{"id": "submit", "label": "提交申请", "description": "把当前申请送入审核流程", "side": "right"},
+		{"id": "returns", "label": "查看退件", "description": "领取被退回或要求补正的文件", "side": "right"},
 	]
 
 
@@ -33,4 +33,3 @@ func _handle_action(action_id: String) -> void:
 		"returns":
 			var pending := WorkdayState.manager.get_blank_personal_forms().size()
 			_show_feedback("档案袋中现有 %d 份空白表单，没有新的退件。" % pending, pending == 0)
-

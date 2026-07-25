@@ -37,6 +37,7 @@ func run() -> void:
 	assert(main.get_node_or_null("NpcWindow") == null, "the black visitor information panel must be removed")
 	assert(main.get_node_or_null("InstitutionalWallClock") != null, "the visitor panel space must contain an institutional wall clock")
 	assert(main.get_node_or_null("ClerkToolCabinet") != null, "the applicant panel space must contain a clerk tool cabinet")
+	assert(main.get_node_or_null("NumberMachine") == null, "the retired reputation counter must be absent from the desk")
 	var background := main.get_node("ClerkDeskConcept") as TextureRect
 	assert(background.texture != null, "workbench concept must be loaded")
 	assert(background.stretch_mode == TextureRect.STRETCH_SCALE, "background must fill the design canvas")

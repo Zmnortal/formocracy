@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-LUO",
+  "slug": "person_luo",
+  "identity": {
+    "display_name": "罗雨棠",
+    "latin_name": "LUO YUTANG",
+    "age": 32,
+    "occupation": "夜班电车售票员",
+    "citizen_id": "87-140-55",
+    "queue_label": "B03"
+  },
+  "narrative": {
+    "file_number": "12-D/C10",
+    "role": "回访核心",
+    "summary": "一个用笑声维持夜班秩序的售票员；她私藏的废票根记录着官方时刻表之外的人。",
+    "background": "罗雨棠登记在第九区，夜班线路终点却在第十二区。她会在末班车后睡在调度室，因此持有轮班居住许可。她保存乘客废票根，用路线和时间拼出失踪者最后出现的位置。",
+    "quote": "票根不记名字，可它们记得谁在不该有车的晚上到过终点。"
+  },
+  "administrative": {
+    "status": "本市外区居民",
+    "code": "HC-X",
+    "origin": "衡川市第九区",
+    "registry": "第九区 / 12-8",
+    "actual_residence": "第十二区交通调度室（轮班）",
+    "identity_document": "本市身份证明 87-140-55；有效",
+    "residence_document": "夜班轮住许可 N12-TR；仅工作日有效",
+    "policy_risk": "轮住许可不能用于家庭配给。若当日将“实际过夜”视为居住，她会同时归属两个辖区。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-X",
+    "actor_scale": 0.34,
+    "move_speed": 1.04
+  },
+  "visual": {
+    "colors": {
+      "primary": "#E36F59",
+      "secondary": "#A98A84",
+      "forbidden": "#4E6B8F"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_luo.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_luo.png",
+    "actor_texture": "res://assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/person_luo/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_young.wav"
+  }
+}

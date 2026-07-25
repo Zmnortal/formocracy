@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-TANG",
+  "slug": "person_tang",
+  "identity": {
+    "display_name": "唐霁",
+    "latin_name": "TANG JI",
+    "age": 19,
+    "occupation": "见习公文投递员",
+    "citizen_id": "03-882-14",
+    "queue_label": "B02"
+  },
+  "narrative": {
+    "file_number": "12-D/C09",
+    "role": "回访核心",
+    "summary": "一个仍相信程序会保护人的见习投递员；他尚未明白，正确送达也可能产生错误现实。",
+    "background": "唐霁登记在第三区，见习期间住进第十二区投递站。他曾把装配线事故封存袋按时送达监察处，从此许桥的工伤记录开始消失。他不断核对签收时间，想证明自己没有做错。",
+    "quote": "我按规定送到了。可如果规定把错误送到了正确的地方呢？"
+  },
+  "administrative": {
+    "status": "本市临时居住者",
+    "code": "HC-T",
+    "origin": "衡川市第三区",
+    "registry": "第三区 / 44-9",
+    "actual_residence": "第十二区递送站宿舍 / 6-5",
+    "identity_document": "本市青年身份证明 03-882-14；有效",
+    "residence_document": "见习人员居住证明 I12-6-5；剩余 23 日",
+    "policy_risk": "见习单位可撤销担保；一旦投递事故被立案，居住证明同步失效。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-T",
+    "actor_scale": 0.34,
+    "move_speed": 1.08
+  },
+  "visual": {
+    "colors": {
+      "primary": "#3474D4",
+      "secondary": "#7E94B6",
+      "forbidden": "#B15A42"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_tang.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_tang.png",
+    "actor_texture": "res://assets/characters/applicants/person_tang/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+    "animation_table": "res://data/animations/person_tang/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_young.wav"
+  }
+}

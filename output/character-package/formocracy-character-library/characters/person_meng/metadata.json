@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-MENG",
+  "slug": "person_meng",
+  "identity": {
+    "display_name": "孟秋兰",
+    "latin_name": "MENG QIULAN",
+    "age": 48,
+    "occupation": "公共食堂配餐员",
+    "citizen_id": "46-208-71",
+    "queue_label": "A04"
+  },
+  "narrative": {
+    "file_number": "12-D/C04",
+    "role": "回访核心",
+    "summary": "一个用重复日常抵抗行政遗忘的母亲；她每天多留一份饭，好像那个被注销的人仍会回来。",
+    "background": "孟秋兰在公共食堂工作二十一年。她的儿子在夜间装配线事故后被登记为“主动离区”，随后从户籍和配给名册中消失。她持续替儿子领取食物，用每一张退件回执证明系统曾经承认过这个人。",
+    "quote": "只要窗口还肯退给我一张纸，就说明系统里还有地方记得他。"
+  },
+  "administrative": {
+    "status": "第十二区常住居民",
+    "code": "D12",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区 / 31-2",
+    "actual_residence": "第十二区 / 31-2",
+    "identity_document": "本市身份证明 46-208-71；有效",
+    "residence_document": "家庭居住证明 R12-31-2；含一名已注销成员",
+    "policy_risk": "本人材料完整，风险来自家庭成员编号不存在。批准会触发冒领审查，驳回会切断追索入口。"
+  },
+  "gameplay": {
+    "administrative_status": "D12",
+    "actor_scale": 0.36,
+    "move_speed": 0.88
+  },
+  "visual": {
+    "colors": {
+      "primary": "#D6A126",
+      "secondary": "#9D8658",
+      "forbidden": "#744A78"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_meng.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_meng.png",
+    "actor_texture": "res://assets/characters/applicants/person_meng/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_meng/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
+  }
+}

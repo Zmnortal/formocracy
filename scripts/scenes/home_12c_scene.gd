@@ -17,10 +17,10 @@ func _configure_scene() -> void:
 		"门口那封不是我拆的。它来的时候就没有封严。",
 	]
 	actions = [
-		{"id": "delivery", "label": "查看投递", "side": "left"},
-		{"id": "repair", "label": "申请报修", "side": "left"},
-		{"id": "forms", "label": "整理个人表单", "side": "right"},
-		{"id": "rest", "label": "确认休息", "side": "right"},
+		{"id": "delivery", "label": "查看投递", "description": "检查门房代收的信件与通知", "side": "left"},
+		{"id": "repair", "label": "申请报修", "description": "登记宿舍内需要维修的设施", "side": "left"},
+		{"id": "forms", "label": "整理个人表单", "description": "打开档案袋整理自己的文件", "side": "right"},
+		{"id": "rest", "label": "确认休息", "description": "结束今晚的行动并进入下一天", "side": "right"},
 	]
 
 
@@ -36,4 +36,3 @@ func _handle_action(action_id: String) -> void:
 			WorkdayState.manager.begin_next_day()
 			Sfx.play("start")
 			get_tree().change_scene_to_file("res://main.tscn")
-

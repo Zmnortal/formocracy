@@ -23,7 +23,7 @@ const STAMP_SIZE := Vector2(32, 40)
 const STAMP_ANIMATION_SIZE := Vector2(192, 192)
 const STAMP_CONTACT_ANCHOR := Vector2(0.5, 0.57)
 const STAMP_FRAME_DURATION := 0.075
-const STAMP_ANIMATION_LAYER := 96
+const STAMP_ANIMATION_LAYER := 1200
 
 var root: Node2D
 var desk: DeskNodes
@@ -123,15 +123,16 @@ func _can_begin_stamp_interaction(tool: Control, _local_position: Vector2) -> bo
 	return not WorkdayContext.to_bool(tool.get_meta("stamp_animation_playing"))
 
 
-# 释放印章时锁定自由落点；无效落点不播放动画也不产生印记。
+# 释放印章时只在有效文件上暂停落桌物理；无效落点直接交回统一重力。
 func _prepare_stamp_drop(tool: Control) -> void:
-	tool.set_meta("desk_skip_drop_once", true)
 	var document := _stamp_target_at_tool(tool)
 	if not is_instance_valid(document):
 		if is_instance_valid(desk.status_label):
 			desk.status_label.text = "印章必须落在当前最上层、已经打开的文件纸面内。"
-		_return_stamp(tool)
+		if desk_items == null:
+			_return_stamp(tool)
 		return
+	tool.set_meta("desk_skip_drop_once", true)
 	var center := tool.get_global_transform() * (tool.size * 0.5)
 	var local_position := document.get_global_transform().affine_inverse() * center
 	_play_stamp_contact_animation(tool, document, local_position)
@@ -181,7 +182,20 @@ func _play_stamp_contact_animation(tool: Control, document: DocumentView, local_
 		Sfx.play("stamp")
 		stamp_applied.emit(kind, document.document_id, local_position)
 	tool.visible = true
-	_return_stamp(tool)
+	_release_stamp_after_contact(tool)
+
+
+# 盖章完成后恢复实体印章，并从盖章位置进入与铃铛相同的落桌物理。
+func _release_stamp_after_contact(tool: Control) -> void:
+	tool.visible = true
+	tool.mouse_filter = Control.MOUSE_FILTER_STOP
+	tool.set_meta("stamp_animation_playing", false)
+	tool.set_meta("desk_drag_locked", false)
+	tool.set_meta("desk_skip_drop_once", false)
+	if desk_items != null:
+		desk_items.drop_item(tool)
+	else:
+		_return_stamp(tool)
 
 
 # 通过 Tween 将印章平滑归位。

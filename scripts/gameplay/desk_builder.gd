@@ -7,11 +7,10 @@ extends RefCounted
 const WORKBENCH_TEXTURE := preload("res://assets/office/background/service_hall_light.png")
 const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
 const FILING_CABINET_CLOSED_TEXTURE := preload("res://assets/office/filing_cabinet/states/00_closed.png")
-const NUMBER_MACHINE_TEXTURE := preload("res://assets/office/items/number_machine.png")
 const CALENDAR_TEXTURE := preload("res://assets/office/items/calendar.png")
 const WALL_CLOCK_TEXTURE := preload("res://assets/office/world_props/wall_clock.png")
 const CLERK_TOOL_CABINET_TEXTURE := preload("res://assets/office/world_props/clerk_tool_cabinet.png")
-const SERVICE_WINDOW_TEXTURE := preload("res://assets/office/service_window/service_window_frame.png")
+const SERVICE_WINDOW_TEXTURE := preload("res://assets/office/service_window/service_counter_pass_through.png")
 const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
 const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
 const ARCHIVE_TRAY_FOREGROUND_TEXTURE := preload("res://assets/office/interactive/archive_tray_foreground.png")
@@ -138,10 +137,9 @@ func build(root: Node2D) -> DeskNodes:
 	return desk
 
 
-# 摆放文件柜、取号机与挂历等办公室陈设。
+# 摆放文件柜、挂历与墙钟等办公室陈设。
 func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_build_filing_cabinet(root, desk)
-	desk.number_machine = _add_prop(root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7)
 	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
 	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), -3)
 	_add_prop(root, "ClerkToolCabinet", CLERK_TOOL_CABINET_TEXTURE, Vector2(1018, 254), Vector2(293, 366), 5)
@@ -189,13 +187,13 @@ func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
 func _build_foreground_architecture(root: Node2D) -> void:
 	var glass := ColorRect.new()
 	glass.name = "ServiceWindowGlass"
-	glass.position = Vector2(362, 177)
-	glass.size = Vector2(555, 218)
-	glass.color = Color(0.19, 0.24, 0.22, 0.14)
+	glass.position = Vector2(350, 150)
+	glass.size = Vector2(580, 295)
+	glass.color = Color(0.19, 0.24, 0.22, 0.055)
 	glass.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glass.z_index = 3
 	root.add_child(glass)
-	_add_prop(root, "ServiceWindowForeground", SERVICE_WINDOW_TEXTURE, Vector2(270, 90), Vector2(740, 463), 3)
+	_add_prop(root, "ServiceWindowForeground", SERVICE_WINDOW_TEXTURE, Vector2(320, 465), Vector2(640, 120), 3)
 	var worktable := _add_prop(root, "WorktableForeground", WORKTABLE_TEXTURE, Vector2(DeskGeometry.visual_left(), DeskGeometry.TOP), DeskGeometry.visual_size(), 4)
 	# 负 inset 只扩大桌面图片的绘制矩形，再由 Shader 在矩形内部生成梯形。
 	# DeskBounds 使用上方独立的一组 BOUNDS_* 参数，不跟随图片形变。

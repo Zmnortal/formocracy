@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-SONG",
+  "slug": "person_song",
+  "identity": {
+    "display_name": "宋铎",
+    "latin_name": "SONG DUO",
+    "age": 52,
+    "occupation": "日终验收机房技师",
+    "citizen_id": "31-225-67",
+    "queue_label": "B10"
+  },
+  "narrative": {
+    "file_number": "12-N/N07",
+    "role": "城市节点",
+    "summary": "一个来自境外、却维护着衡川行政机器的技师；他的许可允许他修复系统，却不允许他成为系统的一部分。",
+    "background": "宋铎是北陆联邦籍工程师，中文名用于衡川工作记录。他参与早期验收机部署，知道机器会接受人工调整的时间与优先级。他持专家许可居住在第十二区，却没有本市身份证明。",
+    "quote": "机器不会撒谎。它只是忠实执行了有人不愿署名的选择。"
+  },
+  "administrative": {
+    "status": "境外人员",
+    "code": "INT",
+    "origin": "北陆联邦",
+    "registry": "北陆联邦 / 工程师登记",
+    "actual_residence": "第十二区技师宿舍 / 1-A",
+    "identity_document": "北陆旅行证 + 专家许可 EX-3122567；无本市身份证明",
+    "residence_document": "境外专家居住证明 FR-12-1A；剩余 95 日",
+    "policy_risk": "办理非工作事项需认证译文和市政担保；北陆互惠条款可能按日暂停。"
+  },
+  "gameplay": {
+    "administrative_status": "INT",
+    "actor_scale": 0.18,
+    "move_speed": 0.9
+  },
+  "visual": {
+    "colors": {
+      "primary": "#B8683D",
+      "secondary": "#91766A",
+      "forbidden": "#4C7182"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 8
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_song.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_song.png",
+    "actor_texture": "res://assets/characters/dossier/person_song/concept.png",
+    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_old.wav"
+  }
+}

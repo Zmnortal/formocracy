@@ -46,7 +46,8 @@ func run() -> void:
 	assert(error == OK, "after-work corridor must open for rendering")
 	await process_frame
 	await process_frame
-	current_scene.walk_by(0.78)
+	current_scene.show_slide_for_tests(2)
+	current_scene.dialogue_box.reveal_current_line()
 	await create_timer(0.35).timeout
 	if DisplayServer.get_name() == "headless":
 		print("FORMOCRACY_AFTER_WORK_CORRIDOR_SNAPSHOT_OK (skipped on headless display)")

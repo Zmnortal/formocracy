@@ -62,15 +62,27 @@ func run() -> void:
 
 	presenter.bring_document_to_front(presenter.primary_document_id)
 	var approve_stamp := manager.stamp.stamp_tools[0] as Control
+	var stamp_home: Vector2 = approve_stamp.get_meta("home")
 	var stamp_target_global: Vector2 = presenter.form.get_global_transform() * Vector2(330, 420)
 	_place_visual_center(approve_stamp, stamp_target_global)
 	manager.stamp._prepare_stamp_drop(approve_stamp)
 	assert(workbench.has_node("StampContactAnimation"), "a valid free stamp drop must start the contact animation")
+	assert(
+		(workbench.get_node("StampContactAnimation") as CanvasItem).z_index > DeskItemController.HELD_LAYER,
+		"stamp contact animation must use a four-digit system layer above every desk item"
+	)
 	assert(presenter.form.stamp_records.is_empty(), "the stamp mark must not appear before the contact animation finishes")
 	await create_timer(0.38).timeout
 	assert(not workbench.has_node("StampContactAnimation"), "the temporary stamp animation must clean itself up")
 	assert(presenter.form.stamp_records.size() == 1, "the stamp mark must be written after the fourth animation frame")
 	assert(WorkdayContext.stringify_value(presenter.form.stamp_records[0].get("kind")) == "批准", "the resulting mark must preserve the dragged stamp kind")
+	await create_timer(0.9).timeout
+	assert(approve_stamp.position != stamp_home, "a used stamp must not tween back to a fixed home position")
+	assert(approve_stamp.position.y >= DeskGeometry.BOUNDS_TOP, "a used stamp must fall back onto the desk")
+	assert(
+		state.manager.get_desk_item_layout("stamp_approve").has("position"),
+		"stamp gravity landing must persist through the same desk-item layout path as the bell"
+	)
 
 	print("FORMOCRACY_DOCUMENT_REPACK_AND_STAMP_OK")
 	quit()

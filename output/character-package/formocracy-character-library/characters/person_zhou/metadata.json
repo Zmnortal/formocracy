@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "PERSON-ZHOU",
+  "slug": "person_zhou",
+  "identity": {
+    "display_name": "周循",
+    "latin_name": "ZHOU XUN",
+    "age": 44,
+    "occupation": "锅炉与管线维修工",
+    "citizen_id": "20-441-88",
+    "queue_label": "A02"
+  },
+  "narrative": {
+    "file_number": "12-D/C02",
+    "role": "回访核心",
+    "summary": "一个把照护责任全部揽在自己身上的维修工；他说话温和，却正在被配给制度一点点耗空。",
+    "background": "周循负责住宅区的锅炉和供水阀，与需要持续用水服药的母亲杜春梅同住。街区重编把他的身份地址和实际住所拆成两个编号。他知道配给损耗流向没有登记资格的住户，却不愿举报任何人。",
+    "quote": "表上写的是额度，回到家里，就是一个人今天能不能把药咽下去。"
+  },
+  "administrative": {
+    "status": "本市临时居住者",
+    "code": "HC-T",
+    "origin": "衡川市第十二区",
+    "registry": "第十二区 / 5-8（旧）",
+    "actual_residence": "第十二区 / 9-1",
+    "identity_document": "本市身份证明 20-441-88；地址未变更；有效",
+    "residence_document": "临时居住证明 R12-9-1；街区重编专用；有效",
+    "policy_risk": "身份地址与居住证明不一致。只有当日通告承认“街区重编豁免”时才能通过。"
+  },
+  "gameplay": {
+    "administrative_status": "HC-T",
+    "actor_scale": 0.36,
+    "move_speed": 1.08
+  },
+  "visual": {
+    "colors": {
+      "primary": "#C78238",
+      "secondary": "#8E765F",
+      "forbidden": "#4E77A8"
+    },
+    "portrait_specification": {
+      "logical_size": "32x32",
+      "output_size": "128x128",
+      "palette": [
+        "#000000",
+        "#FFFFFF"
+      ],
+      "bit_depth": 1,
+      "scaling": "nearest-neighbor"
+    }
+  },
+  "assets": {
+    "portrait_8bit": "portrait_8bit.png",
+    "concept_art": "concept.png",
+    "fullbody": "fullbody.png",
+    "animation_table": "animation_table.json",
+    "animation_frames": {
+      "directory": "frames",
+      "count": 20
+    },
+    "voice_sfx": "voice_sfx.wav"
+  },
+  "original_project_paths": {
+    "portrait_texture": "res://assets/characters/portraits_8bit/person_zhou.png",
+    "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_zhou.png",
+    "actor_texture": "res://assets/characters/applicants/person_zhou/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+    "animation_table": "res://data/animations/person_zhou/animation_table.json",
+    "voice_sfx": "res://assets/audio/sfx/people_male_average.wav"
+  }
+}

@@ -20,6 +20,7 @@ var blocker: ColorRect
 var console_panel: Panel
 var scene_selector: OptionButton
 var day_selector: SpinBox
+var credit_selector: SpinBox
 var level_selector: OptionButton
 var seed_selector: SpinBox
 var preset_selector: OptionButton
@@ -97,8 +98,8 @@ func build_ui() -> void:
 
 	console_panel = Panel.new()
 	console_panel.set_anchors_preset(Control.PRESET_CENTER)
-	console_panel.position = Vector2(-500, -300)
-	console_panel.size = Vector2(1000, 600)
+	console_panel.position = Vector2(-500, -330)
+	console_panel.size = Vector2(1000, 660)
 	UI.style_panel(console_panel)
 	blocker.add_child(console_panel)
 
@@ -219,10 +220,31 @@ func build_ui() -> void:
 	collision_button.pressed.connect(toggle_collision_debug)
 	refresh_collision_button()
 
-	create_section_label("命令终端", Vector2(28, 374))
+	create_section_label("Credit 调试", Vector2(28, 370))
+	credit_selector = SpinBox.new()
+	credit_selector.name = "CreditSelector"
+	credit_selector.position = Vector2(28, 400)
+	credit_selector.size = Vector2(190, 40)
+	credit_selector.min_value = -9999
+	credit_selector.max_value = 9999
+	credit_selector.value = WorkdayState.political_credit
+	credit_selector.prefix = "政治信用 "
+	console_panel.add_child(credit_selector)
+	var credit_minus_ten := create_button("−10", Vector2(232, 400), Vector2(76, 40))
+	credit_minus_ten.pressed.connect(func(): adjust_credit(-10))
+	var credit_minus_one := create_button("−1", Vector2(320, 400), Vector2(76, 40))
+	credit_minus_one.pressed.connect(func(): adjust_credit(-1))
+	var credit_set := create_button("设为输入值", Vector2(408, 400), Vector2(132, 40))
+	credit_set.pressed.connect(set_credit_from_selector)
+	var credit_plus_one := create_button("+1", Vector2(552, 400), Vector2(76, 40))
+	credit_plus_one.pressed.connect(func(): adjust_credit(1))
+	var credit_plus_ten := create_button("+10", Vector2(640, 400), Vector2(76, 40))
+	credit_plus_ten.pressed.connect(func(): adjust_credit(10))
+
+	create_section_label("命令终端", Vector2(28, 458))
 	output = RichTextLabel.new()
-	output.position = Vector2(28, 406)
-	output.size = Vector2(944, 112)
+	output.position = Vector2(28, 488)
+	output.size = Vector2(944, 92)
 	output.bbcode_enabled = true
 	output.scroll_active = true
 	output.add_theme_color_override("default_color", Color("9fbd72"))
@@ -232,7 +254,7 @@ func build_ui() -> void:
 	console_panel.add_child(output)
 	command_input = LineEdit.new()
 	command_input.placeholder_text = "输入命令，例如：scene report"
-	command_input.position = Vector2(28, 530)
+	command_input.position = Vector2(28, 592)
 	command_input.size = Vector2(944, 44)
 	command_input.add_theme_font_override("font", UI.PIXEL_FONT)
 	command_input.add_theme_font_size_override("font_size", 16)
@@ -340,6 +362,7 @@ func toggle_console() -> void:
 	dev_button.visible = not is_open
 	if is_open:
 		day_selector.value = WorkdayState.day_number
+		credit_selector.value = WorkdayState.political_credit
 		refresh_status()
 		command_input.grab_focus()
 	else:
@@ -379,11 +402,12 @@ func refresh_status() -> void:
 	if get_tree().current_scene != null:
 		current = get_tree().current_scene.name
 	status_label.text = (
-		"场景：%s  关卡：%s\n工作日：%d  记录：%d / %d\n日报：%s"
+		"场景：%s  关卡：%s\n工作日：%d  Credit：%d  记录：%d / %d\n日报：%s"
 		% [
 			current,
 			WorkdayState.current_level_id,
 			WorkdayState.day_number,
+			WorkdayState.political_credit,
 			WorkdayState.records.size(),
 			WorkdayState.target_case_count,
 			"可生成" if WorkdayState.manager.should_show_report() else "未满足触发条件"
@@ -416,6 +440,24 @@ func _on_set_day() -> void:
 	WorkdayState.day_number = int(day_selector.value)
 	append_output("工作日已设置为 %d" % WorkdayState.day_number)
 	refresh_status()
+
+
+# 将政治信用直接设为输入框中的值。
+func set_credit_from_selector() -> void:
+	set_credit(int(credit_selector.value))
+
+
+# 将政治信用设为指定值，并同步控制台状态。
+func set_credit(value: int) -> void:
+	WorkdayState.political_credit = clampi(value, -9999, 9999)
+	credit_selector.value = WorkdayState.political_credit
+	append_output("Credit 已设置为 %d" % WorkdayState.political_credit)
+	refresh_status()
+
+
+# 在现有政治信用基础上增减指定数值。
+func adjust_credit(delta: int) -> void:
+	set_credit(WorkdayState.political_credit + delta)
 
 
 # 启动选中的关卡，成功后切换到主工作台场景。
@@ -514,7 +556,7 @@ func execute_command(command: String) -> void:
 	match parts[0].to_lower():
 		"help":
 			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
-			append_output("level <id> [seed] | config reload | queue | npc state | npc skip | report fill | day next | state | clear")
+			append_output("level <id> [seed] | credit set <值> | credit add <增量> | config reload | queue | npc state | npc skip | report fill | day next | state | clear")
 			append_output("glass test")
 		"scene":
 			if parts.size() < 2:
@@ -549,6 +591,15 @@ func execute_command(command: String) -> void:
 				next_day()
 			else:
 				append_output("用法：day next")
+		"credit":
+			if parts.size() < 3 or not parts[2].is_valid_int():
+				append_output("用法：credit set <值> | credit add <增量>")
+			elif parts[1].to_lower() == "set":
+				set_credit(int(parts[2]))
+			elif parts[1].to_lower() == "add":
+				adjust_credit(int(parts[2]))
+			else:
+				append_output("用法：credit set <值> | credit add <增量>")
 		"level":
 			if parts.size() < 2:
 				append_output("用法：level <level_id> [seed]")

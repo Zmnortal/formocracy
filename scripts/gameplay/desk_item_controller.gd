@@ -9,7 +9,8 @@ const DESK_LEFT := DeskGeometry.BOUNDS_LEFT
 const DESK_RIGHT := DeskGeometry.BOUNDS_RIGHT
 const DESK_FLOOR_Y := DeskGeometry.BOUNDS_FLOOR
 const RESTING_LAYER_BASE := 8
-const HELD_LAYER := 80
+const HELD_LAYER := 999
+const RESTING_LAYER_LIMIT := HELD_LAYER - 1
 const LANDING_DEPTH_RANDOMNESS := 0.68
 const IN_PLACE_SETTLE_DURATION := 0.12
 
@@ -18,6 +19,7 @@ var items: Dictionary = {}
 var next_resting_layer := RESTING_LAYER_BASE
 var drop_sequence := 0
 var active_item: Control
+var focused_item: Control
 
 
 # 初始化桌面物品控制器。
@@ -57,10 +59,11 @@ func register_item(
 	var saved: Dictionary = _manager().get_desk_item_layout(item_id)
 	if not saved.is_empty():
 		item.position = _vector_from_value(saved.get("position", item.position), item.position)
-		item.z_index = WorkdayContext.read_int(saved, "layer", next_resting_layer)
+		item.z_index = mini(WorkdayContext.read_int(saved, "layer", next_resting_layer), HELD_LAYER)
 	else:
-		item.z_index = maxi(item.z_index, next_resting_layer)
-	next_resting_layer = maxi(next_resting_layer + 1, item.z_index + 1)
+		item.z_index = mini(maxi(item.z_index, next_resting_layer), RESTING_LAYER_LIMIT)
+	next_resting_layer = mini(maxi(next_resting_layer + 1, item.z_index + 1), RESTING_LAYER_LIMIT)
+	item.set_meta("desk_resting_layer", item.z_index)
 	item.gui_input.connect(_on_item_input.bind(item))
 
 
@@ -69,6 +72,8 @@ func unregister_item(item_id: String) -> void:
 	var removed: Variant = items.get(item_id)
 	if not is_instance_valid(active_item) or (is_instance_valid(removed) and removed == active_item):
 		active_item = null
+	if not is_instance_valid(focused_item) or (is_instance_valid(removed) and removed == focused_item):
+		focused_item = null
 	items.erase(item_id)
 
 
@@ -109,6 +114,7 @@ func _begin_press(item: Control, local_position: Vector2) -> void:
 	if is_instance_valid(active_tween):
 		active_tween.kill()
 	item.remove_meta("desk_motion_tween")
+	_focus_item(item)
 	item.set_meta("desk_pressed", true)
 	item.set_meta("desk_dragging", false)
 	item.set_meta("desk_press_position", local_position)
@@ -127,7 +133,6 @@ func _move_pressed_item(item: Control, event: InputEventMouseMotion) -> void:
 		return
 	if not dragging:
 		item.set_meta("desk_dragging", true)
-		item.z_index = HELD_LAYER
 		_cursor().call("begin_drag", item)
 
 	var previous_position := item.position
@@ -206,6 +211,54 @@ func _anchor_grab_point(item: Control, grab_local_position: Vector2, pointer_glo
 	item.position += parent_inverse * pointer_global - parent_inverse * anchored_global
 
 
+# 将当前按下物件提升到 999；其余物件保持原相对顺序并依次排列为 998、997……
+func _focus_item(item: Control) -> void:
+	var ordered_items := _stack_items_except(item)
+	focused_item = item
+	item.z_index = HELD_LAYER
+	item.set_meta("desk_resting_layer", HELD_LAYER)
+	_persist_item_layer(item, HELD_LAYER)
+	var layer := RESTING_LAYER_LIMIT
+	for candidate: Control in ordered_items:
+		var stack_layer := maxi(layer, RESTING_LAYER_BASE)
+		candidate.z_index = stack_layer
+		candidate.set_meta("desk_resting_layer", stack_layer)
+		_persist_item_layer(candidate, stack_layer)
+		layer -= 1
+
+
+# 供文件展开等程序化交互使用，与鼠标按下共享同一套桌面排名算法。
+func focus_item(item: Control) -> void:
+	if not is_instance_valid(item):
+		return
+	_focus_item(item)
+
+
+# 返回除当前选中项外的桌面堆栈，并保持它们原有的前后顺序。
+func _stack_items_except(selected_item: Control) -> Array[Control]:
+	var ordered_items: Array[Control] = []
+	for value: Variant in items.values():
+		if is_instance_valid(value) and value is Control and value != selected_item:
+			ordered_items.append(value)
+	ordered_items.sort_custom(
+		func(left: Control, right: Control) -> bool:
+			var left_layer := _effective_z_index(left)
+			var right_layer := _effective_z_index(right)
+			if left_layer != right_layer:
+				return left_layer > right_layer
+			return left.is_greater_than(right)
+	)
+	return ordered_items
+
+
+# 保存单个道具当前的稳定堆栈层级。
+func _persist_item_layer(item: Control, layer: int) -> void:
+	var item_id := WorkdayContext.stringify_value(item.get_meta("desk_item_id", ""))
+	if item_id.is_empty():
+		return
+	_manager().set_desk_item_layout(item_id, item.position, layer)
+
+
 # 释放时判断是点击还是拖拽结束，触发相应回调。
 func _end_press(item: Control) -> void:
 	if not _read_meta_bool(item, "desk_pressed"):
@@ -263,6 +316,13 @@ func _drop_to_desk(item: Control) -> void:
 	_finalize_settle(item)
 
 
+# 让特殊交互完成后的桌面实体重新进入统一落桌物理。
+func drop_item(item: Control) -> void:
+	if not is_instance_valid(item):
+		return
+	_drop_to_desk(item)
+
+
 # 判断物件完整视觉矩形是否已经处于桌面可放置区域内。
 func _is_fully_inside_desk(position: Vector2, visual_size: Vector2) -> bool:
 	var top_y := position.y
@@ -313,13 +373,12 @@ func _horizontal_limits(target_y: float, visual_size: Vector2) -> Vector2:
 	return Vector2(minimum_x, maximum_x)
 
 
-# 完成一次落桌：更新层级、保存布局、播放反馈并触发物件回调。
+# 完成一次落桌：只保存位置，不改变点击时已经确定的相对堆栈层级。
 func _finalize_settle(item: Control) -> void:
 	item.remove_meta("desk_motion_tween")
-	item.z_index = next_resting_layer
-	next_resting_layer += 1
-	var item_id := WorkdayContext.stringify_value(item.get_meta("desk_item_id", ""))
-	_manager().set_desk_item_layout(item_id, item.position, item.z_index)
+	var stack_layer := item.z_index
+	item.set_meta("desk_resting_layer", stack_layer)
+	_persist_item_layer(item, stack_layer)
 	_sfx().call("play", "ui_click")
 	var callback: Callable = item.get_meta("desk_on_settled", Callable())
 	if callback.is_valid():
