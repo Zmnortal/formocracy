@@ -65,14 +65,8 @@ func _assert_scene(path: String, expected_name: String, expected_proprietor: Str
 	assert(scene.right_actions.get_child_count() > 0, "scene must expose right-side actions")
 	var left_item = scene.left_actions.get_child(0)
 	var right_item = scene.right_actions.get_child(0)
-	assert(left_item.get_node_or_null("PaperTag") != null, "left action must include a paper explanation tag")
-	assert(right_item.get_node_or_null("PaperTag") != null, "right action must include a paper explanation tag")
-	assert(
-		left_item.get_node("PaperTag").get_meta("shown_position").x > left_item.get_node("PaperTag").position.x,
-		"left paper tag must slide inward from behind its button",
-	)
-	assert(
-		right_item.get_node("PaperTag").get_meta("shown_position").x < right_item.get_node("PaperTag").position.x,
-		"right paper tag must slide inward from behind its button",
-	)
+	assert(left_item.get_node_or_null("PaperTag") == null, "left action hover must not create a sliding paper tag")
+	assert(right_item.get_node_or_null("PaperTag") == null, "right action hover must not create a sliding paper tag")
+	assert(left_item.get_node("ActionButton").get_theme_stylebox("hover") is StyleBoxTexture, "left action must retain a normal button hover style")
+	assert(right_item.get_node("ActionButton").get_theme_stylebox("hover") is StyleBoxTexture, "right action must retain a normal button hover style")
 	assert(scene.dialogue_box.visible, "scene must open with proprietor dialogue")

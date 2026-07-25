@@ -118,7 +118,6 @@ func _build_scene() -> void:
 func _build_actions() -> void:
 	for action in actions:
 		var side := String(action.get("side", "left"))
-		var direction := -1 if side == "right" else 1
 		var item := Control.new()
 		item.name = "ActionItem"
 		item.custom_minimum_size = Vector2(280, 52)
@@ -126,12 +125,6 @@ func _build_actions() -> void:
 		var button := _make_button(String(action.get("label", "未命名操作")))
 		button.name = "ActionButton"
 		button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		_attach_paper_tag(
-			button,
-			item,
-			String(action.get("description", "按下后办理这项事务")),
-			direction
-		)
 		item.add_child(button)
 		var action_id := String(action.get("id", ""))
 		button.pressed.connect(func(): _handle_action(action_id))
@@ -173,51 +166,6 @@ func _make_button(text_value: String) -> Button:
 	return button
 
 
-func _attach_paper_tag(button: Button, host: Control, description: String, direction: int) -> void:
-	if description.is_empty():
-		return
-
-	var tag := PanelContainer.new()
-	tag.name = "PaperTag"
-	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tag.custom_minimum_size = Vector2(190, 42)
-	tag.size = Vector2(190, 42)
-
-	var paper := StyleBoxFlat.new()
-	paper.bg_color = Color("d8cfad")
-	paper.border_color = Color("817858")
-	paper.set_border_width_all(2)
-	paper.corner_radius_top_left = 2
-	paper.corner_radius_top_right = 2
-	paper.corner_radius_bottom_left = 2
-	paper.corner_radius_bottom_right = 2
-	paper.shadow_color = Color(0.02, 0.025, 0.02, 0.42)
-	paper.shadow_size = 4
-	paper.content_margin_left = 12
-	paper.content_margin_right = 12
-	paper.content_margin_top = 7
-	paper.content_margin_bottom = 6
-	tag.add_theme_stylebox_override("panel", paper)
-
-	var note := Label.new()
-	note.text = description
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	note.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	note.add_theme_font_override("font", UI.PIXEL_FONT)
-	note.add_theme_font_size_override("font_size", 11)
-	note.add_theme_color_override("font_color", Color("393a30"))
-	tag.add_child(note)
-
-	var hidden_x := 82.0 if direction > 0 else 8.0
-	var shown_x := 268.0 if direction > 0 else -178.0
-	tag.position = Vector2(hidden_x, 5)
-	tag.modulate = Color(0.82, 0.8, 0.68, 0.0)
-	tag.set_meta("hidden_position", Vector2(hidden_x, 5))
-	tag.set_meta("shown_position", Vector2(shown_x, 5))
-	button.set_meta("paper_tag", tag)
-	host.add_child(tag)
-
-
 func _make_button_style(texture: Texture2D, pressed_offset := 0.0) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = texture
@@ -241,19 +189,6 @@ func _animate_button(button: Button, hovered: bool) -> void:
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", Vector2(1.012, 1.012) if hovered else Vector2.ONE, 0.08)
-	if not button.has_meta("paper_tag"):
-		return
-	var tag := button.get_meta("paper_tag") as PanelContainer
-	var destination: Vector2 = tag.get_meta("shown_position") if hovered else tag.get_meta("hidden_position")
-	var tag_tween := create_tween().set_parallel(true)
-	tag_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tag_tween.tween_property(tag, "position", destination, 0.16 if hovered else 0.12)
-	tag_tween.tween_property(
-		tag,
-		"modulate",
-		Color(1, 1, 1, 1) if hovered else Color(0.82, 0.8, 0.68, 0.0),
-		0.11
-	)
 
 
 func _make_label(text_value: String, font_size: int, color: Color) -> Label:
