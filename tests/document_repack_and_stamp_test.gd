@@ -58,7 +58,7 @@ func run() -> void:
 	assert(WorkdayContext.to_bool(presenter.envelope_outline_material.get_shader_parameter("outline_enabled")), "the envelope outline shader must receive the valid-drop state")
 	assert(presenter.envelope_repack_outline.visible, "the valid pocket target must draw a visible white frame around the full envelope")
 	assert(
-		Rect2(presenter.envelope_repack_outline.position, presenter.envelope_repack_outline.size) == WorkbenchCasePresenter.ENVELOPE_VISIBLE_BOUNDS,
+		Rect2(presenter.envelope_repack_outline.position, presenter.envelope_repack_outline.size) == Rect2(82, 30, 348, 559),
 		"the white target frame must follow the visible envelope silhouette bounds"
 	)
 	var repack_outline_style := presenter.envelope_repack_outline.get_theme_stylebox("panel") as StyleBoxFlat
