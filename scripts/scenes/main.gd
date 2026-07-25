@@ -15,6 +15,12 @@ func _process(delta: float) -> void:
 		manager.process(delta)
 
 
+# 把未命中任何交互控件的点击交给工作台，用于收起文件袋或立起文件。
+func _unhandled_input(event: InputEvent) -> void:
+	if manager != null:
+		manager.handle_unhandled_input(event)
+
+
 func _exit_tree() -> void:
 	if manager != null:
 		manager.shutdown()

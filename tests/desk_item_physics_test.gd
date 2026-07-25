@@ -27,6 +27,17 @@ func run() -> void:
 	assert(click_count[0] == 1, "a stationary press must remain a click")
 
 	controller._begin_press(item, Vector2(10, 10))
+	var direct_drag := InputEventMouseMotion.new()
+	direct_drag.position = Vector2(90, 90)
+	direct_drag.relative = Vector2(1, 1)
+	direct_drag.global_position = scene_root.to_global(Vector2(530, 510))
+	controller._move_pressed_item(item, direct_drag)
+	var anchored_pointer := item.get_global_transform() * Vector2(10, 10)
+	assert(anchored_pointer.is_equal_approx(direct_drag.global_position), "the original grab point must track the absolute pointer one-to-one through drag transforms")
+	controller._end_press(item)
+	await create_timer(0.25).timeout
+
+	controller._begin_press(item, Vector2(10, 10))
 	item.set_meta("desk_dragging", true)
 	item.position = Vector2(1500, 80)
 	item.set_meta("desk_last_motion", Vector2(20, -4))
@@ -43,7 +54,7 @@ func run() -> void:
 	assert(manager.get_desk_item_layout("physics_test_item").has("position"), "resting layout must persist")
 
 	var in_bounds_item := Control.new()
-	in_bounds_item.position = Vector2(360, 535)
+	in_bounds_item.position = Vector2(360, DeskGeometry.BOUNDS_TOP + 20)
 	in_bounds_item.size = Vector2(70, 44)
 	scene_root.add_child(in_bounds_item)
 	controller.register_item(in_bounds_item, "in_bounds_item")
@@ -62,6 +73,41 @@ func run() -> void:
 	controller.unregister_item("physics_test_item")
 	controller.register_item(restored, "physics_test_item")
 	assert(restored.position.is_equal_approx(item.position), "registered item must restore its saved layout")
+
+	var guarded_item := Control.new()
+	guarded_item.position = Vector2(520, 520)
+	guarded_item.size = Vector2(80, 60)
+	scene_root.add_child(guarded_item)
+	controller.register_item(guarded_item, "guarded_item", Callable(), Callable(), Callable(), Callable(), func(_item: Control, _local_position: Vector2): return false)
+	controller._begin_press(guarded_item, Vector2(12, 12))
+	assert(not WorkdayContext.to_bool(guarded_item.get_meta("desk_pressed")), "an interaction guard must prevent a covered item from starting a drag")
+
+	var back_item := Control.new()
+	back_item.position = Vector2(620, 180)
+	back_item.size = Vector2(120, 100)
+	scene_root.add_child(back_item)
+	controller.register_item(back_item, "overlap_back")
+	var front_item := Control.new()
+	front_item.position = back_item.position
+	front_item.size = back_item.size
+	scene_root.add_child(front_item)
+	controller.register_item(front_item, "overlap_front")
+	back_item.z_index = 30
+	front_item.z_index = 40
+	var overlap_press := InputEventMouseButton.new()
+	overlap_press.button_index = MOUSE_BUTTON_LEFT
+	overlap_press.pressed = true
+	overlap_press.global_position = scene_root.to_global(back_item.position + Vector2(24, 24))
+	overlap_press.position = Vector2(24, 24)
+	controller._on_item_input(overlap_press, back_item)
+	assert(not WorkdayContext.to_bool(back_item.get_meta("desk_pressed")), "a visually covered item must never capture the press")
+	assert(WorkdayContext.to_bool(front_item.get_meta("desk_pressed")), "the frontmost visible item must receive a press even when the event reached a lower control")
+	var overlap_release := InputEventMouseButton.new()
+	overlap_release.button_index = MOUSE_BUTTON_LEFT
+	overlap_release.pressed = false
+	overlap_release.global_position = overlap_press.global_position
+	controller._on_item_input(overlap_release, back_item)
+	assert(not WorkdayContext.to_bool(front_item.get_meta("desk_pressed")), "release must finish the item selected by the centralized frontmost resolver")
 
 	print("FORMOCRACY_DESK_ITEM_PHYSICS_TEST_OK")
 	quit(0)

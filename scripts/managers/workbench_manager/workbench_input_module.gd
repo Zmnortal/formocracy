@@ -41,7 +41,8 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 				presenter.open_document.bind(document.document_id),
 				_on_document_drag_motion.bind(presenter),
 				_on_document_settled.bind(presenter),
-				_prepare_document_drop.bind(presenter)
+				_prepare_document_drop.bind(presenter),
+				_can_begin_document_interaction.bind(presenter)
 			)
 		else:
 			if document.document_id == presenter.primary_document_id:
@@ -62,18 +63,23 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 
 # 表单落定后若覆盖在打开的文件袋上则装袋。
 func _on_form_settled(item: Control, presenter: WorkbenchCasePresenter) -> void:
+	presenter._set_repack_preview(false)
 	if _is_over_open_envelope(item, presenter):
 		presenter.pack_document(presenter.primary_document_id)
 
 
 # 材料落定后若覆盖在打开的文件袋上则装袋。
 func _on_document_settled(item: Control, presenter: WorkbenchCasePresenter) -> void:
+	presenter._set_repack_preview(false)
 	if _is_over_open_envelope(item, presenter):
 		presenter.pack_document(WorkdayContext.stringify_value(item.get_meta("document_id")))
 
 
 # 文件向下进入桌面区域时立即切换为较小的平躺纸张比例。
 func _on_document_drag_motion(item: Control, presenter: WorkbenchCasePresenter) -> void:
+	var entered_repack_zone := _is_over_open_envelope(item, presenter)
+	presenter._set_repack_preview(entered_repack_zone)
+	CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered_repack_zone else CursorManager.Cursor.GRABBING)
 	if WorkdayContext.stringify_value(item.get_meta("document_state", "BAG")) != "INSPECTION":
 		return
 	var visual_center_y := item.position.y + item.size.y * absf(item.scale.y) * 0.5
@@ -84,11 +90,23 @@ func _on_document_drag_motion(item: Control, presenter: WorkbenchCasePresenter) 
 # 释放文件前先确定语义：进入袋口则装袋，否则转换为桌面纸张再执行落桌物理。
 func _prepare_document_drop(item: Control, presenter: WorkbenchCasePresenter) -> void:
 	var document_id := WorkdayContext.stringify_value(item.get_meta("document_id"))
-	if _is_over_open_envelope(item, presenter):
+	var entered_repack_zone := _is_over_open_envelope(item, presenter)
+	presenter._set_repack_preview(false)
+	if entered_repack_zone:
 		item.set_meta("desk_skip_drop_once", true)
 		presenter.pack_document(document_id)
 		return
+	if WorkdayContext.stringify_value(item.get_meta("document_state", "BAG")) == "INSPECTION":
+		item.set_meta("desk_skip_drop_once", true)
+		presenter._settle_inspection_document(document_id)
+		return
 	presenter.place_document_on_desk(document_id)
+
+
+# 重叠文件只允许当前指针位置最高显示层的那一份开始交互。
+func _can_begin_document_interaction(item: Control, local_position: Vector2, presenter: WorkbenchCasePresenter) -> bool:
+	var pointer_global := item.get_global_transform() * local_position
+	return presenter.find_document_at_global(pointer_global) == item
 
 
 # 拖动文件袋时检测是否进入归档区并切换预览状态。
@@ -149,6 +167,7 @@ func _on_form_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> voi
 		else:
 			form_dragging = false
 			CursorManager.end_drag()
+			presenter._set_repack_preview(false)
 			presenter.form.z_index = 5
 			var base_scale := _read_meta_vector(presenter.form, "desk_base_scale", presenter.form.scale)
 			var tween := root.create_tween().set_parallel(true)
@@ -159,7 +178,9 @@ func _on_form_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> voi
 	elif event is InputEventMouseMotion and form_dragging:
 		var mouse_motion: InputEventMouseMotion = event
 		presenter.form.position += mouse_motion.relative * drag_response_multiplier
-		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if _is_over_open_envelope(presenter.form, presenter) else CursorManager.Cursor.GRABBING)
+		var entered_repack_zone := _is_over_open_envelope(presenter.form, presenter)
+		presenter._set_repack_preview(entered_repack_zone)
+		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered_repack_zone else CursorManager.Cursor.GRABBING)
 
 
 # 文件袋的拖拽、放置到工作台与送交验收槽处理。
@@ -237,24 +258,23 @@ func _on_document_input(event: InputEvent, document: Panel, presenter: Workbench
 		else:
 			document.z_index = 8
 			CursorManager.end_drag()
+			presenter._set_repack_preview(false)
 			if _is_over_open_envelope(document, presenter):
 				presenter.pack_document(WorkdayContext.stringify_value(document.get_meta("document_id")))
 	elif event is InputEventMouseMotion and WorkdayContext.to_bool(document.get_meta("dragging")):
 		var mouse_motion: InputEventMouseMotion = event
 		document.position += mouse_motion.relative * drag_response_multiplier
-		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if _is_over_open_envelope(document, presenter) else CursorManager.Cursor.GRABBING)
+		var entered_repack_zone := _is_over_open_envelope(document, presenter)
+		presenter._set_repack_preview(entered_repack_zone)
+		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered_repack_zone else CursorManager.Cursor.GRABBING)
 
 
 # 判断物件是否覆盖在已打开且可见的文件袋上。
 func _is_over_open_envelope(item: Control, presenter: WorkbenchCasePresenter) -> bool:
 	if not presenter.envelope_opened or not presenter.envelope_billboard_expanded:
 		return false
-	if not is_instance_valid(presenter.thumbnail_tray) or not presenter.thumbnail_tray.visible:
-		return false
 	var item_center := item.get_global_transform() * (item.size * 0.5)
-	var tray_center := presenter.thumbnail_tray.get_global_transform() * (presenter.thumbnail_tray.size * 0.5)
-	var tray_half_size := presenter.thumbnail_tray.size * presenter.thumbnail_tray.get_global_transform().get_scale().abs() * 0.5
-	return Rect2(tray_center - tray_half_size, tray_half_size * 2.0).has_point(item_center)
+	return presenter._is_global_point_in_repack_zone(item_center)
 
 
 # 从物品元数据安全读取 Vector2。

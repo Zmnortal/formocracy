@@ -37,7 +37,10 @@ func run() -> void:
 	)
 	assert(DeskGeometry.BOUNDS_FLOOR == DeskGeometry.DESIGN_HEIGHT, "DeskBounds floor must stay attached to the game canvas bottom edge")
 	assert(desk.has_node("FilingCabinet") and desk.has_node("NumberMachine") and desk.has_node("WallCalendar"), "office props must remain independent scene nodes")
-	assert(desk.has_node("ServiceRailingForeground") and desk.has_node("WorktableForeground"), "railing and worktable must be independent foreground layers")
+	assert(
+		desk.has_node("ServiceWindowForeground") and desk.has_node("ServiceWindowGlass") and desk.has_node("WorktableForeground"),
+		"service window, glass, and worktable must be independent foreground layers"
+	)
 	var worktable := desk.get_node("WorktableForeground") as TextureRect
 	var desk_bounds := desk.get_node("DeskBounds") as Control
 	assert(worktable.position == Vector2(DeskGeometry.visual_left(), DeskGeometry.TOP), "negative desk inset must expand the visual draw bounds")
@@ -50,9 +53,11 @@ func run() -> void:
 	var worktable_material := worktable.material as ShaderMaterial
 	assert(is_zero_approx(WorkdayContext.to_float(worktable_material.get_shader_parameter("top_inset"))), "the widest desk edge must touch the expanded draw bounds")
 	assert(WorkdayContext.to_float(worktable_material.get_shader_parameter("bottom_inset")) > 0.0, "the narrower edge must retain an inset inside the expanded bounds")
-	var service_railing := desk.get_node("ServiceRailingForeground") as CanvasItem
-	assert(service_railing.z_index > manager.npc_performance.actor_layer.z_index, "NPC must render behind the service railing")
-	assert(manager.desk.npc_panel.z_index >= 0 and manager.presenter.envelope.z_index > background.z_index, "interactive queue and envelope must render over the background")
+	var service_window := desk.get_node("ServiceWindowForeground") as CanvasItem
+	var service_glass := desk.get_node("ServiceWindowGlass") as CanvasItem
+	assert(service_window.z_index > manager.npc_performance.actor_layer.z_index, "NPC must render behind the service-window frame")
+	assert(service_glass.z_index > manager.npc_performance.actor_layer.z_index, "NPC must render behind the protective glass tint")
+	assert(manager.npc_performance.actor_layer.z_index >= 0 and manager.presenter.envelope.z_index > background.z_index, "interactive NPCs and envelope must render over the background")
 	var presenter: Variant = manager.presenter
 	assert(not presenter.envelope_opened, "delivered envelope must start sealed")
 	presenter.set_envelope_on_desk(true)
@@ -64,6 +69,7 @@ func run() -> void:
 	assert(presenter.envelope_billboard_expanded, "clicking the desk envelope must expand the billboard inspection layer")
 	assert(presenter.envelope.size == Vector2(500, 620), "billboard envelope must occupy the configured large inspection area")
 	assert(presenter.envelope.z_index > manager.npc_performance.actor_layer.z_index, "billboard envelope must cover the NPC layer")
+	assert(presenter.envelope.mouse_filter == Control.MOUSE_FILTER_IGNORE, "expanded envelope body must not block documents or desk tools")
 	assert(presenter.envelope_flap.visible and presenter.envelope_flap.position.y < 40, "the only opening hit area must cover the upper ring and flap")
 	assert(presenter.envelope_flap.text.is_empty(), "the envelope must not use a bottom open button")
 	presenter.envelope_flap.emit_signal("button_down")
@@ -83,23 +89,60 @@ func run() -> void:
 	await create_timer(0.3).timeout
 	assert(presenter.form.visible and supporting_document.visible, "thumbnail selection must allow multiple documents to stay expanded")
 	assert(not primary_preview.visible, "extracting a real document must remove its pocket preview")
+	var supporting_home: Vector2 = supporting_document.position
+	supporting_document.position = presenter.form.position
+	supporting_document.scale = presenter.form.scale
+	presenter.bring_document_to_front(supporting_document.document_id)
+	manager.desk_items._begin_press(presenter.form, Vector2(10, 10))
+	assert(not WorkdayContext.to_bool(presenter.form.get_meta("desk_pressed")), "a covered document must not begin interacting through the top sheet")
+	manager.desk_items._begin_press(supporting_document, Vector2(10, 10))
+	assert(WorkdayContext.to_bool(supporting_document.get_meta("desk_pressed")), "only the topmost overlapping document may begin interacting")
+	manager.desk_items._end_press(supporting_document)
+	supporting_document.position = supporting_home
 	assert(presenter.inspection_dismiss_layer.visible, "expanded envelope must expose a dismiss layer below inspection items")
+	assert(presenter.inspection_dismiss_layer.mouse_filter == Control.MOUSE_FILTER_IGNORE, "inspection dismiss handling must not block documents or desk tools")
+	for child: Node in presenter.form.get_children():
+		if child is Label:
+			assert((child as Label).mouse_filter == Control.MOUSE_FILTER_IGNORE, "document display labels must pass drag input to the document panel")
+	var document_probe := InputEventMouseMotion.new()
+	document_probe.position = presenter.form.get_global_transform() * Vector2(8, 8)
+	Input.parse_input_event(document_probe)
+	await process_frame
+	assert(desk.get_viewport().gui_get_hovered_control() == presenter.form, "real GUI hit testing must reach the expanded document instead of a transparent blocker")
+	var approve_stamp := manager.stamp.stamp_tools[0] as Control
+	var stamp_probe := InputEventMouseMotion.new()
+	stamp_probe.position = approve_stamp.get_global_rect().get_center()
+	Input.parse_input_event(stamp_probe)
+	await process_frame
+	assert(desk.get_viewport().gui_get_hovered_control() == approve_stamp, "expanded inspection layers must not block the stamp tools")
 	var outside_click := InputEventMouseButton.new()
 	outside_click.button_index = MOUSE_BUTTON_LEFT
 	outside_click.pressed = true
-	presenter._on_inspection_dismiss_input(outside_click)
+	manager.handle_unhandled_input(outside_click)
 	await create_timer(0.3).timeout
 	assert(not presenter.envelope_billboard_expanded, "clicking outside the envelope must collapse it to the desk")
+	assert(presenter.envelope.mouse_filter == Control.MOUSE_FILTER_STOP, "desk-flat envelope must recover its own click and drag input")
 	assert(presenter.form.visible and supporting_document.visible, "collapsing the envelope must leave extracted documents available")
 	manager.desk_items._begin_press(presenter.envelope, Vector2(10, 10))
 	manager.desk_items._end_press(presenter.envelope)
 	await create_timer(0.3).timeout
 	assert(presenter.envelope_billboard_expanded and presenter.thumbnail_tray.visible, "an opened envelope must be expandable again without losing its contents")
+	for document: DocumentView in presenter.all_document_views:
+		if WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) == "BAG":
+			var preview := presenter.thumbnail_by_id[document.document_id] as Button
+			preview.emit_signal("pressed")
+	await create_timer(0.3).timeout
+	assert(presenter.thumbnail_tray.visible, "an emptied open envelope must retain its transparent repacking target")
+	for thumbnail_value: Variant in presenter.thumbnail_by_id.values():
+		var thumbnail := thumbnail_value as Button
+		assert(not thumbnail.visible, "an extracted document must no longer leave a fake preview inside the envelope")
 
 	manager.desk_items._begin_press(presenter.form, Vector2(10, 10))
 	var downward_drag := InputEventMouseMotion.new()
 	downward_drag.position = Vector2(10, 390)
 	downward_drag.relative = Vector2(0, 320)
+	var desired_document_position := Vector2(presenter.form.position.x, DeskGeometry.BOUNDS_TOP + 20)
+	downward_drag.global_position = desk.to_global(desired_document_position + Vector2(10, 10))
 	manager.desk_items._move_pressed_item(presenter.form, downward_drag)
 	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "DESK", "dragging an inspection document down must convert it into a desk paper")
 	assert(_meta_vector(presenter.form, "desk_base_scale") == presenter.DOCUMENT_DESK_SCALE, "desk paper must use the compact foreshortened scale")
@@ -116,7 +159,7 @@ func run() -> void:
 	await create_timer(0.25).timeout
 	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "INSPECTION", "clicking a desk paper must raise it into the inspection layer")
 	assert(presenter.form.scale == presenter.DOCUMENT_INSPECTION_SCALE, "raised desk paper must recover its readable inspection scale")
-	presenter._on_inspection_dismiss_input(outside_click)
+	manager.handle_unhandled_input(outside_click)
 	await create_timer(0.25).timeout
 	assert(WorkdayContext.stringify_value(presenter.form.get_meta("document_state")) == "DESK", "clicking outside a raised desk paper must lay it down again")
 	assert(presenter.form.position == desk_home, "lowering a raised paper must preserve its previous desk position")
@@ -124,6 +167,7 @@ func run() -> void:
 	manager.desk_items._end_press(presenter.envelope)
 	await create_timer(0.3).timeout
 
+	assert(presenter.thumbnail_tray.visible, "an empty bag opening must remain available before the first document is returned")
 	var tray_center_global: Vector2 = presenter.thumbnail_tray.get_global_transform() * (presenter.thumbnail_tray.size * 0.5)
 	var tray_center := desk.to_local(tray_center_global)
 	supporting_document.position = tray_center - supporting_document.size * 0.5

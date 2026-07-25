@@ -382,6 +382,132 @@ func run() -> void:
 	for action_name: StringName in tang_animation.sprite_frames.get_animation_names():
 		assert(tang_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Tang Ji animation may exceed the global four FPS style limit")
 
+	var luo_animation = library_script.new()
+	assert(luo_animation.load_animation_table("res://data/animations/person_luo/animation_table.json"), "Luo Yutang's production animation table must load")
+	assert(luo_animation.error_messages.is_empty() and luo_animation.warning_messages.is_empty(), "Luo Yutang's production animation table must resolve every generated frame")
+	assert(luo_animation.character_id == "PERSON-LUO" and not luo_animation.substitute_frames_with_static_actor, "Luo Yutang must use her own generated frames instead of the static placeholder")
+	assert(
+		luo_animation.required_actions == library.required_actions and luo_animation.optional_actions == library.optional_actions and luo_animation.max_unique_pngs == 20,
+		"Luo Yutang must implement the formal eight-core plus three-optional contract"
+	)
+	var luo_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(luo_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Luo Yutang action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = luo_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_luo/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Luo Yutang action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Luo Yutang production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Luo Yutang's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Luo Yutang must leave the golden document bag on the player's desk after delivery")
+			luo_unique_frame_paths[frame_path] = true
+	assert(luo_unique_frame_paths.size() == 20, "Luo Yutang's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_luo_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_luo/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_luo_pngs.append(filename)
+	assert(active_luo_pngs.size() == 20, "Luo Yutang's active animation directory must contain exactly twenty PNG files")
+	for filename in active_luo_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Luo Yutang filename must declare full-body coverage")
+	assert(
+		not luo_animation.has_action("walk_in") and not luo_animation.has_action("arrive") and not luo_animation.has_action("look_aside"),
+		"Luo Yutang must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in luo_animation.sprite_frames.get_animation_names():
+		assert(luo_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Luo Yutang animation may exceed the global four FPS style limit")
+
+	var aunt_zhou_animation = library_script.new()
+	assert(aunt_zhou_animation.load_animation_table("res://data/animations/proprietor_zhou/animation_table.json"), "Aunt Zhou's production animation table must load")
+	assert(aunt_zhou_animation.error_messages.is_empty() and aunt_zhou_animation.warning_messages.is_empty(), "Aunt Zhou's production animation table must resolve every generated frame")
+	assert(
+		aunt_zhou_animation.character_id == "PROPRIETOR-ZHOU" and not aunt_zhou_animation.substitute_frames_with_static_actor,
+		"Aunt Zhou must use her own generated frames instead of the static placeholder"
+	)
+	assert(
+		aunt_zhou_animation.required_actions == library.required_actions and aunt_zhou_animation.optional_actions == library.optional_actions and aunt_zhou_animation.max_unique_pngs == 20,
+		"Aunt Zhou must implement the formal eight-core plus three-optional contract"
+	)
+	var aunt_zhou_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(aunt_zhou_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Aunt Zhou action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = aunt_zhou_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/proprietor_zhou/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Aunt Zhou action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Aunt Zhou production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Aunt Zhou's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Aunt Zhou must leave the golden document bag on the player's desk after delivery")
+			aunt_zhou_unique_frame_paths[frame_path] = true
+	assert(aunt_zhou_unique_frame_paths.size() == 20, "Aunt Zhou's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_aunt_zhou_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/proprietor_zhou/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_aunt_zhou_pngs.append(filename)
+	assert(active_aunt_zhou_pngs.size() == 20, "Aunt Zhou's active animation directory must contain exactly twenty PNG files")
+	for filename in active_aunt_zhou_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Aunt Zhou filename must declare full-body coverage")
+	assert(
+		not aunt_zhou_animation.has_action("walk_in") and not aunt_zhou_animation.has_action("arrive") and not aunt_zhou_animation.has_action("look_aside"),
+		"Aunt Zhou must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in aunt_zhou_animation.sprite_frames.get_animation_names():
+		assert(aunt_zhou_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Aunt Zhou animation may exceed the global four FPS style limit")
+
+	var old_he_animation = library_script.new()
+	assert(old_he_animation.load_animation_table("res://data/animations/proprietor_he/animation_table.json"), "Old He's production animation table must load")
+	assert(old_he_animation.error_messages.is_empty() and old_he_animation.warning_messages.is_empty(), "Old He's production animation table must resolve every generated frame")
+	assert(
+		old_he_animation.character_id == "PROPRIETOR-HE" and not old_he_animation.substitute_frames_with_static_actor,
+		"Old He must use his own generated frames instead of the static placeholder"
+	)
+	assert(
+		old_he_animation.required_actions == library.required_actions and old_he_animation.optional_actions == library.optional_actions and old_he_animation.max_unique_pngs == 20,
+		"Old He must implement the formal eight-core plus three-optional contract"
+	)
+	var old_he_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(old_he_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Old He action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = old_he_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/proprietor_he/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Old He action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Old He production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Old He's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Old He must leave the golden document bag on the player's desk after delivery")
+			old_he_unique_frame_paths[frame_path] = true
+	assert(old_he_unique_frame_paths.size() == 20, "Old He's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_old_he_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/proprietor_he/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_old_he_pngs.append(filename)
+	assert(active_old_he_pngs.size() == 20, "Old He's active animation directory must contain exactly twenty PNG files")
+	for filename in active_old_he_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Old He filename must declare full-body coverage")
+	assert(
+		not old_he_animation.has_action("walk_in") and not old_he_animation.has_action("arrive") and not old_he_animation.has_action("look_aside"),
+		"Old He must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in old_he_animation.sprite_frames.get_animation_names():
+		assert(old_he_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Old He animation may exceed the global four FPS style limit")
+
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(exact.get("kind") == "animation" and exact.get("action") == "blink", "an available requested action must resolve to itself")
 	var emotional: Dictionary = library.resolve_action("unmade_happy_departure")

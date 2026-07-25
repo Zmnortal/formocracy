@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-LUO",
+  "default_animation": "idle",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+  "action_contract": {
+    "required": [
+      "idle",
+      "deliver",
+      "happy_react",
+      "happy_idle",
+      "angry_react",
+      "angry_idle",
+      "walk_out_happy",
+      "walk_out_angry"
+    ],
+    "optional": [
+      "queue_idle",
+      "blink",
+      "nervous"
+    ],
+    "max_unique_pngs": 20
+  },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "charcoal_night_tram_conductor_cap",
+      "charcoal_double_breasted_long_uniform_coat",
+      "coral_orange_collar_and_cuffs",
+      "brown_leather_fare_pouch",
+      "brown_lace_up_work_shoes"
+    ],
+    "delivery_prop_markers": [
+      "golden_ochre_portrait_document_bag",
+      "broad_trapezoid_flap",
+      "two_red_centered_closure_discs",
+      "cream_figure_eight_cord",
+      "reinforced_bottom_corner_seams"
+    ],
+    "note": "所有帧完整保留帽顶、双手、双腿与双鞋。个人票根属于罗雨棠的职业证据，可出现在紧张和驳回动作；金黄封绳文档袋只在 06–08 三张递交帧出现，交付后留在玩家工作台。"
+  },
+  "emotion_fallbacks": {
+    "happy": "happy_idle",
+    "angry": "angry_idle"
+  },
+  "micro_expressions": [
+    {
+      "action": "blink",
+      "weight": 45
+    },
+    {
+      "action": "nervous",
+      "weight": 55
+    }
+  ],
+  "micro_expression_cooldown": [
+    2.2,
+    4.0
+  ],
+  "actions": [
+    {
+      "action": "queue_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/01_queue_idle_neutral_fullbody.png"
+      ]
+    },
+    {
+      "action": "idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "blink",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/03_blink_eyes_closed_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "nervous",
+      "fps": 3,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/04_nervous_count_ticket_stubs_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/05_nervous_hold_hidden_ticket_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "deliver",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/06_deliver_prepare_document_bag_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/07_deliver_offer_document_bag_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/08_deliver_present_document_bag_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_react",
+      "fps": 4,
+      "playback": "ONCE",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/09_approve_surprised_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/10_approve_relief_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/11_approve_warm_smile_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/12_approve_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "happy_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/12_approve_idle_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/11_approve_warm_smile_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_react",
+      "fps": 4,
+      "playback": "HOLD",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/13_reject_smile_fades_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/14_reject_show_ticket_stub_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/15_reject_resolved_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/16_reject_idle_fullbody.png"
+      ]
+    },
+    {
+      "action": "angry_idle",
+      "fps": 2,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/16_reject_idle_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/15_reject_resolved_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_happy",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/17_exit_approved_step_a_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/18_exit_approved_step_b_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/17_exit_approved_step_a_fullbody.png"
+      ]
+    },
+    {
+      "action": "walk_out_angry",
+      "fps": 4,
+      "playback": "LOOP",
+      "frames": [
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/19_exit_rejected_step_a_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/20_exit_rejected_step_b_fullbody.png",
+        "../../../assets/characters/applicants/person_luo/fullbody_frames_20/19_exit_rejected_step_a_fullbody.png"
+      ]
+    }
+  ]
+}

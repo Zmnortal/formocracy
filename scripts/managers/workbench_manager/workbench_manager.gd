@@ -14,6 +14,7 @@ const CallBellModule := preload("res://scripts/managers/workbench_manager/workbe
 const BriefingModule := preload("res://scripts/managers/workbench_manager/workbench_briefing_module.gd")
 const BriefingDirector := preload("res://scripts/managers/workbench_manager/workbench_briefing_director.gd")
 const NpcPerformanceModule := preload("res://scripts/managers/workbench_manager/workbench_npc_performance_module.gd")
+const FilingCabinetModule := preload("res://scripts/managers/workbench_manager/workbench_filing_cabinet_module.gd")
 
 var root: Node2D
 var desk: DeskNodes
@@ -28,6 +29,7 @@ var dialogue_box: DialogueBox
 var call_bell: WorkbenchCallBellModule
 var batch_validation: WorkbenchBatchValidationModule
 var desk_items: DeskItemController
+var filing_cabinet: WorkbenchFilingCabinetModule
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
@@ -46,6 +48,7 @@ func start() -> void:
 	Sfx.start_ambience()
 
 	desk = DeskBuilder.new().build(root)
+	filing_cabinet = FilingCabinetModule.new(root, desk)
 	desk_items = DeskItemController.new(root)
 	presenter = CasePresenterModule.new(root, desk)
 	stamp = StampModule.new(root, desk, presenter, desk_items)
@@ -107,11 +110,22 @@ func process(delta: float) -> void:
 			desk.status_label.text = "工作时间结束：完成当前案件后停止接待。"
 
 
+# 仅处理没有被文件或桌面工具消费的点击，用于关闭查验层且不抢占其他交互。
+func handle_unhandled_input(event: InputEvent) -> void:
+	if filing_cabinet != null and filing_cabinet.handle_unhandled_input(event):
+		return
+	if presenter == null:
+		return
+	presenter.handle_unhandled_input(event)
+
+
 # 释放工作台功能域持有的输入、语音和环境音资源。
 func shutdown() -> void:
 	if root == null:
 		return
 	CursorManager.reset()
+	if filing_cabinet != null:
+		filing_cabinet.shutdown()
 	if npc_performance != null:
 		npc_performance.shutdown()
 	if briefing != null:
@@ -132,6 +146,7 @@ func shutdown() -> void:
 	dialogue_box = null
 	call_bell = null
 	batch_validation = null
+	filing_cabinet = null
 	desk_items = null
 	desk = null
 	root = null

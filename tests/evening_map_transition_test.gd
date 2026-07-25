@@ -35,9 +35,15 @@ func run() -> void:
 	report.confirm_button.pressed.emit()
 	await process_frame
 	await process_frame
-	assert(current_scene != null and current_scene.name == "EveningMap", "confirming report must enter evening map")
-	assert(state.day_number == 3, "entering map must not advance the day")
-	assert(state.records.size() == 1, "entering map must preserve current-day records")
+	assert(current_scene != null and current_scene.name == "AfterWorkCorridor", "confirming report must enter the after-work corridor")
+	assert(state.day_number == 3, "entering corridor must not advance the day")
+	assert(state.records.size() == 1, "entering corridor must preserve current-day records")
+	current_scene.walk_by(1.0)
+	assert(current_scene.exit_button.visible, "reaching the corridor exit must reveal the leave action")
+	current_scene.leave_corridor()
+	await create_timer(0.5).timeout
+	await process_frame
+	assert(current_scene != null and current_scene.name == "EveningMap", "leaving the corridor must enter evening map")
 	assert(current_scene.day_label.text.contains("03"), "map must show the current workday")
 	assert(current_scene.action_label.text.contains("2 / 2"), "map must expose the evening action budget")
 	print("FORMOCRACY_EVENING_MAP_TRANSITION_TEST_OK")

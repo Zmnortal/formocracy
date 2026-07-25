@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-LUO",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_luo_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "01_idle_nervous_strip.png",
+    "02_deliver_strip.png",
+    "03_approve_strip.png",
+    "04_reject_strip.png",
+    "05_exit_strip.png",
+    "06_exit_passing_correction_strip.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 32,
+    "role": "夜班电车售票员",
+    "palette": "炭灰、珊瑚橙与旧皮革棕",
+    "markers": [
+      "炭灰色售票员圆帽",
+      "炭灰色双排扣长制服",
+      "珊瑚橙领口与袖口",
+      "棕色皮革票款腰包",
+      "棕色系带工作鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "用轻快和机灵维持夜班秩序，空闲时清点旧票根，并把关键票根贴身收好。",
+    "approved": "先短暂惊讶，随后明显松一口气，以真心的温暖笑意收住情绪。",
+    "rejected": "笑意消失后举出票根作为证据，最后安静但不退让地离开。"
+  },
+  "prop_ownership": {
+    "personal_ticket_stubs": "可出现在 04、05、14 等职业或证据动作中。",
+    "golden_document_bag": "只出现在 06–08 递交三帧，交付后不再随人物移动。"
+  }
+}

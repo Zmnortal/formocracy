@@ -47,17 +47,17 @@
   {
     "id":"PERSON-LUO","display_name":"罗雨棠","age":32,"occupation":"夜班电车售票员","citizen_id":"87-140-55","queue_label":"B03",
     "administrative_status":"HC-X","registry":"第九区 / 12-8","actual_residence":"第十二区交通调度室（轮班）","character_color":"e36f59",
-    "actor_texture":"res://assets/characters/dossier/person_luo/concept.png","portrait_texture":"res://assets/characters/dossier/person_luo/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.04,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+    "actor_texture":"res://assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_luo/fullbody_frames_20/02_idle_breath_a_fullbody.png","animation_table":"res://data/animations/person_luo/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":1.04,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
   },
   {
     "id":"PROPRIETOR-ZHOU","display_name":"周姨","age":57,"occupation":"合作供销社表单发行人","citizen_id":"18-509-33","queue_label":"B04",
     "administrative_status":"D12","registry":"第十二区供销社后屋 / 1","actual_residence":"同登记地址","character_color":"d89b38",
-    "actor_texture":"res://assets/characters/dossier/person_zhou_aunt/concept.png","portrait_texture":"res://assets/characters/dossier/person_zhou_aunt/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.88,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
+    "actor_texture":"res://assets/characters/applicants/proprietor_zhou/fullbody_frames_20/02_idle_breath_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/proprietor_zhou/fullbody_frames_20/02_idle_breath_a_fullbody.png","animation_table":"res://data/animations/proprietor_zhou/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":0.88,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
   },
   {
     "id":"PROPRIETOR-HE","display_name":"老赫","age":64,"occupation":"旧照相馆经营者","citizen_id":"09-377-61","queue_label":"B05",
     "administrative_status":"UNK","registry":"旧第二区 / 编码失效","actual_residence":"第十二区废弃照相馆后室","character_color":"932d3e",
-    "actor_texture":"res://assets/characters/dossier/person_old_he/concept.png","portrait_texture":"res://assets/characters/dossier/person_old_he/concept.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.76,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
+    "actor_texture":"res://assets/characters/applicants/proprietor_he/fullbody_frames_20/02_idle_breath_a_fullbody.png","portrait_texture":"res://assets/characters/applicants/proprietor_he/fullbody_frames_20/02_idle_breath_a_fullbody.png","animation_table":"res://data/animations/proprietor_he/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":0.76,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
   },
   {
     "id":"PERSON-FANG","display_name":"方澄","age":31,"occupation":"第五诊疗站登记员","citizen_id":"60-214-79","queue_label":"B06",

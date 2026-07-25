@@ -17,6 +17,7 @@ var root: Node2D
 var items: Dictionary = {}
 var next_resting_layer := RESTING_LAYER_BASE
 var drop_sequence := 0
+var active_item: Control
 
 
 # 初始化桌面物品控制器。
@@ -26,7 +27,13 @@ func _init(owner_root: Node2D) -> void:
 
 # 注册一个可点击、拖拽的桌面实体，恢复其保存的位置与层级。
 func register_item(
-	item: Control, item_id: String, on_click: Callable = Callable(), on_drag_motion: Callable = Callable(), on_settled: Callable = Callable(), on_drop_prepare: Callable = Callable()
+	item: Control,
+	item_id: String,
+	on_click: Callable = Callable(),
+	on_drag_motion: Callable = Callable(),
+	on_settled: Callable = Callable(),
+	on_drop_prepare: Callable = Callable(),
+	can_begin_interaction: Callable = Callable()
 ) -> void:
 	if not is_instance_valid(item) or item_id.is_empty():
 		return
@@ -44,6 +51,7 @@ func register_item(
 	item.set_meta("desk_on_drag_motion", on_drag_motion)
 	item.set_meta("desk_on_settled", on_settled)
 	item.set_meta("desk_on_drop_prepare", on_drop_prepare)
+	item.set_meta("desk_can_begin_interaction", can_begin_interaction)
 	items[item_id] = item
 
 	var saved: Dictionary = _manager().get_desk_item_layout(item_id)
@@ -58,26 +66,42 @@ func register_item(
 
 # 注销指定桌面实体。
 func unregister_item(item_id: String) -> void:
+	var removed: Control = items.get(item_id)
+	if removed == active_item:
+		active_item = null
 	items.erase(item_id)
 
 
-# 分发桌面物品的 GUI 输入事件：按下、移动、释放。
+# 所有 GUI 事件都转发给鼠标位置上实际绘制在最前面的桌面物件。
 func _on_item_input(event: InputEvent, item: Control) -> void:
 	if event is InputEventMouseButton:
 		var mouse_button: InputEventMouseButton = event
 		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
 			return
 		if mouse_button.pressed:
-			_begin_press(item, mouse_button.position)
+			var target := _frontmost_item_at_global(mouse_button.global_position)
+			if not is_instance_valid(target):
+				return
+			var local_position := target.get_global_transform().affine_inverse() * mouse_button.global_position
+			_begin_press(target, local_position)
+			if _read_meta_bool(target, "desk_pressed"):
+				active_item = target
+				if target != item:
+					target.grab_click_focus()
 		else:
-			_end_press(item)
-	elif event is InputEventMouseMotion and _read_meta_bool(item, "desk_pressed"):
+			var target := active_item if is_instance_valid(active_item) else item
+			_end_press(target)
+			active_item = null
+	elif event is InputEventMouseMotion and is_instance_valid(active_item) and _read_meta_bool(active_item, "desk_pressed"):
 		var mouse_motion: InputEventMouseMotion = event
-		_move_pressed_item(item, mouse_motion)
+		_move_pressed_item(active_item, mouse_motion)
 
 
 # 记录按下位置，停止当前补间动画，准备开始拖拽。
 func _begin_press(item: Control, local_position: Vector2) -> void:
+	var interaction_guard: Callable = item.get_meta("desk_can_begin_interaction", Callable())
+	if interaction_guard.is_valid() and not WorkdayContext.to_bool(interaction_guard.call(item, local_position)):
+		return
 	var active_tween: Tween
 	var tween_value: Variant = item.get_meta("desk_motion_tween") if item.has_meta("desk_motion_tween") else null
 	if tween_value is Tween:
@@ -87,31 +111,90 @@ func _begin_press(item: Control, local_position: Vector2) -> void:
 	item.set_meta("desk_pressed", true)
 	item.set_meta("desk_dragging", false)
 	item.set_meta("desk_press_position", local_position)
+	item.set_meta("desk_press_global_position", item.get_global_transform() * local_position)
 	item.set_meta("desk_last_motion", Vector2.ZERO)
+	item.set_meta("desk_grab_local_position", local_position)
 
 
-# 移动被拖拽物品，应用响应倍率、缩放倾斜与拖动回调。
+# 移动被拖拽物品，使用绝对指针坐标保持抓取点贴手，并应用缩放倾斜与拖动回调。
 func _move_pressed_item(item: Control, event: InputEventMouseMotion) -> void:
 	if _read_meta_bool(item, "desk_drag_locked"):
 		return
 	var dragging := _read_meta_bool(item, "desk_dragging")
-	var press_position := _read_meta_vector(item, "desk_press_position", Vector2.ZERO)
-	if not dragging and event.position.distance_to(press_position) < DRAG_THRESHOLD:
+	var press_global_position := _read_meta_vector(item, "desk_press_global_position", event.global_position)
+	if not dragging and event.global_position.distance_to(press_global_position) < DRAG_THRESHOLD:
 		return
 	if not dragging:
 		item.set_meta("desk_dragging", true)
 		item.z_index = HELD_LAYER
 		_cursor().call("begin_drag", item)
 
-	var motion: Vector2 = event.relative * _manager().get_drag_response_multiplier()
-	item.position += motion
-	item.set_meta("desk_last_motion", motion)
+	var previous_position := item.position
 	var base_scale := _read_meta_vector(item, "desk_base_scale", Vector2.ONE)
 	item.scale = base_scale * 1.025
-	item.rotation = clampf(motion.x * 0.0025, -0.07, 0.07)
+	item.rotation = clampf(event.relative.x * 0.0025, -0.07, 0.07)
+	var grab_local_position := _read_meta_vector(item, "desk_grab_local_position", Vector2.ZERO)
+	_anchor_grab_point(item, grab_local_position, event.global_position)
 	var callback: Callable = item.get_meta("desk_on_drag_motion", Callable())
 	if callback.is_valid():
 		callback.call(item)
+		# 回调可能把立起文件切为桌面比例；再次校正，确保缩放切换时抓取点不跳离鼠标。
+		_anchor_grab_point(item, grab_local_position, event.global_position)
+	item.set_meta("desk_last_motion", item.position - previous_position)
+
+
+# 从所有已注册且可见的桌面物件中返回指针命中的最前绘制项。
+func _frontmost_item_at_global(global_point: Vector2) -> Control:
+	var frontmost: Control
+	for value: Variant in items.values():
+		if not value is Control:
+			continue
+		var candidate := value as Control
+		if not _is_pointer_inside_item(candidate, global_point):
+			continue
+		if not is_instance_valid(frontmost) or _is_drawn_in_front_of(candidate, frontmost):
+			frontmost = candidate
+	return frontmost
+
+
+# 使用物件真实变换后的矩形做命中，缩放和旋转不会扩大成错误的轴对齐区域。
+func _is_pointer_inside_item(item: Control, global_point: Vector2) -> bool:
+	if not is_instance_valid(item) or not item.is_visible_in_tree() or item.mouse_filter == Control.MOUSE_FILTER_IGNORE:
+		return false
+	var local_point := item.get_global_transform().affine_inverse() * global_point
+	return Rect2(Vector2.ZERO, item.size).has_point(local_point)
+
+
+# 绘制层级优先；层级相同时，场景树中更靠后的同级节点显示在前面。
+func _is_drawn_in_front_of(candidate: Control, current: Control) -> bool:
+	var candidate_layer := _effective_z_index(candidate)
+	var current_layer := _effective_z_index(current)
+	if candidate_layer != current_layer:
+		return candidate_layer > current_layer
+	return candidate.is_greater_than(current)
+
+
+# 汇总相对父节点的 CanvasItem 层级，得到用于同一画布比较的有效 Z 值。
+func _effective_z_index(item: CanvasItem) -> int:
+	var result := item.z_index
+	var current := item
+	while current.z_as_relative:
+		var parent := current.get_parent() as CanvasItem
+		if not is_instance_valid(parent):
+			break
+		result += parent.z_index
+		current = parent
+	return result
+
+
+# 在物件缩放、旋转或语义状态变化后，让最初抓住的局部点仍精确贴住当前指针。
+func _anchor_grab_point(item: Control, grab_local_position: Vector2, pointer_global: Vector2) -> void:
+	var parent_canvas := item.get_parent() as CanvasItem
+	if not is_instance_valid(parent_canvas):
+		return
+	var parent_inverse := parent_canvas.get_global_transform().affine_inverse()
+	var anchored_global := item.get_global_transform() * grab_local_position
+	item.position += parent_inverse * pointer_global - parent_inverse * anchored_global
 
 
 # 释放时判断是点击还是拖拽结束，触发相应回调。

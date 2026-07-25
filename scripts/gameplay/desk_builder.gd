@@ -9,11 +9,14 @@ const VALIDATION_TEXTURE := preload("res://assets/day1_8bit/interactive/validati
 const FILING_CABINET_CLOSED_TEXTURE := preload("res://assets/office/filing_cabinet/states/00_closed.png")
 const NUMBER_MACHINE_TEXTURE := preload("res://assets/office/items/number_machine.png")
 const CALENDAR_TEXTURE := preload("res://assets/office/items/calendar.png")
-const SERVICE_RAILING_TEXTURE := preload("res://assets/office/foreground/service_railing.png")
+const WALL_CLOCK_TEXTURE := preload("res://assets/office/world_props/wall_clock.png")
+const CLERK_TOOL_CABINET_TEXTURE := preload("res://assets/office/world_props/clerk_tool_cabinet.png")
+const SERVICE_WINDOW_TEXTURE := preload("res://assets/office/service_window/service_window_frame.png")
 const WORKTABLE_TEXTURE := preload("res://assets/office/foreground/worktable.png")
 const ARCHIVE_TRAY_TEXTURE := preload("res://assets/office/interactive/archive_tray.png")
 const ARCHIVE_TRAY_FOREGROUND_TEXTURE := preload("res://assets/office/interactive/archive_tray_foreground.png")
 const DESK_DEFORMATION_SHADER := preload("res://shaders/desk_deformation.gdshader")
+const FILING_CABINET_SCALE := 1.8
 
 
 # 在指定 root 节点下构建工作台，并返回共享的 DeskNodes 引用容器。
@@ -44,15 +47,6 @@ func build(root: Node2D) -> DeskNodes:
 
 	_build_office_props(root, desk)
 	_build_foreground_architecture(root)
-
-	var case_card := Panel.new()
-	case_card.name = "ApplicantCard"
-	case_card.position = Vector2(1030, 305)
-	case_card.size = Vector2(218, 104)
-	case_card.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color(0.045, 0.052, 0.043, 0.92), 3, WorkbenchUI.COLORS.brass, 1))
-	root.add_child(case_card)
-	WorkbenchUI.add_text(case_card, "当前申请人档案", 12, Color("b9aa88"), Vector2(14, 10), Vector2(200, 20))
-	desk.applicant_card_label = WorkbenchUI.add_text(case_card, "", 13, Color("ddd0ac"), Vector2(14, 34), Vector2(190, 62))
 
 	desk.slot = Panel.new()
 	desk.slot.name = "RealityValidationSlot"
@@ -149,24 +143,28 @@ func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_build_filing_cabinet(root, desk)
 	desk.number_machine = _add_prop(root, "NumberMachine", NUMBER_MACHINE_TEXTURE, Vector2(30, 565), Vector2(145, 112), 7)
 	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
+	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), -3)
+	_add_prop(root, "ClerkToolCabinet", CLERK_TOOL_CABINET_TEXTURE, Vector2(1018, 254), Vector2(293, 366), 5)
 
 
 # 使用独立柜体贴图与上下抽屉热区构建左侧文件柜。
 # 512×640 素材四周保留透明安全区，因此绘制矩形会越过画布左边；
-# 实际非透明柜体仍落在原有的 22×315 位置附近。
+# 实际非透明柜体贴住画布左缘，并放在前景桌面上方。
+# 1.8 倍显示时按素材的非透明边界贴住左墙。
 func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
 	desk.filing_cabinet = _add_prop(
 		root,
 		"FilingCabinet",
 		FILING_CABINET_CLOSED_TEXTURE,
-		Vector2(-18, 254),
+		Vector2(-84, 179),
 		Vector2(220, 256),
-		-4,
+		8,
 	)
+	desk.filing_cabinet.scale = Vector2.ONE * FILING_CABINET_SCALE
 
 	desk.filing_cabinet_upper_hit = Button.new()
 	desk.filing_cabinet_upper_hit.name = "UpperDrawerHit"
-	desk.filing_cabinet_upper_hit.position = Vector2(40, 70)
+	desk.filing_cabinet_upper_hit.position = Vector2(40, 79)
 	desk.filing_cabinet_upper_hit.size = Vector2(140, 82)
 	desk.filing_cabinet_upper_hit.flat = true
 	desk.filing_cabinet_upper_hit.focus_mode = Control.FOCUS_NONE
@@ -177,7 +175,7 @@ func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
 
 	desk.filing_cabinet_lower_hit = Button.new()
 	desk.filing_cabinet_lower_hit.name = "LowerDrawerHit"
-	desk.filing_cabinet_lower_hit.position = Vector2(40, 150)
+	desk.filing_cabinet_lower_hit.position = Vector2(40, 159)
 	desk.filing_cabinet_lower_hit.size = Vector2(140, 92)
 	desk.filing_cabinet_lower_hit.flat = true
 	desk.filing_cabinet_lower_hit.focus_mode = Control.FOCUS_NONE
@@ -187,9 +185,17 @@ func _build_filing_cabinet(root: Node2D, desk: DeskNodes) -> void:
 	desk.filing_cabinet.add_child(desk.filing_cabinet_lower_hit)
 
 
-# 构建服务围栏与带梯形形变 Shader 的前景桌面。
+# 构建封闭式服务窗口与带梯形形变 Shader 的前景桌面。
 func _build_foreground_architecture(root: Node2D) -> void:
-	_add_prop(root, "ServiceRailingForeground", SERVICE_RAILING_TEXTURE, Vector2(350, 350), Vector2(580, 148), 3)
+	var glass := ColorRect.new()
+	glass.name = "ServiceWindowGlass"
+	glass.position = Vector2(362, 177)
+	glass.size = Vector2(555, 218)
+	glass.color = Color(0.19, 0.24, 0.22, 0.14)
+	glass.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glass.z_index = 3
+	root.add_child(glass)
+	_add_prop(root, "ServiceWindowForeground", SERVICE_WINDOW_TEXTURE, Vector2(270, 90), Vector2(740, 463), 3)
 	var worktable := _add_prop(root, "WorktableForeground", WORKTABLE_TEXTURE, Vector2(DeskGeometry.visual_left(), DeskGeometry.TOP), DeskGeometry.visual_size(), 4)
 	# 负 inset 只扩大桌面图片的绘制矩形，再由 Shader 在矩形内部生成梯形。
 	# DeskBounds 使用上方独立的一组 BOUNDS_* 参数，不跟随图片形变。
@@ -246,16 +252,8 @@ func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:
 	root.add_child(desk.machine_mouth_mask)
 
 
-# 构建来访者队列面板与倒计时标签。
+# 只保留工作时限；来访者与案件状态由人物、文件和工作空间本身表达。
 func _build_queue_display(root: Node2D, desk: DeskNodes) -> void:
-	desk.npc_panel = Panel.new()
-	desk.npc_panel.name = "NpcWindow"
-	desk.npc_panel.position = Vector2(24, 84)
-	desk.npc_panel.size = Vector2(246, 112)
-	desk.npc_panel.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color(0.04, 0.05, 0.042, 0.9), 3, WorkbenchUI.COLORS.brass, 1))
-	root.add_child(desk.npc_panel)
-	WorkbenchUI.add_text(desk.npc_panel, "当前来访者", 13, Color("b9aa88"), Vector2(13, 9), Vector2(218, 22))
-	desk.queue_label = WorkbenchUI.add_text(desk.npc_panel, "队列准备中", 14, Color("ddd0ac"), Vector2(13, 36), Vector2(218, 68))
 	desk.timer_label = WorkbenchUI.add_text(root, "剩余 03:00", 18, Color("ddd0ac"), Vector2(1040, 28), Vector2(190, 28))
 	desk.timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 

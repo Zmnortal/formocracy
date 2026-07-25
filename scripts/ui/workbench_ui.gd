@@ -47,5 +47,7 @@ static func add_text(parent: Node, text: String, size: int, color: Color, positi
 	label.add_theme_font_override("font", PIXEL_FONT)
 	label.add_theme_color_override("font_color", color)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# 这里创建的文本均为父控件的展示内容；鼠标事件应继续交给文件、按钮或桌面物件本体。
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(label)
 	return label

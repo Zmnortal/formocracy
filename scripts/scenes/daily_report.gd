@@ -1,6 +1,6 @@
 extends Control
 
-const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
+const AFTER_WORK_CORRIDOR_SCENE := "res://scenes/after_work_corridor.tscn"
 const REVEAL_OFFSET := Vector2(0.0, 7.0)
 const REVEAL_SETTLE_SECONDS := 0.12
 const REVEAL_INITIAL_DELAY_SECONDS := 0.30
@@ -245,7 +245,7 @@ func _on_declaration_toggled(pressed: bool) -> void:
 
 
 # 玩家点击确认封存后执行。先校验声明已勾选且未处于封存中，设置 confirming 标志防止重复提交。
-# 成功后进入下班地图；此时仍属于当前工作日，不提前结算或清除当日记录。
+# 成功后进入下班走廊；此时仍属于当前工作日，不提前结算或清除当日记录。
 # 若场景切换失败则复位标志并提示“封存失败，请重试”。
 func _on_confirm_pressed() -> void:
 	if confirming or not declaration.button_pressed or not reveal_sequence_finished:
@@ -255,7 +255,7 @@ func _on_confirm_pressed() -> void:
 	confirm_button.disabled = true
 	status_line.text = "记录状态：正在封存"
 	WorkdayState.manager.begin_evening()
-	var error: Error = get_tree().change_scene_to_file(EVENING_MAP_SCENE)
+	var error: Error = get_tree().change_scene_to_file(AFTER_WORK_CORRIDOR_SCENE)
 	if error != OK:
 		confirming = false
 		status_line.text = "记录状态：封存失败，请重试"

@@ -7,6 +7,7 @@ const ENVELOPE_DESK_SIDE := preload("res://assets/documents/envelopes/bureau_env
 const ENVELOPE_CLOSED := preload("res://assets/documents/envelopes/bureau_envelope_closed.png")
 const ENVELOPE_UNSTRUNG := preload("res://assets/documents/envelopes/bureau_envelope_unstrung.png")
 const ENVELOPE_OPEN_EMPTY := preload("res://assets/documents/envelopes/bureau_envelope_open_empty.png")
+const ENVELOPE_OUTLINE_SHADER := preload("res://shaders/envelope_outline.gdshader")
 const DOCUMENT_INSPECTION_SCALE := Vector2(0.64, 0.64)
 const DOCUMENT_DESK_SCALE := Vector2(0.36, 0.28)
 const DOCUMENT_PEEK_SCALE := Vector2(0.17, 0.17)
@@ -27,6 +28,11 @@ const ENVELOPE_FRONT_REGION := Rect2(0, 168, 340, 352)
 const ENVELOPE_FRONT_POSITION := Vector2(48, 200)
 const ENVELOPE_FRONT_SIZE := Vector2(405, 420)
 const ENVELOPE_CONTENT_OVERLAY_TOP := 12
+const ENVELOPE_REPACK_ZONE := [
+	Vector2(86, 136),
+	Vector2(414, 136),
+	Vector2(250, 248),
+]
 
 var root: Node2D
 var desk: DeskNodes
@@ -40,6 +46,7 @@ var thumbnail_by_id: Dictionary = {}
 
 var envelope: Panel
 var envelope_image: TextureRect
+var envelope_outline_material: ShaderMaterial
 var envelope_front_cover: TextureRect
 var envelope_case_label: Label
 var envelope_flap: Button
@@ -126,6 +133,7 @@ func clear_case() -> void:
 	envelope_billboard_expanded = false
 	envelope_transitioning = false
 	envelope_desk_position = ENVELOPE_DESK_POSITION
+	envelope_outline_material = null
 	inspection_dismiss_layer = null
 	next_document_layer = 14
 
@@ -186,6 +194,10 @@ func _create_envelope() -> void:
 	envelope_image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	envelope_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	envelope_image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	envelope_outline_material = ShaderMaterial.new()
+	envelope_outline_material.shader = ENVELOPE_OUTLINE_SHADER
+	envelope_outline_material.set_shader_parameter("outline_enabled", false)
+	envelope_image.material = envelope_outline_material
 	envelope.add_child(envelope_image)
 
 	envelope_case_label = (
@@ -232,7 +244,7 @@ func _create_envelope() -> void:
 	thumbnail_tray.name = "DocumentPocketContents"
 	thumbnail_tray.visible = false
 	thumbnail_tray.z_index = 1
-	thumbnail_tray.mouse_filter = Control.MOUSE_FILTER_PASS
+	thumbnail_tray.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_tray.clip_contents = true
 	thumbnail_tray.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 0))
 	envelope.add_child(thumbnail_tray)
@@ -255,7 +267,7 @@ func _create_envelope() -> void:
 	envelope.add_child(envelope_front_cover)
 
 
-# 创建位于桌面与查验物件之间的透明点击层，专门接收袋外关闭操作。
+# 创建查验态标记层；实际袋外点击由主场景的未处理输入接收，避免透明层拦住桌面工具。
 func _create_inspection_dismiss_layer() -> void:
 	inspection_dismiss_layer = Control.new()
 	inspection_dismiss_layer.name = "EnvelopeInspectionDismissLayer"
@@ -263,13 +275,12 @@ func _create_inspection_dismiss_layer() -> void:
 	inspection_dismiss_layer.size = DeskGeometry.design_size()
 	inspection_dismiss_layer.z_index = INSPECTION_DISMISS_LAYER
 	inspection_dismiss_layer.visible = false
-	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_STOP
-	inspection_dismiss_layer.gui_input.connect(_on_inspection_dismiss_input)
+	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(inspection_dismiss_layer)
 
 
-# 点击文件袋与查验文件之外的空白区域时收回查验层。
-func _on_inspection_dismiss_input(event: InputEvent) -> void:
+# 处理未被桌面物件消费的输入；点击空白区域时收回查验层。
+func handle_unhandled_input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton:
 		return
 	var mouse_button: InputEventMouseButton = event
@@ -337,6 +348,7 @@ func expand_envelope_billboard() -> void:
 	envelope_billboard_expanded = true
 	envelope_desk_position = envelope.position
 	inspection_dismiss_layer.visible = true
+	envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	envelope.set_meta("desk_drag_locked", true)
 	envelope.set_meta("context_cursor", CursorManager.Cursor.OPEN_ENVELOPE)
 	envelope.z_index = ENVELOPE_BILLBOARD_LAYER
@@ -365,6 +377,7 @@ func _show_billboard_immediate() -> void:
 	envelope.position = ENVELOPE_BILLBOARD_POSITION
 	envelope.size = ENVELOPE_BILLBOARD_SIZE
 	envelope.z_index = ENVELOPE_BILLBOARD_LAYER
+	envelope.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	envelope.set_meta("desk_drag_locked", true)
 	envelope.set_meta("context_cursor", CursorManager.Cursor.OPEN_ENVELOPE)
 	envelope_image.texture = ENVELOPE_OPEN_EMPTY if envelope_opened else ENVELOPE_CLOSED
@@ -572,6 +585,40 @@ func bring_document_to_front(document_id: String) -> void:
 	document.z_index = next_document_layer
 
 
+# 让仍处于查验层的文件在释放后原地回正，不进入桌面重力流程。
+func _settle_inspection_document(document_id: String) -> void:
+	var document: DocumentView = document_by_id.get(document_id)
+	if not is_instance_valid(document):
+		return
+	if WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) != "INSPECTION":
+		return
+	_kill_document_tween(document)
+	document.set_meta("desk_base_scale", DOCUMENT_INSPECTION_SCALE)
+	bring_document_to_front(document_id)
+	var settle := _replace_document_tween(document)
+	settle.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	settle.tween_property(document, "rotation", 0.0, 0.12)
+	settle.parallel().tween_property(document, "scale", DOCUMENT_INSPECTION_SCALE, 0.12)
+	_refresh_inspection_dismiss_layer()
+
+
+# 判断全局点是否位于打开文件袋上方的三角形收口区。
+func _is_global_point_in_repack_zone(global_point: Vector2) -> bool:
+	if not envelope_opened or not envelope_billboard_expanded or not is_instance_valid(envelope):
+		return false
+	var local_point := envelope.get_global_transform().affine_inverse() * global_point
+	return Geometry2D.is_point_in_polygon(local_point, PackedVector2Array(ENVELOPE_REPACK_ZONE))
+
+
+# 切换有效归袋反馈；只有真正进入三角袋口时才显示整袋白色描边。
+func _set_repack_preview(active: bool) -> void:
+	var should_show := active and envelope_opened and envelope_billboard_expanded
+	if is_instance_valid(envelope):
+		envelope.set_meta("repack_preview_active", should_show)
+	if is_instance_valid(envelope_outline_material):
+		envelope_outline_material.set_shader_parameter("outline_enabled", should_show)
+
+
 # 将指定文档重新装袋；若全部装袋则提示可送入验收机器。
 func pack_document(document_id: String) -> bool:
 	if document_id.is_empty() or packed_document_ids.has(document_id):
@@ -579,6 +626,7 @@ func pack_document(document_id: String) -> bool:
 	var document: DocumentView = document_by_id.get(document_id)
 	if not is_instance_valid(document):
 		return all_documents_packed()
+	_set_repack_preview(false)
 	packed_document_ids.append(document_id)
 	_kill_document_tween(document)
 	document.visible = false
@@ -613,6 +661,7 @@ func pack_all_documents() -> void:
 func _collapse_to_desk_flat() -> void:
 	if not envelope_billboard_expanded or envelope_transitioning:
 		return
+	_set_repack_preview(false)
 	envelope_transitioning = true
 	envelope_billboard_expanded = false
 	inspection_dismiss_layer.visible = false
@@ -632,6 +681,7 @@ func _collapse_to_desk_flat() -> void:
 	collapse.tween_property(envelope, "scale", Vector2.ONE, ENVELOPE_TRANSITION_DURATION)
 	await collapse.finished
 	envelope.z_index = ENVELOPE_DESK_LAYER
+	envelope.mouse_filter = Control.MOUSE_FILTER_STOP
 	var ready_for_archive := all_documents_packed()
 	envelope.set_meta("desk_drag_locked", not ready_for_archive)
 	envelope.set_meta("context_cursor", CursorManager.Cursor.GRAB if ready_for_archive else CursorManager.Cursor.OPEN_ENVELOPE)
@@ -661,7 +711,8 @@ func _refresh_document_previews() -> void:
 		if should_show:
 			_layout_document_preview_slot(thumbnail, visible_slot)
 			visible_slot += 1
-	thumbnail_tray.visible = envelope_billboard_expanded and envelope_opened and visible_slot > 0
+	# 即使文件已全部抽出也保留透明袋口投放区，否则最后一份文件将没有可归还目标。
+	thumbnail_tray.visible = envelope_billboard_expanded and envelope_opened
 
 
 # 袋口始终只露出最上方两份真实文件；抽走一份后下一份自动补到袋口。
@@ -682,7 +733,7 @@ func _layout_document_preview_slot(thumbnail: Button, slot: int) -> void:
 func _show_inspection_dismiss_layer() -> void:
 	if not is_instance_valid(inspection_dismiss_layer):
 		return
-	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inspection_dismiss_layer.visible = true
 
 
@@ -699,7 +750,7 @@ func _refresh_inspection_dismiss_layer() -> void:
 			break
 	var should_show := envelope_billboard_expanded or has_inspection_document
 	inspection_dismiss_layer.visible = should_show
-	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_STOP if should_show else Control.MOUSE_FILTER_IGNORE
+	inspection_dismiss_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 # 替换一份文件当前正在播放的空间动画。

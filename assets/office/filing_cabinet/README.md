@@ -13,7 +13,8 @@ Replacement-ready art for the filing cabinet on the left side of the main game s
 
 ## Cabinet states
 
-All state images use a `512 x 640` transparent canvas and share a bottom-center anchor.
+All state images use a `512 x 640` transparent canvas and a mostly front-facing camera with a subtle top-down pitch.
+The cabinet body is top-center aligned across the sequence; fully opened drawers may extend farther downward.
 
 - `states/00_closed.png`
 - `states/01_upper_half_open.png`
@@ -22,6 +23,7 @@ All state images use a `512 x 640` transparent canvas and share a bottom-center 
 - `states/04_lower_open_evidence.png`
 
 The half-open states are transition/hover frames. The fully open states are stable interaction targets.
+Every state exposes the same narrow worn-metal top plane, matching the perspective of the right-side clerk cabinet. No exterior side plane is exposed, and the shared top/body anchor prevents visible jumps during texture swaps.
 
 ## Removable contents
 
@@ -34,10 +36,8 @@ All content images use a `512 x 384` transparent canvas.
 
 ## Integration target
 
-The current static cabinet is instantiated by `scripts/gameplay/desk_builder.gd` from:
+The interactive cabinet is instantiated by `scripts/gameplay/desk_builder.gd` and switched at runtime by:
 
-`res://assets/office/items/filing_cabinet.png`
+`res://scripts/managers/workbench_manager/workbench_filing_cabinet_module.gd`
 
-For an asset-only visual swap, use `states/00_closed.png`. A later interaction pass can switch the cabinet texture through the five states and spawn the appropriate removable content.
-
-No gameplay logic is included in this asset set.
+The old `res://assets/office/items/filing_cabinet.png` is retained only as a historical source asset.

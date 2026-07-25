@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "character_id": "PROPRIETOR-ZHOU",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/proprietor_zhou_aunt_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "01_idle_nervous_strip.png",
+    "02_deliver_approve_strip.png",
+    "03_approve_reject_strip.png",
+    "04_reject_exit_strip.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 57,
+    "role": "合作供销社表单发行人",
+    "palette": "蜂蜜琥珀、深褐与旧纸米色",
+    "markers": [
+      "灰黑色向后梳低盘发",
+      "蜂蜜琥珀针织开衫",
+      "米色尖领衬衫",
+      "深褐色长围裙与双大口袋",
+      "腰间金属钥匙串",
+      "棕色工作鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "熟练亲切地观察窗口，偶尔检查钥匙串或护住记录老住户地址的旧账本。",
+    "approved": "短暂意外后会意释然，仍保持店主式的务实温暖。",
+    "rejected": "笑意收住，摊开旧账本作为连续居住的证据，最后沉着而不退让。"
+  },
+  "prop_ownership": {
+    "old_account_ledger": "属于周姨本人，可在紧张、驳回和驳回离场动作中持续出现。",
+    "waist_key_ring": "属于供销社经营者制服识别物，所有动作保持。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

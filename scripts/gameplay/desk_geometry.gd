@@ -15,7 +15,7 @@ const DESIGN_HEIGHT := 720.0
 # 桌面图片的原始矩形。TOP_INSET / BOTTOM_INSET 只改变图片形变。
 const LEFT := 0.0
 const RIGHT := DESIGN_WIDTH
-const TOP := 465.0
+const TOP := 565.0
 const FLOOR := 840.0
 
 # 梯形透视形变，单位为像素。
@@ -30,7 +30,7 @@ const BOTTOM_INSET := -20.0
 # 修改桌面图片的矩形或 inset，不会改变这些值。
 const BOUNDS_LEFT := 0.0
 const BOUNDS_RIGHT := DESIGN_WIDTH
-const BOUNDS_TOP := 465.0
+const BOUNDS_TOP := 565.0
 # DeskBounds 下沿严格等于游戏设计画布下沿；不要填写物理屏幕高度。
 const BOUNDS_FLOOR := DESIGN_HEIGHT
 const BOUNDS_TOP_INSET := 0.0

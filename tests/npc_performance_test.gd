@@ -41,10 +41,7 @@ func run() -> void:
 		var queue_configured_scale := WorkdayContext.read_float(queue_person, "actor_scale", 0.34)
 		assert(
 			queue_actor.scale.is_equal_approx(
-				Vector2.ONE
-				* queue_configured_scale
-				* main.manager.npc_performance.FRONT_ACTOR_SCALE_MULTIPLIER
-				* main.manager.npc_performance._queue_scale_factor(queue_index)
+				Vector2.ONE * queue_configured_scale * main.manager.npc_performance.FRONT_ACTOR_SCALE_MULTIPLIER * main.manager.npc_performance._queue_scale_factor(queue_index)
 			),
 			"every queued NPC must inherit the 1.3 crowd enlargement before perspective scaling",
 		)
@@ -70,8 +67,11 @@ func run() -> void:
 		not (main.manager.npc_performance.current_actor.sprite_frames.get_frame_texture(&"idle", 0) is AtlasTexture), "the complete NPC frame must be preserved and hidden by foreground architecture"
 	)
 	var worktable := main.get_node("WorktableForeground")
-	var railing := main.get_node("ServiceRailingForeground")
-	assert(main.manager.npc_performance.actor_layer.z_index < railing.z_index and railing.z_index < worktable.z_index, "NPC, railing, and worktable must form the requested back-to-front stack")
+	var service_window := main.get_node("ServiceWindowForeground")
+	assert(
+		main.manager.npc_performance.actor_layer.z_index < service_window.z_index and service_window.z_index < worktable.z_index,
+		"NPC, service window, and worktable must form the requested back-to-front stack"
+	)
 	assert(main.manager.npc_performance.actor_layer.get_parent() == main, "the renderer must keep the full-body actor uncut and rely on foreground assets")
 	assert(main.manager.npc_performance.queue_case_ids.slice(0, 2) == ["CASE-002", "CASE-003"], "queue actors must retain the fixed day-one gameplay identities")
 	assert(main.manager.npc_performance.current_actor.position.is_equal_approx(main.manager.npc_performance.FRONT_POSITION), "the active NPC must already occupy the counter position")
@@ -85,8 +85,10 @@ func run() -> void:
 		"even the nearest queued NPC must remain clearly smaller than the active foreground NPC",
 	)
 	assert(
-		main.manager.npc_performance._queue_position(0).x < main.manager.npc_performance.FRONT_POSITION.x
-		and main.manager.npc_performance._queue_position(2).x < main.manager.npc_performance._queue_position(0).x,
+		(
+			main.manager.npc_performance._queue_position(0).x < main.manager.npc_performance.FRONT_POSITION.x
+			and main.manager.npc_performance._queue_position(2).x < main.manager.npc_performance._queue_position(0).x
+		),
 		"the queue must fan out toward the left instead of stacking behind the foreground NPC",
 	)
 	assert(
@@ -98,8 +100,10 @@ func run() -> void:
 		"each deeper applicant must render darker than the person before them"
 	)
 	assert(
-		_brightness(main.manager.npc_performance.queue_actors[1].modulate) > _brightness(main.manager.npc_performance.queue_actors[2].modulate)
-		and _brightness(main.manager.npc_performance.queue_actors[2].modulate) > _brightness(main.manager.npc_performance.queue_actors[3].modulate),
+		(
+			_brightness(main.manager.npc_performance.queue_actors[1].modulate) > _brightness(main.manager.npc_performance.queue_actors[2].modulate)
+			and _brightness(main.manager.npc_performance.queue_actors[2].modulate) > _brightness(main.manager.npc_performance.queue_actors[3].modulate)
+		),
 		"the entire visible crowd must become progressively darker with depth"
 	)
 	assert(main.manager.npc_performance.queue_actors[0].z_index > main.manager.npc_performance.queue_actors[1].z_index, "deeper applicants must render behind nearer applicants")
@@ -154,7 +158,7 @@ func run() -> void:
 		"a promoted applicant must keep breathing while staged before the bell"
 	)
 	assert(main.manager.npc_performance.queue_case_ids[0] == "CASE-003", "promoting the next NPC must move the following fixed identity to the front of the queue")
-	assert("周循" in main.manager.desk.applicant_card_label.text and "等待传唤" in main.manager.desk.applicant_card_label.text, "staged applicant UI must no longer show the departed person's dossier")
+	assert(not is_instance_valid(main.manager.desk.applicant_card_label), "staged applicant identity must be communicated by the actor rather than a duplicate information panel")
 	var staged_actor = main.manager.npc_performance.current_actor
 	main.manager.call_bell.trigger(true)
 	main.manager.dialogue_box.reveal_current_line()

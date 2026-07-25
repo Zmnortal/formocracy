@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "character_id": "PROPRIETOR-HE",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/proprietor_he_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_idle_nervous_magenta.png",
+    "strip_02_deliver_approve_magenta.png",
+    "strip_03_approve_reject_magenta.png",
+    "strip_04_exit_magenta.png",
+    "frame_09_approve_surprised_handfix_magenta.png"
+  ],
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 64,
+    "role": "旧照相馆经营者",
+    "palette": "炭灰、暗房深红、旧皮革棕与褪色银盐灰",
+    "markers": [
+      "深色扁帽",
+      "瘦削风霜脸与胡茬",
+      "炭灰色长外套",
+      "暗房深红背心与围巾",
+      "棕色背带老式双反相机",
+      "深色直筒裤",
+      "棕色系带靴"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "略微佝偻而戒备地观察窗口，偶尔检查相机、旧照片或底片证据。",
+    "approved": "先难以置信，继而露出极少见的克制轻松，像确认照片这次仍被承认为证据。",
+    "rejected": "苦涩地收住表情，展示底片后把证据贴身收好，以受伤但不退让的姿态离开。"
+  },
+  "prop_ownership": {
+    "vintage_twin_lens_camera": "属于老赫本人，是所有动作持续保留的身份识别物。",
+    "old_photo_and_negative_sleeve": "属于老赫本人，可在紧张、批准、驳回与驳回离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

@@ -42,6 +42,10 @@ var end_dialogue_lines: Array[Dictionary] = [
 	{"speaker": "PLAYER", "text": "今天的行动许可已经用完。剩下的事，只能留到明天。"},
 	{"speaker": "走廊广播", "text": "第十二区夜间窗口现已关闭。所有职员返回登记住所。"},
 ]
+var dialogue_box: DialogueBox
+var end_speaker_label: Label
+var end_dialogue_label: Label
+var end_continue_label: Label
 
 @onready var day_label: Label = $Header/Day
 @onready var balance_label: Label = $Header/Balance
@@ -83,10 +87,6 @@ var end_dialogue_lines: Array[Dictionary] = [
 @onready var next_day_effect_label: Label = $NextDayReceipt/Effect
 @onready var enter_workday_button: Button = $NextDayReceipt/EnterWorkdayButton
 @onready var end_overlay: Control = $EndOfNightOverlay
-var dialogue_box: DialogueBox
-var end_speaker_label: Label
-var end_dialogue_label: Label
-var end_continue_label: Label
 
 
 # 初始化傍晚地图场景：绑定按钮、刷新状态并适配窗口。

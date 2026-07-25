@@ -7,7 +7,23 @@ signal stamp_applied(kind: String, document_id: String, local_position: Vector2)
 
 const APPROVE_STAMP_TEXTURE := preload("res://assets/office/items/approve_stamp.png")
 const RETURN_STAMP_TEXTURE := preload("res://assets/office/items/return_stamp.png")
-const STAMP_SIZE := Vector2(46, 56)
+const APPROVE_STAMP_FRAMES := [
+	preload("res://assets/office/stamp_animation/approve/00_tilted_entry.png"),
+	preload("res://assets/office/stamp_animation/approve/01_diagonal_swing.png"),
+	preload("res://assets/office/stamp_animation/approve/02_aligning.png"),
+	preload("res://assets/office/stamp_animation/approve/03_pressed_top.png"),
+]
+const RETURN_STAMP_FRAMES := [
+	preload("res://assets/office/stamp_animation/reject/00_tilted_entry.png"),
+	preload("res://assets/office/stamp_animation/reject/01_diagonal_swing.png"),
+	preload("res://assets/office/stamp_animation/reject/02_aligning.png"),
+	preload("res://assets/office/stamp_animation/reject/03_pressed_top.png"),
+]
+const STAMP_SIZE := Vector2(32, 40)
+const STAMP_ANIMATION_SIZE := Vector2(192, 192)
+const STAMP_CONTACT_ANCHOR := Vector2(0.5, 0.57)
+const STAMP_FRAME_DURATION := 0.075
+const STAMP_ANIMATION_LAYER := 96
 
 var root: Node2D
 var desk: DeskNodes
@@ -56,7 +72,7 @@ func _create_stamp_tool(kind: String, at: Vector2) -> void:
 	stamp_image.size = STAMP_SIZE
 
 	if desk_items != null:
-		desk_items.register_item(tool, "stamp_approve" if kind == "批准" else "stamp_return", Callable(), Callable(), _try_apply_stamp)
+		desk_items.register_item(tool, "stamp_approve" if kind == "批准" else "stamp_return", Callable(), _on_stamp_drag_motion, Callable(), _prepare_stamp_drop, _can_begin_stamp_interaction)
 	else:
 		tool.gui_input.connect(_on_stamp_input.bind(tool))
 	tool.mouse_entered.connect(_on_stamp_hover.bind(tool, true))
@@ -65,7 +81,7 @@ func _create_stamp_tool(kind: String, at: Vector2) -> void:
 
 # 鼠标悬停时轻微放大；拖拽时不响应。
 func _on_stamp_hover(tool: Panel, entered: bool) -> void:
-	if WorkdayContext.to_bool(tool.get_meta("dragging")):
+	if WorkdayContext.to_bool(tool.get_meta("dragging")) or WorkdayContext.to_bool(tool.get_meta("desk_dragging")):
 		return
 	if entered:
 		Sfx.play("ui_hover")
@@ -89,28 +105,87 @@ func _on_stamp_input(event: InputEvent, tool: Panel) -> void:
 		else:
 			tool.set_meta("dragging", false)
 			CursorManager.end_drag()
-			_try_apply_stamp(tool)
-			_return_stamp(tool)
+			_prepare_stamp_drop(tool)
 	elif event is InputEventMouseMotion and WorkdayContext.to_bool(tool.get_meta("dragging")):
 		var mouse_motion: InputEventMouseMotion = event
 		tool.position += mouse_motion.relative
+		_on_stamp_drag_motion(tool)
 
 
-# 释放印章时判断命中的最上层展开文件。
-func _try_apply_stamp(tool: Panel) -> void:
-	var center := tool.get_global_rect().get_center()
-	var document := presenter.find_document_at_global(center)
+# 拖动印章时只把最上层打开文件视为有效盖章目标。
+func _on_stamp_drag_motion(tool: Control) -> void:
+	var document := _stamp_target_at_tool(tool)
+	CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if is_instance_valid(document) else CursorManager.Cursor.STAMP)
+
+
+# 动画期间锁住实体印章，避免重复开始第二次盖章。
+func _can_begin_stamp_interaction(tool: Control, _local_position: Vector2) -> bool:
+	return not WorkdayContext.to_bool(tool.get_meta("stamp_animation_playing"))
+
+
+# 释放印章时锁定自由落点；无效落点不播放动画也不产生印记。
+func _prepare_stamp_drop(tool: Control) -> void:
+	tool.set_meta("desk_skip_drop_once", true)
+	var document := _stamp_target_at_tool(tool)
 	if not is_instance_valid(document):
 		if is_instance_valid(desk.status_label):
-			desk.status_label.text = "印章必须落在已展开文件的纸面范围内。"
+			desk.status_label.text = "印章必须落在当前最上层、已经打开的文件纸面内。"
+		_return_stamp(tool)
 		return
-	var local_position: Vector2 = document.get_global_transform().affine_inverse() * center
-	Sfx.play("stamp")
-	stamp_applied.emit(WorkdayContext.stringify_value(tool.get_meta("kind")), document.document_id, local_position)
+	var center := tool.get_global_transform() * (tool.size * 0.5)
+	var local_position := document.get_global_transform().affine_inverse() * center
+	_play_stamp_contact_animation(tool, document, local_position)
+
+
+# 返回印章中心命中的最上层查验文件；桌面平躺文件不能直接盖章。
+func _stamp_target_at_tool(tool: Control) -> DocumentView:
+	var center := tool.get_global_transform() * (tool.size * 0.5)
+	var document := presenter.find_document_at_global(center)
+	if not is_instance_valid(document):
+		return null
+	if WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) != "INSPECTION":
+		return null
+	return document
+
+
+# 在自由落点上播放四帧下压动作，结束后才写入印章记录并显示印记。
+func _play_stamp_contact_animation(tool: Control, document: DocumentView, local_position: Vector2) -> void:
+	tool.set_meta("stamp_animation_playing", true)
+	tool.set_meta("desk_drag_locked", true)
+	tool.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tool.visible = false
+	var animation := TextureRect.new()
+	animation.name = "StampContactAnimation"
+	animation.size = STAMP_ANIMATION_SIZE
+	animation.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	animation.stretch_mode = TextureRect.STRETCH_SCALE
+	animation.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	animation.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	animation.z_index = STAMP_ANIMATION_LAYER
+	var contact_global := document.get_global_transform() * local_position
+	var contact_in_root := root.to_local(contact_global)
+	animation.position = contact_in_root - STAMP_ANIMATION_SIZE * STAMP_CONTACT_ANCHOR
+	root.add_child(animation)
+
+	var kind := WorkdayContext.stringify_value(tool.get_meta("kind"))
+	var frames: Array = APPROVE_STAMP_FRAMES if kind == "批准" else RETURN_STAMP_FRAMES
+	for frame_texture: Texture2D in frames:
+		if not is_instance_valid(animation) or not is_instance_valid(document):
+			break
+		animation.texture = frame_texture
+		await root.get_tree().create_timer(STAMP_FRAME_DURATION).timeout
+
+	if is_instance_valid(animation):
+		animation.queue_free()
+	if is_instance_valid(document):
+		Sfx.play("stamp")
+		stamp_applied.emit(kind, document.document_id, local_position)
+	tool.visible = true
+	_return_stamp(tool)
 
 
 # 通过 Tween 将印章平滑归位。
-func _return_stamp(tool: Panel) -> void:
+func _return_stamp(tool: Control) -> void:
 	var tween := root.create_tween().set_parallel(true)
 	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	var home: Variant = tool.get_meta("home", tool.position)
@@ -120,5 +195,10 @@ func _return_stamp(tool: Panel) -> void:
 
 
 # 印章归位动画结束后恢复静置层级。
-func _restore_stamp_layer(tool: Panel) -> void:
+func _restore_stamp_layer(tool: Control) -> void:
 	tool.z_index = 8
+	tool.visible = true
+	tool.mouse_filter = Control.MOUSE_FILTER_STOP
+	tool.set_meta("stamp_animation_playing", false)
+	tool.set_meta("desk_drag_locked", false)
+	tool.set_meta("desk_skip_drop_once", false)

@@ -32,7 +32,11 @@ func run() -> void:
 	await process_frame
 	var presenter: Variant = manager.presenter
 	assert(presenter.form != null, "a form must be created")
-	assert(not manager.desk.applicant_card_label.text.is_empty(), "applicant card must be populated")
+	assert(not is_instance_valid(manager.desk.applicant_card_label), "applicant data must not be duplicated in an out-of-world information panel")
+	assert(main.get_node_or_null("ApplicantCard") == null, "the black applicant information panel must be removed")
+	assert(main.get_node_or_null("NpcWindow") == null, "the black visitor information panel must be removed")
+	assert(main.get_node_or_null("InstitutionalWallClock") != null, "the visitor panel space must contain an institutional wall clock")
+	assert(main.get_node_or_null("ClerkToolCabinet") != null, "the applicant panel space must contain a clerk tool cabinet")
 	var background := main.get_node("ClerkDeskConcept") as TextureRect
 	assert(background.texture != null, "workbench concept must be loaded")
 	assert(background.stretch_mode == TextureRect.STRETCH_SCALE, "background must fill the design canvas")
