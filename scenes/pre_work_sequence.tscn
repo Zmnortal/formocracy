@@ -77,42 +77,44 @@ color = Color(0.04, 0.055, 0.07, 0.28)
 
 [node name="Newspaper" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 455.0
-offset_top = 76.0
-offset_right = 1067.0
-offset_bottom = 531.0
+offset_left = 700.0
+offset_top = 24.0
+offset_right = 1050.0
+offset_bottom = 549.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBox_newspaper")
 
 [node name="Edition" type="Label" parent="Newspaper"]
 layout_mode = 0
 offset_left = 34.0
-offset_top = 24.0
-offset_right = 578.0
-offset_bottom = 75.0
+offset_top = 14.0
+offset_right = 316.0
+offset_bottom = 64.0
 theme_override_colors/font_color = Color(0.145, 0.137, 0.102, 1)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 13
 text = "衡川日报 · 第十二区晨版"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Rule" type="ColorRect" parent="Newspaper"]
 layout_mode = 0
 offset_left = 34.0
-offset_top = 83.0
-offset_right = 578.0
-offset_bottom = 87.0
+offset_top = 70.0
+offset_right = 316.0
+offset_bottom = 73.0
 mouse_filter = 2
 color = Color(0.145, 0.137, 0.102, 0.88)
 
 [node name="Headline" type="Label" parent="Newspaper"]
 layout_mode = 0
 offset_left = 34.0
-offset_top = 104.0
-offset_right = 578.0
-offset_bottom = 212.0
+offset_top = 80.0
+offset_right = 316.0
+offset_bottom = 175.0
 theme_override_colors/font_color = Color(0.09, 0.085, 0.063, 1)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 23
 text = "第十二区综合窗口今日恢复受理"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -121,34 +123,47 @@ autowrap_mode = 2
 [node name="Rule2" type="ColorRect" parent="Newspaper"]
 layout_mode = 0
 offset_left = 34.0
-offset_top = 231.0
-offset_right = 578.0
-offset_bottom = 233.0
+offset_top = 183.0
+offset_right = 316.0
+offset_bottom = 185.0
 mouse_filter = 2
 color = Color(0.145, 0.137, 0.102, 0.68)
 
 [node name="Article" type="Label" parent="Newspaper"]
 layout_mode = 0
 offset_left = 42.0
-offset_top = 253.0
-offset_right = 570.0
-offset_bottom = 379.0
+offset_top = 195.0
+offset_right = 308.0
+offset_bottom = 445.0
 theme_override_colors/font_color = Color(0.17, 0.158, 0.116, 1)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 12
 text = "停办十七日后，居住配置处 B-07 工位重新启用。首批事项仍按旧版目录执行，补充规则将通过内部广播发布。"
-vertical_alignment = 1
-autowrap_mode = 2
+autowrap_mode = 3
+clip_text = true
+
+[node name="Article2" type="Label" parent="Newspaper"]
+layout_mode = 0
+offset_left = 181.0
+offset_top = 356.0
+offset_right = 326.0
+offset_bottom = 464.0
+theme_override_colors/font_color = Color(0.17, 0.158, 0.116, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 10
+text = "补充规则将通过内部广播发布。管理局提醒市民依照预约时间到场。"
+autowrap_mode = 3
+clip_text = true
 
 [node name="DayMarker" type="Label" parent="Newspaper"]
 layout_mode = 0
 offset_left = 34.0
-offset_top = 401.0
-offset_right = 578.0
-offset_bottom = 433.0
+offset_top = 477.0
+offset_right = 316.0
+offset_bottom = 511.0
 theme_override_colors/font_color = Color(0.145, 0.137, 0.102, 0.78)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 12
 text = "第 01 工作日"
 horizontal_alignment = 2
 

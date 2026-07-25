@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "character_id": "DEFAULT-APPLICANT",
+  "character_id": "PERSON-JIANG",
   "default_animation": "idle",
-  "substitute_frames_with_static_actor": true,
-  "static_actor_texture": "frames/02_idle_neutral_a_fullbody.png",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "frames/02_idle_adjust_sleeve_fullbody.png",
   "action_contract": {
     "required": [
       "idle",
@@ -22,6 +22,30 @@
     ],
     "max_unique_pngs": 20
   },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "short_slightly_messy_dark_hair",
+      "tired_pragmatic_face",
+      "gray_utilitarian_work_coverall",
+      "young_olive_green_yoke_and_chest_pockets",
+      "rolled_elbow_sleeves_and_pale_undershirt",
+      "brown_work_belt",
+      "mechanical_ration_counter_at_left_hip",
+      "rolled_trouser_cuffs",
+      "heavy_dark_work_boots"
+    ],
+    "delivery_prop_markers": [
+      "golden_ochre_portrait_document_bag",
+      "broad_trapezoid_flap",
+      "two_red_centered_closure_discs",
+      "cream_figure_eight_cord",
+      "reinforced_bottom_corner_seams"
+    ],
+    "note": "所有帧的可见人物高度统一为650像素，脚底统一保留20像素底边距，并完整显示短乱深发、双手、灰色连体工装、卷裤脚和重型工靴。机械配给计数器、额度簿、配给筹码与带红色预留覆盖章的净水调拨凭证属于蒋森本人；金黄封绳文档袋只在06–08递交三帧出现，交付后留在玩家工作台。"
+  },
   "emotion_fallbacks": {
     "happy": "happy_idle",
     "angry": "angry_idle"
@@ -29,16 +53,16 @@
   "micro_expressions": [
     {
       "action": "blink",
-      "weight": 50
+      "weight": 35
     },
     {
       "action": "nervous",
-      "weight": 50
+      "weight": 65
     }
   ],
   "micro_expression_cooldown": [
-    2.5,
-    5
+    2.2,
+    4
   ],
   "actions": [
     {
@@ -46,9 +70,9 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_sleeve_fullbody.png",
+        "frames/01_queue_idle_neutral_fullbody.png"
       ]
     },
     {
@@ -56,8 +80,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_sleeve_fullbody.png"
       ]
     },
     {
@@ -65,9 +89,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-04.png",
-        "frames/frame-00.png"
+        "frames/02_idle_adjust_sleeve_fullbody.png",
+        "frames/03_blink_eyes_closed_fullbody.png",
+        "frames/02_idle_adjust_sleeve_fullbody.png"
       ]
     },
     {
@@ -75,9 +99,9 @@
       "fps": 3,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-02.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/04_nervous_reconcile_quota_ledger_fullbody.png",
+        "frames/05_nervous_compare_reserved_voucher_fullbody.png",
+        "frames/02_idle_adjust_sleeve_fullbody.png"
       ]
     },
     {
@@ -85,9 +109,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/06_deliver_prepare_document_bag_fullbody.png",
+        "frames/07_deliver_offer_document_bag_fullbody.png",
+        "frames/08_deliver_present_document_bag_fullbody.png"
       ]
     },
     {
@@ -95,10 +119,10 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png",
-        "frames/frame-03.png"
+        "frames/09_approve_surprised_relief_fullbody.png",
+        "frames/10_approve_dispatch_ready_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png",
+        "frames/12_approve_idle_fullbody.png"
       ]
     },
     {
@@ -106,8 +130,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/12_approve_idle_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png"
       ]
     },
     {
@@ -115,10 +139,10 @@
       "fps": 4,
       "playback": "HOLD",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-03.png",
-        "frames/frame-02.png"
+        "frames/13_reject_disappointed_fullbody.png",
+        "frames/14_reject_show_reserved_voucher_fullbody.png",
+        "frames/15_reject_trace_allocation_fullbody.png",
+        "frames/16_reject_idle_fullbody.png"
       ]
     },
     {
@@ -126,8 +150,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/16_reject_idle_fullbody.png",
+        "frames/15_reject_trace_allocation_fullbody.png"
       ]
     },
     {
@@ -135,9 +159,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/17_exit_approved_step_a_fullbody.png",
+        "frames/18_exit_approved_step_b_fullbody.png",
+        "frames/17_exit_approved_step_a_fullbody.png"
       ]
     },
     {
@@ -145,9 +169,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/19_exit_rejected_step_a_fullbody.png",
+        "frames/20_exit_rejected_step_b_fullbody.png",
+        "frames/19_exit_rejected_step_a_fullbody.png"
       ]
     }
   ]

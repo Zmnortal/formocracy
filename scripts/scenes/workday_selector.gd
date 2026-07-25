@@ -3,6 +3,7 @@ extends Control
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const OPENING_SCENE := "res://scenes/opening.tscn"
 const GAME_SCENE := "res://main.tscn"
+const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
 const DAILY_REPORT_SCENE := "res://scenes/daily_report.tscn"
 const EVENING_MAP_SCENE := "res://scenes/evening_map.tscn"
 const UI := preload("res://scripts/ui/bureau_ui.gd")
@@ -297,7 +298,7 @@ func _start_new_game() -> void:
 	_change_scene(OPENING_SCENE)
 
 
-# 加载选中存档节点并进入主游戏，失败时刷新时间线。
+# 加载历史日节点后从下一天的晨间读报开始创建分支。
 func _continue_game() -> void:
 	var selected: Dictionary = checkpoint_nodes_by_id.get(selected_checkpoint_id, {})
 	if WorkdayContext.read_int(selected, "completed_day") == 0:
@@ -305,7 +306,7 @@ func _continue_game() -> void:
 		return
 	if WorkdayState.save_system.load_checkpoint(selected_checkpoint_id):
 		Sfx.play("start")
-		_change_scene(GAME_SCENE)
+		_change_scene(PRE_WORK_SCENE)
 	else:
 		_refresh_save_slot()
 		new_game_button.grab_focus()
@@ -319,6 +320,8 @@ func resume_game() -> void:
 		return
 	Sfx.play("start")
 	match WorkdayState.get_resume_phase():
+		"pre_work":
+			_change_scene(PRE_WORK_SCENE)
 		"daily_report":
 			_change_scene(DAILY_REPORT_SCENE)
 		"evening":

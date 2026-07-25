@@ -25,6 +25,7 @@ func run() -> void:
 	assert(kiosk.dialogue_box is DialogueBox, "kiosk result must reuse the shared DialogueBox")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/newspaper_kiosk.tscn"), "kiosk must allow the shared pause menu")
 	assert(kiosk.form_count_label.text.contains("1"), "kiosk must show the blank form in the dossier")
+	assert(kiosk.form_asset.texture.resource_path.ends_with("subscription_form_s01.png"), "kiosk must use the S-01 form asset instead of a flat placeholder")
 	assert(kiosk.submit_button.disabled, "destruction declaration must be required before submission")
 
 	kiosk.declaration.button_pressed = true

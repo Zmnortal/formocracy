@@ -89,10 +89,13 @@ func build(root: Node2D) -> DeskNodes:
 	desk.archive_count_label.add_theme_constant_override("outline_size", 3)
 	desk.archive_count_label.add_theme_color_override("font_outline_color", Color("31291f"))
 	var archive_label := WorkbenchUI.add_text(desk.slot, "当日归档", 12, Color("d0c09b"), Vector2(61, -18), Vector2(90, 20))
+	archive_label.name = "ArchiveTitleLabel"
 	archive_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	archive_label.z_index = 1
 	archive_label.add_theme_constant_override("outline_size", 3)
 	archive_label.add_theme_color_override("font_outline_color", Color("31291f"))
+	# 只去掉旧版 HUD 标题；归档盒、文件堆与投放交互必须保持可见可用。
+	archive_label.visible = false
 	desk.slot_light = ColorRect.new()
 	desk.slot_light.color = WorkbenchUI.COLORS.red
 	desk.slot_light.position = Vector2(166, 76)
@@ -114,21 +117,28 @@ func build(root: Node2D) -> DeskNodes:
 	root.add_child(desk_surface_zone)
 
 	var status_back := Panel.new()
+	status_back.name = "WorkbenchHintPanel"
 	status_back.position = Vector2(300, 681)
 	status_back.size = Vector2(390, 31)
 	status_back.z_index = 60
 	status_back.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color(0.04, 0.035, 0.025, 0.92), 4, WorkbenchUI.COLORS.brass, 1))
+	# 主玩法用物件与演出表达当前操作，不再常驻显示底部文字提示框。
+	status_back.visible = false
 	root.add_child(status_back)
 	desk.status_label = WorkbenchUI.add_text(status_back, "请完成申请的形式处理。", 13, Color("d8c9a9"), Vector2(12, 5), Vector2(366, 21))
 	desk.status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	var clerk_name := WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "未登记职员"
 	var identity_label := WorkbenchUI.add_text(root, "经办员：%s  /  第 %02d 工作日" % [clerk_name, WorkdayState.day_number], 14, Color("d8c9a9"), Vector2(24, 18), Vector2(520, 28))
+	identity_label.name = "ClerkStatusLabel"
 	identity_label.add_theme_constant_override("outline_size", 5)
 	identity_label.add_theme_color_override("font_outline_color", Color("11130f"))
+	identity_label.visible = false
 	desk.need_status_label = WorkbenchUI.add_text(root, "生活状态：饮水正常", 13, Color("aabd78"), Vector2(24, 45), Vector2(420, 24))
+	desk.need_status_label.name = "NeedStatusLabel"
 	desk.need_status_label.add_theme_constant_override("outline_size", 4)
 	desk.need_status_label.add_theme_color_override("font_outline_color", Color("11130f"))
+	desk.need_status_label.visible = false
 
 	_build_machine_ingestion_zone(root, desk)
 	_build_queue_display(root, desk)
@@ -140,7 +150,7 @@ func build(root: Node2D) -> DeskNodes:
 # 摆放文件柜、可交互挂历与墙钟等办公室陈设。
 func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_build_filing_cabinet(root, desk)
-	desk.wall_calendar = _add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1038, 74), Vector2(220, 146), -3)
+	desk.wall_calendar = _add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1062, 74), Vector2(220, 146), -3)
 	desk.wall_calendar.mouse_filter = Control.MOUSE_FILTER_PASS
 	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), -3)
 	_add_prop(root, "ClerkToolCabinet", CLERK_TOOL_CABINET_TEXTURE, Vector2(1018, 254), Vector2(293, 366), 5)
@@ -251,10 +261,12 @@ func _build_machine_ingestion_zone(root: Node2D, desk: DeskNodes) -> void:
 	root.add_child(desk.machine_mouth_mask)
 
 
-# 只保留工作时限；来访者与案件状态由人物、文件和工作空间本身表达。
+# 保留工作时限节点供流程内部更新，但不再把倒计时作为常驻 HUD 显示。
 func _build_queue_display(root: Node2D, desk: DeskNodes) -> void:
 	desk.timer_label = WorkbenchUI.add_text(root, "剩余 03:00", 18, Color("ddd0ac"), Vector2(1040, 28), Vector2(190, 28))
+	desk.timer_label.name = "RemainingTimeLabel"
 	desk.timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	desk.timer_label.visible = false
 
 
 # 构建提交后的验收过渡遮罩与提示文字。

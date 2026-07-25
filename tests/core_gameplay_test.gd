@@ -89,6 +89,11 @@ func run() -> void:
 	for thumbnail_value: Variant in presenter.thumbnail_by_id.values():
 		var stacked_thumbnail := thumbnail_value as Button
 		assert(stacked_thumbnail.visible, "opening the envelope must reveal every real document in the pocket stack")
+		assert(
+			is_equal_approx(stacked_thumbnail.position.y, presenter.thumbnail_tray.size.y - presenter.ENVELOPE_POCKET_EXPOSED_HEIGHT),
+			"bagged documents must expose only their upper edge above the pocket"
+		)
+		assert(is_zero_approx(stacked_thumbnail.rotation), "bagged documents must form a tidy unrotated stack")
 	assert(not presenter.envelope_front_cover.visible, "the pocket must use the original envelope body instead of a duplicate tinted front cover")
 	assert(presenter.envelope_front_cover.texture == null, "the duplicate front-cover crop must not be drawn over the envelope body")
 	var primary_preview := presenter.thumbnail_by_id[presenter.primary_document_id] as Button

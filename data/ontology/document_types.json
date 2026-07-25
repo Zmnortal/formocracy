@@ -1,6 +1,7 @@
 [
   {
     "id":"DOCTYPE-APPLICATION","name":"事项申请表","is_primary":true,
+    "visual_language":{"category":"事项申请","icon":"form","accent":"8B5A2B"},
     "background":"res://assets/documents/types/application/inspection.png",
     "visuals":{
       "pocket":{"texture":"res://assets/documents/types/application/pocket.png","size":[178,96]},
@@ -29,6 +30,7 @@
   },
   {
     "id":"DOCTYPE-IDENTITY","name":"本市或来源地身份证明","is_primary":false,
+    "visual_language":{"category":"身份档案","icon":"person","accent":"49657A"},
     "background":"res://assets/documents/types/identity/inspection.png",
     "visuals":{
       "pocket":{"texture":"res://assets/documents/types/identity/pocket.png","size":[178,58]},
@@ -47,6 +49,7 @@
   },
   {
     "id":"DOCTYPE-RESIDENCE","name":"居住证明或临时居留备案","is_primary":false,
+    "visual_language":{"category":"居住事务","icon":"home","accent":"7A633E"},
     "background":"res://assets/documents/types/residence/inspection.png",
     "visuals":{
       "pocket":{"texture":"res://assets/documents/types/residence/pocket.png","size":[172,100]},
@@ -64,6 +67,7 @@
   },
   {
     "id":"DOCTYPE-DECLARATION","name":"知情声明或关系证明","is_primary":false,
+    "visual_language":{"category":"声明关系","icon":"hand","accent":"6D5B7A"},
     "background":"res://assets/documents/templates/declaration.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -76,6 +80,7 @@
   },
   {
     "id":"DOCTYPE-MEDICAL","name":"诊疗站回执或医疗急件","is_primary":false,
+    "visual_language":{"category":"医疗事务","icon":"cross","accent":"8B3D3A"},
     "background":"res://assets/documents/templates/medical_receipt.png",
     "title_position":[47,58],"title_size":[430,38],"code_position":[510,60],
     "fields":{
@@ -88,6 +93,7 @@
   },
   {
     "id":"DOCTYPE-TRANSFER","name":"原区转送单或单位担保函","is_primary":false,
+    "visual_language":{"category":"辖区转送","icon":"arrow","accent":"5D6F75"},
     "background":"res://assets/documents/templates/declaration.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -100,6 +106,7 @@
   },
   {
     "id":"DOCTYPE-PERMIT","name":"工作、居留或通行许可","is_primary":false,
+    "visual_language":{"category":"许可凭证","icon":"key","accent":"5E6C47"},
     "background":"res://assets/documents/templates/identity_record.png",
     "title_position":[47,58],"title_size":[445,38],"code_position":[522,60],
     "fields":{
@@ -112,6 +119,7 @@
   },
   {
     "id":"DOCTYPE-TRANSLATION","name":"认证译文","is_primary":false,
+    "visual_language":{"category":"译文认证","icon":"language","accent":"6C5978"},
     "background":"res://assets/documents/templates/declaration.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -123,6 +131,7 @@
   },
   {
     "id":"DOCTYPE-EVIDENCE","name":"事故、劳动或交通证据","is_primary":false,
+    "visual_language":{"category":"事实证据","icon":"file","accent":"6A5646"},
     "background":"res://assets/documents/templates/declaration.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -135,6 +144,7 @@
   },
   {
     "id":"DOCTYPE-MAINTENANCE","name":"设备维护与时间同步记录","is_primary":false,
+    "visual_language":{"category":"设备记录","icon":"gear","accent":"496660"},
     "background":"res://assets/documents/templates/declaration.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -147,6 +157,7 @@
   },
   {
     "id":"DOCTYPE-UTILITY","name":"水电缴费与实际居住记录","is_primary":false,
+    "visual_language":{"category":"公用服务","icon":"drop","accent":"3F6970"},
     "background":"res://assets/documents/templates/residence_certificate.png",
     "title_position":[47,58],"title_size":[530,38],"code_position":[522,60],
     "fields":{
@@ -158,6 +169,7 @@
   },
   {
     "id":"DOCTYPE-RESOURCE","name":"资源优先或主管保障凭证","is_primary":false,
+    "visual_language":{"category":"资源保障","icon":"box","accent":"725B32"},
     "background":"res://assets/documents/templates/application_form.png",
     "title_position":[46,57],"title_size":[430,38],"code_position":[510,60],
     "fields":{

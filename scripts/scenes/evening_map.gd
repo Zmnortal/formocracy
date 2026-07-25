@@ -4,6 +4,13 @@ signal end_sequence_finished
 
 const UI := preload("res://scripts/ui/bureau_ui.gd")
 const ROUTE_NODE_TEXTURE := preload("res://assets/map/tokens/route_node_active.png")
+const LOCATION_TEXTURES := {
+	"LOCATION-FORMS": preload("res://assets/map/locations/central_forms_v2.png"),
+	"LOCATION-RATION": preload("res://assets/map/locations/ration_depot_v2.png"),
+	"LOCATION-HOME": preload("res://assets/map/locations/home_12c_v2.png"),
+	"LOCATION-FORM-SHOP": preload("res://assets/map/locations/form_shop_v3.png"),
+	"LOCATION-NEWSSTAND": preload("res://assets/map/locations/newspaper_kiosk_v3.png"),
+}
 const DESIGN_SIZE := Vector2(1280, 720)
 const LOCATION_OFFICE := "LOCATION-OFFICE"
 const LOCATION_FORMS := "LOCATION-FORMS"
@@ -15,12 +22,12 @@ const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
 const NEWSPAPER_FORM_ID := "PERSONAL-FORM-NEWSPAPER-S01"
 
 const LOCATION_POSITIONS := {
-	LOCATION_OFFICE: Vector2(748, 520),
-	LOCATION_FORMS: Vector2(320, 220),
-	LOCATION_RATION: Vector2(640, 350),
-	LOCATION_HOME: Vector2(920, 540),
-	LOCATION_FORM_SHOP: Vector2(270, 420),
-	LOCATION_NEWSSTAND: Vector2(1052, 230),
+	LOCATION_OFFICE: Vector2(640, 316),
+	LOCATION_FORMS: Vector2(640, 180),
+	LOCATION_RATION: Vector2(985, 320),
+	LOCATION_HOME: Vector2(943, 540),
+	LOCATION_FORM_SHOP: Vector2(365, 505),
+	LOCATION_NEWSSTAND: Vector2(652, 390),
 }
 const LOCATION_NAMES := {
 	LOCATION_FORMS: "中央表单部",
@@ -28,6 +35,33 @@ const LOCATION_NAMES := {
 	LOCATION_HOME: "职员宿舍 12-C",
 	LOCATION_FORM_SHOP: "第十二区合作供销社",
 	LOCATION_NEWSSTAND: "第十二区报刊亭",
+}
+const LOCATION_DETAILS := {
+	LOCATION_FORMS: {
+		"proprietor": "负责人：袁科员",
+		"status": "当前状态：夜间受理",
+		"services": "可办理：申请送验、档案查询、退件领取",
+	},
+	LOCATION_RATION: {
+		"proprietor": "负责人：马姐",
+		"status": "当前状态：第三领取窗开放",
+		"services": "可办理：配给核验、饮水表领取",
+	},
+	LOCATION_HOME: {
+		"proprietor": "负责人：秦叔",
+		"status": "当前状态：门房值守",
+		"services": "可办理：查看投递、个人表单、休息",
+	},
+	LOCATION_FORM_SHOP: {
+		"proprietor": "负责人：周姨",
+		"status": "当前状态：晚间目录开放",
+		"services": "可办理：购买空白表单",
+	},
+	LOCATION_NEWSSTAND: {
+		"proprietor": "负责人：自动验收机",
+		"status": "当前状态：投递口运行",
+		"services": "可办理：报刊订阅申请送验",
+	},
 }
 
 var moving := false
@@ -41,6 +75,14 @@ var auto_transition_after_end_sequence := true
 var auto_open_location_scenes := true
 var active_route_points: Array[Vector2] = []
 var highlighted_route_points: Array[Vector2] = []
+var selected_location_id := ""
+var location_sprites: Dictionary = {}
+var location_dossier: Panel
+var location_dossier_title: Label
+var location_dossier_image: TextureRect
+var location_dossier_details: Label
+var location_dossier_confirm: Button
+var location_dossier_cancel: Button
 var end_dialogue_lines: Array[Dictionary] = [
 	{"speaker": "邻室职员", "text": "还不走？这一层的灯马上就要熄了。"},
 	{"speaker": "PLAYER", "text": "今天的行动许可已经用完。剩下的事，只能留到明天。"},
@@ -92,6 +134,12 @@ var end_continue_label: Label
 @onready var next_day_effect_label: Label = $NextDayReceipt/Effect
 @onready var enter_workday_button: Button = $NextDayReceipt/EnterWorkdayButton
 @onready var end_overlay: Control = $EndOfNightOverlay
+@onready var map_shade: ColorRect = $MapShade
+@onready var forms_sprite: TextureRect = $FormsSprite
+@onready var ration_sprite: TextureRect = $RationSprite
+@onready var home_sprite: TextureRect = $HomeSprite
+@onready var shop_sprite: TextureRect = $ShopSprite
+@onready var kiosk_sprite: TextureRect = $KioskSprite
 
 
 # 初始化傍晚地图场景：绑定按钮、刷新状态并适配窗口。
@@ -100,6 +148,15 @@ func _ready() -> void:
 	day_label.text = "第 %02d 工作日 · 18:40" % WorkdayState.day_number
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
 	_apply_pixel_theme(self)
+	location_sprites = {
+		LOCATION_FORMS: forms_sprite,
+		LOCATION_RATION: ration_sprite,
+		LOCATION_HOME: home_sprite,
+		LOCATION_FORM_SHOP: shop_sprite,
+		LOCATION_NEWSSTAND: kiosk_sprite,
+	}
+	_style_location_labels()
+	_build_location_dossier()
 	_connect_location_button(forms_button, LOCATION_FORMS)
 	_connect_location_button(ration_button, LOCATION_RATION)
 	_connect_location_button(home_button, LOCATION_HOME)
@@ -159,8 +216,166 @@ func _build_end_dialogue_box() -> void:
 
 # 为地点按钮绑定点击移动。悬停只使用 Theme 中的颜色与边框样式，不改变尺寸。
 func _connect_location_button(button: Button, location_id: String) -> void:
-	button.pressed.connect(func(): select_location(location_id))
+	button.pressed.connect(func(): _preview_location(location_id))
 	button.scale = Vector2.ONE
+
+
+func _style_location_labels() -> void:
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("d8cfad")
+	paper.border_color = Color("776b46")
+	paper.set_border_width_all(2)
+	paper.corner_radius_top_left = 2
+	paper.corner_radius_top_right = 2
+	paper.corner_radius_bottom_left = 2
+	paper.corner_radius_bottom_right = 2
+	paper.shadow_color = Color(0.03, 0.035, 0.025, 0.48)
+	paper.shadow_size = 4
+	var paper_hover := paper.duplicate() as StyleBoxFlat
+	paper_hover.bg_color = Color("ece0b8")
+	paper_hover.border_color = Color("aa8d45")
+	for button in [forms_button, ration_button, home_button, shop_button, kiosk_button]:
+		button.add_theme_stylebox_override("normal", paper)
+		button.add_theme_stylebox_override("hover", paper_hover)
+		button.add_theme_stylebox_override("pressed", paper_hover)
+		button.add_theme_color_override("font_color", Color("34372e"))
+		button.add_theme_color_override("font_hover_color", Color("22251f"))
+		button.add_theme_color_override("font_pressed_color", Color("22251f"))
+		button.add_theme_font_size_override("font_size", 14)
+
+
+func _build_location_dossier() -> void:
+	location_dossier = Panel.new()
+	location_dossier.name = "LocationDossier"
+	location_dossier.position = Vector2(46, 116)
+	location_dossier.size = Vector2(382, 486)
+	location_dossier.z_index = 40
+	location_dossier.visible = false
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("d1c7a5")
+	paper.border_color = Color("5d593f")
+	paper.set_border_width_all(4)
+	paper.corner_radius_top_right = 4
+	paper.corner_radius_bottom_right = 4
+	paper.shadow_color = Color(0.015, 0.02, 0.015, 0.72)
+	paper.shadow_size = 12
+	location_dossier.add_theme_stylebox_override("panel", paper)
+	add_child(location_dossier)
+
+	location_dossier_title = Label.new()
+	location_dossier_title.position = Vector2(24, 20)
+	location_dossier_title.size = Vector2(334, 42)
+	location_dossier_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	location_dossier_title.add_theme_font_override("font", UI.PIXEL_FONT)
+	location_dossier_title.add_theme_font_size_override("font_size", 21)
+	location_dossier_title.add_theme_color_override("font_color", Color("5a3026"))
+	location_dossier.add_child(location_dossier_title)
+
+	var rule := HSeparator.new()
+	rule.position = Vector2(24, 64)
+	rule.size = Vector2(334, 4)
+	location_dossier.add_child(rule)
+
+	location_dossier_image = TextureRect.new()
+	location_dossier_image.position = Vector2(50, 76)
+	location_dossier_image.size = Vector2(282, 210)
+	location_dossier_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	location_dossier_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	location_dossier_image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	location_dossier_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	location_dossier.add_child(location_dossier_image)
+
+	location_dossier_details = Label.new()
+	location_dossier_details.position = Vector2(28, 298)
+	location_dossier_details.size = Vector2(326, 92)
+	location_dossier_details.add_theme_font_override("font", UI.PIXEL_FONT)
+	location_dossier_details.add_theme_font_size_override("font_size", 14)
+	location_dossier_details.add_theme_color_override("font_color", Color("37382f"))
+	location_dossier_details.add_theme_constant_override("line_spacing", 5)
+	location_dossier.add_child(location_dossier_details)
+
+	location_dossier_confirm = Button.new()
+	location_dossier_confirm.text = "前往此处  →"
+	location_dossier_confirm.position = Vector2(26, 410)
+	location_dossier_confirm.size = Vector2(224, 52)
+	location_dossier_confirm.add_theme_font_override("font", UI.PIXEL_FONT)
+	location_dossier_confirm.add_theme_font_size_override("font_size", 17)
+	location_dossier_confirm.add_theme_color_override("font_color", Color("e7dba9"))
+	location_dossier_confirm.add_theme_stylebox_override("normal", _make_dossier_button_style(Color("253c32")))
+	location_dossier_confirm.add_theme_stylebox_override("hover", _make_dossier_button_style(Color("365044")))
+	location_dossier_confirm.pressed.connect(_confirm_selected_location)
+	location_dossier.add_child(location_dossier_confirm)
+
+	location_dossier_cancel = Button.new()
+	location_dossier_cancel.text = "取消"
+	location_dossier_cancel.position = Vector2(260, 410)
+	location_dossier_cancel.size = Vector2(96, 52)
+	location_dossier_cancel.add_theme_font_override("font", UI.PIXEL_FONT)
+	location_dossier_cancel.add_theme_font_size_override("font_size", 15)
+	location_dossier_cancel.add_theme_color_override("font_color", Color("403d31"))
+	location_dossier_cancel.add_theme_stylebox_override("normal", _make_dossier_button_style(Color("b8ae8f")))
+	location_dossier_cancel.add_theme_stylebox_override("hover", _make_dossier_button_style(Color("c9bea0")))
+	location_dossier_cancel.pressed.connect(_cancel_location_preview)
+	location_dossier.add_child(location_dossier_cancel)
+
+
+func _make_dossier_button_style(color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color
+	style.border_color = Color("88794d")
+	style.set_border_width_all(3)
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	return style
+
+
+func _preview_location(location_id: String) -> void:
+	if moving or ending_night:
+		return
+	if WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
+		notice_label.text = "今日行动已经用尽。你只能返回职员宿舍。"
+		return
+	selected_location_id = location_id
+	var details: Dictionary = LOCATION_DETAILS.get(location_id, {})
+	location_dossier_title.text = LOCATION_NAMES.get(location_id, "未登记地点")
+	location_dossier_image.texture = LOCATION_TEXTURES.get(location_id)
+	location_dossier_details.text = "%s\n%s\n%s" % [
+		details.get("proprietor", "负责人：未登记"),
+		details.get("status", "当前状态：未知"),
+		details.get("services", "可办理：未登记"),
+	]
+	location_dossier_confirm.disabled = location_id == WorkdayState.evening_location_id
+	location_dossier_confirm.text = "当前位置" if location_dossier_confirm.disabled else "前往此处  →"
+	location_dossier.visible = true
+	map_shade.color = Color(0.018, 0.024, 0.019, 0.48)
+	_refresh_landmark_focus()
+	Sfx.play("ui_switch")
+
+
+func _cancel_location_preview() -> void:
+	selected_location_id = ""
+	location_dossier.visible = false
+	map_shade.color = Color(0.02, 0.025, 0.02, 0.12)
+	_refresh_landmark_focus()
+
+
+func _confirm_selected_location() -> void:
+	if selected_location_id.is_empty():
+		return
+	var destination := selected_location_id
+	_cancel_location_preview()
+	select_location(destination)
+
+
+func _refresh_landmark_focus() -> void:
+	for location_id in location_sprites:
+		var sprite := location_sprites[location_id] as TextureRect
+		sprite.pivot_offset = sprite.size * 0.5
+		var selected: bool = not selected_location_id.is_empty() and location_id == selected_location_id
+		sprite.modulate = Color.WHITE if selected or selected_location_id.is_empty() else Color(0.48, 0.5, 0.45, 0.72)
+		sprite.scale = Vector2(1.045, 1.045) if selected else Vector2.ONE
 
 
 # 为场景内所有按钮统一挂接点击与悬停音效。

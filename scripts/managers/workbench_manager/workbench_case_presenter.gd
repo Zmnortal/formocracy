@@ -30,6 +30,8 @@ const ENVELOPE_FRONT_POSITION := Vector2(48, 200)
 const ENVELOPE_FRONT_SIZE := Vector2(405, 420)
 const ENVELOPE_POCKET_WINDOW_POSITION := Vector2(86, 132)
 const ENVELOPE_POCKET_WINDOW_SIZE := Vector2(328, 68)
+const ENVELOPE_POCKET_EXPOSED_HEIGHT := 38.0
+const ENVELOPE_POCKET_STACK_OFFSET_X := 10.0
 const ENVELOPE_VISIBLE_BOUNDS := Rect2(82, 30, 348, 559)
 # 文件袋父节点可以在抓取时占用 999；其余桌面物件会依次降到 998、997……
 # 全部视觉子节点统一固定在父节点 -2，因此封皮最高只能是 997：
@@ -820,7 +822,7 @@ func _refresh_document_previews() -> void:
 	thumbnail_tray.visible = envelope_billboard_expanded and envelope_opened
 
 
-# 将袋内全部文件横向错位堆叠；每份保留可点击边缘，最后回插的文件位于堆顶。
+# 将袋内文件紧凑堆叠在袋口，只露出顶部边角；最后回插的文件位于堆顶。
 func _layout_document_preview_slot(thumbnail: Button, slot: int, total: int) -> void:
 	var document_id := WorkdayContext.stringify_value(thumbnail.get_meta("document_id"))
 	var document: DocumentView = document_by_id.get(document_id)
@@ -829,11 +831,11 @@ func _layout_document_preview_slot(thumbnail: Button, slot: int, total: int) -> 
 		pocket_size = document.visual_size(DocumentView.VISUAL_POCKET)
 	thumbnail.size = pocket_size
 	thumbnail.pivot_offset = thumbnail.size * 0.5
-	var horizontal_margin := 8.0
-	var horizontal_span := maxf(0.0, thumbnail_tray.size.x - thumbnail.size.x - horizontal_margin * 2.0)
-	var normalized_slot := 0.5 if total <= 1 else float(slot) / float(total - 1)
-	thumbnail.position = Vector2(horizontal_margin + horizontal_span * normalized_slot, thumbnail_tray.size.y - thumbnail.size.y + sin(float(slot) * 1.7) * 3.0)
-	thumbnail.rotation = lerpf(-0.045, 0.045, normalized_slot)
+	var stack_offset := minf(ENVELOPE_POCKET_STACK_OFFSET_X, maxf(0.0, thumbnail_tray.size.x - thumbnail.size.x) / float(maxi(1, total - 1)))
+	var stack_width := thumbnail.size.x + stack_offset * float(maxi(0, total - 1))
+	var stack_left := maxf(0.0, (thumbnail_tray.size.x - stack_width) * 0.5)
+	thumbnail.position = Vector2(stack_left + stack_offset * float(slot), thumbnail_tray.size.y - ENVELOPE_POCKET_EXPOSED_HEIGHT)
+	thumbnail.rotation = 0.0
 	# 袋内缩略图与文件袋共用一个原子层，堆叠顺序由 move_child 决定。
 	# 禁止按 slot 增加 Z-index，否则父节点位于 999 时会再次突破层级上限。
 	thumbnail.z_index = 0

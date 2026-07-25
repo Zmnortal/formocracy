@@ -9,6 +9,15 @@
       "free": true,
       "accent": "a88948",
       "paper_color": "d2c7a2",
+      "template_asset": "res://assets/newspapers/templates/hengchuan_daily.png",
+      "reading_grid": {
+        "edition": [60, 12, 230, 54, 12],
+        "headline": [24, 78, 302, 102, 18],
+        "image": [24, 198, 302, 152],
+        "article_left": [24, 356, 145, 108, 10],
+        "article_right": [181, 356, 145, 108, 10],
+        "day": [190, 477, 136, 26, 11]
+      },
       "issues": [
         {
           "day": 1,
@@ -70,6 +79,15 @@
       "free": false,
       "accent": "b85e45",
       "paper_color": "d8c5a4",
+      "template_asset": "res://assets/newspapers/templates/district_12_morning.png",
+      "reading_grid": {
+        "edition": [22, 14, 236, 62, 12],
+        "headline": [184, 116, 142, 104, 13],
+        "image": [18, 116, 156, 354],
+        "article_left": [184, 246, 68, 188, 8],
+        "article_right": [260, 246, 67, 188, 8],
+        "day": [190, 477, 136, 26, 11]
+      },
       "issues": [
         {
           "day": 1,
@@ -131,6 +149,15 @@
       "free": false,
       "accent": "526f84",
       "paper_color": "c8c9be",
+      "template_asset": "res://assets/newspapers/templates/hengchuan_gazette.png",
+      "reading_grid": {
+        "edition": [64, 10, 218, 48, 11],
+        "headline": [24, 76, 302, 112, 20],
+        "image": [248, 322, 80, 126],
+        "article_left": [24, 218, 145, 92, 9],
+        "article_right": [181, 218, 145, 92, 9],
+        "day": [190, 477, 136, 26, 11]
+      },
       "issues": [
         {
           "day": 1,
@@ -192,6 +219,15 @@
       "free": false,
       "accent": "75557f",
       "paper_color": "c8b9bd",
+      "template_asset": "res://assets/newspapers/templates/old_city_evening.png",
+      "reading_grid": {
+        "edition": [22, 12, 214, 58, 12],
+        "headline": [24, 86, 302, 96, 20],
+        "image": [104, 190, 134, 264],
+        "article_left": [18, 198, 78, 246, 8],
+        "article_right": [246, 198, 80, 246, 8],
+        "day": [190, 477, 136, 26, 11]
+      },
       "issues": [
         {
           "day": 1,

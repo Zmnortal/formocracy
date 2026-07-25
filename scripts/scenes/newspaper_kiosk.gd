@@ -5,6 +5,7 @@ const CONFIG_PATH := "res://data/narrative/newspapers.json"
 const MAP_SCENE := "res://scenes/evening_map.tscn"
 const FORM_ID := "PERSONAL-FORM-NEWSPAPER-S01"
 const DESIGN_SIZE := Vector2(1280, 720)
+const SUBSCRIPTION_FORM_TEXTURE := preload("res://assets/newspapers/forms/subscription_form_s01.png")
 
 var publisher_selector: OptionButton
 var duration_selector: OptionButton
@@ -18,6 +19,7 @@ var balance_label: Label
 var form_count_label: Label
 var dialogue_box: DialogueBox
 var publishers: Array[Dictionary] = []
+var form_asset: TextureRect
 
 
 func _ready() -> void:
@@ -61,36 +63,39 @@ func _build_scene() -> void:
 	var form_paper := Panel.new()
 	form_paper.position = Vector2(48, 120)
 	form_paper.size = Vector2(716, 530)
-	form_paper.add_theme_stylebox_override("panel", UI.make_box(Color("cfc4a0"), Color("544b35"), 3, 2))
+	var transparent_form_style := StyleBoxFlat.new()
+	transparent_form_style.bg_color = Color(0, 0, 0, 0)
+	transparent_form_style.shadow_color = Color(0, 0, 0, 0.62)
+	transparent_form_style.shadow_size = 10
+	transparent_form_style.shadow_offset = Vector2(7, 8)
+	form_paper.add_theme_stylebox_override("panel", transparent_form_style)
 	add_child(form_paper)
 
-	var form_heading := _label("报刊订阅通行申请", 27, Color("27261d"))
-	form_heading.position = Vector2(32, 24)
-	form_heading.size = Vector2(480, 42)
-	form_paper.add_child(form_heading)
-
-	var form_code := _label("S-01/PRESS · 版本 04 · 一次送件有效", 14, Color("5e5943"))
-	form_code.position = Vector2(34, 66)
-	form_code.size = Vector2(540, 26)
-	form_paper.add_child(form_code)
+	form_asset = TextureRect.new()
+	form_asset.name = "SubscriptionFormAsset"
+	form_asset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	form_asset.texture = SUBSCRIPTION_FORM_TEXTURE
+	form_asset.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	form_asset.stretch_mode = TextureRect.STRETCH_SCALE
+	form_asset.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	form_asset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	form_paper.add_child(form_asset)
 
 	form_count_label = _label("", 14, Color("733c32"))
-	form_count_label.position = Vector2(486, 28)
-	form_count_label.size = Vector2(190, 54)
+	form_count_label.position = Vector2(820, 80)
+	form_count_label.size = Vector2(394, 28)
 	form_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	form_paper.add_child(form_count_label)
+	add_child(form_count_label)
 
-	_add_field_label(form_paper, "订阅发行商", Vector2(34, 114))
 	publisher_selector = OptionButton.new()
-	publisher_selector.position = Vector2(34, 142)
-	publisher_selector.size = Vector2(310, 42)
+	publisher_selector.position = Vector2(66, 178)
+	publisher_selector.size = Vector2(286, 36)
 	_style_input(publisher_selector)
 	form_paper.add_child(publisher_selector)
 
-	_add_field_label(form_paper, "订阅期限", Vector2(370, 114))
 	duration_selector = OptionButton.new()
-	duration_selector.position = Vector2(370, 142)
-	duration_selector.size = Vector2(310, 42)
+	duration_selector.position = Vector2(370, 178)
+	duration_selector.size = Vector2(278, 36)
 	_style_input(duration_selector)
 	duration_selector.add_item("3 日短期投递", 3)
 	duration_selector.set_item_metadata(0, 3)
@@ -98,31 +103,28 @@ func _build_scene() -> void:
 	duration_selector.set_item_metadata(1, 7)
 	form_paper.add_child(duration_selector)
 
-	_add_field_label(form_paper, "投递地址", Vector2(34, 206))
 	address_input = _line_edit("须与居住登记完全一致")
-	address_input.position = Vector2(34, 234)
-	address_input.size = Vector2(646, 42)
+	address_input.position = Vector2(66, 254)
+	address_input.size = Vector2(582, 36)
 	address_input.text = "第十二区 · 职员宿舍 12-C"
 	form_paper.add_child(address_input)
 
-	_add_field_label(form_paper, "本市身份证明号", Vector2(34, 298))
 	identity_input = _line_edit("本市身份证明号")
-	identity_input.position = Vector2(34, 326)
-	identity_input.size = Vector2(310, 42)
+	identity_input.position = Vector2(66, 332)
+	identity_input.size = Vector2(286, 36)
 	identity_input.text = WorkdayState.manager.get_player_identity_number()
 	form_paper.add_child(identity_input)
 
-	_add_field_label(form_paper, "申请人签名", Vector2(370, 298))
 	signature_input = _line_edit("须与登记姓名一致")
-	signature_input.position = Vector2(370, 326)
-	signature_input.size = Vector2(310, 42)
+	signature_input.position = Vector2(370, 332)
+	signature_input.size = Vector2(278, 36)
 	signature_input.text = WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
 	form_paper.add_child(signature_input)
 
 	declaration = CheckBox.new()
 	declaration.text = "本人知悉：机器先收费并吞表；退件不退款，原表不退还"
-	declaration.position = Vector2(34, 390)
-	declaration.size = Vector2(646, 40)
+	declaration.position = Vector2(66, 388)
+	declaration.size = Vector2(582, 40)
 	declaration.add_theme_font_override("font", UI.PIXEL_FONT)
 	declaration.add_theme_font_size_override("font_size", 14)
 	declaration.add_theme_color_override("font_color", Color("373329"))
@@ -131,8 +133,8 @@ func _build_scene() -> void:
 
 	submit_button = Button.new()
 	submit_button.text = "支付 1 配给券并送入验收机"
-	submit_button.position = Vector2(164, 456)
-	submit_button.size = Vector2(388, 48)
+	submit_button.position = Vector2(182, 456)
+	submit_button.size = Vector2(352, 44)
 	UI.style_button(submit_button, 17, true)
 	submit_button.pressed.connect(_submit)
 	form_paper.add_child(submit_button)

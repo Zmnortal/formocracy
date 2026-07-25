@@ -25,6 +25,7 @@ var dialogue_box: DialogueBox
 var available_newspapers: Array[Dictionary] = []
 var selected_newspaper: Dictionary = {}
 var newspaper_selector: Control
+var full_newspaper_texture: TextureRect
 
 @onready var backdrop: TextureRect = $Backdrop
 @onready var mood_tint: ColorRect = $MoodTint
@@ -33,6 +34,7 @@ var newspaper_selector: Control
 @onready var edition_label: Label = $Newspaper/Edition
 @onready var headline_label: Label = $Newspaper/Headline
 @onready var article_label: Label = $Newspaper/Article
+@onready var article_secondary_label: Label = $Newspaper/Article2
 @onready var day_label: Label = $Newspaper/DayMarker
 @onready var location_label: Label = $LocationLabel
 @onready var slide_flash: ColorRect = $SlideFlash
@@ -45,6 +47,7 @@ func _ready() -> void:
 	Sfx.stop_walking()
 	day_content = _load_day_content()
 	walk_lines = _read_walk_lines(day_content)
+	_build_full_newspaper_texture()
 	_build_newspaper_selector()
 	_build_dialogue_box()
 	get_viewport().size_changed.connect(_fit_to_window)
@@ -64,7 +67,7 @@ func _build_dialogue_box() -> void:
 	dialogue_box.advance_requested.connect(advance_sequence)
 
 
-# 根据有效订阅开始晨间读报；多份报纸先选头条，只有官方报时直接精读。
+# 根据有效订阅开始晨间读报；无论送达几份，都必须由玩家亲自选择后才能精读。
 func _begin_newspaper_flow() -> void:
 	available_newspapers = WorkdayState.manager.get_available_newspapers()
 	var already_read := WorkdayState.manager.get_read_newspaper()
@@ -75,10 +78,7 @@ func _begin_newspaper_flow() -> void:
 				_show_newspaper(item)
 				_show_departure_prompt()
 				return
-	if available_newspapers.size() <= 1:
-		_choose_newspaper(available_newspapers[0] if not available_newspapers.is_empty() else {})
-	else:
-		_show_newspaper_selection()
+	_show_newspaper_selection()
 
 
 # 构建最多四份报纸并列的晨间头条选择层；正文仍复用既有报纸面板。
@@ -90,6 +90,19 @@ func _build_newspaper_selector() -> void:
 	newspaper_selector.visible = false
 	add_child(newspaper_selector)
 	move_child(newspaper_selector, slide_flash.get_index())
+
+
+# 正文纸面始终使用发行商的正式美术底图；文字只作为动态排版层覆盖其上。
+func _build_full_newspaper_texture() -> void:
+	full_newspaper_texture = TextureRect.new()
+	full_newspaper_texture.name = "NewspaperAsset"
+	full_newspaper_texture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	full_newspaper_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	full_newspaper_texture.stretch_mode = TextureRect.STRETCH_SCALE
+	full_newspaper_texture.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	full_newspaper_texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	newspaper.add_child(full_newspaper_texture)
+	newspaper.move_child(full_newspaper_texture, 0)
 
 
 # 展示所有到报的头条与摘要。只有玩家按下某张报纸的“精读”按钮才会继续。
@@ -135,15 +148,32 @@ func _build_newspaper_card(item: Dictionary) -> Panel:
 	card.size = Vector2(278, 364)
 	card.clip_contents = true
 	var style := StyleBoxFlat.new()
-	style.bg_color = paper_color
+	style.bg_color = Color(0, 0, 0, 0)
 	style.border_color = accent
-	style.set_border_width_all(4)
+	style.set_border_width_all(3)
 	style.shadow_color = Color(0, 0, 0, 0.55)
 	style.shadow_size = 8
 	style.shadow_offset = Vector2(5, 6)
 	card.add_theme_stylebox_override("panel", style)
 
-	var masthead := _make_newspaper_label(WorkdayContext.read_string(item, "name"), 23, Color("25231c"))
+	var paper_asset := TextureRect.new()
+	paper_asset.name = "NewspaperAsset"
+	paper_asset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	paper_asset.texture = _load_newspaper_asset(item)
+	paper_asset.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	paper_asset.stretch_mode = TextureRect.STRETCH_SCALE
+	paper_asset.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	paper_asset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(paper_asset)
+
+	var text_wash := ColorRect.new()
+	text_wash.color = Color(paper_color, 0.62)
+	text_wash.position = Vector2(12, 8)
+	text_wash.size = Vector2(254, 210)
+	text_wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(text_wash)
+
+	var masthead := _make_newspaper_label(WorkdayContext.read_string(item, "name"), 20, Color("25231c"))
 	masthead.position = Vector2(16, 16)
 	masthead.size = Vector2(246, 34)
 	masthead.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -162,20 +192,26 @@ func _build_newspaper_card(item: Dictionary) -> Panel:
 	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card.add_child(tagline)
 
-	var headline := _make_newspaper_label(WorkdayContext.read_string(issue, "headline"), 20, Color("201f19"))
-	headline.position = Vector2(18, 124)
-	headline.size = Vector2(242, 90)
-	headline.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var headline := _make_newspaper_label(
+		_wrap_card_text(WorkdayContext.read_string(issue, "headline"), 12),
+		13,
+		Color("201f19")
+	)
+	headline.position = Vector2(18, 116)
+	headline.size = Vector2(242, 72)
+	headline.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	headline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	headline.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	headline.clip_text = true
 	card.add_child(headline)
 
-	var teaser := _make_newspaper_label(_wrap_card_text(WorkdayContext.read_string(issue, "teaser"), 15), 13, Color("4d493d"))
-	teaser.position = Vector2(20, 222)
-	teaser.size = Vector2(238, 70)
+	var teaser := _make_newspaper_label(_wrap_card_text(WorkdayContext.read_string(issue, "teaser"), 13), 9, Color("4d493d"))
+	teaser.position = Vector2(20, 194)
+	teaser.size = Vector2(238, 52)
 	teaser.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	teaser.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	teaser.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	teaser.clip_text = true
 	card.add_child(teaser)
 
 	var read_button := Button.new()
@@ -215,21 +251,89 @@ func _show_newspaper(item: Dictionary = {}) -> void:
 	location_label.text = "06:24  /  职员宿舍 12-C"
 	var publisher_name := WorkdayContext.read_string(selected_newspaper, "name", "衡川日报")
 	edition_label.text = "%s\n%s" % [publisher_name, WorkdayContext.read_string(selected_newspaper, "tagline")]
+	if WorkdayContext.read_string(selected_newspaper, "id") == "NEWSPAPER-ADMIN-GAZETTE":
+		edition_label.add_theme_color_override("font_color", Color("e8dfc3"))
+	else:
+		edition_label.add_theme_color_override("font_color", Color("25231c"))
 	headline_label.text = WorkdayContext.read_string(issue, "headline", "今日行政规则等待发布")
-	article_label.text = WorkdayContext.read_string(issue, "article", "窗口人员须在上班后收听内部广播。")
+	var article_columns := _split_article_columns(
+		WorkdayContext.read_string(issue, "article", "窗口人员须在上班后收听内部广播。")
+	)
+	article_label.text = article_columns[0]
+	article_secondary_label.text = article_columns[1]
 	day_label.text = "第 %02d 工作日 · 今日精读" % WorkdayState.day_number
+	_apply_reading_grid(selected_newspaper)
 	var accent := Color(WorkdayContext.read_string(selected_newspaper, "accent", "a88948"))
-	var paper_color := Color(WorkdayContext.read_string(selected_newspaper, "paper_color", "d2c7a2"))
+	full_newspaper_texture.texture = _load_newspaper_asset(selected_newspaper)
 	var newspaper_style := StyleBoxFlat.new()
-	newspaper_style.bg_color = paper_color
+	newspaper_style.bg_color = Color(0, 0, 0, 0)
 	newspaper_style.border_color = accent
-	newspaper_style.set_border_width_all(4)
+	newspaper_style.set_border_width_all(2)
 	newspaper_style.shadow_color = Color(0, 0, 0, 0.62)
 	newspaper_style.shadow_size = 13
 	newspaper_style.shadow_offset = Vector2(9, 10)
 	newspaper.add_theme_stylebox_override("panel", newspaper_style)
 	dialogue_box.show_line(_player_speaker(), WorkdayContext.read_string(issue, "reflection", "今天的报纸没有更多说明。"), "player")
 	_publish_phase()
+
+
+func _load_newspaper_asset(item: Dictionary) -> Texture2D:
+	var asset_path := WorkdayContext.read_string(
+		item,
+		"template_asset",
+		"res://assets/newspapers/templates/hengchuan_daily.png"
+	)
+	var resource := load(asset_path)
+	return resource as Texture2D
+
+
+# 每家报纸只允许文字进入配置好的安全格；格子之外的照片与插图永不承载动态文字。
+func _apply_reading_grid(item: Dictionary) -> void:
+	var grid := WorkdayContext.read_dictionary(item, "reading_grid")
+	_apply_label_grid(edition_label, WorkdayContext.read_array(grid, "edition"))
+	_apply_label_grid(headline_label, WorkdayContext.read_array(grid, "headline"))
+	_apply_label_grid(article_label, WorkdayContext.read_array(grid, "article_left"))
+	_apply_label_grid(article_secondary_label, WorkdayContext.read_array(grid, "article_right"))
+	_apply_label_grid(day_label, WorkdayContext.read_array(grid, "day"))
+	edition_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	edition_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	headline_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	headline_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	article_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	article_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	article_secondary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	article_secondary_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	day_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	day_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+
+func _apply_label_grid(label: Label, values: Array) -> void:
+	if values.size() < 5:
+		return
+	label.position = Vector2(float(values[0]), float(values[1]))
+	label.size = Vector2(float(values[2]), float(values[3]))
+	label.add_theme_font_size_override("font_size", int(values[4]))
+	label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	label.clip_text = true
+
+
+# 正文在最接近中点的句末处分栏，避免半句话被机械截断到另一栏。
+func _split_article_columns(text: String) -> Array[String]:
+	if text.length() < 2:
+		return [text, ""]
+	var midpoint := text.length() / 2
+	var split_at := midpoint
+	var punctuation := "。！？；"
+	for distance in range(0, mini(24, text.length() - midpoint)):
+		var forward := midpoint + distance
+		if forward < text.length() and punctuation.contains(text.substr(forward, 1)):
+			split_at = forward + 1
+			break
+		var backward := midpoint - distance
+		if backward > 0 and punctuation.contains(text.substr(backward, 1)):
+			split_at = backward + 1
+			break
+	return [text.substr(0, split_at).strip_edges(), text.substr(split_at).strip_edges()]
 
 
 # 报纸、四拍走路和办事厅入口均由玩家逐拍确认，不设置自动播放计时器。

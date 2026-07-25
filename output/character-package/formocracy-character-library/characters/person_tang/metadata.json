@@ -47,10 +47,17 @@
       ],
       "bit_depth": 1,
       "scaling": "nearest-neighbor"
+    },
+    "standard_portrait_specification": {
+      "output_size": "256x256",
+      "source": "01_queue_idle_neutral_fullbody",
+      "crop": "head-and-shoulders",
+      "background": "transparent"
     }
   },
   "assets": {
     "portrait_8bit": "portrait_8bit.png",
+    "portrait_standard": "portrait_standard.png",
     "concept_art": "concept.png",
     "fullbody": "fullbody.png",
     "animation_table": "animation_table.json",
@@ -63,6 +70,9 @@
   "original_project_paths": {
     "portrait_texture": "res://assets/characters/portraits_8bit/person_tang.png",
     "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_tang.png",
+    "standard_portrait_texture": "res://assets/characters/portraits_standard/person_tang.png",
+    "packaged_standard_portrait_source": "res://assets/characters/portraits_standard/person_tang.png",
+    "standard_portrait_source_frame": "res://assets/characters/applicants/person_tang/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
     "actor_texture": "res://assets/characters/applicants/person_tang/fullbody_frames_20/02_idle_breath_a_fullbody.png",
     "animation_table": "res://data/animations/person_tang/animation_table.json",
     "voice_sfx": "res://assets/audio/sfx/people_male_young.wav"

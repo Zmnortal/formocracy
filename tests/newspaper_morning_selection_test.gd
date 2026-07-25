@@ -26,10 +26,16 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var sequence = current_scene
-	assert(sequence.phase == "newspaper_selection", "multiple deliveries must begin at the headline shelf")
+	assert(sequence.phase == "newspaper_selection", "every delivery count must begin at the headline shelf")
 	assert(sequence.available_newspapers.size() == 3, "official plus two active subscriptions must be visible")
 	assert(sequence.newspaper_selector.visible, "headline selection layer must be visible")
 	assert(not sequence.dialogue_box.visible, "selection must wait for a paper click rather than dialogue autoplay")
+	var first_card_asset := sequence.newspaper_selector.get_child(2).get_node("NewspaperAsset") as TextureRect
+	assert(first_card_asset.texture != null, "headline shelf must use a real newspaper texture")
+	assert(
+		first_card_asset.texture.resource_path.contains("assets/newspapers/templates"),
+		"headline shelf must not fall back to a code-drawn paper placeholder"
+	)
 
 	var chosen: Dictionary = sequence.available_newspapers[1]
 	var chosen_id := String(chosen.get("id", ""))
@@ -37,6 +43,21 @@ func run() -> void:
 	assert(sequence.phase == "newspaper", "choosing a headline must open the full paper")
 	assert(sequence.newspaper.visible and not sequence.newspaper_selector.visible, "full paper must replace the headline shelf")
 	assert(sequence.edition_label.text.contains(String(chosen.get("name", ""))), "full paper must use the selected masthead")
+	assert(sequence.full_newspaper_texture.texture.resource_path == String(chosen.get("template_asset", "")), "full reading must use the chosen publisher asset")
+	var reading_grid: Dictionary = chosen.get("reading_grid", {})
+	var image_values: Array = reading_grid.get("image", [])
+	var image_rect := Rect2(
+		Vector2(float(image_values[0]), float(image_values[1])),
+		Vector2(float(image_values[2]), float(image_values[3]))
+	)
+	assert(
+		not Rect2(sequence.article_label.position, sequence.article_label.size).intersects(image_rect),
+		"left article column must never overlap the configured image cell"
+	)
+	assert(
+		not Rect2(sequence.article_secondary_label.position, sequence.article_secondary_label.size).intersects(image_rect),
+		"right article column must never overlap the configured image cell"
+	)
 	assert(state.manager.get_read_newspaper().is_empty(), "choice is recorded only after the player finishes the article")
 
 	sequence.dialogue_box.reveal_current_line()

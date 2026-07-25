@@ -176,6 +176,17 @@ func _validate_ontology() -> void:
 	var storylines_table := _ontology_table("storylines")
 	var personal_forms_table := _ontology_table("personal_forms")
 	var locations_table := _ontology_table("locations")
+	for type_id_value: Variant in document_types_table:
+		var type_id := WorkdayContext.stringify_value(type_id_value)
+		var type_data := WorkdayContext.read_dictionary(document_types_table, type_id)
+		var visual_language := WorkdayContext.read_dictionary(type_data, "visual_language")
+		if WorkdayContext.read_string(visual_language, "category").is_empty():
+			errors.append("材料类型 %s 缺少 visual_language.category 功能分类" % type_id)
+		if WorkdayContext.read_string(visual_language, "icon").is_empty():
+			errors.append("材料类型 %s 缺少 visual_language.icon 像素图标" % type_id)
+		var accent := WorkdayContext.read_string(visual_language, "accent")
+		if accent.is_empty() or not Color.html_is_valid(accent):
+			errors.append("材料类型 %s 的 visual_language.accent 不是有效颜色" % type_id)
 	for case_id_value: Variant in cases_table:
 		var case_id := WorkdayContext.stringify_value(case_id_value)
 		var case_data := WorkdayContext.read_dictionary(cases_table, case_id)

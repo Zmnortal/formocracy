@@ -18,11 +18,21 @@ func run() -> void:
 
 	var general_slots := 0
 	var story_slots := 0
+	var multi_line_story_cases := 0
 	for case_id in database.ontology.cases_v2:
 		var case_data: Dictionary = database.get_gameplay_case(case_id)
 		assert(not case_data.is_empty(), "every configured case must resolve at runtime: %s" % case_id)
 		assert(case_data.documents.size() <= 6, "each case must fit the six-document envelope tray: %s" % case_id)
 		assert(database.evaluate_gameplay_case(case_data).decision in ["批准", "驳回"], "every configured case must produce a rule decision: %s" % case_id)
+		if String(case_data.get("content_kind", "")) == "story":
+			var dialogue: Dictionary = case_data.get("dialogue", {})
+			for dialogue_key in ["greeting", "delivery", "waiting", "approved", "rejected"]:
+				var lines: Variant = dialogue.get(dialogue_key, [])
+				assert(lines is Array and lines.size() >= 2, "story dialogue stage must contain at least two lines: %s/%s" % [case_id, dialogue_key])
+				for line: Variant in lines:
+					assert(not String(line).strip_edges().is_empty(), "story dialogue must not contain empty lines: %s/%s" % [case_id, dialogue_key])
+					assert(String(line).length() <= 36, "story dialogue must fit the compact NPC bubble: %s/%s" % [case_id, dialogue_key])
+			multi_line_story_cases += 1
 	for day in range(1, 8):
 		var workday: Dictionary = database.get_workday_for_day(day)
 		assert(int(workday.day_number) == day, "each demo day must resolve by its configured day number")
@@ -33,6 +43,7 @@ func run() -> void:
 			else:
 				general_slots += 1
 	assert(general_slots == 24 and story_slots == 11, "seven-day slot mix must be 24 general and 11 story cases")
+	assert(multi_line_story_cases == 11, "all eleven story cases must use multi-line key NPC dialogue")
 
 	state.day_number = 1
 	assert(director.start_gameplay_workday(), "day one queue must build from configured slots")

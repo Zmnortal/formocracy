@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "character_id": "DEFAULT-APPLICANT",
+  "character_id": "PERSON-YE",
   "default_animation": "idle",
-  "substitute_frames_with_static_actor": true,
-  "static_actor_texture": "frames/02_idle_neutral_a_fullbody.png",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "frames/02_idle_adjust_strap_fullbody.png",
   "action_contract": {
     "required": [
       "idle",
@@ -22,6 +22,29 @@
     ],
     "max_unique_pngs": 20
   },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "dark_compact_high_bun_with_side_swept_fringe",
+      "calm_narrow_face",
+      "blue_violet_structured_dispatch_jacket",
+      "broad_lapels_silver_buttons_and_brass_name_badge",
+      "pale_gray_high_collar_shirt",
+      "charcoal_straight_wide_leg_trousers",
+      "brown_crossbody_dispatch_satchel_at_left_hip",
+      "black_low_work_shoes"
+    ],
+    "delivery_prop_markers": [
+      "golden_ochre_portrait_document_bag",
+      "broad_trapezoid_flap",
+      "two_red_centered_closure_discs",
+      "cream_figure_eight_cord",
+      "reinforced_bottom_corner_seams"
+    ],
+    "note": "所有帧的可见人物高度统一为650像素，脚底统一保留20像素底边距，并完整显示高髻、名牌、斜挎调度包、直筒裤和低帮黑鞋。路线板、夜车票根、蓝线地图、本市身份证、临时安置回执和调度令牌属于叶蓁本人；金黄封绳文档袋只在06–08递交三帧出现，交付后留在玩家工作台。"
+  },
   "emotion_fallbacks": {
     "happy": "happy_idle",
     "angry": "angry_idle"
@@ -29,16 +52,16 @@
   "micro_expressions": [
     {
       "action": "blink",
-      "weight": 50
+      "weight": 35
     },
     {
       "action": "nervous",
-      "weight": 50
+      "weight": 65
     }
   ],
   "micro_expression_cooldown": [
-    2.5,
-    5
+    2.2,
+    4
   ],
   "actions": [
     {
@@ -46,9 +69,9 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_strap_fullbody.png",
+        "frames/01_queue_idle_neutral_fullbody.png"
       ]
     },
     {
@@ -56,8 +79,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_strap_fullbody.png"
       ]
     },
     {
@@ -65,9 +88,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-04.png",
-        "frames/frame-00.png"
+        "frames/02_idle_adjust_strap_fullbody.png",
+        "frames/03_blink_eyes_closed_fullbody.png",
+        "frames/02_idle_adjust_strap_fullbody.png"
       ]
     },
     {
@@ -75,9 +98,9 @@
       "fps": 3,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-02.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/04_nervous_compare_night_ticket_fullbody.png",
+        "frames/05_nervous_mark_unofficial_route_fullbody.png",
+        "frames/02_idle_adjust_strap_fullbody.png"
       ]
     },
     {
@@ -85,9 +108,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/06_deliver_prepare_document_bag_fullbody.png",
+        "frames/07_deliver_offer_document_bag_fullbody.png",
+        "frames/08_deliver_present_document_bag_fullbody.png"
       ]
     },
     {
@@ -95,10 +118,10 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png",
-        "frames/frame-03.png"
+        "frames/09_approve_surprised_relief_fullbody.png",
+        "frames/10_approve_dispatch_ready_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png",
+        "frames/12_approve_idle_fullbody.png"
       ]
     },
     {
@@ -106,8 +129,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/12_approve_idle_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png"
       ]
     },
     {
@@ -115,10 +138,10 @@
       "fps": 4,
       "playback": "HOLD",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-03.png",
-        "frames/frame-02.png"
+        "frames/13_reject_stunned_hurt_fullbody.png",
+        "frames/14_reject_show_city_id_and_housing_receipt_fullbody.png",
+        "frames/15_reject_compare_address_and_route_fullbody.png",
+        "frames/16_reject_idle_fullbody.png"
       ]
     },
     {
@@ -126,8 +149,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/16_reject_idle_fullbody.png",
+        "frames/15_reject_compare_address_and_route_fullbody.png"
       ]
     },
     {
@@ -135,9 +158,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/17_exit_approved_step_a_fullbody.png",
+        "frames/18_exit_approved_step_b_fullbody.png",
+        "frames/17_exit_approved_step_a_fullbody.png"
       ]
     },
     {
@@ -145,9 +168,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/19_exit_rejected_step_a_fullbody.png",
+        "frames/20_exit_rejected_step_b_fullbody.png",
+        "frames/19_exit_rejected_step_a_fullbody.png"
       ]
     }
   ]

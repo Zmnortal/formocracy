@@ -1,13 +1,15 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/scenes/evening_map.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/map/background/district_12_map.png" id="2_background"]
-[ext_resource type="Texture2D" path="res://assets/map/locations/central_forms.png" id="3_forms"]
-[ext_resource type="Texture2D" path="res://assets/map/locations/ration_depot.png" id="4_ration"]
-[ext_resource type="Texture2D" path="res://assets/map/locations/home_12c.png" id="5_home"]
+[ext_resource type="Texture2D" path="res://assets/map/background/district_12_civic_clean.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/central_forms_v2.png" id="3_forms"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/ration_depot_v2.png" id="4_ration"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/home_12c_v2.png" id="5_home"]
 [ext_resource type="Texture2D" path="res://assets/map/tokens/player_token.png" id="6_token"]
 [ext_resource type="Texture2D" path="res://assets/map/stamps/locked_stamp.png" id="7_locked"]
 [ext_resource type="Script" path="res://scripts/ui/document_background.gd" id="8_document"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/form_shop_v3.png" id="9_shop"]
+[ext_resource type="Texture2D" path="res://assets/map/locations/newspaper_kiosk_v3.png" id="10_kiosk"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderPanel"]
 bg_color = Color(0.035, 0.055, 0.043, 0.97)
@@ -118,10 +120,10 @@ color = Color(0.02, 0.025, 0.02, 0.12)
 [node name="FormsSprite" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0
-offset_left = 218.0
-offset_top = 112.0
-offset_right = 422.0
-offset_bottom = 260.0
+offset_left = 535.0
+offset_top = 86.0
+offset_right = 745.0
+offset_bottom = 238.0
 mouse_filter = 2
 texture = ExtResource("3_forms")
 expand_mode = 1
@@ -130,10 +132,10 @@ stretch_mode = 5
 [node name="RationSprite" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0
-offset_left = 548.0
-offset_top = 220.0
-offset_right = 732.0
-offset_bottom = 350.0
+offset_left = 890.0
+offset_top = 238.0
+offset_right = 1080.0
+offset_bottom = 372.0
 mouse_filter = 2
 texture = ExtResource("4_ration")
 expand_mode = 1
@@ -142,12 +144,36 @@ stretch_mode = 5
 [node name="HomeSprite" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0
-offset_left = 870.0
-offset_top = 350.0
-offset_right = 970.0
-offset_bottom = 542.0
+offset_left = 876.0
+offset_top = 442.0
+offset_right = 1010.0
+offset_bottom = 624.0
 mouse_filter = 2
 texture = ExtResource("5_home")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ShopSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 254.0
+offset_top = 432.0
+offset_right = 474.0
+offset_bottom = 576.0
+mouse_filter = 2
+texture = ExtResource("9_shop")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="KioskSprite" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_left = 604.0
+offset_top = 330.0
+offset_right = 700.0
+offset_bottom = 450.0
+mouse_filter = 2
+texture = ExtResource("10_kiosk")
 expand_mode = 1
 stretch_mode = 5
 
@@ -217,10 +243,10 @@ horizontal_alignment = 2
 
 [node name="FormsButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 216.0
-offset_top = 258.0
-offset_right = 424.0
-offset_bottom = 322.0
+offset_left = 544.0
+offset_top = 220.0
+offset_right = 736.0
+offset_bottom = 264.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -229,14 +255,14 @@ theme_override_styles/normal = SubResource("LocationPanel")
 theme_override_styles/hover = SubResource("LocationHover")
 theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
-text = "中央表单部\n特殊窗口"
+text = "中央表单部"
 
 [node name="RationButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 536.0
-offset_top = 346.0
-offset_right = 744.0
-offset_bottom = 410.0
+offset_left = 888.0
+offset_top = 360.0
+offset_right = 1082.0
+offset_bottom = 404.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -245,9 +271,10 @@ theme_override_styles/normal = SubResource("LocationPanel")
 theme_override_styles/hover = SubResource("LocationHover")
 theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
-text = "公共配给站\n可办理"
+text = "公共配给站"
 
 [node name="Clinic" type="Panel" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 946.0
 offset_top = 128.0
@@ -283,6 +310,7 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="Transit" type="Panel" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 160.0
 offset_top = 380.0
@@ -319,10 +347,10 @@ stretch_mode = 5
 
 [node name="ShopButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 160.0
-offset_top = 380.0
-offset_right = 374.0
-offset_bottom = 460.0
+offset_left = 270.0
+offset_top = 532.0
+offset_right = 458.0
+offset_bottom = 576.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -331,14 +359,14 @@ theme_override_styles/normal = SubResource("LocationPanel")
 theme_override_styles/hover = SubResource("LocationHover")
 theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
-text = "合作供销社\n周姨的表单窗口"
+text = "国营表格商店"
 
 [node name="HomeButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 826.0
-offset_top = 528.0
+offset_left = 852.0
+offset_top = 578.0
 offset_right = 1034.0
-offset_bottom = 586.0
+offset_bottom = 622.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -347,14 +375,14 @@ theme_override_styles/normal = SubResource("LocationPanel")
 theme_override_styles/hover = SubResource("LocationHover")
 theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
-text = "职员宿舍 12-C\n回家"
+text = "职员宿舍 12-C"
 
 [node name="KioskButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 946.0
-offset_top = 128.0
-offset_right = 1160.0
-offset_bottom = 208.0
+offset_left = 584.0
+offset_top = 438.0
+offset_right = 720.0
+offset_bottom = 482.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
 theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
@@ -363,7 +391,7 @@ theme_override_styles/normal = SubResource("LocationPanel")
 theme_override_styles/hover = SubResource("LocationHover")
 theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
-text = "第十二区报刊亭\n订阅表送验"
+text = "报刊亭"
 
 [node name="PlayerToken" type="TextureRect" parent="."]
 texture_filter = 1

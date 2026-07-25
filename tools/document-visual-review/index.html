@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FORMOCRACY · 材料三态校样台</title>
+  <style>
+    @font-face {
+      font-family: "Ark Pixel";
+      src: url("../../assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: dark;
+      --ink: #e8dfc9;
+      --muted: #9a927f;
+      --panel: #151816;
+      --panel-2: #1d211d;
+      --line: #34382f;
+      --amber: #c59a48;
+      --green: #768764;
+      --red: #a64f42;
+      --blue: #68869a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 980px;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+        radial-gradient(circle at 50% -20%, #34372c 0, #171a17 40%, #0d0f0e 100%);
+      background-size: 16px 16px, 16px 16px, auto;
+      font-family: "Ark Pixel", monospace;
+    }
+
+    button, input { font: inherit; }
+
+    .shell {
+      width: min(1540px, calc(100% - 44px));
+      margin: 0 auto;
+      padding: 30px 0 50px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: end;
+      padding: 0 2px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--amber);
+      font-size: 13px;
+      letter-spacing: .16em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 42px);
+      font-weight: 400;
+      letter-spacing: .04em;
+    }
+
+    .summary {
+      max-width: 570px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      color: #b7c7a3;
+      border: 1px solid #4d5a42;
+      background: #182019;
+      box-shadow: inset 0 0 20px rgba(118,135,100,.08);
+    }
+
+    .status::before {
+      width: 8px;
+      height: 8px;
+      content: "";
+      border-radius: 50%;
+      background: #97b776;
+      box-shadow: 0 0 12px #97b776;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 16px;
+      align-items: center;
+      margin: 18px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: rgba(21,24,22,.9);
+      box-shadow: 0 18px 60px rgba(0,0,0,.24);
+    }
+
+    .tabs, .mode-switch {
+      display: flex;
+      gap: 7px;
+    }
+
+    .tool-button {
+      min-height: 36px;
+      padding: 7px 14px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .tool-button:hover {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #21251f;
+    }
+
+    .tool-button[aria-pressed="true"] {
+      color: #17130c;
+      border-color: #d3ad65;
+      background: var(--amber);
+      box-shadow: 0 0 0 2px rgba(197,154,72,.12);
+    }
+
+    .mode-switch .tool-button[aria-pressed="true"] {
+      color: var(--ink);
+      border-color: var(--green);
+      background: #2c3429;
+    }
+
+    .check-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-control input { accent-color: var(--amber); }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .state-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(34,38,33,.96), rgba(15,17,16,.98));
+      box-shadow: 0 18px 55px rgba(0,0,0,.28);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.018);
+    }
+
+    .state-name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .state-code {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .light-table {
+      position: relative;
+      display: grid;
+      place-items: center;
+      height: 560px;
+      overflow: hidden;
+      background:
+        linear-gradient(45deg, #242823 25%, transparent 25%),
+        linear-gradient(-45deg, #242823 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #242823 75%),
+        linear-gradient(-45deg, transparent 75%, #242823 75%),
+        #20241f;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      background-size: 16px 16px;
+    }
+
+    .light-table::before,
+    .overlay-stage::before {
+      position: absolute;
+      z-index: 8;
+      inset: 50% 0 auto;
+      height: 1px;
+      content: "";
+      pointer-events: none;
+      background: rgba(197,154,72,.42);
+      opacity: 0;
+    }
+
+    .light-table::after,
+    .overlay-stage::after {
+      position: absolute;
+      z-index: 8;
+      inset: 0 auto 0 50%;
+      width: 1px;
+      content: "";
+      pointer-events: none;
+      background: rgba(197,154,72,.42);
+      opacity: 0;
+    }
+
+    body.guides .light-table::before,
+    body.guides .light-table::after,
+    body.guides .overlay-stage::before,
+    body.guides .overlay-stage::after { opacity: 1; }
+
+    .state-image {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 86%;
+      max-height: 88%;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 16px 18px rgba(0,0,0,.42));
+    }
+
+    .card-foot {
+      display: grid;
+      gap: 5px;
+      min-height: 66px;
+      padding: 11px 15px 13px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .card-foot strong {
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .overlay-view[hidden], .review-grid[hidden] { display: none; }
+
+    .overlay-view {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      min-height: 665px;
+      border: 1px solid var(--line);
+      background: #121412;
+      box-shadow: 0 18px 55px rgba(0,0,0,.3);
+    }
+
+    .overlay-stage {
+      position: relative;
+      overflow: hidden;
+      min-height: 665px;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle, #292e28 0, #191c19 70%);
+      background-size: 24px 24px, 24px 24px, auto;
+    }
+
+    .overlay-layer {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 42%;
+      max-height: 84%;
+      object-fit: contain;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 8px 9px rgba(0,0,0,.18));
+    }
+
+    .overlay-layer[data-state="pocket"] { mix-blend-mode: screen; }
+    .overlay-layer[data-state="desk"] { mix-blend-mode: multiply; }
+
+    .controls {
+      padding: 18px;
+      border-left: 1px solid var(--line);
+      background: #181b18;
+    }
+
+    .controls h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .controls > p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .layer-select {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      margin-bottom: 18px;
+    }
+
+    .layer-select .tool-button {
+      padding-inline: 6px;
+      border-color: var(--line);
+    }
+
+    .layer-select .tool-button[aria-pressed="true"] {
+      color: var(--ink);
+      border-color: var(--blue);
+      background: #25333a;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 55px 1fr 45px;
+      gap: 8px;
+      align-items: center;
+      margin: 13px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .range-row output {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--amber);
+    }
+
+    .control-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .control-actions button {
+      min-height: 38px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: #252922;
+      cursor: pointer;
+    }
+
+    .control-actions button:hover {
+      border-color: var(--amber);
+      background: #302b20;
+    }
+
+    .diagnosis {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 14px;
+      margin-top: 18px;
+      padding-top: 18px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .diagnosis b {
+      color: var(--amber);
+      font-weight: 400;
+    }
+
+    @media (max-width: 1120px) {
+      .light-table { height: 470px; }
+      .toolbar { grid-template-columns: 1fr auto; }
+      .toolbar > .check-control { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body class="guides">
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">FORMOCRACY / MATERIAL REGISTRATION LIGHT TABLE</p>
+        <h1>材料三态校样台</h1>
+        <p class="summary">同一份材料的袋内裁片、桌面平放图与打开查验图必须保持同一纸张、同一版式语言。这里直接读取游戏原始 PNG，不经过 Godot 的额外 UI 覆盖。</p>
+      </div>
+      <div class="status">原始素材直读</div>
+    </header>
+
+    <section class="toolbar" aria-label="校样工具">
+      <div class="tabs" id="materialTabs"></div>
+      <div class="mode-switch">
+        <button class="tool-button" type="button" data-mode="grid" aria-pressed="true">三栏对照</button>
+        <button class="tool-button" type="button" data-mode="overlay" aria-pressed="false">透明叠合</button>
+      </div>
+      <label class="check-control"><input id="guideToggle" type="checkbox" checked> 显示中心基准线</label>
+    </section>
+
+    <section class="review-grid" id="reviewGrid" aria-label="三态素材对照"></section>
+
+    <section class="overlay-view" id="overlayView" hidden>
+      <div class="overlay-stage" id="overlayStage"></div>
+      <aside class="controls">
+        <h2>叠合校准</h2>
+        <p>选中一层后调整位置与比例。数值只用于视觉评审，不会写回游戏配置。</p>
+        <div class="layer-select" id="layerSelect"></div>
+        <label class="range-row"><span>X 偏移</span><input id="xRange" type="range" min="-220" max="220" value="0"><output id="xOutput">0</output></label>
+        <label class="range-row"><span>Y 偏移</span><input id="yRange" type="range" min="-220" max="220" value="0"><output id="yOutput">0</output></label>
+        <label class="range-row"><span>缩放</span><input id="scaleRange" type="range" min="20" max="180" value="100"><output id="scaleOutput">100%</output></label>
+        <label class="range-row"><span>透明度</span><input id="opacityRange" type="range" min="0" max="100" value="62"><output id="opacityOutput">62%</output></label>
+        <div class="control-actions">
+          <button type="button" id="resetLayer">重置当前层</button>
+          <button type="button" id="resetAll">重置全部三态</button>
+        </div>
+        <div class="diagnosis">
+          <b>检查 01</b><span>纸张外轮廓与破损边缘是否来自同一张母稿。</span>
+          <b>检查 02</b><span>桌面态和袋内态是否只是透视、裁切变化，而非重新设计。</span>
+          <b>检查 03</b><span>打开态是否被额外 UI 底板遮盖，导致视觉语言突变。</span>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const materials = {
+      application: {
+        label: "事项申请表",
+        code: "DOCTYPE-APPLICATION",
+        states: {
+          pocket: { label: "袋内露出态", file: "pocket.png", native: "1052 × 587", game: "178 × 96" },
+          desk: { label: "桌面平放态", file: "desk.png", native: "1071 × 812", game: "640 × 485" },
+          inspection: { label: "打开查验态", file: "inspection.png", native: "1043 × 1495", game: "640 × 918" }
+        }
+      },
+      identity: {
+        label: "身份证明",
+        code: "DOCTYPE-IDENTITY",
+        states: {
+          pocket: { label: "袋内露出态", file: "pocket.png", native: "1541 × 496", game: "178 × 58" },
+          desk: { label: "桌面平放态", file: "desk.png", native: "1554 × 617", game: "800 × 318" },
+          inspection: { label: "打开查验态", file: "inspection.png", native: "1528 × 846", game: "800 × 443" }
+        }
+      },
+      residence: {
+        label: "居住证明",
+        code: "DOCTYPE-RESIDENCE",
+        states: {
+          pocket: { label: "袋内露出态", file: "pocket.png", native: "863 × 503", game: "172 × 100" },
+          desk: { label: "桌面平放态", file: "desk.png", native: "878 × 681", game: "600 × 465" },
+          inspection: { label: "打开查验态", file: "inspection.png", native: "852 × 1256", game: "600 × 885" }
+        }
+      }
+    };
+
+    const stateOrder = ["pocket", "desk", "inspection"];
+    const stateShortLabels = { pocket: "袋内", desk: "桌面", inspection: "打开" };
+    const transforms = {};
+    let activeMaterial = "application";
+    let activeLayer = "inspection";
+
+    const materialTabs = document.querySelector("#materialTabs");
+    const reviewGrid = document.querySelector("#reviewGrid");
+    const overlayView = document.querySelector("#overlayView");
+    const overlayStage = document.querySelector("#overlayStage");
+    const layerSelect = document.querySelector("#layerSelect");
+    const controls = {
+      x: document.querySelector("#xRange"),
+      y: document.querySelector("#yRange"),
+      scale: document.querySelector("#scaleRange"),
+      opacity: document.querySelector("#opacityRange")
+    };
+    const outputs = {
+      x: document.querySelector("#xOutput"),
+      y: document.querySelector("#yOutput"),
+      scale: document.querySelector("#scaleOutput"),
+      opacity: document.querySelector("#opacityOutput")
+    };
+
+    function assetPath(materialId, stateId) {
+      return `../../assets/documents/types/${materialId}/${materials[materialId].states[stateId].file}`;
+    }
+
+    function defaultTransform(stateId) {
+      return { x: 0, y: 0, scale: stateId === "pocket" ? 1.35 : stateId === "desk" ? 1.08 : 1, opacity: stateId === "inspection" ? 1 : .62 };
+    }
+
+    function materialTransforms() {
+      transforms[activeMaterial] ??= {};
+      for (const stateId of stateOrder) transforms[activeMaterial][stateId] ??= defaultTransform(stateId);
+      return transforms[activeMaterial];
+    }
+
+    function renderTabs() {
+      materialTabs.replaceChildren();
+      for (const [id, material] of Object.entries(materials)) {
+        const button = document.createElement("button");
+        button.className = "tool-button";
+        button.type = "button";
+        button.textContent = material.label;
+        button.setAttribute("aria-pressed", String(id === activeMaterial));
+        button.addEventListener("click", () => {
+          activeMaterial = id;
+          render();
+        });
+        materialTabs.append(button);
+      }
+    }
+
+    function renderGrid() {
+      reviewGrid.replaceChildren();
+      const material = materials[activeMaterial];
+      for (const stateId of stateOrder) {
+        const state = material.states[stateId];
+        const card = document.createElement("article");
+        card.className = "state-card";
+        card.innerHTML = `
+          <div class="card-head">
+            <h2 class="state-name">${state.label}</h2>
+            <span class="state-code">${stateId.toUpperCase()}</span>
+          </div>
+          <div class="light-table">
+            <img class="state-image" src="${assetPath(activeMaterial, stateId)}" alt="${material.label} ${state.label}">
+          </div>
+          <div class="card-foot">
+            <span><strong>源文件</strong> · ${activeMaterial}/${state.file}</span>
+            <span><strong>原图</strong> ${state.native}　/　<strong>游戏逻辑尺寸</strong> ${state.game}</span>
+          </div>`;
+        reviewGrid.append(card);
+      }
+    }
+
+    function renderLayerSelect() {
+      layerSelect.replaceChildren();
+      for (const stateId of stateOrder) {
+        const button = document.createElement("button");
+        button.className = "tool-button";
+        button.type = "button";
+        button.textContent = stateShortLabels[stateId];
+        button.setAttribute("aria-pressed", String(stateId === activeLayer));
+        button.addEventListener("click", () => {
+          activeLayer = stateId;
+          renderLayerSelect();
+          syncControls();
+        });
+        layerSelect.append(button);
+      }
+    }
+
+    function renderOverlay() {
+      overlayStage.replaceChildren();
+      const material = materials[activeMaterial];
+      for (const stateId of stateOrder) {
+        const image = document.createElement("img");
+        image.className = "overlay-layer";
+        image.dataset.state = stateId;
+        image.src = assetPath(activeMaterial, stateId);
+        image.alt = `${material.label} ${material.states[stateId].label}`;
+        overlayStage.append(image);
+      }
+      applyTransforms();
+    }
+
+    function applyTransforms() {
+      const current = materialTransforms();
+      for (const image of overlayStage.querySelectorAll(".overlay-layer")) {
+        const value = current[image.dataset.state];
+        image.style.opacity = value.opacity;
+        image.style.transform = `translate(calc(-50% + ${value.x}px), calc(-50% + ${value.y}px)) scale(${value.scale})`;
+      }
+    }
+
+    function syncControls() {
+      const value = materialTransforms()[activeLayer];
+      controls.x.value = value.x;
+      controls.y.value = value.y;
+      controls.scale.value = Math.round(value.scale * 100);
+      controls.opacity.value = Math.round(value.opacity * 100);
+      outputs.x.value = value.x;
+      outputs.y.value = value.y;
+      outputs.scale.value = `${Math.round(value.scale * 100)}%`;
+      outputs.opacity.value = `${Math.round(value.opacity * 100)}%`;
+    }
+
+    function render() {
+      renderTabs();
+      renderGrid();
+      renderLayerSelect();
+      renderOverlay();
+      syncControls();
+    }
+
+    for (const [key, input] of Object.entries(controls)) {
+      input.addEventListener("input", () => {
+        const value = materialTransforms()[activeLayer];
+        value[key] = key === "scale" || key === "opacity" ? Number(input.value) / 100 : Number(input.value);
+        syncControls();
+        applyTransforms();
+      });
+    }
+
+    document.querySelectorAll("[data-mode]").forEach(button => {
+      button.addEventListener("click", () => {
+        const mode = button.dataset.mode;
+        document.querySelectorAll("[data-mode]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+        reviewGrid.hidden = mode !== "grid";
+        overlayView.hidden = mode !== "overlay";
+      });
+    });
+
+    document.querySelector("#guideToggle").addEventListener("change", event => {
+      document.body.classList.toggle("guides", event.target.checked);
+    });
+
+    document.querySelector("#resetLayer").addEventListener("click", () => {
+      materialTransforms()[activeLayer] = defaultTransform(activeLayer);
+      syncControls();
+      applyTransforms();
+    });
+
+    document.querySelector("#resetAll").addEventListener("click", () => {
+      transforms[activeMaterial] = {};
+      materialTransforms();
+      syncControls();
+      applyTransforms();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -97,10 +97,11 @@ function portableDossierHtml(sourceHtml, dossierPeople, start, end) {
     sourceHtml.slice(end);
 
   html = html.replace(
-    /const avatarPath=.*?;\n/,
+    /const avatarPath=.*?;\nconst standardPortraitPath=.*?;\n/,
     [
       "const packageDir=p=>`characters/${p.package_slug}`;",
       "const avatarPath=p=>`${packageDir(p)}/portrait_8bit.png`;",
+      "const standardPortraitPath=p=>`${packageDir(p)}/portrait_standard.png`;",
       "",
     ].join("\n"),
   );
@@ -108,7 +109,7 @@ function portableDossierHtml(sourceHtml, dossierPeople, start, end) {
     "      <div class=\"palette\">",
     [
       "      <div class=\"package-links\"><b>PACKAGE FILES / 独立素材</b>",
-      "        <span><a href=\"${packageDir(p)}/metadata.json\">JSON</a> · <a href=\"${packageDir(p)}/fullbody.png\">FULLBODY</a> · <a href=\"${packageDir(p)}/animation_table.json\">ANIMATION</a></span>",
+      "        <span><a href=\"${packageDir(p)}/metadata.json\">JSON</a> · <a href=\"${packageDir(p)}/portrait_standard.png\">PORTRAIT</a> · <a href=\"${packageDir(p)}/fullbody.png\">FULLBODY</a> · <a href=\"${packageDir(p)}/animation_table.json\">ANIMATION</a></span>",
       "      </div>",
       "      <div class=\"palette\">",
     ].join("\n"),
@@ -139,11 +140,23 @@ async function buildCharacter(ontologyPerson, dossierPerson) {
   const portraitPackagePath =
     `assets/characters/portraits_8bit/${slug}.png`;
   const portraitSource = join(projectRoot, portraitPackagePath);
+  const standardPortraitPackagePath =
+    `assets/characters/portraits_standard/${slug}.png`;
+  const standardPortraitSource = join(projectRoot, standardPortraitPackagePath);
   const actorSource = resourcePath(ontologyPerson.actor_texture);
+  const standardPortraitFrameSource = join(
+    dirname(actorSource),
+    "01_queue_idle_neutral_fullbody.png",
+  );
   const animationSource = resourcePath(ontologyPerson.animation_table);
   const conceptSource = resolve(dirname(dossierSourcePath), dossierPerson.image);
 
+  await assertFile(standardPortraitFrameSource);
   await copyRequired(portraitSource, join(personDirectory, "portrait_8bit.png"));
+  await copyRequired(
+    standardPortraitSource,
+    join(personDirectory, "portrait_standard.png"),
+  );
   await copyRequired(conceptSource, join(personDirectory, "concept.png"));
   await copyRequired(actorSource, join(personDirectory, "fullbody.png"));
 
@@ -234,9 +247,16 @@ async function buildCharacter(ontologyPerson, dossierPerson) {
         bit_depth: 1,
         scaling: "nearest-neighbor",
       },
+      standard_portrait_specification: {
+        output_size: "256x256",
+        source: "01_queue_idle_neutral_fullbody",
+        crop: "head-and-shoulders",
+        background: "transparent",
+      },
     },
     assets: {
       portrait_8bit: "portrait_8bit.png",
+      portrait_standard: "portrait_standard.png",
       concept_art: "concept.png",
       fullbody: "fullbody.png",
       animation_table: "animation_table.json",
@@ -249,6 +269,10 @@ async function buildCharacter(ontologyPerson, dossierPerson) {
     original_project_paths: {
       portrait_texture: ontologyPerson.portrait_texture,
       packaged_portrait_source: `res://${portraitPackagePath}`,
+      standard_portrait_texture: ontologyPerson.standard_portrait_texture,
+      packaged_standard_portrait_source: `res://${standardPortraitPackagePath}`,
+      standard_portrait_source_frame:
+        `res://${relative(projectRoot, standardPortraitFrameSource)}`,
       actor_texture: ontologyPerson.actor_texture,
       animation_table: ontologyPerson.animation_table,
       voice_sfx: ontologyPerson.voice_sfx ?? null,
@@ -270,6 +294,7 @@ async function buildCharacter(ontologyPerson, dossierPerson) {
     directory: `characters/${slug}`,
     metadata: `characters/${slug}/metadata.json`,
     portrait: `characters/${slug}/portrait_8bit.png`,
+    standard_portrait: `characters/${slug}/portrait_standard.png`,
     concept: `characters/${slug}/concept.png`,
     fullbody: `characters/${slug}/fullbody.png`,
     animation_table: `characters/${slug}/animation_table.json`,
@@ -324,6 +349,7 @@ async function main() {
     contents: {
       per_character_metadata: true,
       separated_images: true,
+      standard_portraits: true,
       animation_frames: true,
       voice_sfx: true,
       offline_html: true,
@@ -348,6 +374,7 @@ async function main() {
 每个人物目录包含：
 
 - \`metadata.json\`：身份、叙事、行政、玩法、视觉与源路径元数据。
+- \`portrait_standard.png\`：256×256、由全身图头肩区域统一裁切的透明背景标准头像。
 - \`portrait_8bit.png\`：128×128、纯黑白、1-bit 头像。
 - \`concept.png\`：人物设定图。
 - \`fullbody.png\`：游戏内默认全身像。

@@ -181,8 +181,10 @@ func create_checkpoint(completed_day: int) -> bool:
 	return _save().create_checkpoint(completed_day)
 
 
-# 根据已恢复的状态决定返回工作台、日报还是下班地图。
+# 根据已恢复的状态决定返回晨间读报、工作台、日报还是下班地图。
 func get_resume_phase() -> String:
+	if records.is_empty() and read_string(newspaper_read_history, str(day_number)).is_empty():
+		return "pre_work"
 	if records.size() < target_case_count:
 		return "workbench"
 	if settled_day_number == day_number:

@@ -11,7 +11,8 @@ func run() -> void:
 	var person := {
 		"display_name": "林默",
 		"citizen_id": "74-119-02",
-		"portrait_texture": "res://assets/characters/applicants/person_lin/fullbody_frames_20/02_idle_neutral_a_fullbody.png",
+		"portrait_texture": "res://assets/characters/portraits_8bit/person_lin.png",
+		"standard_portrait_texture": "res://assets/characters/portraits_standard/person_lin.png",
 	}
 	var database := root.get_node("ConfigDatabase")
 	var cases := [
@@ -77,7 +78,20 @@ func run() -> void:
 		assert(view.visual_state == DocumentView.VISUAL_INSPECTION, "documents must begin with the readable inspection visual prepared")
 		assert(view.background.texture.resource_path == inspection_path, "inspection texture must be active after configuration")
 		assert(view.content_layer.visible, "dynamic fields must be visible in inspection state")
+		assert(not view.content_layer.has_node("ReadablePaper"), "native three-state materials must keep their own inspection artwork visible")
+		assert(not view.content_layer.has_node("DocumentChrome"), "native inspection artwork must not be covered by a second generic visual language")
+		assert(not view.content_layer.find_children("DocumentField_*", "Label", true, false).is_empty(), "native inspection artwork must receive prefilled document fields")
+		var title := view.content_layer.get_node("DocumentTitle") as Label
+		assert(title.get_theme_font_size("font_size") >= 20, "native document titles must remain legible without overpowering the source artwork")
+		for descendant: Node in view.content_layer.find_children("*", "Label", true, false):
+			if descendant.get_meta("document_font_role", "") == "field_value":
+				var field_value := descendant as Label
+				assert(field_value.get_theme_font_size("font_size") >= 24, "field values must remain legible after workbench scaling")
 		assert(view.content_layer.has_node("DocumentPortrait") == WorkdayContext.read_bool(fixture, "portrait"), "only configured card types may render a portrait")
+		if type_id == "DOCTYPE-IDENTITY":
+			var portrait := view.content_layer.get_node("DocumentPortrait") as TextureRect
+			assert(portrait.texture.resource_path == person.standard_portrait_texture, "identity proof must prefer the standardized full-body head crop")
+			assert(portrait.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR, "standard identity portraits must use smooth texture sampling")
 		if type_id == "DOCTYPE-APPLICATION":
 			assert(view.content_layer.get_child_count() >= 10, "the primary form must include prefilled filing metadata in addition to case fields")
 		view.add_stamp("批准", view.inspection_size * 0.75)

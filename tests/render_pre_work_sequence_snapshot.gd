@@ -26,6 +26,7 @@ func run() -> void:
 		return
 	var sequence = current_scene
 	await create_timer(0.55).timeout
+	sequence._choose_newspaper(sequence.available_newspapers[0])
 	sequence.dialogue_box.reveal_current_line()
 	await RenderingServer.frame_post_draw
 	_save_frame(NEWSPAPER_PATH)

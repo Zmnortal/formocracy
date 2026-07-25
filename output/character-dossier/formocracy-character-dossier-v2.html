@@ -57,11 +57,14 @@
     .char-body{display:grid;grid-template-columns:59mm 1fr;gap:7mm;margin-top:6mm}
     .portrait{height:78mm;border:1px solid #8d877e;background:linear-gradient(145deg,rgba(255,255,255,.45),rgba(80,75,68,.06));display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
     .portrait img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
-    .avatar-card{height:30mm;margin-top:3mm;border:1px solid #8d877e;display:grid;grid-template-columns:30mm 1fr;background:#fff;overflow:hidden}
-    .avatar-card img{width:30mm;height:30mm;object-fit:contain;image-rendering:pixelated;border-right:1px solid #8d877e}
-    .avatar-card figcaption{padding:3mm 2.6mm;display:flex;flex-direction:column;justify-content:center;gap:1.5mm}
-    .avatar-card b{font:800 7px/1.2 ui-monospace,monospace;letter-spacing:.08em}
-    .avatar-card span{font:700 6.5px/1.45 ui-monospace,monospace;color:#777067}
+    .avatar-grid{display:grid;grid-template-columns:1fr 1fr;gap:2mm;margin-top:3mm}
+    .avatar-card{margin:0;border:1px solid #8d877e;background:#fff;overflow:hidden}
+    .avatar-card img{display:block;width:100%;height:26mm;object-fit:contain;border-bottom:1px solid #8d877e}
+    .avatar-card.standard img{image-rendering:auto;background:linear-gradient(145deg,#f4f0e7,#ded8cd)}
+    .avatar-card.pixel img{image-rendering:pixelated}
+    .avatar-card figcaption{padding:1.5mm 1.4mm}
+    .avatar-card b{display:block;font:800 5.8px/1.2 ui-monospace,monospace;letter-spacing:.05em}
+    .avatar-card span{display:block;margin-top:.8mm;font:700 5.2px/1.35 ui-monospace,monospace;color:#777067}
     .id-mini{border:1px solid #989186;border-top:5px solid var(--accent);padding:3.3mm;margin-top:3mm}
     .id-mini p{font-size:8.5px;line-height:1.45;padding:1.4mm 0;border-bottom:1px dotted #b5aea3}
     .id-mini p:last-child{border:0}.id-mini b{display:block;font:700 6.5px/1.1 ui-monospace,monospace;letter-spacing:.1em;color:#777067;margin-bottom:.8mm}
@@ -118,6 +121,7 @@ const people=[
 {id:"PERSON-YE",file:"12-N/N08",name:"叶蓁",latin:"YE ZHEN",age:36,role:"城市节点",occupation:"夜间交通调度员",citizen:"70-418-26",color:"#5267BD",secondary:"#7D88AC",forbidden:"#C26A42",image:"../../assets/characters/dossier/person_ye/concept.png",who:"一个掌握真实夜间路线的归市居民；她拥有衡川身份，却因多年境外生活而没有一张当前有效的住所证明。",story:"叶蓁出生在衡川，成年后长期居住于澜岬共和国，最近被调回夜间交通室。她保留有效的本市身份证明，但旧住所已经拆除，临时宿舍证明又在等待盖章。她熟悉境外线路与未进入官方时刻表的夜车。",origin:"衡川市 / 长期旅居澜岬共和国",status:"本市临时居住者",code:"HC-T",registry:"衡川市第六区 / 原址已拆除",actual:"第十二区 / 交通宿舍待核准",idDoc:"本市身份证明 70-418-26；有效；归市标记",resDoc:"临时安置回执；尚未转为居住证明",risk:"她属于本市居民，却无法证明当前归属辖区；不同日次可能被判给第六区或第十二区。",quote:"路线发生过，不等于时刻表会承认它。人也是一样。"}
 ];
 const avatarPath=p=>`../../assets/characters/portraits_8bit/${p.id.toLowerCase().replaceAll("-","_")}.png`;
+const standardPortraitPath=p=>`../../assets/characters/portraits_standard/${p.id.toLowerCase().replaceAll("-","_")}.png`;
 const colors=people.map((p,i)=>`<i style="--c:${p.color};--h:${5+(i%5)*2}mm"></i>`).join("");
 const cover=`<section class="page cover">
   <div class="cover-top"><div><div class="eyebrow">HENGCHUAN MUNICIPAL ARCHIVE / INTERNAL</div><div class="eyebrow">DISTRICT 12 / CAST RECORD</div></div><div class="seal">身份制度<br>增补版</div></div>
@@ -137,7 +141,10 @@ const pages=people.map((p,i)=>`<section class="page character" style="--accent:$
   <header class="char-head"><div><div class="eyebrow">${p.file} / ${p.id}</div><h2>${p.name}</h2><div class="latin">${p.latin}</div></div><div class="age"><strong>${p.age}</strong><span>AGE / 年龄</span></div></header>
   <div class="char-body">
     <aside><figure class="portrait"><img src="${p.image}" alt="${p.name}人物立绘"></figure>
-      <figure class="avatar-card"><img src="${avatarPath(p)}" alt="${p.name} 8-bit 头像"><figcaption><b>NES PORTRAIT</b><span>32×32 LOGICAL<br>128×128 PNG · 1-BIT</span></figcaption></figure>
+      <div class="avatar-grid">
+        <figure class="avatar-card standard"><img src="${standardPortraitPath(p)}" alt="${p.name}标准头像"><figcaption><b>STANDARD PORTRAIT</b><span>256×256 PNG<br>FROM FULLBODY</span></figcaption></figure>
+        <figure class="avatar-card pixel"><img src="${avatarPath(p)}" alt="${p.name} 8-bit 头像"><figcaption><b>NES PORTRAIT</b><span>32×32 LOGICAL<br>128×128 PNG · 1-BIT</span></figcaption></figure>
+      </div>
       <div class="id-mini"><p><b>OCCUPATION / 职业</b>${p.occupation}</p><p><b>ROLE / 叙事层级</b>${p.role}</p><p><b>CITIZEN NO. / 现用编号</b>${p.citizen}</p></div>
       <div class="palette"><div class="sw" style="--c:${p.color}">PRIMARY<br>${p.color}</div><div class="sw" style="--c:${p.secondary}">SECONDARY<br>${p.secondary}</div><div class="sw" style="--c:${p.forbidden}">FORBIDDEN<br>${p.forbidden}</div></div>
     </aside>

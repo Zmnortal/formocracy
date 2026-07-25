@@ -21,6 +21,17 @@ func run() -> void:
 	map.end_sequence_step_duration = 0.01
 	map.auto_transition_after_end_sequence = false
 	map.auto_open_location_scenes = false
+	assert(map.location_dossier != null, "map must build the location dossier")
+	assert(map.location_sprites.size() == 5, "map must expose all five evening landmarks")
+	map._preview_location(map.LOCATION_RATION)
+	assert(map.selected_location_id == map.LOCATION_RATION, "location click must select a destination before travel")
+	assert(map.location_dossier.visible, "location click must open the dossier")
+	assert(map.location_dossier_title.text == "公共配给站", "dossier must identify the selected institution")
+	assert(map.location_dossier_details.text.contains("马姐"), "dossier must identify the proprietor")
+	assert(map.map_shade.color.a > 0.4, "selected view must dim the city behind the dossier")
+	map._cancel_location_preview()
+	assert(not map.location_dossier.visible, "cancel must close the dossier")
+	assert(map.selected_location_id.is_empty(), "cancel must clear the selected location")
 	var start_position: Vector2 = map.player_token.position
 	map.select_location(map.LOCATION_RATION)
 	await create_timer(1.0).timeout

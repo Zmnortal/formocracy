@@ -26,7 +26,7 @@
   {
     "id":"CASE-001","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/共同居住配额变更申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day1"],
     "policy_hook":"跨区共同居住必须提交迁入转送材料。",
-    "dialogue":{"greeting":"您好。我来办理共同居住配额。","delivery":"我的材料都在这里。沈青禾的转送单还没下来。","waiting":"缺材料只会退件，不会触发调查，对吗？","waiting_delay_seconds":7,"approved":"谢谢。我们会等正式通知。","rejected":"我明白。我会把她的材料补齐。"},
+    "dialogue":{"greeting":["您好。我来办理共同居住配额。","申请人是我和沈青禾。她今天没能来。"],"delivery":["我的材料都在这里。","沈青禾的转送单还没下来，编号一直显示生成中。"],"waiting":["缺材料只会退件，对吗？","不会因为这个地址，去查那三个月吧？"],"waiting_delay_seconds":7,"approved":["谢谢。我们会等正式通知。","如果有人来问，请说材料是今天才补的。"],"rejected":["我明白。我会把她的材料补齐。","只是系统每次都说少一张不同的纸。"]},
     "document_ids":["S1-APP","S1-ID","S1-RES","S1-DEC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-RESIDENCE-VALID","RULE-DECLARATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
     "documents":[
       {"id":"S1-APP","document_type_id":"DOCTYPE-APPLICATION","title":"共同居住配额变更申请表","fields":{"request":"将单人居住配额变更为林默与沈青禾二人共同配额","address":"第十二区 17-4","signed":true,"note":"共同居住开始日期有多次涂改"}},
@@ -71,7 +71,7 @@
   {
     "id":"CASE-S-M31-D2","person_id":"PERSON-XU","purpose_id":"PURPOSE-MEDICAL","form_code":"M-31/非计划医疗通行申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day2"],
     "policy_hook":"医疗回执必须在验收机记录时点仍有效。",
-    "dialogue":{"greeting":"第五诊疗站让我今晚过去复查。","delivery":"医院回执写的是截止前，机器却说晚了二十三分钟。","waiting":"通行时段快结束了。麻烦您快一点。","waiting_delay_seconds":6,"approved":"谢谢，我现在就去诊疗站。","rejected":"回执过期了？他们昨天才交给我。"},
+    "dialogue":{"greeting":["第五诊疗站让我今晚过去复查。","我得在通行时段结束前赶到。"],"delivery":["医院回执写的是截止前。","机器却说我晚了二十三分钟。"],"waiting":["通行时段快结束了。麻烦您快一点。","我的伤不会替验收机多等二十三分钟。"],"waiting_delay_seconds":6,"approved":["谢谢，我现在就去诊疗站。","请把机器记录的时间也留着。"],"rejected":["回执过期了？他们昨天才交给我。","那二十三分钟，到底是谁改掉的？"]},
     "document_ids":["S2-APP","S2-ID","S2-MED"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-MEDICAL"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-NOT-EXPIRED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S2-APP","document_type_id":"DOCTYPE-APPLICATION","title":"非计划医疗通行申请表","fields":{"request":"限制时段前往第五诊疗站复查工伤","signed":true,"note":"医院原始登记 18:37；机器验收 19:00"}},
@@ -111,7 +111,7 @@
   },
   {
     "id":"CASE-S-R09-D3","person_id":"PERSON-DU","purpose_id":"PURPOSE-RATION","form_code":"R-09/家庭配给领取人变更申请","difficulty":2,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day3"],
-    "dialogue":{"greeting":"以后让周循替我领配给。","delivery":"我在旧领取人那里写了一个名字。系统可能找不到。","waiting":"事故那晚，他打过电话。我记得他的呼吸声。","waiting_delay_seconds":8,"approved":"谢谢。至少这次还能有人替我去。","rejected":"机器不记得他，不等于我也该忘。"},
+    "dialogue":{"greeting":["以后让周循替我领配给。","我腿脚慢了，他下夜班还能赶上。"],"delivery":["我在旧领取人那里写了一个名字。","系统可能找不到孟启川。"],"waiting":["事故那晚，他打过电话。","我记得他的呼吸声，系统却说没有这个人。"],"waiting_delay_seconds":8,"approved":["谢谢。至少这次还能有人替我去。","旧名字先别划掉。我还没有等到结论。"],"rejected":["机器不记得他，不等于我也该忘。","你们删掉一个名字，家里还是少一个人。"]},
     "document_ids":["S3A-APP","S3A-ID","S3A-RES","S3A-DEC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-DECLARATION"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-DECLARATION-SIGNED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
     "documents":[
       {"id":"S3A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"家庭配给领取人变更申请表","fields":{"request":"将家庭配给代领人变更为周循","address":"第十二区 9-1","signed":true,"note":"旧领取人：孟启川（系统无此人）"}},
@@ -122,7 +122,7 @@
   },
   {
     "id":"CASE-S-X14-D3","person_id":"PERSON-SHEN","purpose_id":"PURPOSE-COHABITATION","form_code":"X-14/跨区共同居住预登记申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day3"],
-    "dialogue":{"greeting":"我是沈青禾，从第七区申请迁入。","delivery":"临住证明和工作说明都在，原区转送编号没有生成。","waiting":"那三个月我们住在第七码头附近。林默不想让我说。","waiting_delay_seconds":7,"approved":"至少这次，地址会留下来。","rejected":"我会补编号。但日期不会因此改变。"},
+    "dialogue":{"greeting":["我是沈青禾，从第七区申请迁入。","林默先来过。他大概没有说完整。"],"delivery":["临住证明和工作说明都在。","原区转送编号一直没有生成。"],"waiting":["那三个月我们住在第七码头附近。","林默不想让我说，但那里每晚都有车。"],"waiting_delay_seconds":7,"approved":["至少这次，地址会留下来。","请也留下开始日期。那不是填错的。"],"rejected":["我会补编号。但日期不会因此改变。","如果系统没有那三个月，就问问夜班车。"]},
     "document_ids":["S3B-APP","S3B-ID","S3B-RES","S3B-TR"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-TRANSFER"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-TRANSFER-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-WRONG",
     "documents":[
       {"id":"S3B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"跨区共同居住预登记申请表","fields":{"request":"由第七区迁入第十二区 17-4 与林默共同居住","address":"第十二区 17-4","signed":true,"note":"临住开始日期落在林默住所记录空白期"}},
@@ -176,7 +176,7 @@
   {
     "id":"CASE-S-F09-D4","person_id":"PERSON-SONG","purpose_id":"PURPOSE-FOREIGN","form_code":"F-09/境外专业人员居住许可延续申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day4"],
     "policy_hook":"北陆互惠暂停；只有紧急维修令可构成居留续期例外。",
-    "dialogue":{"greeting":"我是宋铎，来延续机房维护期间的居住许可。","delivery":"旅行证、译文、居住证明和紧急维修令都在。","waiting":"机器不会自己改时间。它只执行一次被授权的同步。","waiting_delay_seconds":7,"approved":"我会继续维护它。至于那二十三分钟，您已经看见了。","rejected":"没有许可，我今晚也得先让验收机运行。"},
+    "dialogue":{"greeting":["我是宋铎，来续机房维护期间的居住许可。","验收机今晚还需要最后一次校准。"],"delivery":["旅行证、译文和紧急维修令都在。","居住证明上的时间没有写错。"],"waiting":["机器不会自己改时间。","它只执行一次被授权的同步。"],"waiting_delay_seconds":7,"approved":["我会继续维护它。","至于那二十三分钟，您已经看见了。"],"rejected":["没有许可，我今晚也得让验收机运行。","停机以后，时间错误只会变得更干净。"]},
     "document_ids":["S4-APP","S4-ID","S4-TRN","S4-RES","S4-PER","S4-MNT"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-TRANSLATION","DOCTYPE-RESIDENCE","DOCTYPE-PERMIT","DOCTYPE-MAINTENANCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-TRANSLATION-CERTIFIED","RULE-RESIDENCE-VALID","RULE-PERMIT-VALID","RULE-MAINTENANCE-AUTHORIZED"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S4-APP","document_type_id":"DOCTYPE-APPLICATION","title":"境外专业人员居住许可延续申请表","fields":{"request":"延续验收机维护期间第十二区居住许可","signed":true}},
@@ -223,7 +223,7 @@
   {
     "id":"CASE-S-P44-D5","person_id":"PERSON-MENG","purpose_id":"PURPOSE-POLLUTION","form_code":"P-44/污染暴露应急供水与临时安置申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day5"],
     "policy_hook":"检测早于官方事故日期并不自动等于无效，但必须作为异常附件保留。",
-    "dialogue":{"greeting":"家里的水有异味，我手上也开始灼痛。","delivery":"检测单比官方事故日期早四天。因为污染本来就早四天。","waiting":"先给我水。至于你们愿不愿承认日期，可以以后再说。","waiting_delay_seconds":7,"approved":"谢谢。请别把那张检测单丢掉。","rejected":"日期不对，受伤就不算发生吗？"},
+    "dialogue":{"greeting":["家里的水有异味，我手上也开始灼痛。","街坊让我别来，说日期对不上就没用。"],"delivery":["检测单比官方事故日期早四天。","因为污染本来就早四天。"],"waiting":["先给我水。","你们愿不愿承认日期，可以以后再说。"],"waiting_delay_seconds":7,"approved":["谢谢。请别把那张检测单丢掉。","上面的日期，是我儿子失踪前一天。"],"rejected":["日期不对，受伤就不算发生吗？","那我儿子失踪的日子，也要一起改吗？"]},
     "document_ids":["S5A-APP","S5A-ID","S5A-RES","S5A-UTL","S5A-MED","S5A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-UTILITY","DOCTYPE-MEDICAL","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-UTILITY-PAID","RULE-NOT-EXPIRED","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S5A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"污染暴露应急供水与临时安置申请表","fields":{"request":"紧急净水、皮肤灼伤处置与七日临时安置","address":"第十二区 31-2","signed":true}},
@@ -236,7 +236,7 @@
   },
   {
     "id":"CASE-S-M52-D5","person_id":"PERSON-DU","purpose_id":"PURPOSE-RESOURCE","form_code":"M-52/慢性病生存资源优先验收申请","difficulty":3,"content_kind":"story","storyline_id":"STORY-TIME-RESOURCES","pool_tags":["story","day5"],
-    "dialogue":{"greeting":"我的药和净水都快断了。","delivery":"材料都有效。可系统说高优先级只剩一个位置。","waiting":"机器记得优先级，却不记得一个人断药以后会怎样。","waiting_delay_seconds":7,"approved":"谢谢。请别把这个位置又收回去。","rejected":"我知道。总得有人被排到后面。"},
+    "dialogue":{"greeting":["我的药和净水都快断了。","诊疗站说这个疗程不能停。"],"delivery":["材料都有效。","可系统说高优先级只剩一个位置。"],"waiting":["机器记得优先级。","它却不记得一个人断药以后会怎样。"],"waiting_delay_seconds":7,"approved":["谢谢。请别把这个位置又收回去。","我能活到下个周期，再来补你们要的纸。"],"rejected":["我知道。总得有人被排到后面。","只是排在后面的人，也会按时病下去。"]},
     "document_ids":["S5B-APP","S5B-ID","S5B-RES","S5B-MED","S5B-RSC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-MEDICAL","DOCTYPE-RESOURCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-NOT-EXPIRED","RULE-RESOURCE-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S5B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"慢性病生存资源优先验收申请表","fields":{"request":"优先核发慢性病净水与连续用药资源","address":"第十二区 9-1","signed":true}},
@@ -278,7 +278,7 @@
   },
   {
     "id":"CASE-S-R12-D6","person_id":"PERSON-LIN","purpose_id":"PURPOSE-COHABITATION","form_code":"R-12/共同居住配额变更申请（补件）","difficulty":4,"content_kind":"story","storyline_id":"STORY-COHABITATION","pool_tags":["story","day6"],
-    "dialogue":{"greeting":"我们把缺的材料都补齐了。","delivery":"里面还有一张旧工作证明。它和共同居住无关，也可能有关。","waiting":"那三个月我在维护一条不存在的夜间线路。","waiting_delay_seconds":7,"approved":"谢谢。请让那张工作证明也留下。","rejected":"材料已经齐了。您驳回的是哪一部分生活？"},
+    "dialogue":{"greeting":["我们把缺的材料都补齐了。","沈青禾在外面。她不想再回答一次日期。"],"delivery":["里面还有一张旧工作证明。","它和共同居住无关，也可能有关。"],"waiting":["那三个月我在维护一条不存在的夜间线路。","沈青禾住在终点。我每晚都能看见她。"],"waiting_delay_seconds":7,"approved":["谢谢。请让那张工作证明也留下。","以后有人说线路不存在，至少还有一个章。"],"rejected":["材料已经齐了。","您驳回的到底是哪一部分生活？"]},
     "document_ids":["S6A-APP","S6A-ID","S6A-RES","S6A-TR","S6A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-RESIDENCE","DOCTYPE-TRANSFER","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-RESIDENCE-VALID","RULE-TRANSFER-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S6A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"共同居住配额变更申请表（补件）","fields":{"request":"核准林默与沈青禾共同居住并合并家庭配额","address":"第十二区 17-4","signed":true}},
@@ -291,7 +291,7 @@
   {
     "id":"CASE-S-A73-D6","person_id":"PERSON-MENG","purpose_id":"PURPOSE-ARCHIVE","form_code":"A-73/公共事故封存证据临时解封使用申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day6"],
     "policy_hook":"新修订页只接受已确认死亡人员直系亲属；孟秋兰的儿子没有死亡记录。",
-    "dialogue":{"greeting":"我想查看儿子失踪前的污染和夜班记录。","delivery":"亲属关系和封存编号都在。新的主管授权，我拿不到。","waiting":"旧手册说生存状态不明也能有限查看。你们昨天把那一行删了。","waiting_delay_seconds":7,"approved":"我只要看见一次他的名字。","rejected":"没有死亡记录，所以连证明他活过都不行。"},
+    "dialogue":{"greeting":["我想查看儿子失踪前的污染和夜班记录。","我不要赔偿，只想知道他在哪一页。"],"delivery":["亲属关系和封存编号都在。","新的主管授权，我拿不到。"],"waiting":["旧手册允许生存状态不明者的亲属查看。","你们昨天把那一行删了。"],"waiting_delay_seconds":7,"approved":["我只要看见一次他的名字。","看见以后，我就知道该继续等谁。"],"rejected":["没有死亡记录，就不能证明他死了。","现在连证明他活过都不行。"]},
     "document_ids":["S6B-APP","S6B-ID","S6B-DEC","S6B-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-DECLARATION","DOCTYPE-EVIDENCE","DOCTYPE-PERMIT"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-DECLARATION-SIGNED","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S6B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"公共事故封存证据临时解封使用申请表","fields":{"request":"有限查看孟启川的污染检测、夜班名单与交通记录","signed":true,"note":"申请依据：旧版手册 7.3 条"}},
@@ -334,7 +334,7 @@
   },
   {
     "id":"CASE-S-S18-D7","person_id":"PERSON-GU","purpose_id":"PURPOSE-ARCHIVE","form_code":"S-18/公共事故档案续封申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-POLLUTION-ARCHIVE","pool_tags":["story","day7"],
-    "dialogue":{"greeting":"工厂让我递交事故档案续封申请。","delivery":"材料都合法。名单、检测和票根都会继续封存。","waiting":"我签过第一次修改。今天这次，轮到您签。","waiting_delay_seconds":7,"approved":"我明白。它们会继续安静。","rejected":"那扇门一旦打开，就不会只出来一个名字。"},
+    "dialogue":{"greeting":["工厂让我递交事故档案续封申请。","他们说这只是一次例行签字。"],"delivery":["材料都合法。","名单、检测和票根都会再封十年。"],"waiting":["我签过第一次修改。","今天这一次，轮到您签。"],"waiting_delay_seconds":7,"approved":["我明白。它们会继续安静。","十年以后，也许没人还认得那些名字。"],"rejected":["那扇门一旦打开，就不会只出来一个名字。","名单上有我的笔迹。我会留下来说明。"]},
     "document_ids":["S7A-APP","S7A-ID","S7A-PER","S7A-EV"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-EVIDENCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-SEAL-PRESENT"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S7A-APP","document_type_id":"DOCTYPE-APPLICATION","title":"公共事故档案续封申请表","fields":{"request":"将第七码头事故联合卷宗续封十年","signed":true,"note":"申请单位：夜间装配厂"}},
@@ -346,7 +346,7 @@
   {
     "id":"CASE-S-V01-D7","person_id":"PERSON-WEI","purpose_id":"PURPOSE-RESOURCE","form_code":"V-01/主管保障资源兑付申请","difficulty":4,"content_kind":"story","storyline_id":"STORY-FINAL-STAMP","pool_tags":["story","day7"],
     "policy_hook":"材料完全合法；批准会占用当日最后一个高优先级资源位。",
-    "dialogue":{"greeting":"这是主管保障资源的正式兑付申请。","delivery":"每一张材料都有效。程序上没有理由驳回。","waiting":"您真正要决定的，不是它是否合法，而是合法性要让谁先活下去。","waiting_delay_seconds":7,"approved":"记录会显示：您按规定办事。","rejected":"记录也会显示：您主动拒绝了一项合法权利。"},
+    "dialogue":{"greeting":["这是主管保障资源的正式兑付申请。","也是今天最后一个高优先级资源位。"],"delivery":["每一张材料都有效。","程序上没有理由驳回。"],"waiting":["您决定的不是它是否合法。","您决定的是，合法性要让谁先活下去。"],"waiting_delay_seconds":7,"approved":["记录会显示：您按规定办事。","记录不会写下另一个人因此失去了什么。"],"rejected":["记录会显示：您拒绝了一项合法权利。","如果要这样做，请确保您记得为什么。"]},
     "document_ids":["S7B-APP","S7B-ID","S7B-PER","S7B-RSC"],"required_document_type_ids":["DOCTYPE-APPLICATION","DOCTYPE-IDENTITY","DOCTYPE-PERMIT","DOCTYPE-RESOURCE"],"rule_ids":["RULE-REQUIRED-DOCUMENTS","RULE-APPLICATION-SIGNED","RULE-IDENTITY-VALID","RULE-PERMIT-VALID","RULE-RESOURCE-VALID"],"consequence_correct_id":"CONSEQUENCE-CORRECT","consequence_wrong_id":"CONSEQUENCE-DELAYED",
     "documents":[
       {"id":"S7B-APP","document_type_id":"DOCTYPE-APPLICATION","title":"主管保障资源兑付申请表","fields":{"request":"兑付主管家庭应急净水与药品保障券","signed":true,"note":"当日最后一个高优先级资源位"}},

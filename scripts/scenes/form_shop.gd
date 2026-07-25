@@ -4,8 +4,10 @@ const UI := preload("res://scripts/ui/bureau_ui.gd")
 const SHOP_BACKGROUND := preload("res://assets/shop/background/form_shop_interior.png")
 const ZHOU_PORTRAIT := preload("res://assets/shop/characters/zhou_proprietor.png")
 const TRANSACTION_TRAY := preload("res://assets/shop/items/form_transaction_tray.png")
+const SUBSCRIPTION_FORM_TEXTURE := preload("res://assets/newspapers/forms/subscription_form_s01.png")
 const DESIGN_SIZE := Vector2(1280, 720)
 const SHOP_LOCATION_ID := "LOCATION-FORM-SHOP"
+const NEWSPAPER_FORM_ID := "PERSONAL-FORM-NEWSPAPER-S01"
 const FORM_IDS := [
 	"PERSONAL-FORM-LOST-PROPERTY-C01",
 	"PERSONAL-FORM-ARCHIVE-EXTRACT-A02",
@@ -126,27 +128,43 @@ func build_scene() -> void:
 func build_form_card(form_id: String) -> Panel:
 	var form := ConfigDatabase.get_ontology("personal_forms", form_id)
 	var card := make_panel(Color("c6b883"), Color("51472d"), 3)
+	card.name = "FormCard_%s" % form_id
 	card.size = Vector2(552, 146)
+	card.clip_contents = true
+	var content_left := 16.0
+	if form_id == NEWSPAPER_FORM_ID:
+		var form_preview := Sprite2D.new()
+		form_preview.name = "SubscriptionFormAsset"
+		form_preview.texture = SUBSCRIPTION_FORM_TEXTURE
+		form_preview.centered = false
+		form_preview.position = Vector2(12, 12)
+		form_preview.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		form_preview.scale = Vector2(
+			142.0 / float(SUBSCRIPTION_FORM_TEXTURE.get_width()),
+			106.0 / float(SUBSCRIPTION_FORM_TEXTURE.get_height())
+		)
+		card.add_child(form_preview)
+		content_left = 168.0
 
 	var agency := make_label("第十二区表单发行管理处", 13, Color("4b432d"))
-	agency.position = Vector2(16, 12)
-	agency.size = Vector2(520, 22)
+	agency.position = Vector2(content_left, 12)
+	agency.size = Vector2(536.0 - content_left, 22)
 	card.add_child(agency)
 
 	var name := make_label(String(form.get("name", "未登记表单")), 18, Color("222319"))
-	name.position = Vector2(16, 34)
-	name.size = Vector2(520, 28)
+	name.position = Vector2(content_left, 34)
+	name.size = Vector2(536.0 - content_left, 28)
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(name)
 
 	var code := make_label("%s · 版本 %s" % [form.get("form_code", ""), form.get("version", "")], 13, Color("514a34"))
-	code.position = Vector2(16, 64)
-	code.size = Vector2(300, 22)
+	code.position = Vector2(content_left, 64)
+	code.size = Vector2(348.0 - content_left, 22)
 	card.add_child(code)
 
 	var description := make_label(String(form.get("description", "")), 13, Color("403c2a"))
-	description.position = Vector2(16, 88)
-	description.size = Vector2(332, 46)
+	description.position = Vector2(content_left, 88)
+	description.size = Vector2(348.0 - content_left, 46)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(description)
 

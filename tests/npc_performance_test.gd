@@ -11,6 +11,7 @@ func run() -> void:
 	var state = root.get_node("WorkdayState")
 	var sfx = root.get_node("Sfx")
 	var bridge = root.get_node("RealityBridge")
+	root.get_node("OpeningMusic").muted = false
 	bridge.last_emitted_event.clear()
 	state.reset_for_tests()
 	var packed: PackedScene = load("res://main.tscn")
@@ -20,8 +21,40 @@ func run() -> void:
 	main.manager.start_first_case_for_tests()
 	await process_frame
 
+	assert(
+		main.manager.npc_performance._dialogue_lines({"greeting": "单句"}, "greeting") == ["单句"],
+		"legacy dialogue strings must remain valid",
+	)
+	assert(
+		main.manager.npc_performance._dialogue_lines({"greeting": ["第一句", "", "第二句"]}, "greeting") == ["第一句", "第二句"],
+		"story dialogue arrays must preserve order and ignore empty lines",
+	)
+
 	assert(main.manager.npc_performance.state == "GREETING", "first NPC must begin directly at the counter")
 	assert(is_instance_valid(main.manager.npc_performance.current_actor), "current NPC actor must be visible")
+	main.manager.npc_performance.set_story_markers_enabled(true)
+	assert(
+		main.manager.npc_performance.current_actor.has_node(main.manager.npc_performance.STORY_MARKER_NAME),
+		"the current story-case NPC must receive a developer marker",
+	)
+	assert(
+		not main.manager.npc_performance.queue_actors[0].has_node(main.manager.npc_performance.STORY_MARKER_NAME),
+		"a queued general-case NPC must not receive a story marker",
+	)
+	var original_first_queue_case_id: String = main.manager.npc_performance.queue_case_ids[0]
+	main.manager.npc_performance.queue_case_ids[0] = "CASE-S-X14-D3"
+	main.manager.npc_performance._refresh_story_markers()
+	assert(
+		main.manager.npc_performance.queue_actors[0].has_node(main.manager.npc_performance.STORY_MARKER_NAME),
+		"a queued story-case NPC must be marked before reaching the counter",
+	)
+	main.manager.npc_performance.queue_case_ids[0] = original_first_queue_case_id
+	main.manager.npc_performance.set_story_markers_enabled(false)
+	assert(
+		not main.manager.npc_performance.current_actor.has_node(main.manager.npc_performance.STORY_MARKER_NAME)
+		and not main.manager.npc_performance.queue_actors[0].has_node(main.manager.npc_performance.STORY_MARKER_NAME),
+		"disabling the trigger must remove current and queued markers immediately",
+	)
 	_assert_actor_fps_cap(main.manager.npc_performance.current_actor)
 	assert(main.manager.npc_performance.animation_player.get_current_action() == &"idle", "the counter greeting must use the breathing idle row")
 	var expected_visible_queue: int = state.target_case_count - 1
@@ -144,7 +177,7 @@ func run() -> void:
 		await _wait_until(func() -> bool: return main.manager.npc_performance.animation_player.get_current_action() == &"happy_idle", 2.0),
 		"approval reaction must persist as happy idle during the result line"
 	)
-	assert(await _wait_until(func() -> bool: return main.manager.call_bell.available, 7.0), "approved NPC bubble must auto-hide after about five seconds and unlock the call bell")
+	assert(await _wait_until(func() -> bool: return main.manager.call_bell.available, 13.0), "multi-line approval dialogue must finish before unlocking the call bell")
 	assert(main.manager.call_bell.available, "NPC departure must unlock the call bell")
 	assert(main.manager.npc_performance.state == "FRONT_STAGED", "the next queued NPC must remain staged at the front")
 	assert(main.manager.npc_performance.staged_case_id == "CASE-002", "the first queued identity must be promoted")

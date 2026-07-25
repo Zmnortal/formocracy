@@ -16,8 +16,14 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var sequence = current_scene
-	assert(sequence.phase == "newspaper", "every workday must begin at home with the newspaper")
-	assert(sequence.newspaper.visible, "the configured newspaper must be visible")
+	assert(sequence.phase == "newspaper_selection", "every workday must begin with a manual newspaper choice")
+	assert(sequence.newspaper_selector.visible, "the newspaper choice must remain visible even when only one paper arrives")
+	assert(not sequence.newspaper.visible, "the game must not open the only delivered paper automatically")
+	assert(not sequence.dialogue_box.visible, "newspaper selection must wait for the player's explicit click")
+	assert(sequence.available_newspapers.size() == 1, "day one must still deliver the official newspaper")
+	sequence._choose_newspaper(sequence.available_newspapers[0])
+	assert(sequence.phase == "newspaper", "clicking the delivered paper must open it for reading")
+	assert(sequence.newspaper.visible, "the chosen newspaper must become visible")
 	assert(sequence.headline_label.text.contains("恢复受理"), "day one must load its configured headline")
 	assert(sequence.dialogue_box is DialogueBox, "the sequence must reuse the shared DialogueBox")
 	var initial_line_id: int = sequence.dialogue_box.line_id

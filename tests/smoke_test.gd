@@ -40,6 +40,13 @@ func run() -> void:
 	assert(main.get_node("WallCalendar").size == Vector2(220, 146), "the interactive calendar must use the enlarged in-world size")
 	assert(main.get_node_or_null("WorkCalendarOverlay") != null, "the workbench must expose the interactive calendar reader")
 	assert(main.get_node_or_null("NumberMachine") == null, "the retired reputation counter must be absent from the desk")
+	assert(not main.get_node("WorkbenchHintPanel").visible, "the obsolete bottom hint panel must stay hidden")
+	assert(not main.get_node("ClerkStatusLabel").visible, "the obsolete top-left clerk status must stay hidden")
+	assert(not main.get_node("NeedStatusLabel").visible, "the obsolete top-left need status must stay hidden")
+	assert(not main.get_node("RemainingTimeLabel").visible, "the obsolete top-right remaining-time label must stay hidden")
+	assert(manager.desk.slot.visible, "the bottom-right archive tray must remain visible")
+	assert(not manager.desk.slot.get_node("ArchiveTitleLabel").visible, "only the obsolete archive title text must stay hidden")
+	assert(manager.desk.archive_drop_zone == manager.desk.slot, "sealed envelopes must still be submitted to the archive tray")
 	var background := main.get_node("ClerkDeskConcept") as TextureRect
 	assert(background.texture != null, "workbench concept must be loaded")
 	assert(background.stretch_mode == TextureRect.STRETCH_SCALE, "background must fill the design canvas")

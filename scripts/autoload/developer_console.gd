@@ -25,6 +25,7 @@ var level_selector: OptionButton
 var seed_selector: SpinBox
 var preset_selector: OptionButton
 var collision_button: Button
+var story_marker_button: Button
 var glass_test_button: Button
 var glass_event_selector: OptionButton
 var interaction_overlay: Control
@@ -34,6 +35,7 @@ var command_input: LineEdit
 var command_history: Array[String] = []
 var history_index := 0
 var status_elapsed := 0.0
+var story_markers_enabled := false
 
 
 # 开发控制台入口初始化。
@@ -245,6 +247,10 @@ func _build_ui() -> void:
 	credit_plus_one.pressed.connect(func(): adjust_credit(1))
 	var credit_plus_ten := _create_button("+10", Vector2(640, 400), Vector2(76, 40))
 	credit_plus_ten.pressed.connect(func(): adjust_credit(10))
+	story_marker_button = _create_button("", Vector2(732, 400), Vector2(240, 40))
+	story_marker_button.name = "StoryNpcMarkerButton"
+	story_marker_button.pressed.connect(toggle_story_marker_debug)
+	refresh_story_marker_button()
 
 	_create_section_label("命令终端", Vector2(28, 458))
 	output = RichTextLabel.new()
@@ -305,6 +311,46 @@ func refresh_collision_button() -> void:
 	if collision_button == null:
 		return
 	collision_button.text = "交互框：%s" % ("显示" if interaction_overlay.visible else "关闭")
+
+
+# 切换当前开发会话中的关键剧情角色标签。
+func toggle_story_marker_debug() -> void:
+	set_story_marker_debug(not story_markers_enabled)
+
+
+# 设置剧情角色标签状态，并立即应用到当前工作台。
+func set_story_marker_debug(enabled_now: bool) -> void:
+	story_markers_enabled = enabled_now
+	var applied := _apply_story_marker_state()
+	refresh_story_marker_button()
+	var suffix := "" if applied else "（进入主工作台后自动应用）"
+	append_output("关键剧情标记：%s%s" % [("显示" if enabled_now else "关闭"), suffix])
+
+
+# 刷新控制台 trigger 的显示状态。
+func refresh_story_marker_button() -> void:
+	if story_marker_button == null:
+		return
+	story_marker_button.text = "剧情标记：%s" % ("显示" if story_markers_enabled else "关闭")
+
+
+# 返回当前主工作台的 NPC 演出控制器。
+func _active_npc_performance() -> WorkbenchNpcPerformanceModule:
+	var scene := get_tree().current_scene
+	var manager_value: Variant = scene.get("manager") if scene != null else null
+	if manager_value is WorkbenchManager:
+		var manager: WorkbenchManager = manager_value
+		return manager.npc_performance
+	return null
+
+
+# 将控制台保存的 trigger 状态同步给当前 NPC 演出控制器。
+func _apply_story_marker_state() -> bool:
+	var performance := _active_npc_performance()
+	if performance == null:
+		return false
+	performance.set_story_markers_enabled(story_markers_enabled)
+	return true
 
 
 # 发送选择器中当前选中的眼镜联调事件。
@@ -391,12 +437,15 @@ func toggle_console() -> void:
 # 每帧更新控制台的实时状态。
 # 累加 status_elapsed，每 0.25 秒调用一次 refresh_status()，使状态标签中的场景名、工作日、记录数等保持实时同步。
 func _process(delta: float) -> void:
-	if not enabled or not is_open:
+	if not enabled:
 		return
 	status_elapsed += delta
 	if status_elapsed >= 0.25:
 		status_elapsed = 0.0
-		refresh_status()
+		if story_markers_enabled:
+			_apply_story_marker_state()
+		if is_open:
+			refresh_status()
 
 
 # 根据当前可视视口大小缩放控制台根节点。
@@ -575,7 +624,8 @@ func execute_command(command: String) -> void:
 	match parts[0].to_lower():
 		"help":
 			append_output("scene menu | scene days | scene opening | scene main | scene report | scene map | scene validation | scene reload")
-			append_output("level <id> [seed] | credit set <值> | credit add <增量> | config reload | queue | npc state | npc skip | report fill | day next | state | clear")
+			append_output("level <id> [seed] | credit set <值> | credit add <增量> | config reload | queue | npc state | npc skip | npc story on|off|toggle")
+			append_output("report fill | day next | state | clear")
 			append_output("glass test")
 		"scene":
 			if parts.size() < 2:
@@ -636,21 +686,27 @@ func execute_command(command: String) -> void:
 		"queue":
 			append_output(JSON.stringify(LevelDirector.get_state_summary()))
 		"npc":
-			var scene := get_tree().current_scene
-			var manager_value: Variant = scene.get("manager") if scene != null else null
-			var performance: WorkbenchNpcPerformanceModule
-			if manager_value is WorkbenchManager:
-				var manager: WorkbenchManager = manager_value
-				performance = manager.npc_performance
-			if performance == null:
+			var performance := _active_npc_performance()
+			if parts.size() > 1 and parts[1].to_lower() == "story":
+				var story_mode := parts[2].to_lower() if parts.size() > 2 else "toggle"
+				match story_mode:
+					"on":
+						set_story_marker_debug(true)
+					"off":
+						set_story_marker_debug(false)
+					"toggle":
+						toggle_story_marker_debug()
+					_:
+						append_output("用法：npc story on|off|toggle")
+			elif performance == null:
 				append_output("当前场景没有 NPC 演出控制器。")
 			elif parts.size() > 1 and parts[1].to_lower() == "skip":
 				performance.skip_current_performance()
 				append_output("已跳过当前 NPC 演出阶段。")
 			elif parts.size() > 1 and parts[1].to_lower() == "state":
-				append_output("NPC 状态：" + performance.state)
+				append_output("NPC 状态：%s / 剧情标记：%s" % [performance.state, ("显示" if story_markers_enabled else "关闭")])
 			else:
-				append_output("用法：npc state | npc skip")
+				append_output("用法：npc state | npc skip | npc story on|off|toggle")
 		"glass":
 			if parts.size() > 1:
 				send_glass_event(parts[1].to_lower())

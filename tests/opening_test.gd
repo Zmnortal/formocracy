@@ -88,8 +88,11 @@ func run() -> void:
 		"machine ingestion must enter the daily home-newspaper sequence"
 	)
 	var pre_work = current_scene
-	assert(pre_work.phase == "newspaper", "the first workday must begin at home with the newspaper")
+	assert(pre_work.phase == "newspaper_selection", "the first workday must require a manual newspaper choice")
+	assert(pre_work.newspaper_selector.visible, "the only delivered newspaper must still be presented as a choice")
+	assert(not pre_work.newspaper.visible, "the first newspaper must not open automatically")
 	assert(pre_work.dialogue_box is DialogueBox, "the daily pre-work sequence must reuse the shared DialogueBox")
+	pre_work._choose_newspaper(pre_work.available_newspapers[0])
 	assert(pre_work.headline_label.text.contains("恢复受理"), "day one must load its configured newspaper headline")
 	assert(not bridge.last_emitted_event.has("speakerId") or bridge.last_emitted_event.get("speakerId") != "MOMO", "the removed cat assistant must emit no event")
 	state.start_new_game()

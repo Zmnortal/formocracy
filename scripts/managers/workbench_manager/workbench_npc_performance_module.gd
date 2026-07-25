@@ -17,6 +17,8 @@ const FRAME_PATHS: Array[String] = [
 ]
 const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animation_table.json"
 const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
+const UI := preload("res://scripts/ui/bureau_ui.gd")
+const STORY_MARKER_NAME := "StoryDebugMarker"
 const EXISTING_ACTOR_SCALE_MULTIPLIER := 1.3
 const GLOBAL_ACTOR_SCALE_ADJUSTMENT := 1.2
 const FRONT_ACTOR_SCALE_MULTIPLIER := EXISTING_ACTOR_SCALE_MULTIPLIER * GLOBAL_ACTOR_SCALE_ADJUSTMENT
@@ -61,6 +63,7 @@ var micro_expression_rng := RandomNumberGenerator.new()
 var departure_in_progress := false
 var promote_after_departure := true
 var pending_exit_action := "walk_out_angry"
+var story_markers_enabled := false
 
 
 # 初始化 NPC 演出控制器并创建人物附近的自动气泡。
@@ -100,6 +103,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 		current_actor.z_index = 0
 		actor_layer.add_child(current_actor)
 	_sync_queue(queued_case_ids)
+	_refresh_story_markers()
 	animation_player = NpcAnimationPlayer.new(current_actor)
 	animation_player.name = "NpcCutoutAnimationPlayer"
 	actor_layer.add_child(animation_player)
@@ -107,7 +111,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	state = "GREETING"
 	_play_action("idle")
 	var dialogue := WorkdayContext.read_dictionary(case_data, "dialogue")
-	await _say(WorkdayContext.read_string(dialogue, "greeting", "您好，我来办理事项。"), token)
+	await _say_sequence(_dialogue_lines(dialogue, "greeting", "您好，我来办理事项。"), token)
 	if token != performance_token:
 		return
 	state = "DELIVERING"
@@ -119,7 +123,7 @@ func start_case(case_data: Dictionary, queued_case_ids: Array[String]) -> void:
 	if token != performance_token:
 		return
 	Sfx.play("ui_switch", -5.0, 0.82)
-	await _say(WorkdayContext.read_string(dialogue, "delivery", "材料都在这里。"), token)
+	await _say_sequence(_dialogue_lines(dialogue, "delivery", "材料都在这里。"), token)
 	if token != performance_token:
 		return
 	delivery_finished.emit()
@@ -140,7 +144,7 @@ func _schedule_waiting_line(token: int) -> void:
 	if token != performance_token or state != "WAITING" or waiting_line_shown:
 		return
 	waiting_line_shown = true
-	await _say(WorkdayContext.read_string(dialogue, "waiting"), token)
+	await _say_sequence(_dialogue_lines(dialogue, "waiting"), token)
 
 
 # 在等待状态下按随机间隔循环播放微表情动画。
@@ -211,7 +215,7 @@ func react_and_leave(decision: String, promote_next := true) -> void:
 	_play_action(emotional_idle)
 	var line_key := "approved" if approved else "rejected"
 	var dialogue := WorkdayContext.read_dictionary(current_case, "dialogue")
-	await _say(WorkdayContext.read_string(dialogue, line_key, "我知道了。"), token)
+	await _say_sequence(_dialogue_lines(dialogue, line_key, "我知道了。"), token)
 	if token != performance_token:
 		return
 	await _walk_current_actor_out(exit_action, token)
@@ -319,6 +323,32 @@ func _say(text: String, token: int) -> void:
 	GameStateSync.speaker_stopped(state.to_lower())
 
 
+# 将兼容的单句或多句字段统一整理为可播放序列。
+func _dialogue_lines(dialogue: Dictionary, key: String, fallback := "") -> Array[String]:
+	var raw_value: Variant = dialogue.get(key, fallback)
+	var lines: Array[String] = []
+	if raw_value is Array:
+		for entry: Variant in raw_value:
+			var line := String(entry).strip_edges()
+			if not line.is_empty():
+				lines.append(line)
+		return lines
+	var line := String(raw_value).strip_edges()
+	if not line.is_empty():
+		lines.append(line)
+	return lines
+
+
+# 逐句播放一个对白阶段；跳过或案件切换会终止整个剩余序列。
+func _say_sequence(lines: Array[String], token: int) -> void:
+	for line: String in lines:
+		if token != performance_token or skip_requested:
+			return
+		await _say(line, token)
+		if token != performance_token or skip_requested:
+			return
+
+
 # 从人物资源名推断性别与年龄后将台词转发给 RealityBridge。
 func _send_line_to_glass(person: Dictionary, text: String) -> void:
 	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
@@ -384,6 +414,7 @@ func _sync_queue(case_ids: Array[String]) -> void:
 	queue_case_ids = desired_ids
 	for i in queue_actors.size():
 		_apply_queue_slot(queue_actors[i], queue_case_ids[i], i)
+	_refresh_story_markers()
 
 
 # 清理离场角色并按需提升队列下一位，最后发出离场完成信号。
@@ -449,6 +480,7 @@ func _promote_queue(token: int) -> void:
 	await tween.finished
 	if token != performance_token:
 		return
+	_refresh_story_markers()
 
 
 # 根据案件配置创建一个后排队列演员。
@@ -494,6 +526,78 @@ func _apply_queue_slot(actor: AnimatedSprite2D, case_id: String, depth: int) -> 
 	)
 	actor.modulate = tint
 	actor.z_index = -depth - 1
+
+
+# 启用或关闭仅供开发者使用的关键剧情角色标签。
+func set_story_markers_enabled(enabled_now: bool) -> void:
+	if story_markers_enabled == enabled_now:
+		return
+	story_markers_enabled = enabled_now
+	_refresh_story_markers()
+
+
+# 根据当前案件与队列案件重新创建剧情角色标签。
+func _refresh_story_markers() -> void:
+	_clear_story_markers()
+	if not story_markers_enabled:
+		return
+	if is_instance_valid(current_actor):
+		var current_case_id := staged_case_id
+		if current_case_id.is_empty():
+			current_case_id = WorkdayContext.read_string(current_case, "case_id")
+		_add_story_marker(current_actor, current_case_id)
+	for index in mini(queue_actors.size(), queue_case_ids.size()):
+		_add_story_marker(queue_actors[index], queue_case_ids[index])
+
+
+# 清除当前演员与候场演员上的全部剧情调试标签。
+func _clear_story_markers() -> void:
+	var actors: Array[AnimatedSprite2D] = []
+	if is_instance_valid(current_actor):
+		actors.append(current_actor)
+	actors.append_array(queue_actors)
+	for actor: AnimatedSprite2D in actors:
+		if not is_instance_valid(actor):
+			continue
+		var marker := actor.get_node_or_null(STORY_MARKER_NAME)
+		if marker != null:
+			actor.remove_child(marker)
+			marker.queue_free()
+
+
+# 若案件属于 story 内容，为对应演员添加固定屏幕尺寸的金色标签。
+func _add_story_marker(actor: AnimatedSprite2D, case_id: String) -> void:
+	if not is_instance_valid(actor) or case_id.is_empty() or not _case_is_story(case_id):
+		return
+	var marker := Label.new()
+	marker.name = STORY_MARKER_NAME
+	marker.text = "◆ 关键剧情"
+	marker.size = Vector2(104, 24)
+	marker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	marker.z_index = 200
+	UI.style_label(marker, 14, true)
+	marker.add_theme_color_override("font_color", Color("f4cf58"))
+	marker.add_theme_color_override("font_outline_color", Color("211806"))
+	marker.add_theme_constant_override("outline_size", 4)
+	var inverse_scale := Vector2(
+		1.0 / maxf(absf(actor.scale.x), 0.001),
+		1.0 / maxf(absf(actor.scale.y), 0.001),
+	)
+	var texture_height := 720.0
+	if actor.sprite_frames != null and actor.sprite_frames.has_animation(actor.animation):
+		var texture := actor.sprite_frames.get_frame_texture(actor.animation, actor.frame)
+		if texture != null:
+			texture_height = texture.get_height()
+	marker.scale = inverse_scale
+	marker.position = Vector2(-52.0 * inverse_scale.x, -texture_height * 0.5 - 34.0 * inverse_scale.y)
+	actor.add_child(marker)
+
+
+# 案件级识别避免把同一人物参与的普通案件误标为关键剧情。
+func _case_is_story(case_id: String) -> bool:
+	var case_data: Dictionary = ConfigDatabase.get_gameplay_case(case_id)
+	return WorkdayContext.read_string(case_data, "content_kind") == "story"
 
 
 # 将任意数量的候办人按四人一排向门廊左侧展开，避免任何一位拥挤在前排人物背后。

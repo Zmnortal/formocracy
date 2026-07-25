@@ -29,7 +29,7 @@
   },
   "gameplay": {
     "administrative_status": "HC-T",
-    "actor_scale": 0.18,
+    "actor_scale": 0.34,
     "move_speed": 0.98
   },
   "visual": {
@@ -47,24 +47,34 @@
       ],
       "bit_depth": 1,
       "scaling": "nearest-neighbor"
+    },
+    "standard_portrait_specification": {
+      "output_size": "256x256",
+      "source": "01_queue_idle_neutral_fullbody",
+      "crop": "head-and-shoulders",
+      "background": "transparent"
     }
   },
   "assets": {
     "portrait_8bit": "portrait_8bit.png",
+    "portrait_standard": "portrait_standard.png",
     "concept_art": "concept.png",
     "fullbody": "fullbody.png",
     "animation_table": "animation_table.json",
     "animation_frames": {
       "directory": "frames",
-      "count": 8
+      "count": 20
     },
     "voice_sfx": "voice_sfx.wav"
   },
   "original_project_paths": {
     "portrait_texture": "res://assets/characters/portraits_8bit/person_wei.png",
     "packaged_portrait_source": "res://assets/characters/portraits_8bit/person_wei.png",
-    "actor_texture": "res://assets/characters/dossier/person_wei/concept.png",
-    "animation_table": "res://data/animations/default_applicant/animation_table.json",
+    "standard_portrait_texture": "res://assets/characters/portraits_standard/person_wei.png",
+    "packaged_standard_portrait_source": "res://assets/characters/portraits_standard/person_wei.png",
+    "standard_portrait_source_frame": "res://assets/characters/applicants/person_wei/fullbody_frames_20/01_queue_idle_neutral_fullbody.png",
+    "actor_texture": "res://assets/characters/applicants/person_wei/fullbody_frames_20/02_idle_adjust_belt_fullbody.png",
+    "animation_table": "res://data/animations/person_wei/animation_table.json",
     "voice_sfx": "res://assets/audio/sfx/people_female_old.wav"
   }
 }

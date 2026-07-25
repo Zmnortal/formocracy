@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "character_id": "DEFAULT-APPLICANT",
+  "character_id": "PERSON-SONG",
   "default_animation": "idle",
-  "substitute_frames_with_static_actor": true,
-  "static_actor_texture": "frames/02_idle_neutral_a_fullbody.png",
+  "substitute_frames_with_static_actor": false,
+  "static_actor_texture": "frames/02_idle_adjust_goggles_fullbody.png",
   "action_contract": {
     "required": [
       "idle",
@@ -22,6 +22,29 @@
     ],
     "max_unique_pngs": 20
   },
+  "asset_policy": {
+    "body_coverage": "full_body_only",
+    "active_png_count": 20,
+    "filename_marker": "_fullbody",
+    "identity_markers": [
+      "short_graying_black_hair",
+      "industrial_goggles_on_forehead",
+      "narrow_tired_weathered_face",
+      "dark_charcoal_mechanic_coverall",
+      "oxidized_copper_orange_shoulder_yoke_and_collar",
+      "rolled_forearm_sleeves",
+      "leather_tool_pouch_at_left_hip",
+      "heavy_brown_work_boots"
+    ],
+    "delivery_prop_markers": [
+      "golden_ochre_portrait_document_bag",
+      "broad_trapezoid_flap",
+      "two_red_centered_closure_discs",
+      "cream_figure_eight_cord",
+      "reinforced_bottom_corner_seams"
+    ],
+    "note": "所有帧的可见人物高度统一为650像素，脚底统一保留20像素底边距，并完整显示额头护目镜、双手、工具袋、工装裤和重型工靴。模拟诊断仪、人工校时记录、紧急维修令与境外旅行许可属于宋铎本人；金黄封绳文档袋只在06–08递交三帧出现，交付后留在玩家工作台。"
+  },
   "emotion_fallbacks": {
     "happy": "happy_idle",
     "angry": "angry_idle"
@@ -29,16 +52,16 @@
   "micro_expressions": [
     {
       "action": "blink",
-      "weight": 50
+      "weight": 35
     },
     {
       "action": "nervous",
-      "weight": 50
+      "weight": 65
     }
   ],
   "micro_expression_cooldown": [
-    2.5,
-    5
+    2.2,
+    4
   ],
   "actions": [
     {
@@ -46,9 +69,9 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_goggles_fullbody.png",
+        "frames/01_queue_idle_neutral_fullbody.png"
       ]
     },
     {
@@ -56,8 +79,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png"
+        "frames/01_queue_idle_neutral_fullbody.png",
+        "frames/02_idle_adjust_goggles_fullbody.png"
       ]
     },
     {
@@ -65,9 +88,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-04.png",
-        "frames/frame-00.png"
+        "frames/02_idle_adjust_goggles_fullbody.png",
+        "frames/03_blink_eyes_closed_fullbody.png",
+        "frames/02_idle_adjust_goggles_fullbody.png"
       ]
     },
     {
@@ -75,9 +98,9 @@
       "fps": 3,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-02.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/04_nervous_check_diagnostic_meter_fullbody.png",
+        "frames/05_nervous_compare_time_sync_record_fullbody.png",
+        "frames/02_idle_adjust_goggles_fullbody.png"
       ]
     },
     {
@@ -85,9 +108,9 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/06_deliver_prepare_document_bag_fullbody.png",
+        "frames/07_deliver_offer_document_bag_fullbody.png",
+        "frames/08_deliver_present_document_bag_fullbody.png"
       ]
     },
     {
@@ -95,10 +118,10 @@
       "fps": 4,
       "playback": "ONCE",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-02.png",
-        "frames/frame-03.png"
+        "frames/09_approve_surprised_relief_fullbody.png",
+        "frames/10_approve_maintenance_ready_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png",
+        "frames/12_approve_idle_fullbody.png"
       ]
     },
     {
@@ -106,8 +129,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-01.png",
-        "frames/frame-02.png"
+        "frames/12_approve_idle_fullbody.png",
+        "frames/11_approve_relieved_smile_fullbody.png"
       ]
     },
     {
@@ -115,10 +138,10 @@
       "fps": 4,
       "playback": "HOLD",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-03.png",
-        "frames/frame-02.png"
+        "frames/13_reject_stunned_disappointment_fullbody.png",
+        "frames/14_reject_show_permit_and_repair_order_fullbody.png",
+        "frames/15_reject_trace_time_discrepancy_fullbody.png",
+        "frames/16_reject_idle_fullbody.png"
       ]
     },
     {
@@ -126,8 +149,8 @@
       "fps": 2,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/16_reject_idle_fullbody.png",
+        "frames/15_reject_trace_time_discrepancy_fullbody.png"
       ]
     },
     {
@@ -135,9 +158,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-00.png",
-        "frames/frame-01.png",
-        "frames/frame-00.png"
+        "frames/17_exit_approved_step_a_fullbody.png",
+        "frames/18_exit_approved_step_b_fullbody.png",
+        "frames/17_exit_approved_step_a_fullbody.png"
       ]
     },
     {
@@ -145,9 +168,9 @@
       "fps": 4,
       "playback": "LOOP",
       "frames": [
-        "frames/frame-05.png",
-        "frames/frame-04.png",
-        "frames/frame-05.png"
+        "frames/19_exit_rejected_step_a_fullbody.png",
+        "frames/20_exit_rejected_step_b_fullbody.png",
+        "frames/19_exit_rejected_step_a_fullbody.png"
       ]
     }
   ]

@@ -25,6 +25,9 @@ func run() -> void:
 	assert(shop.dialogue_box.visible, "shop greeting must use the shared bottom dialogue box")
 	assert(shop.dialogue_box.z_index >= 4000, "shop dialogue must render in front of all form cards")
 	assert(shop.dialogue_label.visible_characters >= 0, "shop greeting must begin with typewriter reveal")
+	var newspaper_card := shop.get_node("FormCard_PERSONAL-FORM-NEWSPAPER-S01")
+	var newspaper_form_asset := newspaper_card.get_node("SubscriptionFormAsset") as Sprite2D
+	assert(newspaper_form_asset.texture.resource_path.ends_with("subscription_form_s01.png"), "shop must display the real S-01 form asset")
 	shop.purchase_form(CLAIM_FORM)
 	shop.purchase_form(ARCHIVE_FORM)
 	assert(state.manager.get_personal_form_count(CLAIM_FORM, "blank") == 1, "shop must issue the selected claim form")
