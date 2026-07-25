@@ -45,6 +45,9 @@ const AMBIENCE_STREAM := preload("res://assets/audio/sfx/background_whitenoise_t
 const WALK_STREAM := preload("res://assets/audio/sfx/people_walkonfloor.mp3")
 const CONVEYOR_STREAM := preload("res://assets/audio/sfx/item_conveyor_belt.wav")
 const TYPEWRITER_STREAM := preload("res://assets/audio/sfx/item_typewriter.wav")
+const WORK_AMBIENCE_VOLUME_DB := -16.0
+const ARRIVAL_AMBIENCE_VOLUME_DB := -3.0
+const BROADCAST_AMBIENCE_VOLUME_DB := -28.0
 
 const ONE_SHOT_POOL_SIZE := 8
 const TYPEWRITER_LINGER_SECONDS := 0.3
@@ -58,6 +61,7 @@ var voice_player: AudioStreamPlayer
 var typewriter_deadline := 0.0
 var voice_fallback_index := 0
 var last_voice_person_id := ""
+var ambience_tween: Tween
 
 
 # 创建一次性音效池与各专用播放器；暂停时仍可播放 UI 音效。
@@ -69,7 +73,7 @@ func _ready() -> void:
 		add_child(player)
 		one_shot_players.append(player)
 
-	ambience_player = _make_looping_player("Ambience", AMBIENCE_STREAM, -16.0)
+	ambience_player = _make_looping_player("Ambience", AMBIENCE_STREAM, WORK_AMBIENCE_VOLUME_DB)
 	walk_player = _make_looping_player("Walk", WALK_STREAM, -10.0)
 
 	# 传送带素材长达 10 秒，远超吞入动画，播放一次即可，无需循环。
@@ -154,12 +158,56 @@ func stop_voice() -> void:
 # 开始播放办公室环境底噪（人声嘈杂声）循环。
 func start_ambience() -> void:
 	if not ambience_player.playing:
+		ambience_player.volume_db = WORK_AMBIENCE_VOLUME_DB
 		ambience_player.play()
+
+
+# 从办事厅门外建立更近、更嘈杂的人声声场，并持续到工作台广播开始。
+func start_arrival_ambience() -> void:
+	_stop_ambience_tween()
+	ambience_player.volume_db = ARRIVAL_AMBIENCE_VOLUME_DB
+	if not ambience_player.playing:
+		ambience_player.play()
+
+
+# 广播出现前逐渐压低人群声，使主声音从嘈杂声场中显现。
+func duck_ambience_for_broadcast(duration := 1.15) -> void:
+	start_ambience()
+	await _fade_ambience_to(BROADCAST_AMBIENCE_VOLUME_DB, duration)
+
+
+# 简报结束后把环境声恢复为正常工作音量。
+func restore_work_ambience(duration := 0.65) -> void:
+	if not ambience_player.playing:
+		return
+	await _fade_ambience_to(WORK_AMBIENCE_VOLUME_DB, duration)
 
 
 # 停止办公室环境底噪。
 func stop_ambience() -> void:
+	_stop_ambience_tween()
 	ambience_player.stop()
+	ambience_player.volume_db = WORK_AMBIENCE_VOLUME_DB
+
+
+# 平滑切换环境声音量；新渐变会接管旧渐变，避免跨场景互相争抢。
+func _fade_ambience_to(target_volume_db: float, duration: float) -> void:
+	_stop_ambience_tween()
+	if duration <= 0.0 or DisplayServer.get_name() == "headless":
+		ambience_player.volume_db = target_volume_db
+		return
+	ambience_tween = create_tween()
+	ambience_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	ambience_tween.tween_property(ambience_player, "volume_db", target_volume_db, duration)
+	await ambience_tween.finished
+	ambience_tween = null
+
+
+# 安全终止尚未完成的声场渐变。
+func _stop_ambience_tween() -> void:
+	if ambience_tween != null and ambience_tween.is_valid():
+		ambience_tween.kill()
+	ambience_tween = null
 
 
 # 开始/停止脚步声循环（傍晚地图移动）。

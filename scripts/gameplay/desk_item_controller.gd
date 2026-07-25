@@ -35,7 +35,8 @@ func register_item(
 	on_drag_motion: Callable = Callable(),
 	on_settled: Callable = Callable(),
 	on_drop_prepare: Callable = Callable(),
-	can_begin_interaction: Callable = Callable()
+	can_begin_interaction: Callable = Callable(),
+	uses_gravity: bool = true
 ) -> void:
 	if not is_instance_valid(item) or item_id.is_empty():
 		return
@@ -54,6 +55,7 @@ func register_item(
 	item.set_meta("desk_on_settled", on_settled)
 	item.set_meta("desk_on_drop_prepare", on_drop_prepare)
 	item.set_meta("desk_can_begin_interaction", can_begin_interaction)
+	item.set_meta("desk_uses_gravity", uses_gravity)
 	items[item_id] = item
 
 	var saved: Dictionary = _manager().get_desk_item_layout(item_id)
@@ -283,6 +285,10 @@ func _end_press(item: Control) -> void:
 # 释放拖拽后按物体是否完整位于桌面内，选择原地放下或伪重力坠落。
 func _drop_to_desk(item: Control) -> void:
 	var base_scale := _read_meta_vector(item, "desk_base_scale", Vector2.ONE)
+	if not _read_meta_bool(item, "desk_uses_gravity", true):
+		await _settle_in_place(item, base_scale)
+		_finalize_settle(item)
+		return
 	var visual_size := item.size * base_scale.abs()
 	if _is_fully_inside_desk(item.position, visual_size):
 		await _settle_in_place(item, base_scale)
@@ -400,8 +406,8 @@ func _vector_from_value(value: Variant, fallback: Vector2) -> Vector2:
 
 
 # 安全读取布尔类型的桌面物品元数据。
-func _read_meta_bool(item: Control, key: String) -> bool:
-	return WorkdayContext.to_bool(item.get_meta(key, false))
+func _read_meta_bool(item: Control, key: String, fallback: bool = false) -> bool:
+	return WorkdayContext.to_bool(item.get_meta(key, fallback))
 
 
 # 安全读取 Vector2 类型的桌面物品元数据。

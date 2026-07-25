@@ -15,6 +15,7 @@ const BriefingModule := preload("res://scripts/managers/workbench_manager/workbe
 const BriefingDirector := preload("res://scripts/managers/workbench_manager/workbench_briefing_director.gd")
 const NpcPerformanceModule := preload("res://scripts/managers/workbench_manager/workbench_npc_performance_module.gd")
 const FilingCabinetModule := preload("res://scripts/managers/workbench_manager/workbench_filing_cabinet_module.gd")
+const CalendarModule := preload("res://scripts/managers/workbench_manager/workbench_calendar_module.gd")
 
 var root: Node2D
 var desk: DeskNodes
@@ -30,6 +31,7 @@ var call_bell: WorkbenchCallBellModule
 var batch_validation: WorkbenchBatchValidationModule
 var desk_items: DeskItemController
 var filing_cabinet: WorkbenchFilingCabinetModule
+var calendar: WorkbenchCalendarModule
 
 var current_case: Dictionary = {}
 var accepting_new_cases := true
@@ -49,6 +51,7 @@ func start() -> void:
 
 	desk = DeskBuilder.new().build(root)
 	desk_items = DeskItemController.new(root)
+	calendar = CalendarModule.new(root, desk)
 	filing_cabinet = FilingCabinetModule.new(root, desk, desk_items)
 	presenter = CasePresenterModule.new(root, desk, desk_items)
 	stamp = StampModule.new(root, desk, presenter, desk_items)
@@ -111,6 +114,8 @@ func process(delta: float) -> void:
 
 # 仅处理没有被文件或桌面工具消费的点击，用于关闭查验层且不抢占其他交互。
 func handle_unhandled_input(event: InputEvent) -> void:
+	if calendar != null and calendar.handle_unhandled_input(event):
+		return
 	if filing_cabinet != null and filing_cabinet.handle_unhandled_input(event):
 		return
 	if presenter == null:
@@ -123,6 +128,8 @@ func shutdown() -> void:
 	if root == null:
 		return
 	CursorManager.reset()
+	if calendar != null:
+		calendar.shutdown()
 	if filing_cabinet != null:
 		filing_cabinet.shutdown()
 	if npc_performance != null:
@@ -145,6 +152,7 @@ func shutdown() -> void:
 	dialogue_box = null
 	call_bell = null
 	batch_validation = null
+	calendar = null
 	filing_cabinet = null
 	desk_items = null
 	desk = null

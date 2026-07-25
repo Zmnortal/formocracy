@@ -35,4 +35,4 @@ func _handle_action(action_id: String) -> void:
 		"rest":
 			WorkdayState.manager.begin_next_day()
 			Sfx.play("start")
-			get_tree().change_scene_to_file("res://main.tscn")
+			get_tree().change_scene_to_file("res://scenes/pre_work_sequence.tscn")

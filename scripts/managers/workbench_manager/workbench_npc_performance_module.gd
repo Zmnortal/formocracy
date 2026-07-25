@@ -16,6 +16,7 @@ const FRAME_PATHS: Array[String] = [
 	"res://assets/characters/idle_breathing/frame-05.png",
 ]
 const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animation_table.json"
+const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
 const FRONT_ACTOR_SCALE_MULTIPLIER := 1.3
 # 设计画布会按当前窗口约 3 倍放大；70 个设计单位约等于实机截图中的 200 px。
 const FRONT_ACTOR_VERTICAL_OFFSET := 70.0
@@ -460,6 +461,8 @@ func _make_queue_actor(case_id: String) -> AnimatedSprite2D:
 func _configure_queue_actor(sprite: AnimatedSprite2D, person: Dictionary) -> void:
 	var actor_texture := WorkdayContext.read_string(person, "actor_texture")
 	var animation_table := WorkdayContext.read_string(person, "animation_table", DEFAULT_ANIMATION_TABLE)
+	var actor_id := WorkdayContext.read_string(person, "id", actor_texture)
+	NPC_STATIC_BREATHING.apply(sprite, actor_id + "-queue", 1.8, 1.45)
 	var queue_library := NpcAnimationLibrary.new()
 	if queue_library.load_animation_table(animation_table, actor_texture) and queue_library.has_action("queue_idle"):
 		sprite.sprite_frames = queue_library.get_sprite_frames()
@@ -560,7 +563,9 @@ func _configure_current_actor(sprite: AnimatedSprite2D, person: Dictionary) -> v
 	sprite.position = FRONT_POSITION
 	sprite.rotation = 0.0
 	sprite.z_index = 0
-	micro_expression_rng.seed = hash(WorkdayContext.read_string(person, "id", "DEFAULT-APPLICANT"))
+	var actor_id := WorkdayContext.read_string(person, "id", "DEFAULT-APPLICANT")
+	NPC_STATIC_BREATHING.apply(sprite, actor_id, 2.4, 1.55)
+	micro_expression_rng.seed = hash(actor_id)
 
 
 # 解析人物配置的着色并强制不透明。

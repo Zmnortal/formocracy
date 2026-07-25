@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-JIANG",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_jiang_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_05_magenta.png",
+    "strip_06_10_magenta.png",
+    "strip_11_15_magenta.png",
+    "strip_16_20_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 39,
+    "role": "公共配给站班组长",
+    "palette": "灰色工装、嫩橄榄绿肩轭与胸袋、额度簿绿、预留章红",
+    "markers": [
+      "略显凌乱的深色短发",
+      "疲惫而务实的面容",
+      "灰色实用连体工装",
+      "嫩橄榄绿肩轭与双胸袋",
+      "卷至肘部的袖口与浅色内衫",
+      "棕色工作腰带",
+      "左腰机械配给计数器",
+      "卷裤脚",
+      "深色重型工作靴"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "以站点班组长的熟练动作调校腰间机械计数器，核对额度簿、配给筹码和净水调拨凭证。",
+    "approved": "先因通行获准而短暂释然，随即收起情绪、握稳调拨凭证，准备马上把水送往街区。",
+    "rejected": "先显出克制的失望，再展示带红色预留覆盖章的凭证，翻查额度簿追索预留究竟落给谁。"
+  },
+  "prop_ownership": {
+    "mechanical_ration_counter": "固定在蒋森左腰，属于他日常调度配给的职业识别物。",
+    "quota_ledger_ration_chits_and_reserved_water_voucher": "属于蒋森的工作材料，可在待机、紧张、批准、驳回与离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

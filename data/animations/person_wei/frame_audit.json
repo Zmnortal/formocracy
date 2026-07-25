@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-WEI",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_wei_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_05_magenta.png",
+    "strip_06_10_magenta.png",
+    "strip_11_15_magenta.png",
+    "strip_16_20_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 46,
+    "role": "内部程序监察员",
+    "palette": "铁灰蓝、珊瑚红、旧公文箱深褐与黄铜",
+    "markers": [
+      "向后梳理并带灰鬓的深色短发",
+      "严厉而疲惫的棱角面容",
+      "及小腿的铁灰蓝束腰监察大衣",
+      "结构化肩章、黄铜胸牌与方扣腰带",
+      "珊瑚红围巾",
+      "深色袜与低帮正式鞋",
+      "带金属扣和侧棱的硬壳监察公文箱"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "始终站得笔直，精确核对调阅豁免令、监察日志与珊瑚红异议签，不让职业判断显露为情绪。",
+    "approved": "只出现一瞬意外、克制点头与极轻的认可，随后立刻恢复监察员的冷静。",
+    "rejected": "不失控发怒，而是要求书面依据、展示空白理由栏并把拒绝记录进带异议签的监察日志。"
+  },
+  "prop_ownership": {
+    "rigid_inspector_briefcase": "属于魏岚本人，是所有动作持续使用的职业识别物。",
+    "exemption_order_audit_log_and_objection_tabs": "属于魏岚的监察材料，可在紧张、批准、驳回与离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

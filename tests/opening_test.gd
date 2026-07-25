@@ -78,35 +78,20 @@ func run() -> void:
 	assert(opening.FORM_APPROACH_TOP_Y >= opening.machine_foreground.position.y, "the paper far edge must not remain visible above the machine-mouth occluder")
 	assert(opening.FORM_APPROACH_BOTTOM_Y > mouth_bottom, "the paper near edge must remain visible on the conveyor before ingestion")
 	assert(opening.projected_form.polygon[2].y <= mouth_bottom, "the final paper quad must finish completely behind the machine mouth")
-	assert(opening.intro_panel.visible, "submission must end on the first-day narrative cutscene")
-	assert(opening.submission_phase == "first_day_intro", "the simple welcome panel must be replaced by the first-day cutscene")
-	assert(opening.intro_slide_index == 0, "the first-day cutscene must begin on the empty hall")
-	assert(opening.dialogue_box is DialogueBox, "the first-day cutscene must reuse the shared DialogueBox")
-	assert(opening.intro_frame.texture.resource_path.ends_with("01_empty_hall.png"), "the first cutscene frame must show the unopened hall")
-	assert(bridge.last_emitted_event.type == "secretary_line", "the cutscene line must be sent to the glasses")
-	assert(bridge.last_emitted_event.text == "05:58。第十二区综合办事厅，尚未开放。", "the first line must establish the unopened early-morning hall")
-	await create_timer(0.25).timeout
-	assert(opening.intro_slide_index == 0, "the cutscene must never advance on a timer")
-	opening.dialogue_box.reveal_current_line()
-	assert(opening.intro_slide_index == 0, "the first manual input must only complete the current line")
-	opening.dialogue_box._handle_manual_advance()
-	assert(opening.intro_slide_index == 1, "the second manual input must advance to the restored workstation")
-	assert(opening.intro_frame.texture.resource_path.ends_with("02_window_light.png"), "the second frame must show the window light")
-	for expected_index in [2, 3]:
-		opening.dialogue_box.reveal_current_line()
-		opening.dialogue_box._handle_manual_advance()
-		assert(opening.intro_slide_index == expected_index, "each completed line must advance exactly one slide")
-	assert(bridge.last_emitted_event.text == "第十二区综合窗口，今日开始受理。", "the final broadcast must open the service window")
-	assert(current_scene == opening, "the game must not start before the player confirms the final cutscene line")
-	opening.dialogue_box.reveal_current_line()
-	opening.dialogue_box._handle_manual_advance()
-	await create_timer(0.5).timeout
 	await process_frame
 	assert(state.player_name == "测试职员", "submitting the form must establish the global player identity")
 	assert(not state.player_signature.is_empty(), "submitting the form must persist handwritten signature strokes")
 	var checkpoints: Array[Dictionary] = state.save_system.get_checkpoint_nodes()
 	assert(checkpoints.size() == 1 and int(checkpoints[0].completed_day) == 0, "opening completion must create the immutable beginning checkpoint")
-	assert(current_scene != null and current_scene.scene_file_path == "res://main.tscn", "machine ingestion must finish by entering the first workday")
+	assert(
+		current_scene != null and current_scene.scene_file_path == "res://scenes/pre_work_sequence.tscn",
+		"machine ingestion must enter the daily home-newspaper sequence"
+	)
+	var pre_work = current_scene
+	assert(pre_work.phase == "newspaper", "the first workday must begin at home with the newspaper")
+	assert(pre_work.dialogue_box is DialogueBox, "the daily pre-work sequence must reuse the shared DialogueBox")
+	assert(pre_work.headline_label.text.contains("恢复受理"), "day one must load its configured newspaper headline")
+	assert(not bridge.last_emitted_event.has("speakerId") or bridge.last_emitted_event.get("speakerId") != "MOMO", "the removed cat assistant must emit no event")
 	state.start_new_game()
 	state.save_path = state.DEFAULT_SAVE_PATH
 	print("FORMOCRACY_OPENING_TEST_OK")

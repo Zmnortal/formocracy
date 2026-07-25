@@ -86,6 +86,11 @@ func run() -> void:
 	assert(pocket_style.bg_color.a == 0.0, "the document pocket must not draw a black thumbnail background")
 	for document: DocumentView in presenter.all_document_views:
 		assert(not document.visible, "opening the envelope must not spread every document automatically")
+	for thumbnail_value: Variant in presenter.thumbnail_by_id.values():
+		var stacked_thumbnail := thumbnail_value as Button
+		assert(stacked_thumbnail.visible, "opening the envelope must reveal every real document in the pocket stack")
+	assert(not presenter.envelope_front_cover.visible, "the pocket must use the original envelope body instead of a duplicate tinted front cover")
+	assert(presenter.envelope_front_cover.texture == null, "the duplicate front-cover crop must not be drawn over the envelope body")
 	var primary_preview := presenter.thumbnail_by_id[presenter.primary_document_id] as Button
 	primary_preview.emit_signal("pressed")
 	var supporting_document := presenter.document_panels[0] as DocumentView
@@ -224,7 +229,13 @@ func run() -> void:
 	await create_timer(0.3).timeout
 	var current_case := manager.current_case as Dictionary
 	assert(presenter.packed_document_ids.size() == WorkdayContext.read_array(current_case, "documents").size(), "all materials must return to the original envelope")
-	assert(not presenter.envelope_billboard_expanded and presenter.envelope.size == Vector2(180, 126), "repacked envelope must collapse back to its compact side-flat state")
+	assert(presenter.envelope_billboard_expanded and presenter.thumbnail_tray.visible, "the completed repack stack must remain visible until the player closes the envelope")
+	for thumbnail_value: Variant in presenter.thumbnail_by_id.values():
+		var repacked_thumbnail := thumbnail_value as Button
+		assert(repacked_thumbnail.visible, "every returned document must remain visibly stacked inside the open envelope")
+	presenter.collapse_envelope_billboard()
+	await create_timer(0.3).timeout
+	assert(not presenter.envelope_billboard_expanded and presenter.envelope.size == Vector2(180, 126), "closing a repacked envelope must restore its compact side-flat state")
 	manager.input._set_machine_preview(presenter, true)
 	await create_timer(0.16).timeout
 	assert(presenter.envelope.scale.y < 0.7, "machine hover must tilt the envelope with pseudo-3D compression")

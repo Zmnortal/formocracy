@@ -53,6 +53,8 @@ func _assert_scene(path: String, expected_name: String, expected_proprietor: Str
 	assert(scene.proprietor_name == expected_proprietor, "scene must configure proprietor identity")
 	assert(scene.shade.visible, "proprietor focus mode must dim the background")
 	assert(scene.proprietor.texture != null, "proprietor focus mode must show a character state")
+	assert(scene.proprietor.get_meta("static_breathing_enabled", false), "proprietor must use the subtle static breathing effect")
+	assert(scene.proprietor.material is ShaderMaterial, "proprietor breathing must be rendered without moving its layout")
 	assert(scene.left_actions.get_child_count() > 0, "scene must expose left-side actions")
 	assert(scene.right_actions.get_child_count() > 0, "scene must expose right-side actions")
 	var left_item = scene.left_actions.get_child(0)

@@ -27,6 +27,7 @@ var archive_drop_zone: Control
 var machine_mouth_mask: ColorRect
 var archive_stack: Control
 var archive_count_label: Label
+var wall_calendar: TextureRect
 var filing_cabinet: TextureRect
 var filing_cabinet_upper_hit: Button
 var filing_cabinet_lower_hit: Button

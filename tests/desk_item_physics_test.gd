@@ -70,6 +70,19 @@ func run() -> void:
 	controller._end_press(in_bounds_item)
 	assert(not in_bounds_item.has_meta("desk_motion_tween"), "a completed motion tween must not leave a freed object in item metadata")
 
+	var no_gravity_item := Control.new()
+	no_gravity_item.position = Vector2(1000, 120)
+	no_gravity_item.size = Vector2(180, 126)
+	scene_root.add_child(no_gravity_item)
+	controller.register_item(no_gravity_item, "no_gravity_item", Callable(), Callable(), Callable(), Callable(), Callable(), false)
+	controller._begin_press(no_gravity_item, Vector2(10, 10))
+	no_gravity_item.set_meta("desk_dragging", true)
+	no_gravity_item.set_meta("desk_last_motion", Vector2(4, -16))
+	var no_gravity_release_position := no_gravity_item.position
+	controller._end_press(no_gravity_item)
+	await create_timer(0.25).timeout
+	assert(no_gravity_item.position.is_equal_approx(no_gravity_release_position), "a no-gravity item released above DeskBounds must remain where the player left it")
+
 	var restored := Control.new()
 	restored.size = item.size
 	scene_root.add_child(restored)
@@ -117,10 +130,7 @@ func run() -> void:
 	assert(in_bounds_item.z_index == DeskItemController.HELD_LAYER, "the newly pressed item must take the desk focus layer immediately")
 	assert(front_item.z_index < in_bounds_item.z_index, "the previous focused item must return below the newly focused item")
 	assert(front_item.z_index == DeskItemController.HELD_LAYER - 1, "the previous top item must move down exactly one stack rank")
-	assert(
-		front_item.z_index == WorkdayContext.to_int(front_item.get_meta("desk_resting_layer")),
-		"the previous focused item must recover its ordinary resting layer"
-	)
+	assert(front_item.z_index == WorkdayContext.to_int(front_item.get_meta("desk_resting_layer")), "the previous focused item must recover its ordinary resting layer")
 	controller._end_press(in_bounds_item)
 
 	var stale_item := Control.new()

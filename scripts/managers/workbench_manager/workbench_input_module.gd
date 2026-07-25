@@ -60,7 +60,9 @@ func bind_case(presenter: WorkbenchCasePresenter) -> void:
 		presenter.envelope.add_to_group("debug_interaction_zone")
 		presenter.envelope.set_meta("debug_zone_label", "文件袋：点击进入查验层")
 		if desk_items != null:
-			desk_items.register_item(presenter.envelope, "case_envelope", presenter.expand_envelope_billboard, _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter))
+			desk_items.register_item(
+				presenter.envelope, "case_envelope", presenter.expand_envelope_billboard, _on_envelope_drag_motion.bind(presenter), _on_envelope_settled.bind(presenter), Callable(), Callable(), false
+			)
 			registered_case_item_ids.append("case_envelope")
 			if is_instance_valid(presenter.envelope_drag_handle):
 				CursorManager.watch(presenter.envelope_drag_handle, CursorManager.Cursor.GRAB)

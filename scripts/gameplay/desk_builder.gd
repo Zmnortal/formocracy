@@ -137,10 +137,11 @@ func build(root: Node2D) -> DeskNodes:
 	return desk
 
 
-# 摆放文件柜、挂历与墙钟等办公室陈设。
+# 摆放文件柜、可交互挂历与墙钟等办公室陈设。
 func _build_office_props(root: Node2D, desk: DeskNodes) -> void:
 	_build_filing_cabinet(root, desk)
-	_add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1090, 92), Vector2(155, 104), -3)
+	desk.wall_calendar = _add_prop(root, "WallCalendar", CALENDAR_TEXTURE, Vector2(1038, 74), Vector2(220, 146), -3)
+	desk.wall_calendar.mouse_filter = Control.MOUSE_FILTER_PASS
 	_add_prop(root, "InstitutionalWallClock", WALL_CLOCK_TEXTURE, Vector2(62, 74), Vector2(126, 126), -3)
 	_add_prop(root, "ClerkToolCabinet", CLERK_TOOL_CABINET_TEXTURE, Vector2(1018, 254), Vector2(293, 366), 5)
 

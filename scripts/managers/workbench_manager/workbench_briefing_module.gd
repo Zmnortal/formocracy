@@ -23,6 +23,10 @@ func play(lines: Array[String]) -> void:
 	var bridge := root.get_tree().root.get_node_or_null("RealityBridge")
 	if bridge != null and not lines.is_empty():
 		bridge.call("morning_briefing", WorkdayState.day_number, lines, "第十二区 · 工作日晨间指令")
+	await Sfx.duck_ambience_for_broadcast()
+	if current_token != token:
+		return
+	Sfx.play("call_intercom")
 	for line in lines:
 		if current_token != token:
 			return
@@ -34,6 +38,7 @@ func play(lines: Array[String]) -> void:
 	dialogue_box.close()
 	GameStateSync.speaker_stopped("waiting_for_call")
 	Sfx.stop_voice()
+	Sfx.restore_work_ambience()
 	finished.emit()
 
 
@@ -46,6 +51,7 @@ func skip() -> void:
 	dialogue_box.close()
 	GameStateSync.speaker_stopped("waiting_for_call")
 	Sfx.stop_voice()
+	Sfx.restore_work_ambience(0.2)
 	finished.emit()
 
 

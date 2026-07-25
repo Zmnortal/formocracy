@@ -8,6 +8,7 @@ const BUTTON_NORMAL := preload("res://assets/ui/after_work_buttons/button_normal
 const BUTTON_HOVER := preload("res://assets/ui/after_work_buttons/button_hover.png")
 const BUTTON_PRESSED := preload("res://assets/ui/after_work_buttons/button_pressed.png")
 const BUTTON_DISABLED := preload("res://assets/ui/after_work_buttons/button_disabled.png")
+const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
 
 var background_texture: Texture2D
 var proprietor_textures: Dictionary
@@ -82,6 +83,7 @@ func _build_scene() -> void:
 	proprietor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	proprietor.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	proprietor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	NPC_STATIC_BREATHING.apply(proprietor, proprietor_name, 2.2, 1.45)
 	add_child(proprietor)
 
 	left_actions = _make_action_column(Vector2(44, 170))

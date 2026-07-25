@@ -4,10 +4,7 @@ const FRAME_PATHS := [
 	"/tmp/formocracy-opening-approach.png",
 	"/tmp/formocracy-opening-ingestion.png",
 	"/tmp/formocracy-opening-machine-fade.png",
-	"/tmp/formocracy-opening-first-day-intro-01.png",
-	"/tmp/formocracy-opening-first-day-intro-02.png",
-	"/tmp/formocracy-opening-first-day-intro-03.png",
-	"/tmp/formocracy-opening-first-day-intro-04.png",
+	"/tmp/formocracy-opening-pre-work-newspaper.png",
 ]
 
 
@@ -53,17 +50,16 @@ func run() -> void:
 	await wait_for_phase(opening, "machine_fade")
 	await create_timer(1.4).timeout
 	save_frame(FRAME_PATHS[2])
-	await wait_for_phase(opening, "first_day_intro")
-	await create_timer(0.9).timeout
-	save_frame(FRAME_PATHS[3])
-	for frame_index in range(1, 4):
-		opening.dialogue_box.reveal_current_line()
-		opening.dialogue_box._handle_manual_advance()
-		await create_timer(0.2).timeout
-		opening.dialogue_box.reveal_current_line()
+	var deadline := Time.get_ticks_msec() + 15000
+	while current_scene == opening:
+		if Time.get_ticks_msec() >= deadline:
+			push_error("timed out waiting for the pre-work newspaper")
+			quit(1)
+			return
 		await process_frame
-		await RenderingServer.frame_post_draw
-		save_frame(FRAME_PATHS[frame_index + 3])
+	await process_frame
+	await RenderingServer.frame_post_draw
+	save_frame(FRAME_PATHS[3])
 
 	state.start_new_game()
 	state.save_path = state.DEFAULT_SAVE_PATH

@@ -10,6 +10,7 @@ const UI := preload("res://scripts/ui/bureau_ui.gd")
 # 允许打开暂停菜单的场景路径白名单
 const ALLOWED_SCENES := [
 	"res://main.tscn",
+	"res://scenes/pre_work_sequence.tscn",
 	"res://scenes/daily_report.tscn",
 	"res://scenes/after_work_corridor.tscn",
 	"res://scenes/evening_map.tscn",

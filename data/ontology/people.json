@@ -72,12 +72,12 @@
   {
     "id":"PERSON-WEI","display_name":"魏岚","age":46,"occupation":"内部程序监察员","citizen_id":"23-771-08","queue_label":"B08",
     "administrative_status":"HC-T","registry":"中央行政带 / 保密","actual_residence":"第十二区公务宿舍 / 12-C","character_color":"637080",
-    "actor_texture":"res://assets/characters/dossier/person_wei/concept.png","portrait_texture":"res://assets/characters/portraits_8bit/person_wei.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.98,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
+    "actor_texture":"res://assets/characters/applicants/person_wei/fullbody_frames_20/02_idle_adjust_belt_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_wei/fullbody_frames_20/02_idle_adjust_belt_fullbody.png","animation_table":"res://data/animations/person_wei/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":0.98,"voice_sfx":"res://assets/audio/sfx/people_female_old.wav"
   },
   {
     "id":"PERSON-JIANG","display_name":"蒋森","age":39,"occupation":"公共配给站班组长","citizen_id":"56-330-41","queue_label":"B09",
     "administrative_status":"DOM","registry":"永川市河西区 / 3-4","actual_residence":"第十二区配给站宿舍","character_color":"829b45",
-    "actor_texture":"res://assets/characters/dossier/person_jiang/concept.png","portrait_texture":"res://assets/characters/portraits_8bit/person_jiang.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.02,"voice_sfx":"res://assets/audio/sfx/people_male_average.wav"
+    "actor_texture":"res://assets/characters/applicants/person_jiang/fullbody_frames_20/02_idle_adjust_sleeve_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_jiang/fullbody_frames_20/02_idle_adjust_sleeve_fullbody.png","animation_table":"res://data/animations/person_jiang/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":1.02,"voice_sfx":"res://assets/audio/sfx/people_male_average.wav"
   },
   {
     "id":"PERSON-SONG","display_name":"宋铎","age":52,"occupation":"日终验收机房技师","citizen_id":"31-225-67","queue_label":"B10",

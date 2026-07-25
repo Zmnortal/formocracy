@@ -435,7 +435,7 @@ func _resolve_dialogue_speaker(speaker: String) -> String:
 # 切换到主场景进入下一个工作日。
 func _enter_next_workday() -> void:
 	Sfx.play("start")
-	var error := get_tree().change_scene_to_file("res://main.tscn")
+	var error := get_tree().change_scene_to_file("res://scenes/pre_work_sequence.tscn")
 	if error != OK:
 		review_detail_label.text = "进入下一工作日失败：%s" % error_string(error)
 

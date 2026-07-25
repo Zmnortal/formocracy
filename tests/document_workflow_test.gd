@@ -29,6 +29,8 @@ func run() -> void:
 	var supporting_preview := presenter.thumbnail_by_id[supporting.document_id] as Button
 	assert(primary_preview.icon.resource_path.ends_with("/application/pocket.png"), "application pocket preview must use its independent cropped asset")
 	assert(supporting_preview.icon.resource_path.ends_with("/identity/pocket.png"), "identity pocket preview must use its independent cropped asset")
+	assert(presenter.thumbnail_by_id.values().all(func(thumbnail: Button): return thumbnail.visible), "opening the envelope must reveal every configured document in one visible stack")
+	assert(primary_preview.position != supporting_preview.position, "stacked pocket documents must retain separately clickable exposed edges")
 	presenter.open_document(primary_id)
 	assert(
 		main.manager.desk_items._effective_z_index(presenter.form) > main.manager.desk_items._effective_z_index(presenter.envelope_front_cover),
@@ -54,6 +56,15 @@ func run() -> void:
 	)
 	main.manager.desk_items._end_press(presenter.envelope)
 	await create_timer(0.2).timeout
+	main.manager.desk_items._begin_press(presenter.envelope, Vector2(12, 12))
+	var upward_envelope_drag := InputEventMouseMotion.new()
+	upward_envelope_drag.relative = Vector2(0, -180)
+	upward_envelope_drag.global_position = presenter.envelope.get_meta("desk_press_global_position") + Vector2(0, -180)
+	main.manager.desk_items._move_pressed_item(presenter.envelope, upward_envelope_drag)
+	var elevated_envelope_position: Vector2 = presenter.envelope.position
+	main.manager.desk_items._end_press(presenter.envelope)
+	await create_timer(0.25).timeout
+	assert(presenter.envelope.position.is_equal_approx(elevated_envelope_position), "the case envelope must stay where it is released above the desk instead of falling under desk-item gravity")
 	presenter.expand_envelope_billboard()
 	await create_timer(0.3).timeout
 
@@ -66,9 +77,14 @@ func run() -> void:
 	presenter.pack_document(supporting.document_id)
 	assert(not supporting.visible, "dragging a document back must hide only that document")
 	assert(presenter.form.visible, "other expanded documents must remain on the desk")
+	assert(supporting_preview.visible, "a repacked document must immediately return to the visible pocket stack")
 	presenter.pack_all_documents()
 	assert(presenter.all_documents_packed(), "every document must be individually recoverable")
-	assert(not presenter.thumbnail_tray.visible, "a fully repacked envelope must hide thumbnails")
+	assert(presenter.envelope_billboard_expanded, "repacking the last document must leave the open envelope visible for confirmation")
+	assert(presenter.thumbnail_tray.visible, "a fully repacked envelope must keep the document stack visible")
+	assert(presenter.thumbnail_by_id.values().all(func(thumbnail: Button): return thumbnail.visible), "every repacked document must be visible in the completed pocket stack")
+	presenter.collapse_envelope_billboard()
+	await create_timer(0.3).timeout
 
 	main.manager.submission.submit(presenter, main.manager.current_case)
 	await create_timer(0.9).timeout

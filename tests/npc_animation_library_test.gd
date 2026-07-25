@@ -594,6 +594,92 @@ func run() -> void:
 	for action_name: StringName in li_animation.sprite_frames.get_animation_names():
 		assert(li_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Li Su animation may exceed the global four FPS style limit")
 
+	var wei_animation = library_script.new()
+	assert(wei_animation.load_animation_table("res://data/animations/person_wei/animation_table.json"), "Wei Lan's production animation table must load")
+	assert(wei_animation.error_messages.is_empty() and wei_animation.warning_messages.is_empty(), "Wei Lan's production animation table must resolve every generated frame")
+	assert(
+		wei_animation.character_id == "PERSON-WEI" and not wei_animation.substitute_frames_with_static_actor,
+		"Wei Lan must use her own generated frames instead of the static placeholder"
+	)
+	assert(
+		wei_animation.required_actions == library.required_actions and wei_animation.optional_actions == library.optional_actions and wei_animation.max_unique_pngs == 20,
+		"Wei Lan must implement the formal eight-core plus three-optional contract"
+	)
+	var wei_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(wei_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Wei Lan action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = wei_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_wei/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Wei Lan action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Wei Lan production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Wei Lan's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Wei Lan must leave the golden document bag on the player's desk after delivery")
+			wei_unique_frame_paths[frame_path] = true
+	assert(wei_unique_frame_paths.size() == 20, "Wei Lan's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_wei_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_wei/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_wei_pngs.append(filename)
+	assert(active_wei_pngs.size() == 20, "Wei Lan's active animation directory must contain exactly twenty PNG files")
+	for filename in active_wei_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Wei Lan filename must declare full-body coverage")
+	assert(
+		not wei_animation.has_action("walk_in") and not wei_animation.has_action("arrive") and not wei_animation.has_action("look_aside"),
+		"Wei Lan must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in wei_animation.sprite_frames.get_animation_names():
+		assert(wei_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Wei Lan animation may exceed the global four FPS style limit")
+
+	var jiang_animation = library_script.new()
+	assert(jiang_animation.load_animation_table("res://data/animations/person_jiang/animation_table.json"), "Jiang Sen's production animation table must load")
+	assert(jiang_animation.error_messages.is_empty() and jiang_animation.warning_messages.is_empty(), "Jiang Sen's production animation table must resolve every generated frame")
+	assert(
+		jiang_animation.character_id == "PERSON-JIANG" and not jiang_animation.substitute_frames_with_static_actor,
+		"Jiang Sen must use his own generated frames instead of the static placeholder"
+	)
+	assert(
+		jiang_animation.required_actions == library.required_actions and jiang_animation.optional_actions == library.optional_actions and jiang_animation.max_unique_pngs == 20,
+		"Jiang Sen must implement the formal eight-core plus three-optional contract"
+	)
+	var jiang_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(jiang_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Jiang Sen action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = jiang_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_jiang/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Jiang Sen action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Jiang Sen production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Jiang Sen's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Jiang Sen must leave the golden document bag on the player's desk after delivery")
+			jiang_unique_frame_paths[frame_path] = true
+	assert(jiang_unique_frame_paths.size() == 20, "Jiang Sen's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_jiang_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_jiang/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_jiang_pngs.append(filename)
+	assert(active_jiang_pngs.size() == 20, "Jiang Sen's active animation directory must contain exactly twenty PNG files")
+	for filename in active_jiang_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Jiang Sen filename must declare full-body coverage")
+	assert(
+		not jiang_animation.has_action("walk_in") and not jiang_animation.has_action("arrive") and not jiang_animation.has_action("look_aside"),
+		"Jiang Sen must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in jiang_animation.sprite_frames.get_animation_names():
+		assert(jiang_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Jiang Sen animation may exceed the global four FPS style limit")
+
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(exact.get("kind") == "animation" and exact.get("action") == "blink", "an available requested action must resolve to itself")
 	var emotional: Dictionary = library.resolve_action("unmade_happy_departure")

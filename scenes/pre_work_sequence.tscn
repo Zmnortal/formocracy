@@ -1,0 +1,181 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/scenes/pre_work_sequence.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/concepts/after_work_interiors/home_12c_concept.png" id="2_home"]
+[ext_resource type="FontFile" path="res://assets/fonts/ark_pixel/ark-pixel-16px-proportional-zh_cn.ttf" id="3_font"]
+[ext_resource type="Theme" path="res://themes/pixel_theme.tres" id="4_theme"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_newspaper"]
+bg_color = Color(0.827, 0.784, 0.659, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.18, 0.169, 0.125, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(0, 0, 0, 0.62)
+shadow_size = 13
+shadow_offset = Vector2(9, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_location"]
+bg_color = Color(0.018, 0.024, 0.021, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.31, 0.37, 0.3, 0.8)
+content_margin_left = 14.0
+content_margin_right = 14.0
+content_margin_top = 7.0
+content_margin_bottom = 7.0
+
+[node name="PreWorkSequence" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 0
+theme = ExtResource("4_theme")
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.006, 0.008, 0.007, 1)
+
+[node name="Backdrop" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+texture = ExtResource("2_home")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="FrameTexture" type="TextureRect" parent="."]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="MoodTint" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.04, 0.055, 0.07, 0.28)
+
+[node name="Newspaper" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 455.0
+offset_top = 76.0
+offset_right = 1067.0
+offset_bottom = 531.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_newspaper")
+
+[node name="Edition" type="Label" parent="Newspaper"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 24.0
+offset_right = 578.0
+offset_bottom = 75.0
+theme_override_colors/font_color = Color(0.145, 0.137, 0.102, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 18
+text = "衡川日报 · 第十二区晨版"
+
+[node name="Rule" type="ColorRect" parent="Newspaper"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 83.0
+offset_right = 578.0
+offset_bottom = 87.0
+mouse_filter = 2
+color = Color(0.145, 0.137, 0.102, 0.88)
+
+[node name="Headline" type="Label" parent="Newspaper"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 104.0
+offset_right = 578.0
+offset_bottom = 212.0
+theme_override_colors/font_color = Color(0.09, 0.085, 0.063, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 34
+text = "第十二区综合窗口今日恢复受理"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Rule2" type="ColorRect" parent="Newspaper"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 231.0
+offset_right = 578.0
+offset_bottom = 233.0
+mouse_filter = 2
+color = Color(0.145, 0.137, 0.102, 0.68)
+
+[node name="Article" type="Label" parent="Newspaper"]
+layout_mode = 0
+offset_left = 42.0
+offset_top = 253.0
+offset_right = 570.0
+offset_bottom = 379.0
+theme_override_colors/font_color = Color(0.17, 0.158, 0.116, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 21
+text = "停办十七日后，居住配置处 B-07 工位重新启用。首批事项仍按旧版目录执行，补充规则将通过内部广播发布。"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="DayMarker" type="Label" parent="Newspaper"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 401.0
+offset_right = 578.0
+offset_bottom = 433.0
+theme_override_colors/font_color = Color(0.145, 0.137, 0.102, 0.78)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 17
+text = "第 01 工作日"
+horizontal_alignment = 2
+
+[node name="LocationLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 30.0
+offset_right = 448.0
+offset_bottom = 74.0
+theme_override_colors/font_color = Color(0.77, 0.81, 0.69, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBox_location")
+text = "06:24  /  职员宿舍 12-C"
+vertical_alignment = 1
+
+[node name="SlideFlash" type="ColorRect" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Fade" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

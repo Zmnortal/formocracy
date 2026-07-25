@@ -5,6 +5,8 @@ extends SceneTree
 const DESK_OUTPUT := "/tmp/formocracy-envelope-desk-side.png"
 const CLOSED_OUTPUT := "/tmp/formocracy-envelope-billboard-closed.png"
 const OPEN_OUTPUT := "/tmp/formocracy-envelope-billboard-open.png"
+const REPACK_PREVIEW_OUTPUT := "/tmp/formocracy-envelope-repack-preview.png"
+const REPACKED_STACK_OUTPUT := "/tmp/formocracy-envelope-repacked-stack.png"
 const DOCUMENT_EXTRACTED_OUTPUT := "/tmp/formocracy-document-extracted-state.png"
 const DOCUMENT_DESK_OUTPUT := "/tmp/formocracy-document-desk-state.png"
 const DOCUMENT_RAISED_OUTPUT := "/tmp/formocracy-document-raised-state.png"
@@ -42,6 +44,10 @@ func run() -> void:
 	presenter.open_envelope()
 	await create_timer(0.3).timeout
 	_save_snapshot(OPEN_OUTPUT)
+	presenter._set_repack_preview(true)
+	await process_frame
+	_save_snapshot(REPACK_PREVIEW_OUTPUT)
+	presenter._set_repack_preview(false)
 
 	presenter.open_document(presenter.primary_document_id)
 	await create_timer(0.3).timeout
@@ -54,7 +60,26 @@ func run() -> void:
 	presenter.open_document(presenter.primary_document_id)
 	await create_timer(0.25).timeout
 	_save_snapshot(DOCUMENT_RAISED_OUTPUT)
-	print("FORMOCRACY_ENVELOPE_SNAPSHOT_OK %s %s %s %s %s %s" % [DESK_OUTPUT, CLOSED_OUTPUT, OPEN_OUTPUT, DOCUMENT_EXTRACTED_OUTPUT, DOCUMENT_DESK_OUTPUT, DOCUMENT_RAISED_OUTPUT])
+	presenter.expand_envelope_billboard()
+	await create_timer(0.3).timeout
+	presenter.pack_all_documents()
+	await create_timer(0.2).timeout
+	_save_snapshot(REPACKED_STACK_OUTPUT)
+	print(
+		(
+			"FORMOCRACY_ENVELOPE_SNAPSHOT_OK %s %s %s %s %s %s %s %s"
+			% [
+				DESK_OUTPUT,
+				CLOSED_OUTPUT,
+				OPEN_OUTPUT,
+				REPACK_PREVIEW_OUTPUT,
+				REPACKED_STACK_OUTPUT,
+				DOCUMENT_EXTRACTED_OUTPUT,
+				DOCUMENT_DESK_OUTPUT,
+				DOCUMENT_RAISED_OUTPUT,
+			]
+		)
+	)
 	quit(0)
 
 

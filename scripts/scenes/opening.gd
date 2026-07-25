@@ -1,6 +1,6 @@
 extends Control
 
-const MAIN_SCENE := "res://main.tscn"
+const PRE_WORK_SCENE := "res://scenes/pre_work_sequence.tscn"
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const FORM_TEXTURE := preload("res://assets/opening/position-reinstatement-form-v2.png")
 const MACHINE_TEXTURE := preload("res://assets/day1_8bit/interactive/validation_machine.png")
@@ -9,34 +9,6 @@ const PIXEL_THEME := preload("res://themes/pixel_theme.tres")
 const SignaturePadScene := preload("res://scripts/ui/signature_pad.gd")
 const HandwrittenCheckScene := preload("res://scripts/ui/handwritten_check.gd")
 const UI := preload("res://scripts/ui/bureau_ui.gd")
-const FIRST_DAY_INTRO_TEXTURES: Array[String] = [
-	"res://assets/opening/first_day_intro/01_empty_hall.png",
-	"res://assets/opening/first_day_intro/02_window_light.png",
-	"res://assets/opening/first_day_intro/03_unsigned_note.png",
-	"res://assets/opening/first_day_intro/04_first_applicant.png",
-]
-const FIRST_DAY_INTRO_LINES := [
-	{
-		"speaker": "档案记录",
-		"text": "05:58。第十二区综合办事厅，尚未开放。",
-		"kind": "system",
-	},
-	{
-		"speaker": "内部广播",
-		"text": "职位恢复核验完成。B-07 工位已重新启用。",
-		"kind": "broadcast",
-	},
-	{
-		"speaker": "player",
-		"text": "杯子是冷的。纸条没有署名：第一份材料，替我再看一遍日期。",
-		"kind": "player",
-	},
-	{
-		"speaker": "内部广播",
-		"text": "第十二区综合窗口，今日开始受理。",
-		"kind": "broadcast",
-	},
-]
 const APPROACH_FRAME_COUNT := 8
 const INGEST_FRAME_COUNT := 10
 const STOP_MOTION_FRAME_SECONDS := 0.25
@@ -73,12 +45,7 @@ var confirmation
 var confirm_button: Button
 var status_label: Label
 var clear_signature_button: Button
-var intro_panel: Control
-var intro_frame: TextureRect
-var intro_flash: ColorRect
-var dialogue_box: DialogueBox
-var intro_slide_index := -1
-var intro_exiting := false
+var opening_exiting := false
 var submission_locked := false
 var submission_snap_count := 0
 var submission_phase := "form"
@@ -147,7 +114,6 @@ func _build_scene() -> void:
 	_add_form_inputs()
 
 	_build_machine_foreground()
-	_build_first_day_intro()
 
 
 # 在表单舞台上添加标题、档案编号等印刷文案标签。
@@ -242,39 +208,6 @@ func _build_machine_foreground() -> void:
 	machine_foreground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	machine_foreground.modulate.a = 0.0
 	add_child(machine_foreground)
-
-
-# 构建职位恢复后的四拍首日播片；台词统一交给 DialogueBox 手动推进。
-func _build_first_day_intro() -> void:
-	intro_panel = Control.new()
-	intro_panel.name = "FirstDayIntro"
-	intro_panel.size = Vector2(1280, 720)
-	intro_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	intro_panel.visible = false
-	add_child(intro_panel)
-
-	intro_frame = TextureRect.new()
-	intro_frame.name = "FirstDayIntroFrame"
-	intro_frame.position = Vector2.ZERO
-	intro_frame.size = Vector2(1280, 720)
-	intro_frame.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	intro_frame.stretch_mode = TextureRect.STRETCH_SCALE
-	intro_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	intro_frame.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	intro_panel.add_child(intro_frame)
-
-	intro_flash = ColorRect.new()
-	intro_flash.name = "FirstDayIntroFlash"
-	intro_flash.position = Vector2.ZERO
-	intro_flash.size = Vector2(1280, 720)
-	intro_flash.color = Color.BLACK
-	intro_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	intro_flash.visible = false
-	intro_panel.add_child(intro_flash)
-
-	dialogue_box = DialogueBox.new()
-	intro_panel.add_child(dialogue_box)
-	dialogue_box.advance_requested.connect(_advance_first_day_intro)
 
 
 # 创建带纸面配色的文本标签。
@@ -431,14 +364,14 @@ func set_form_interaction(enabled: bool) -> void:
 	clear_signature_button.disabled = not enabled
 
 
-# 依次播放靠近、吞入、机器淡出与首日叙事播片。
+# 依次播放靠近、吞入和机器淡出，随后进入每日晨间上班序列。
 func _play_submission() -> void:
 	await _play_stop_motion_approach()
 	await _play_stop_motion_ingestion()
 	if DisplayServer.get_name() != "headless":
 		await get_tree().create_timer(0.5).timeout
 	await _fade_machine_out()
-	await _show_first_day_intro()
+	complete_reinstatement()
 
 
 # 将表单内容捕获为投影多边形纹理，供定格动画变形使用。
@@ -555,65 +488,11 @@ func _fade_machine_out() -> void:
 	await fade_out.finished
 
 
-# 淡入首日播片的第一拍；这里只负责入场，不设置任何自动推进计时器。
-func _show_first_day_intro() -> void:
-	submission_phase = "first_day_intro"
-	Sfx.play("bling")
-	intro_panel.modulate.a = 0.0
-	intro_panel.visible = true
-	_show_first_day_intro_slide(0, false)
-	if DisplayServer.get_name() == "headless":
-		intro_panel.modulate.a = 1.0
-		return
-	var reveal := create_tween()
-	reveal.tween_property(intro_panel, "modulate:a", 1.0, 0.8)
-	await reveal.finished
-
-
-# 只有 DialogueBox 发出手动推进信号时才允许换到下一拍。
-func _advance_first_day_intro() -> void:
-	if intro_exiting:
-		return
-	var next_index := intro_slide_index + 1
-	if next_index >= FIRST_DAY_INTRO_TEXTURES.size():
-		complete_reinstatement()
-		return
-	_show_first_day_intro_slide(next_index)
-
-
-# 切换画面和台词，并把同一句内容同步给现实眼镜事件桥。
-func _show_first_day_intro_slide(index: int, flash := true) -> void:
-	intro_slide_index = clampi(index, 0, FIRST_DAY_INTRO_TEXTURES.size() - 1)
-	intro_frame.texture = load(FIRST_DAY_INTRO_TEXTURES[intro_slide_index])
-	var line: Dictionary = FIRST_DAY_INTRO_LINES[intro_slide_index]
-	var speaker := str(line.speaker)
-	if speaker == "player":
-		speaker = WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
-	dialogue_box.show_line(speaker, str(line.text), str(line.kind))
-	var bridge := get_tree().root.get_node_or_null("RealityBridge")
-	if bridge != null:
-		bridge.secretary_line(str(line.text))
-	if intro_slide_index == 1 or intro_slide_index == 3:
-		Sfx.play("call_intercom")
-	if flash:
-		_flash_first_day_intro()
-
-
-# 以短促黑场切换静止画面，强化档案幻灯片的机械顿挫。
-func _flash_first_day_intro() -> void:
-	intro_flash.visible = true
-	intro_flash.modulate.a = 0.78
-	var flash := create_tween()
-	flash.tween_property(intro_flash, "modulate:a", 0.0, 0.14)
-	flash.finished.connect(func(): intro_flash.visible = false)
-
-
-# 确认最后一拍后创建初始存档节点并进入第一工作日。
+# 职位恢复表通过后创建初始存档，并进入首日的家中晨报。
 func complete_reinstatement() -> void:
-	if not submission_locked or intro_exiting:
+	if not submission_locked or opening_exiting:
 		return
-	intro_exiting = true
-	dialogue_box.close()
+	opening_exiting = true
 	Sfx.play("start")
 	WorkdayState.save_system.create_initial_checkpoint()
 	_enter_first_day()
@@ -628,9 +507,9 @@ func _return_to_menu() -> void:
 		push_error("无法返回主菜单：%s" % error_string(error))
 
 
-# 切换到第一工作日的主游戏场景。
+# 切换到第一工作日的晨间上班序列。
 func _enter_first_day() -> void:
-	var error := get_tree().change_scene_to_file(MAIN_SCENE)
+	var error := get_tree().change_scene_to_file(PRE_WORK_SCENE)
 	if error != OK:
 		push_error("无法进入第一工作日：%s" % error_string(error))
 

@@ -56,9 +56,17 @@ func run() -> void:
 	manager.input._on_document_drag_motion(supporting_document, presenter)
 	assert(WorkdayContext.to_bool(presenter.envelope.get_meta("repack_preview_active")), "entering the triangular envelope mouth must enable the whole-envelope white outline")
 	assert(WorkdayContext.to_bool(presenter.envelope_outline_material.get_shader_parameter("outline_enabled")), "the envelope outline shader must receive the valid-drop state")
+	assert(presenter.envelope_repack_outline.visible, "the valid pocket target must draw a visible white frame around the full envelope")
+	assert(
+		Rect2(presenter.envelope_repack_outline.position, presenter.envelope_repack_outline.size) == WorkbenchCasePresenter.ENVELOPE_VISIBLE_BOUNDS,
+		"the white target frame must follow the visible envelope silhouette bounds"
+	)
+	var repack_outline_style := presenter.envelope_repack_outline.get_theme_stylebox("panel") as StyleBoxFlat
+	assert(repack_outline_style.border_color == Color.WHITE and repack_outline_style.border_width_left == 3, "the target frame must use an opaque three-pixel white border")
 	manager.input._prepare_document_drop(supporting_document, presenter)
 	assert(presenter.packed_document_ids.has(supporting_document.document_id), "a document centered in the triangular mouth must be repacked")
 	assert(not WorkdayContext.to_bool(presenter.envelope.get_meta("repack_preview_active")), "the valid-drop outline must clear immediately after repacking")
+	assert(not presenter.envelope_repack_outline.visible, "the white target frame must clear immediately after a successful repack")
 
 	presenter.bring_document_to_front(presenter.primary_document_id)
 	var approve_stamp := manager.stamp.stamp_tools[0] as Control
@@ -67,10 +75,7 @@ func run() -> void:
 	_place_visual_center(approve_stamp, stamp_target_global)
 	manager.stamp._prepare_stamp_drop(approve_stamp)
 	assert(workbench.has_node("StampContactAnimation"), "a valid free stamp drop must start the contact animation")
-	assert(
-		(workbench.get_node("StampContactAnimation") as CanvasItem).z_index > DeskItemController.HELD_LAYER,
-		"stamp contact animation must use a four-digit system layer above every desk item"
-	)
+	assert((workbench.get_node("StampContactAnimation") as CanvasItem).z_index > DeskItemController.HELD_LAYER, "stamp contact animation must use a four-digit system layer above every desk item")
 	assert(presenter.form.stamp_records.is_empty(), "the stamp mark must not appear before the contact animation finishes")
 	await create_timer(0.38).timeout
 	assert(not workbench.has_node("StampContactAnimation"), "the temporary stamp animation must clean itself up")
@@ -79,10 +84,7 @@ func run() -> void:
 	await create_timer(0.9).timeout
 	assert(approve_stamp.position != stamp_home, "a used stamp must not tween back to a fixed home position")
 	assert(approve_stamp.position.y >= DeskGeometry.BOUNDS_TOP, "a used stamp must fall back onto the desk")
-	assert(
-		state.manager.get_desk_item_layout("stamp_approve").has("position"),
-		"stamp gravity landing must persist through the same desk-item layout path as the bell"
-	)
+	assert(state.manager.get_desk_item_layout("stamp_approve").has("position"), "stamp gravity landing must persist through the same desk-item layout path as the bell")
 
 	print("FORMOCRACY_DOCUMENT_REPACK_AND_STAMP_OK")
 	quit()

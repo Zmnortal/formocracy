@@ -25,9 +25,11 @@ const ENVELOPE_TRANSITION_DURATION := 0.24
 const ENVELOPE_OPEN_FRAME_DURATION := 0.08
 const DOCUMENT_EXTRACT_DURATION := 0.28
 const DOCUMENT_RAISE_DURATION := 0.22
-const ENVELOPE_FRONT_REGION := Rect2(0, 168, 340, 352)
 const ENVELOPE_FRONT_POSITION := Vector2(48, 200)
 const ENVELOPE_FRONT_SIZE := Vector2(405, 420)
+const ENVELOPE_POCKET_WINDOW_POSITION := Vector2(86, 132)
+const ENVELOPE_POCKET_WINDOW_SIZE := Vector2(328, 68)
+const ENVELOPE_VISIBLE_BOUNDS := Rect2(82, 30, 348, 559)
 const ENVELOPE_CONTENT_OVERLAY_TOP := 12
 const ENVELOPE_REPACK_ZONE := [
 	Vector2(86, 136),
@@ -49,6 +51,7 @@ var thumbnail_by_id: Dictionary = {}
 var envelope: Panel
 var envelope_image: TextureRect
 var envelope_outline_material: ShaderMaterial
+var envelope_repack_outline: Panel
 var envelope_front_cover: TextureRect
 var envelope_case_label: Label
 var envelope_flap: Button
@@ -61,6 +64,7 @@ var envelope_billboard_expanded := false
 var envelope_transitioning := false
 var envelope_desk_position := ENVELOPE_DESK_POSITION
 var packed_document_ids: Array[String] = []
+var pocket_stack_ids: Array[String] = []
 var primary_document_id := ""
 
 var form_stamped := false
@@ -128,6 +132,7 @@ func clear_case() -> void:
 	document_by_id.clear()
 	thumbnail_by_id.clear()
 	packed_document_ids.clear()
+	pocket_stack_ids.clear()
 	stamp_records.clear()
 	primary_document_id = ""
 	form_stamped = false
@@ -138,6 +143,7 @@ func clear_case() -> void:
 	envelope_transitioning = false
 	envelope_desk_position = ENVELOPE_DESK_POSITION
 	envelope_outline_material = null
+	envelope_repack_outline = null
 	inspection_dismiss_layer = null
 	next_document_layer = 14
 
@@ -165,6 +171,7 @@ func _create_documents(raw_documents: Array) -> void:
 
 		all_document_views.append(document)
 		document_by_id[document.document_id] = document
+		pocket_stack_ids.append(document.document_id)
 		if document.is_primary:
 			form = document
 			primary_document_id = document.document_id
@@ -211,6 +218,16 @@ func _create_envelope() -> void:
 	envelope_outline_material.set_shader_parameter("outline_enabled", false)
 	envelope_image.material = envelope_outline_material
 	envelope.add_child(envelope_image)
+
+	envelope_repack_outline = Panel.new()
+	envelope_repack_outline.name = "EnvelopeRepackOutline"
+	envelope_repack_outline.position = ENVELOPE_VISIBLE_BOUNDS.position
+	envelope_repack_outline.size = ENVELOPE_VISIBLE_BOUNDS.size
+	envelope_repack_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	envelope_repack_outline.visible = false
+	envelope_repack_outline.z_index = 1
+	envelope_repack_outline.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 8, Color.WHITE, 3))
+	envelope.add_child(envelope_repack_outline)
 
 	envelope_case_label = (
 		WorkbenchUI
@@ -262,12 +279,8 @@ func _create_envelope() -> void:
 	envelope.add_child(thumbnail_tray)
 	_create_thumbnails()
 
-	var front_atlas := AtlasTexture.new()
-	front_atlas.atlas = ENVELOPE_OPEN_EMPTY
-	front_atlas.region = ENVELOPE_FRONT_REGION
 	envelope_front_cover = TextureRect.new()
 	envelope_front_cover.name = "EnvelopeFrontPocketCover"
-	envelope_front_cover.texture = front_atlas
 	envelope_front_cover.position = ENVELOPE_FRONT_POSITION
 	envelope_front_cover.size = ENVELOPE_FRONT_SIZE
 	envelope_front_cover.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -303,6 +316,7 @@ func _order_envelope_atomic_layers() -> void:
 	envelope.move_child(envelope_case_label, 3)
 	envelope.move_child(envelope_flap, 4)
 	envelope.move_child(envelope_drag_handle, 5)
+	envelope.move_child(envelope_repack_outline, 6)
 
 
 # 创建查验态标记层；实际袋外点击由主场景的未处理输入接收，避免透明层拦住桌面工具。
@@ -438,12 +452,14 @@ func _layout_billboard_controls() -> void:
 	envelope_flap.visible = not envelope_opened
 	envelope_front_cover.position = ENVELOPE_FRONT_POSITION
 	envelope_front_cover.size = ENVELOPE_FRONT_SIZE
-	envelope_front_cover.visible = envelope_opened
+	envelope_front_cover.visible = false
+	envelope_repack_outline.position = ENVELOPE_VISIBLE_BOUNDS.position
+	envelope_repack_outline.size = ENVELOPE_VISIBLE_BOUNDS.size
 	envelope_drag_handle.position = Vector2(48, 278)
 	envelope_drag_handle.size = Vector2(405, 310)
 	envelope_drag_handle.visible = true
-	thumbnail_tray.position = Vector2(86, 132)
-	thumbnail_tray.size = Vector2(328, 132)
+	thumbnail_tray.position = ENVELOPE_POCKET_WINDOW_POSITION
+	thumbnail_tray.size = ENVELOPE_POCKET_WINDOW_SIZE
 	_refresh_document_previews()
 
 
@@ -480,7 +496,7 @@ func _play_opening_frames() -> void:
 	await root.get_tree().create_timer(ENVELOPE_OPEN_FRAME_DURATION).timeout
 	if not is_instance_valid(active_envelope) or active_envelope != envelope or not envelope_billboard_expanded:
 		return
-	envelope_front_cover.visible = true
+	envelope_front_cover.visible = false
 	_refresh_document_previews()
 	if is_instance_valid(desk.status_label):
 		desk.status_label.text = "文件袋已拆开：点击袋口露出的真实文件并抽出。"
@@ -520,6 +536,7 @@ func _extract_document_from_bag(document: DocumentView) -> void:
 		var preview_center_global := thumbnail.get_global_transform() * (thumbnail.size * 0.5)
 		start_center = root.to_local(preview_center_global)
 		thumbnail.visible = false
+	pocket_stack_ids.erase(document.document_id)
 	document.pivot_offset = document.size * 0.5
 	document.position = start_center - document.pivot_offset
 	document.scale = DOCUMENT_PEEK_SCALE
@@ -674,6 +691,8 @@ func _set_repack_preview(active: bool) -> void:
 		envelope.set_meta("repack_preview_active", should_show)
 	if is_instance_valid(envelope_outline_material):
 		envelope_outline_material.set_shader_parameter("outline_enabled", should_show)
+	if is_instance_valid(envelope_repack_outline):
+		envelope_repack_outline.visible = should_show
 
 
 # 将指定文档重新装袋；若全部装袋则提示可送入验收机器。
@@ -685,6 +704,8 @@ func pack_document(document_id: String) -> bool:
 		return all_documents_packed()
 	_set_repack_preview(false)
 	packed_document_ids.append(document_id)
+	pocket_stack_ids.erase(document_id)
+	pocket_stack_ids.append(document_id)
 	_kill_document_tween(document)
 	document.visible = false
 	document.set_meta("document_state", "BAG")
@@ -692,14 +713,14 @@ func pack_document(document_id: String) -> bool:
 	document.remove_meta("desk_home_layer")
 	var thumbnail: Button = thumbnail_by_id.get(document_id)
 	if is_instance_valid(thumbnail):
-		thumbnail.visible = false
+		thumbnail.visible = true
 	Sfx.play("ui_click")
 
 	if all_documents_packed():
-		thumbnail_tray.visible = false
-		_collapse_to_desk_flat()
+		_refresh_document_previews()
+		_refresh_inspection_dismiss_layer()
 		if is_instance_valid(desk.status_label):
-			desk.status_label.text = "全部文件已重新装袋，可送入验收区。"
+			desk.status_label.text = "全部文件已重新装袋；点击袋外收起后可送入验收区。"
 		return true
 	_refresh_document_previews()
 	_refresh_inspection_dismiss_layer()
@@ -754,27 +775,34 @@ func collapse_envelope_billboard() -> void:
 	_collapse_to_desk_flat()
 
 
-# 只显示仍在袋中的真实文件预览；袋体始终使用不含假文件的 open_empty 原图。
+# 显示全部袋内真实文件；前袋直接使用原图并由裁切窗口遮挡，避免重复叠画造成色差。
 func _refresh_document_previews() -> void:
 	if not is_instance_valid(thumbnail_tray):
 		return
-	var visible_slot := 0
-	for document in all_document_views:
-		var thumbnail: Button = thumbnail_by_id.get(document.document_id)
+	for thumbnail_value: Variant in thumbnail_by_id.values():
+		var thumbnail_to_hide := thumbnail_value as Button
+		if is_instance_valid(thumbnail_to_hide):
+			thumbnail_to_hide.visible = false
+
+	var visible_document_ids: Array[String] = []
+	for document_id: String in pocket_stack_ids:
+		var document: DocumentView = document_by_id.get(document_id)
+		if is_instance_valid(document) and WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) == "BAG":
+			visible_document_ids.append(document_id)
+
+	for slot: int in visible_document_ids.size():
+		var document_id := visible_document_ids[slot]
+		var thumbnail: Button = thumbnail_by_id.get(document_id)
 		if not is_instance_valid(thumbnail):
 			continue
-		var remains_in_bag := WorkdayContext.stringify_value(document.get_meta("document_state", "BAG")) == "BAG" and not packed_document_ids.has(document.document_id)
-		var should_show := remains_in_bag and visible_slot < 2
-		thumbnail.visible = should_show
-		if should_show:
-			_layout_document_preview_slot(thumbnail, visible_slot)
-			visible_slot += 1
+		thumbnail.visible = true
+		_layout_document_preview_slot(thumbnail, slot, visible_document_ids.size())
 	# 即使文件已全部抽出也保留透明袋口投放区，否则最后一份文件将没有可归还目标。
 	thumbnail_tray.visible = envelope_billboard_expanded and envelope_opened
 
 
-# 袋口始终只露出最上方两份真实文件；抽走一份后下一份自动补到袋口。
-func _layout_document_preview_slot(thumbnail: Button, slot: int) -> void:
+# 将袋内全部文件横向错位堆叠；每份保留可点击边缘，最后回插的文件位于堆顶。
+func _layout_document_preview_slot(thumbnail: Button, slot: int, total: int) -> void:
 	var document_id := WorkdayContext.stringify_value(thumbnail.get_meta("document_id"))
 	var document: DocumentView = document_by_id.get(document_id)
 	var pocket_size := Vector2(150, 110)
@@ -782,13 +810,12 @@ func _layout_document_preview_slot(thumbnail: Button, slot: int) -> void:
 		pocket_size = document.visual_size(DocumentView.VISUAL_POCKET)
 	thumbnail.size = pocket_size
 	thumbnail.pivot_offset = thumbnail.size * 0.5
-	if slot == 0:
-		thumbnail.position = Vector2(24, 132 - thumbnail.size.y)
-		thumbnail.rotation = -0.04
-	else:
-		thumbnail.position = Vector2(130, 126 - thumbnail.size.y)
-		thumbnail.rotation = 0.035
-	thumbnail.z_index = 0
+	var horizontal_margin := 8.0
+	var horizontal_span := maxf(0.0, thumbnail_tray.size.x - thumbnail.size.x - horizontal_margin * 2.0)
+	var normalized_slot := 0.5 if total <= 1 else float(slot) / float(total - 1)
+	thumbnail.position = Vector2(horizontal_margin + horizontal_span * normalized_slot, thumbnail_tray.size.y - thumbnail.size.y + sin(float(slot) * 1.7) * 3.0)
+	thumbnail.rotation = lerpf(-0.045, 0.045, normalized_slot)
+	thumbnail.z_index = slot
 	thumbnail_tray.move_child(thumbnail, thumbnail_tray.get_child_count() - 1)
 
 
