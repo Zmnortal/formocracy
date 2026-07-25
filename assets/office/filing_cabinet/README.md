@@ -19,11 +19,13 @@ The cabinet body is top-center aligned across the sequence; fully opened drawers
 - `states/00_closed.png`
 - `states/01_upper_half_open.png`
 - `states/02_upper_open_handbook.png`
+- `states/02_upper_open_empty.png`
 - `states/03_lower_half_open.png`
 - `states/04_lower_open_evidence.png`
 
 The half-open states are transition/hover frames. The fully open states are stable interaction targets.
 Every state exposes the same narrow worn-metal top plane, matching the perspective of the right-side clerk cabinet. No exterior side plane is exposed, and the shared top/body anchor prevents visible jumps during texture swaps.
+At runtime the upper drawer settles on `02_upper_open_empty.png`; the handbook is rendered as a separate movable object, so it never appears twice.
 
 ## Removable contents
 
@@ -31,8 +33,12 @@ All content images use a `512 x 384` transparent canvas.
 
 - `contents/reference_handbook_closed.png`
 - `contents/reference_handbook_open.png`
+- `contents/reference_handbook_item.png` (`255 x 330`, trimmed closed-book desk object)
+- `contents/reference_handbook_paper_spread.png` (`1024 x 768`, transparent tactile paper spread with clickable page curls)
 - `contents/private_evidence_dossier.png`
 - `contents/loose_clue_set.png`
+
+The upper-drawer handbook follows four visual states: in drawer, moving, closed on desk, and reading. A click takes it out; a second click opens the paper reader. Dragging the closed book back over the open upper drawer returns it.
 
 ## Integration target
 

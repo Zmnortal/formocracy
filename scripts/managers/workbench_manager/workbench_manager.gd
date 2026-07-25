@@ -48,9 +48,9 @@ func start() -> void:
 	Sfx.start_ambience()
 
 	desk = DeskBuilder.new().build(root)
-	filing_cabinet = FilingCabinetModule.new(root, desk)
 	desk_items = DeskItemController.new(root)
-	presenter = CasePresenterModule.new(root, desk)
+	filing_cabinet = FilingCabinetModule.new(root, desk, desk_items)
+	presenter = CasePresenterModule.new(root, desk, desk_items)
 	stamp = StampModule.new(root, desk, presenter, desk_items)
 	input = InputModule.new(root, desk, desk_items)
 	submission = SubmissionModule.new(root, desk)

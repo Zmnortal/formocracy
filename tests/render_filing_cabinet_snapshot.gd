@@ -37,7 +37,7 @@ func run() -> void:
 	await create_timer(0.4).timeout
 	assert(cabinet.state == cabinet.STATE_UPPER_OPEN)
 	await _capture(viewport, UPPER_SNAPSHOT)
-	cabinet.close()
+	cabinet.close_upper()
 	await create_timer(0.35).timeout
 	cabinet.open_lower()
 	await create_timer(0.4).timeout
