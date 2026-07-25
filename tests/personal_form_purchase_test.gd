@@ -22,6 +22,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var map = current_scene
+	map.auto_open_location_scenes = false
 	map.select_location(map.LOCATION_RATION)
 	await create_timer(1.1).timeout
 	assert(map.ration_window.visible, "arriving at ration depot must open its catalog")

@@ -22,6 +22,7 @@ func run() -> void:
 	map.end_sequence_fade_duration = 0.01
 	map.end_sequence_step_duration = 0.01
 	map.auto_transition_after_end_sequence = false
+	map.auto_open_location_scenes = false
 	map.select_location(map.LOCATION_HOME)
 	await create_timer(1.4).timeout
 	assert(map.home_window.visible, "arriving home must open personal form desk")

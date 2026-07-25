@@ -210,7 +210,13 @@ func select_location(location_id: String) -> void:
 		get_tree().change_scene_to_file("res://scenes/form_shop.tscn")
 		return
 	if auto_open_location_scenes and location_id == LOCATION_FORMS:
-		get_tree().change_scene_to_file("res://scenes/application_office.tscn")
+		get_tree().change_scene_to_file("res://scenes/central_forms_scene.tscn")
+		return
+	if auto_open_location_scenes and location_id == LOCATION_RATION:
+		get_tree().change_scene_to_file("res://scenes/ration_depot_scene.tscn")
+		return
+	if auto_open_location_scenes and location_id == LOCATION_HOME:
+		get_tree().change_scene_to_file("res://scenes/home_12c_scene.tscn")
 		return
 	if WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
 		_start_end_of_night_sequence()
