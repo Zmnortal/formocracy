@@ -2,7 +2,7 @@ extends AfterWorkProprietorScene
 
 
 func _configure_scene() -> void:
-	background_texture = preload("res://assets/concepts/after_work_interiors/home_12c_concept.png")
+	background_texture = preload("res://assets/life/interiors/home_12c.png")
 	proprietor_textures = {
 		"idle": preload("res://assets/characters/after_work/qin_caretaker/idle.png"),
 		"talk": preload("res://assets/characters/after_work/qin_caretaker/talk.png"),

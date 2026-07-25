@@ -2,6 +2,8 @@ extends Control
 
 const UI := preload("res://scripts/ui/bureau_ui.gd")
 const DESIGN_SIZE := Vector2(1280, 720)
+const OFFICE_BACKGROUND := preload("res://assets/life/interiors/central_forms_department.png")
+const INTAKE_MACHINE := preload("res://assets/life/application_office/intake_machine.png")
 
 var selector: OptionButton
 var form_title: Label
@@ -26,12 +28,22 @@ func _ready() -> void:
 # 以代码构建受理局界面：背景、表单选择器、纸面填写区、受理机面板与返回按钮。
 func build_scene() -> void:
 	custom_minimum_size = DESIGN_SIZE
-	var background := ColorRect.new()
-	background.color = Color("080d0a")
+	var background := TextureRect.new()
+	background.texture = OFFICE_BACKGROUND
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 
-	var frame := make_panel(Color("151c16"), Color("6c7852"), 4)
+	var background_shade := ColorRect.new()
+	background_shade.color = Color(0.018, 0.028, 0.022, 0.7)
+	background_shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background_shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(background_shade)
+
+	var frame := make_panel(Color(0.075, 0.1, 0.078, 0.94), Color("6c7852"), 4)
 	frame.position = Vector2(54, 36)
 	frame.size = Vector2(1172, 648)
 	add_child(frame)
@@ -102,22 +114,31 @@ func build_scene() -> void:
 	submit_button.pressed.connect(submit_selected_form)
 	paper.add_child(submit_button)
 
-	var machine := make_panel(Color("080b09"), Color("786c3f"), 3)
+	var machine := make_panel(Color(0.04, 0.055, 0.045, 0.78), Color("786c3f"), 3)
 	machine.position = Vector2(800, 186)
-	machine.size = Vector2(330, 250)
+	machine.size = Vector2(330, 278)
 	frame.add_child(machine)
 	var machine_title := make_label("统一申请受理机", 20, Color("c8b260"))
-	machine_title.position = Vector2(24, 24)
+	machine_title.position = Vector2(24, 14)
 	machine_title.size = Vector2(282, 34)
+	machine_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	machine.add_child(machine_title)
-	var slot := ColorRect.new()
-	slot.color = Color("010201")
-	slot.position = Vector2(38, 88)
-	slot.size = Vector2(254, 36)
-	machine.add_child(slot)
+
+	var machine_asset := Sprite2D.new()
+	machine_asset.name = "IntakeMachineAsset"
+	machine_asset.texture = INTAKE_MACHINE
+	machine_asset.centered = false
+	machine_asset.position = Vector2(35, 48)
+	machine_asset.scale = Vector2(
+		260.0 / float(INTAKE_MACHINE.get_width()),
+		164.0 / float(INTAKE_MACHINE.get_height()),
+	)
+	machine_asset.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	machine.add_child(machine_asset)
+
 	var warning := make_label("旧版、内部或注销表单\n同样会进入身份核验程序", 14, Color("747d60"))
-	warning.position = Vector2(34, 150)
-	warning.size = Vector2(266, 58)
+	warning.position = Vector2(34, 218)
+	warning.size = Vector2(266, 48)
 	warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	machine.add_child(warning)
 

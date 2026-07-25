@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/scenes/evening_map.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/map/background/district_12_civic_clean.png" id="2_background"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" path="res://assets/map/locations/ration_depot_v2.png" id="4_ration"]
 [ext_resource type="Texture2D" path="res://assets/map/locations/home_12c_v2.png" id="5_home"]
 [ext_resource type="Texture2D" path="res://assets/map/tokens/player_token.png" id="6_token"]
-[ext_resource type="Texture2D" path="res://assets/map/stamps/locked_stamp.png" id="7_locked"]
 [ext_resource type="Script" path="res://scripts/ui/document_background.gd" id="8_document"]
 [ext_resource type="Texture2D" path="res://assets/map/locations/form_shop_v3.png" id="9_shop"]
 [ext_resource type="Texture2D" path="res://assets/map/locations/newspaper_kiosk_v3.png" id="10_kiosk"]
@@ -273,78 +272,6 @@ theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
 text = "公共配给站"
 
-[node name="Clinic" type="Panel" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 946.0
-offset_top = 128.0
-offset_right = 1160.0
-offset_bottom = 208.0
-theme_override_styles/panel = SubResource("LocationPanel")
-
-[node name="Label" type="Label" parent="Clinic"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = -14.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
-theme_override_font_sizes/font_size = 16
-text = "第十二区诊疗所\n需通行表"
-
-[node name="LockedStamp" type="TextureRect" parent="Clinic"]
-texture_filter = 1
-layout_mode = 0
-offset_left = 132.0
-offset_top = 8.0
-offset_right = 196.0
-offset_bottom = 72.0
-mouse_filter = 2
-texture = ExtResource("7_locked")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Transit" type="Panel" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 160.0
-offset_top = 380.0
-offset_right = 374.0
-offset_bottom = 460.0
-theme_override_styles/panel = SubResource("LocationPanel")
-
-[node name="Label" type="Label" parent="Transit"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = -14.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.75, 0.69, 0.45, 1)
-theme_override_font_sizes/font_size = 16
-text = "交通许可处\n已关闭"
-
-[node name="LockedStamp" type="TextureRect" parent="Transit"]
-texture_filter = 1
-layout_mode = 0
-offset_left = 132.0
-offset_top = 8.0
-offset_right = 196.0
-offset_bottom = 72.0
-mouse_filter = 2
-texture = ExtResource("7_locked")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="ShopButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 270.0
@@ -408,17 +335,17 @@ stretch_mode = 5
 [node name="NoticePanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 280.0
-offset_top = 590.0
-offset_right = 1000.0
-offset_bottom = 642.0
+offset_top = 660.0
+offset_right = 1204.0
+offset_bottom = 708.0
 theme_override_styles/panel = SubResource("NoticePanel")
 
 [node name="Notice" type="Label" parent="."]
 layout_mode = 0
 offset_left = 300.0
-offset_top = 602.0
-offset_right = 980.0
-offset_bottom = 632.0
+offset_top = 669.0
+offset_right = 1184.0
+offset_bottom = 699.0
 theme_override_colors/font_color = Color(0.69, 0.72, 0.52, 1)
 theme_override_font_sizes/font_size = 16
 text = "日报已封存。选择一个地点，安排今晚的事务。"
@@ -454,6 +381,7 @@ theme_override_font_sizes/font_size = 14
 text = "机构信息"
 
 [node name="StageLabel" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 72.0
 offset_top = 660.0
@@ -467,9 +395,9 @@ horizontal_alignment = 1
 [node name="DossierButton" type="Button" parent="."]
 layout_mode = 0
 offset_left = 76.0
-offset_top = 592.0
+offset_top = 660.0
 offset_right = 330.0
-offset_bottom = 640.0
+offset_bottom = 708.0
 theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("HeaderPanel")

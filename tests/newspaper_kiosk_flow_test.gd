@@ -23,11 +23,15 @@ func run() -> void:
 	var kiosk = current_scene
 	assert(kiosk.publishers.size() == 3, "kiosk must offer the three paid publishers")
 	assert(kiosk.dialogue_box is DialogueBox, "kiosk result must reuse the shared DialogueBox")
+	assert(kiosk.proprietor_overlay.visible, "kiosk must open on its proprietor instead of the application form")
+	assert(kiosk.find_child("KioskProprietor", true, false) is Sprite2D, "kiosk must render its proprietor")
 	assert(pause_menu.is_scene_allowed_path("res://scenes/newspaper_kiosk.tscn"), "kiosk must allow the shared pause menu")
 	assert(kiosk.form_count_label.text.contains("1"), "kiosk must show the blank form in the dossier")
 	assert(kiosk.form_asset.texture.resource_path.ends_with("subscription_form_s01.png"), "kiosk must use the S-01 form asset instead of a flat placeholder")
 	assert(kiosk.submit_button.disabled, "destruction declaration must be required before submission")
 
+	kiosk._open_subscription_form()
+	assert(not kiosk.proprietor_overlay.visible, "subscription action must reveal the application form")
 	kiosk.declaration.button_pressed = true
 	kiosk._refresh_state()
 	assert(not kiosk.submit_button.disabled, "valid dossier and balance must enable the machine")

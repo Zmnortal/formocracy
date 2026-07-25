@@ -4,7 +4,7 @@ const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
 
 
 func _configure_scene() -> void:
-	background_texture = preload("res://assets/concepts/after_work_interiors/ration_depot_concept.png")
+	background_texture = preload("res://assets/life/interiors/ration_depot.png")
 	proprietor_textures = {
 		"idle": preload("res://assets/characters/after_work/ma_ration/idle.png"),
 		"talk": preload("res://assets/characters/after_work/ma_ration/talk.png"),

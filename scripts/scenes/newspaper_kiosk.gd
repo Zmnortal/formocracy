@@ -6,6 +6,9 @@ const MAP_SCENE := "res://scenes/evening_map.tscn"
 const FORM_ID := "PERSONAL-FORM-NEWSPAPER-S01"
 const DESIGN_SIZE := Vector2(1280, 720)
 const SUBSCRIPTION_FORM_TEXTURE := preload("res://assets/newspapers/forms/subscription_form_s01.png")
+const KIOSK_BACKGROUND := preload("res://assets/life/newspaper_kiosk/interior.png")
+const ACCEPTANCE_MACHINE := preload("res://assets/life/newspaper_kiosk/acceptance_machine.png")
+const KIOSK_PROPRIETOR := preload("res://assets/life/newspaper_kiosk/proprietor/lu_vendor.png")
 
 var publisher_selector: OptionButton
 var duration_selector: OptionButton
@@ -20,6 +23,7 @@ var form_count_label: Label
 var dialogue_box: DialogueBox
 var publishers: Array[Dictionary] = []
 var form_asset: TextureRect
+var proprietor_overlay: Control
 
 
 func _ready() -> void:
@@ -33,16 +37,20 @@ func _ready() -> void:
 # 构建独立报刊亭：左侧是订阅表，右侧是吞表验收机与费用警示。
 func _build_scene() -> void:
 	custom_minimum_size = DESIGN_SIZE
-	var background := ColorRect.new()
-	background.color = Color("090b10")
+	var background := TextureRect.new()
+	background.texture = KIOSK_BACKGROUND
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
 
-	var stripe := ColorRect.new()
-	stripe.color = Color("7c4e32")
-	stripe.position = Vector2(0, 0)
-	stripe.size = Vector2(1280, 18)
-	add_child(stripe)
+	var shade := ColorRect.new()
+	shade.color = Color(0.015, 0.025, 0.028, 0.48)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(shade)
 
 	var title := _label("第十二区报刊亭 · 私人投递登记窗口", 28, Color("dbc989"))
 	title.position = Vector2(48, 34)
@@ -142,41 +150,38 @@ func _build_scene() -> void:
 	var machine := Panel.new()
 	machine.position = Vector2(804, 120)
 	machine.size = Vector2(426, 414)
-	machine.add_theme_stylebox_override("panel", UI.make_box(Color("10171a"), Color("65757a"), 4, 6))
+	var machine_panel_style := StyleBoxFlat.new()
+	machine_panel_style.bg_color = Color(0, 0, 0, 0)
+	machine.add_theme_stylebox_override("panel", machine_panel_style)
 	add_child(machine)
 
+	var machine_asset := Sprite2D.new()
+	machine_asset.name = "AcceptanceMachineAsset"
+	machine_asset.texture = ACCEPTANCE_MACHINE
+	machine_asset.centered = false
+	machine_asset.position = Vector2(98, 34)
+	machine_asset.scale = Vector2(
+		230.0 / float(ACCEPTANCE_MACHINE.get_width()),
+		300.0 / float(ACCEPTANCE_MACHINE.get_height()),
+	)
+	machine_asset.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	machine.add_child(machine_asset)
+
 	var machine_title := _label("投递验收机  P-K12", 22, Color("a9c1bc"))
-	machine_title.position = Vector2(30, 24)
+	machine_title.position = Vector2(30, 0)
 	machine_title.size = Vector2(366, 36)
 	machine_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	machine.add_child(machine_title)
 
-	var lamp := ColorRect.new()
-	lamp.color = Color("c57d42")
-	lamp.position = Vector2(48, 82)
-	lamp.size = Vector2(330, 8)
-	machine.add_child(lamp)
-
-	var slot_frame := Panel.new()
-	slot_frame.position = Vector2(48, 122)
-	slot_frame.size = Vector2(330, 94)
-	slot_frame.add_theme_stylebox_override("panel", UI.make_box(Color("050708"), Color("3d484b"), 3, 2))
-	machine.add_child(slot_frame)
-	var slot := ColorRect.new()
-	slot.color = Color("000000")
-	slot.position = Vector2(28, 38)
-	slot.size = Vector2(274, 18)
-	slot_frame.add_child(slot)
-
 	var arrows := _label("▲　表单由此送入　▲", 16, Color("9b8d58"))
-	arrows.position = Vector2(48, 230)
+	arrows.position = Vector2(48, 344)
 	arrows.size = Vector2(330, 32)
 	arrows.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	machine.add_child(arrows)
 
-	var warning := _label("送件费：1 配给券\n先吞表，后核验\n无退表槽 / 无退款程序", 17, Color("c07260"))
-	warning.position = Vector2(48, 278)
-	warning.size = Vector2(330, 92)
+	var warning := _label("送件费：1 配给券 · 先吞表，后核验 · 原表不退", 14, Color("c99171"))
+	warning.position = Vector2(22, 378)
+	warning.size = Vector2(382, 28)
 	warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	warning.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	machine.add_child(warning)
@@ -189,16 +194,147 @@ func _build_scene() -> void:
 	add_child(status_label)
 
 	var back_button := Button.new()
-	back_button.text = "离开报刊亭"
+	back_button.text = "收起申请表"
 	back_button.position = Vector2(878, 620)
 	back_button.size = Vector2(280, 44)
 	UI.style_button(back_button, 16)
-	back_button.pressed.connect(func(): get_tree().change_scene_to_file(MAP_SCENE))
+	back_button.pressed.connect(_close_subscription_form)
 	add_child(back_button)
+
+	_build_proprietor_overlay()
 
 	dialogue_box = DialogueBox.new()
 	add_child(dialogue_box)
 	dialogue_box.advance_requested.connect(dialogue_box.close)
+	dialogue_box.show_line("陆伯", "订报纸可以，先说清楚你想看什么。机器只认表，我还认人。", "npc")
+
+
+func _build_proprietor_overlay() -> void:
+	proprietor_overlay = Control.new()
+	proprietor_overlay.name = "ProprietorLayer"
+	proprietor_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	proprietor_overlay.z_index = 20
+	add_child(proprietor_overlay)
+
+	var backdrop := TextureRect.new()
+	backdrop.texture = KIOSK_BACKGROUND
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	proprietor_overlay.add_child(backdrop)
+
+	var focus_shade := ColorRect.new()
+	focus_shade.color = Color(0.012, 0.022, 0.024, 0.52)
+	focus_shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	focus_shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	proprietor_overlay.add_child(focus_shade)
+
+	var title := _label("第十二区报刊亭 · 夜间发行窗口", 28, Color("dbc989"))
+	title.position = Vector2(48, 34)
+	title.size = Vector2(720, 44)
+	proprietor_overlay.add_child(title)
+
+	var subtitle := _label("PRESS & DELIVERY / 街区报刊登记处", 14, Color("91a09b"))
+	subtitle.position = Vector2(50, 78)
+	subtitle.size = Vector2(620, 28)
+	proprietor_overlay.add_child(subtitle)
+
+	var proprietor_name := _label("陆伯", 25, Color("d4bd72"))
+	proprietor_name.position = Vector2(62, 132)
+	proprietor_name.size = Vector2(260, 38)
+	proprietor_overlay.add_child(proprietor_name)
+
+	var proprietor_note := _label("报刊亭值守人 / 在这里干了三十七年 / 不负责解释报纸", 15, Color("a3aa8d"))
+	proprietor_note.position = Vector2(62, 176)
+	proprietor_note.size = Vector2(610, 30)
+	proprietor_overlay.add_child(proprietor_note)
+
+	var action_panel := Panel.new()
+	action_panel.position = Vector2(52, 226)
+	action_panel.size = Vector2(560, 324)
+	action_panel.add_theme_stylebox_override(
+		"panel",
+		UI.make_box(Color(0.035, 0.055, 0.048, 0.88), Color("6e7656"), 3, 4),
+	)
+	proprietor_overlay.add_child(action_panel)
+
+	var action_heading := _label("今晚可以办理", 18, Color("c5b36e"))
+	action_heading.position = Vector2(28, 22)
+	action_heading.size = Vector2(300, 32)
+	action_panel.add_child(action_heading)
+
+	var subscribe_button := Button.new()
+	subscribe_button.text = "办理报纸订阅"
+	subscribe_button.position = Vector2(28, 72)
+	subscribe_button.size = Vector2(238, 54)
+	UI.style_button(subscribe_button, 17, true)
+	subscribe_button.pressed.connect(_open_subscription_form)
+	action_panel.add_child(subscribe_button)
+
+	var headline_button := Button.new()
+	headline_button.text = "查看今日头条"
+	headline_button.position = Vector2(288, 72)
+	headline_button.size = Vector2(238, 54)
+	UI.style_button(headline_button, 17)
+	headline_button.pressed.connect(
+		func(): dialogue_box.show_line("陆伯", "头条在外面贴着。看字免费，相信它另算。", "npc")
+	)
+	action_panel.add_child(headline_button)
+
+	var chat_button := Button.new()
+	chat_button.text = "随便聊两句"
+	chat_button.position = Vector2(28, 148)
+	chat_button.size = Vector2(238, 54)
+	UI.style_button(chat_button, 17)
+	chat_button.pressed.connect(
+		func(): dialogue_box.show_line("陆伯", "昨晚的报纸今天还在卖。事情变了，日期没变。", "npc")
+	)
+	action_panel.add_child(chat_button)
+
+	var machine_button := Button.new()
+	machine_button.text = "问问吞表机器"
+	machine_button.position = Vector2(288, 148)
+	machine_button.size = Vector2(238, 54)
+	UI.style_button(machine_button, 17)
+	machine_button.pressed.connect(
+		func(): dialogue_box.show_line("陆伯", "它不跟人说话。你要是听见它回答，今晚就别交表。", "npc")
+	)
+	action_panel.add_child(machine_button)
+
+	var leave_button := Button.new()
+	leave_button.text = "离开报刊亭"
+	leave_button.position = Vector2(158, 236)
+	leave_button.size = Vector2(238, 48)
+	UI.style_button(leave_button, 16)
+	leave_button.pressed.connect(func(): get_tree().change_scene_to_file(MAP_SCENE))
+	action_panel.add_child(leave_button)
+
+	var proprietor_sprite := Sprite2D.new()
+	proprietor_sprite.name = "KioskProprietor"
+	proprietor_sprite.texture = KIOSK_PROPRIETOR
+	proprietor_sprite.centered = false
+	proprietor_sprite.position = Vector2(820, 94)
+	var proprietor_scale: float = min(
+		410.0 / float(KIOSK_PROPRIETOR.get_width()),
+		626.0 / float(KIOSK_PROPRIETOR.get_height()),
+	)
+	proprietor_sprite.scale = Vector2.ONE * proprietor_scale
+	proprietor_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	proprietor_overlay.add_child(proprietor_sprite)
+
+
+func _open_subscription_form() -> void:
+	proprietor_overlay.visible = false
+	dialogue_box.close()
+	Sfx.play("ui_switch")
+
+
+func _close_subscription_form() -> void:
+	proprietor_overlay.visible = true
+	dialogue_box.show_line("陆伯", "不填也行。空表留着，哪天政策改了还能垫桌脚。", "npc")
+	Sfx.play("ui_switch")
 
 
 func _load_publishers() -> void:
