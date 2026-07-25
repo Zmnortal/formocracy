@@ -9,6 +9,12 @@ func _configure_scene() -> void:
 		"success": preload("res://assets/characters/after_work/qin_caretaker/success.png"),
 		"reject": preload("res://assets/characters/after_work/qin_caretaker/reject.png"),
 	}
+	proprietor_idle_frames = [
+		preload("res://assets/characters/after_work/qin_caretaker/micro_expression/frame_00.png"),
+		preload("res://assets/characters/after_work/qin_caretaker/micro_expression/frame_01.png"),
+		preload("res://assets/characters/after_work/qin_caretaker/micro_expression/frame_02.png"),
+		preload("res://assets/characters/after_work/qin_caretaker/micro_expression/frame_03.png"),
+	]
 	proprietor_name = "秦叔"
 	location_title = "职员宿舍 12-C · 门房交接"
 	greeting = "电表没走不代表有电，也可能是表坏了。"

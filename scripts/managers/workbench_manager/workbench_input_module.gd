@@ -102,8 +102,9 @@ func _on_document_drag_motion(item: Control, presenter: WorkbenchCasePresenter) 
 	CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered_repack_zone else CursorManager.Cursor.GRABBING)
 	if WorkdayContext.stringify_value(item.get_meta("document_state", "BAG")) != "INSPECTION":
 		return
-	var visual_center_y := item.position.y + item.size.y * absf(item.scale.y) * 0.5
-	if visual_center_y >= DeskGeometry.BOUNDS_TOP:
+	var visual_center_global := item.get_global_transform() * (item.size * 0.5)
+	var visual_center := root.to_local(visual_center_global)
+	if visual_center.y >= DeskGeometry.BOUNDS_TOP:
 		presenter.place_document_on_desk(WorkdayContext.stringify_value(item.get_meta("document_id")))
 
 
@@ -131,20 +132,13 @@ func _can_begin_document_interaction(item: Control, local_position: Vector2, pre
 
 # 拖动文件袋时检测是否进入归档区并切换预览状态。
 func _on_envelope_drag_motion(item: Control, presenter: WorkbenchCasePresenter) -> void:
-	var entered := (
-		presenter.envelope_on_desk and presenter.all_documents_packed() and is_instance_valid(desk.archive_drop_zone) and item.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
-	)
+	var entered := presenter.envelope_on_desk and is_instance_valid(desk.archive_drop_zone) and item.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
 	if entered != envelope_in_machine_zone:
 		_set_machine_preview(presenter, entered)
 
 
-# 文件袋落定处理：材料未收齐则提示，进入归档区则触发提交。
+# 文件袋落定处理：不检查内容数量，进入归档区便捕获最终状态并触发提交。
 func _on_envelope_settled(item: Control, presenter: WorkbenchCasePresenter) -> void:
-	if presenter.envelope_opened and not presenter.all_documents_packed():
-		_set_machine_preview(presenter, false)
-		if is_instance_valid(desk.status_label):
-			desk.status_label.text = "文件袋尚未收齐全部文件，不能送验。"
-		return
 	var entered := presenter.envelope_on_desk and is_instance_valid(desk.archive_drop_zone) and item.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
 	if entered:
 		if is_instance_valid(envelope_preview_tween):
@@ -218,7 +212,7 @@ func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) ->
 		else:
 			envelope_dragging = false
 			CursorManager.end_drag()
-			if envelope_in_machine_zone and presenter.envelope_on_desk and presenter.all_documents_packed():
+			if envelope_in_machine_zone and presenter.envelope_on_desk:
 				if is_instance_valid(envelope_preview_tween):
 					envelope_preview_tween.kill()
 				presenter.envelope.z_index = 46
@@ -236,10 +230,22 @@ func _on_envelope_input(event: InputEvent, presenter: WorkbenchCasePresenter) ->
 func _on_envelope_drag_handle_input(event: InputEvent, presenter: WorkbenchCasePresenter) -> void:
 	if desk_items == null or not is_instance_valid(presenter.envelope):
 		return
+	# Godot 的 GUI 命中可能先落到后创建的透明封皮拖拽区；此处必须再次使用
+	# 桌面统一前后层级解析。只要指针下有更前面的表单或工具，就把整段
+	# 按下、拖动、释放交还给该物件，禁止透明封皮抢走交互。
+	if is_instance_valid(desk_items.active_item) and desk_items.active_item != presenter.envelope:
+		desk_items._on_item_input(event, desk_items.active_item)
+		return
 	if event is InputEventMouseButton:
 		var mouse_button := event as InputEventMouseButton
 		if mouse_button.button_index != MOUSE_BUTTON_LEFT:
 			return
+		if mouse_button.pressed:
+			var frontmost := desk_items._frontmost_item_at_global(mouse_button.global_position)
+			if is_instance_valid(frontmost) and frontmost != presenter.envelope:
+				desk_items._on_item_input(event, frontmost)
+				envelope_dragging = false
+				return
 		envelope_dragging = mouse_button.pressed
 		if mouse_button.pressed:
 			var local_position := presenter.envelope.get_global_transform().affine_inverse() * mouse_button.global_position
@@ -248,18 +254,6 @@ func _on_envelope_drag_handle_input(event: InputEvent, presenter: WorkbenchCaseP
 			desk_items._end_press(presenter.envelope)
 	elif event is InputEventMouseMotion and envelope_dragging:
 		desk_items._move_pressed_item(presenter.envelope, event as InputEventMouseMotion)
-	elif event is InputEventMouseMotion and envelope_dragging:
-		var mouse_motion: InputEventMouseMotion = event
-		presenter.envelope.position += mouse_motion.relative * drag_response_multiplier
-		var entered := (
-			presenter.envelope_on_desk
-			and presenter.all_documents_packed()
-			and is_instance_valid(desk.archive_drop_zone)
-			and presenter.envelope.get_global_rect().intersects(desk.archive_drop_zone.get_global_rect())
-		)
-		if entered != envelope_in_machine_zone:
-			_set_machine_preview(presenter, entered)
-		CursorManager.set_drag_cursor(CursorManager.Cursor.DROP_VALID if entered else CursorManager.Cursor.GRABBING)
 
 
 # 切换文件袋进入归档区的预览动画、指示灯与提示。
@@ -281,7 +275,7 @@ func _set_machine_preview(presenter: WorkbenchCasePresenter, active: bool) -> vo
 		tray_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		tray_tween.tween_property(desk.slot, "scale", Vector2(1.035, 1.035) if active else Vector2.ONE, 0.12)
 	if active and is_instance_valid(desk.status_label):
-		desk.status_label.text = "归档区已锁定文件袋：松手完成本案归档。"
+		desk.status_label.text = "归档区已锁定文件袋：松手时记录袋内现状。"
 
 
 # 单个材料的拖拽与装袋处理。

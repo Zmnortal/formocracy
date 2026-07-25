@@ -10,6 +10,7 @@ const FORM_IDS := [
 	"PERSONAL-FORM-LOST-PROPERTY-C01",
 	"PERSONAL-FORM-ARCHIVE-EXTRACT-A02",
 	"PERSONAL-FORM-COMM-TERMINAL-T04",
+	"PERSONAL-FORM-NEWSPAPER-S01",
 ]
 
 var balance_label: Label
@@ -101,7 +102,7 @@ func build_scene() -> void:
 	for index in FORM_IDS.size():
 		var form_id: String = FORM_IDS[index]
 		var card := build_form_card(form_id)
-		card.position = Vector2(52 + index * 398, 418)
+		card.position = Vector2(52 + (index % 2) * 584, 334 + (index / 2) * 158)
 		add_child(card)
 
 	dossier_label = make_label("", 15, Color("9fa77d"))
@@ -125,38 +126,39 @@ func build_scene() -> void:
 func build_form_card(form_id: String) -> Panel:
 	var form := ConfigDatabase.get_ontology("personal_forms", form_id)
 	var card := make_panel(Color("c6b883"), Color("51472d"), 3)
-	card.size = Vector2(374, 226)
+	card.size = Vector2(552, 146)
 
 	var agency := make_label("第十二区表单发行管理处", 13, Color("4b432d"))
 	agency.position = Vector2(16, 12)
-	agency.size = Vector2(342, 22)
+	agency.size = Vector2(520, 22)
 	card.add_child(agency)
 
 	var name := make_label(String(form.get("name", "未登记表单")), 18, Color("222319"))
-	name.position = Vector2(16, 40)
-	name.size = Vector2(342, 34)
+	name.position = Vector2(16, 34)
+	name.size = Vector2(520, 28)
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(name)
 
 	var code := make_label("%s · 版本 %s" % [form.get("form_code", ""), form.get("version", "")], 13, Color("514a34"))
-	code.position = Vector2(16, 77)
-	code.size = Vector2(342, 22)
+	code.position = Vector2(16, 64)
+	code.size = Vector2(300, 22)
 	card.add_child(code)
 
 	var description := make_label(String(form.get("description", "")), 13, Color("403c2a"))
-	description.position = Vector2(16, 103)
-	description.size = Vector2(342, 47)
+	description.position = Vector2(16, 88)
+	description.size = Vector2(332, 46)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	card.add_child(description)
 
 	var fee := make_label("空白表单工本费  %d 配给券" % int(form.get("fee", 0)), 14, Color("6a3528"))
-	fee.position = Vector2(16, 154)
-	fee.size = Vector2(342, 24)
+	fee.position = Vector2(364, 72)
+	fee.size = Vector2(172, 24)
+	fee.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card.add_child(fee)
 
 	var buy_button := make_button("请周姨发行")
-	buy_button.position = Vector2(16, 184)
-	buy_button.size = Vector2(342, 30)
+	buy_button.position = Vector2(364, 102)
+	buy_button.size = Vector2(172, 32)
 	buy_button.pressed.connect(func(): purchase_form(form_id))
 	card.add_child(buy_button)
 	card_buttons[form_id] = buy_button
@@ -180,7 +182,7 @@ func purchase_form(form_id: String) -> void:
 func refresh_store() -> void:
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
 	var blank_count := WorkdayState.manager.get_blank_personal_forms().size()
-	dossier_label.text = "个人档案袋：空白表单 × %d　前往中央表单部提交申请" % blank_count
+	dossier_label.text = "个人档案袋：空白表单 × %d　请按表面标注前往对应窗口送交" % blank_count
 	if not greeting_shown:
 		greeting_shown = true
 		_show_shop_dialogue(build_greeting())

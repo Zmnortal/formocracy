@@ -680,6 +680,92 @@ func run() -> void:
 	for action_name: StringName in jiang_animation.sprite_frames.get_animation_names():
 		assert(jiang_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Jiang Sen animation may exceed the global four FPS style limit")
 
+	var song_animation = library_script.new()
+	assert(song_animation.load_animation_table("res://data/animations/person_song/animation_table.json"), "Song Duo's production animation table must load")
+	assert(song_animation.error_messages.is_empty() and song_animation.warning_messages.is_empty(), "Song Duo's production animation table must resolve every generated frame")
+	assert(
+		song_animation.character_id == "PERSON-SONG" and not song_animation.substitute_frames_with_static_actor,
+		"Song Duo must use his own generated frames instead of the static placeholder"
+	)
+	assert(
+		song_animation.required_actions == library.required_actions and song_animation.optional_actions == library.optional_actions and song_animation.max_unique_pngs == 20,
+		"Song Duo must implement the formal eight-core plus three-optional contract"
+	)
+	var song_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(song_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Song Duo action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = song_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_song/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Song Duo action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Song Duo production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Song Duo's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Song Duo must leave the golden document bag on the player's desk after delivery")
+			song_unique_frame_paths[frame_path] = true
+	assert(song_unique_frame_paths.size() == 20, "Song Duo's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_song_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_song/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_song_pngs.append(filename)
+	assert(active_song_pngs.size() == 20, "Song Duo's active animation directory must contain exactly twenty PNG files")
+	for filename in active_song_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Song Duo filename must declare full-body coverage")
+	assert(
+		not song_animation.has_action("walk_in") and not song_animation.has_action("arrive") and not song_animation.has_action("look_aside"),
+		"Song Duo must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in song_animation.sprite_frames.get_animation_names():
+		assert(song_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Song Duo animation may exceed the global four FPS style limit")
+
+	var ye_animation = library_script.new()
+	assert(ye_animation.load_animation_table("res://data/animations/person_ye/animation_table.json"), "Ye Zhen's production animation table must load")
+	assert(ye_animation.error_messages.is_empty() and ye_animation.warning_messages.is_empty(), "Ye Zhen's production animation table must resolve every generated frame")
+	assert(
+		ye_animation.character_id == "PERSON-YE" and not ye_animation.substitute_frames_with_static_actor,
+		"Ye Zhen must use her own generated frames instead of the static placeholder"
+	)
+	assert(
+		ye_animation.required_actions == library.required_actions and ye_animation.optional_actions == library.optional_actions and ye_animation.max_unique_pngs == 20,
+		"Ye Zhen must implement the formal eight-core plus three-optional contract"
+	)
+	var ye_unique_frame_paths := {}
+	for action_name: String in expected_lin_frame_counts:
+		var expected_count: int = expected_lin_frame_counts[action_name]
+		assert(ye_animation.sprite_frames.get_frame_count(action_name) == expected_count, "Ye Zhen action '%s' must use the approved %d-frame budget" % [action_name, expected_count])
+		var metadata: Dictionary = ye_animation.get_action_metadata(action_name)
+		var frame_paths: PackedStringArray = metadata.get("frame_paths", PackedStringArray())
+		for frame_path: String in frame_paths:
+			assert(
+				frame_path.begins_with("res://assets/characters/applicants/person_ye/fullbody_frames_20/") and frame_path.ends_with("_fullbody.png"),
+				"every Ye Zhen action must resolve only to marked full-body production frames"
+			)
+			assert(ResourceLoader.exists(frame_path, "Texture2D"), "Ye Zhen production frame must import as Texture2D: %s" % frame_path)
+			if action_name == "deliver":
+				assert("_document_bag_fullbody.png" in frame_path, "Ye Zhen's delivery action must use only the three audited golden document-bag frames")
+			else:
+				assert("_document_bag_fullbody.png" not in frame_path, "Ye Zhen must leave the golden document bag on the player's desk after delivery")
+			ye_unique_frame_paths[frame_path] = true
+	assert(ye_unique_frame_paths.size() == 20, "Ye Zhen's eleven actions must collectively use exactly twenty unique PNG files")
+	var active_ye_pngs := PackedStringArray()
+	for filename in DirAccess.get_files_at("res://assets/characters/applicants/person_ye/fullbody_frames_20"):
+		if filename.ends_with(".png"):
+			active_ye_pngs.append(filename)
+	assert(active_ye_pngs.size() == 20, "Ye Zhen's active animation directory must contain exactly twenty PNG files")
+	for filename in active_ye_pngs:
+		assert(filename.ends_with("_fullbody.png"), "every active Ye Zhen filename must declare full-body coverage")
+	assert(
+		not ye_animation.has_action("walk_in") and not ye_animation.has_action("arrive") and not ye_animation.has_action("look_aside"),
+		"Ye Zhen must not reintroduce retired animation actions"
+	)
+	for action_name: StringName in ye_animation.sprite_frames.get_animation_names():
+		assert(ye_animation.get_action_fps(action_name) <= library_script.MAX_ACTION_FPS, "no Ye Zhen animation may exceed the global four FPS style limit")
+
 	var exact: Dictionary = library.resolve_action("blink")
 	assert(exact.get("kind") == "animation" and exact.get("action") == "blink", "an available requested action must resolve to itself")
 	var emotional: Dictionary = library.resolve_action("unmade_happy_departure")

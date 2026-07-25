@@ -82,11 +82,11 @@
   {
     "id":"PERSON-SONG","display_name":"宋铎","age":52,"occupation":"日终验收机房技师","citizen_id":"31-225-67","queue_label":"B10",
     "administrative_status":"INT","registry":"北陆联邦 / 工程师登记","actual_residence":"第十二区技师宿舍 / 1-A","character_color":"b8683d",
-    "actor_texture":"res://assets/characters/dossier/person_song/concept.png","portrait_texture":"res://assets/characters/portraits_8bit/person_song.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":0.9,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
+    "actor_texture":"res://assets/characters/applicants/person_song/fullbody_frames_20/02_idle_adjust_goggles_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_song/fullbody_frames_20/02_idle_adjust_goggles_fullbody.png","animation_table":"res://data/animations/person_song/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":0.9,"voice_sfx":"res://assets/audio/sfx/people_male_old.wav"
   },
   {
     "id":"PERSON-YE","display_name":"叶蓁","age":36,"occupation":"夜间交通调度员","citizen_id":"70-418-26","queue_label":"B11",
     "administrative_status":"HC-T","registry":"第六区 / 原址已拆除","actual_residence":"第十二区交通宿舍待核准","character_color":"5267bd",
-    "actor_texture":"res://assets/characters/dossier/person_ye/concept.png","portrait_texture":"res://assets/characters/portraits_8bit/person_ye.png","animation_table":"res://data/animations/default_applicant/animation_table.json","actor_tint":"ffffff","actor_scale":0.18,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
+    "actor_texture":"res://assets/characters/applicants/person_ye/fullbody_frames_20/02_idle_adjust_strap_fullbody.png","portrait_texture":"res://assets/characters/applicants/person_ye/fullbody_frames_20/02_idle_adjust_strap_fullbody.png","animation_table":"res://data/animations/person_ye/animation_table.json","actor_tint":"ffffff","actor_scale":0.34,"move_speed":1.0,"voice_sfx":"res://assets/audio/sfx/people_female_young.wav"
   }
 ]

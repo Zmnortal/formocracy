@@ -23,16 +23,14 @@ func submit(presenter: WorkbenchCasePresenter, case_data: Dictionary) -> void:
 	if submission_in_progress:
 		return
 	submission_in_progress = true
+	var envelope_snapshot := presenter._capture_envelope_snapshot()
 	var procedure_errors: Array[String] = []
 	if not presenter.is_stamped():
 		procedure_errors.append("漏盖章")
 	if presenter.has_stamp_conflict():
 		procedure_errors.append("裁决冲突")
-	if not presenter.all_documents_packed():
+	if not WorkdayContext.read_array(envelope_snapshot, "missing_document_ids").is_empty():
 		procedure_errors.append("遗漏材料")
-		procedure_errors.append("未重新装袋")
-	if not presenter.envelope_opened:
-		procedure_errors.append("未拆封归档")
 
 	if is_instance_valid(presenter.form):
 		presenter.form.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -45,7 +43,7 @@ func submit(presenter: WorkbenchCasePresenter, case_data: Dictionary) -> void:
 
 	var submitted_object: Control = presenter.envelope if is_instance_valid(presenter.envelope) else null
 	if not is_instance_valid(submitted_object):
-		_record_submission(presenter, case_data, procedure_errors)
+		_record_submission(presenter, case_data, procedure_errors, envelope_snapshot)
 		submission_in_progress = false
 		submission_finished.emit()
 		return
@@ -65,15 +63,21 @@ func submit(presenter: WorkbenchCasePresenter, case_data: Dictionary) -> void:
 	await archive.finished
 
 	submitted_object.visible = false
-	_record_submission(presenter, case_data, procedure_errors)
+	_record_submission(presenter, case_data, procedure_errors, envelope_snapshot)
 	submission_in_progress = false
 	submission_finished.emit()
 
 
 # 将案件结果写入工作日状态，刷新归档堆并闪烁提示灯。
-func _record_submission(presenter: WorkbenchCasePresenter, case_data: Dictionary, procedure_errors: Array[String]) -> void:
+func _record_submission(presenter: WorkbenchCasePresenter, case_data: Dictionary, procedure_errors: Array[String], envelope_snapshot: Dictionary) -> void:
 	WorkdayState.manager.record_case_result(
-		case_data, presenter.stamp_type(), procedure_errors, Time.get_ticks_msec() / 1000.0 - presenter.case_started_at, presenter.packed_document_ids.duplicate(), presenter.get_stamp_records()
+		case_data,
+		presenter.stamp_type(),
+		procedure_errors,
+		Time.get_ticks_msec() / 1000.0 - presenter.case_started_at,
+		WorkdayContext.read_array(envelope_snapshot, "document_ids"),
+		presenter.get_stamp_records(),
+		envelope_snapshot
 	)
 	desk.refresh_archive_stack(true)
 	if is_instance_valid(desk.status_label):

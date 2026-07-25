@@ -26,6 +26,7 @@ func archive_record(recorded: Dictionary) -> void:
 				"decision": WorkdayContext.read_string(recorded, "decision"),
 				"procedure_errors": WorkdayContext.read_array(recorded, "procedure_errors"),
 				"document_stamps": WorkdayContext.read_array(recorded, "document_stamps"),
+				"envelope_snapshot": WorkdayContext.read_dictionary(recorded, "envelope_snapshot").duplicate(true),
 				"archived_day": state.day_number,
 				"waiting_days": 0,
 				"status": "ARCHIVED",

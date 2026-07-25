@@ -11,6 +11,12 @@ func _configure_scene() -> void:
 		"success": preload("res://assets/characters/after_work/ma_ration/success.png"),
 		"reject": preload("res://assets/characters/after_work/ma_ration/reject.png"),
 	}
+	proprietor_idle_frames = [
+		preload("res://assets/characters/after_work/ma_ration/micro_expression/frame_00.png"),
+		preload("res://assets/characters/after_work/ma_ration/micro_expression/frame_01.png"),
+		preload("res://assets/characters/after_work/ma_ration/micro_expression/frame_02.png"),
+		preload("res://assets/characters/after_work/ma_ration/micro_expression/frame_03.png"),
+	]
 	proprietor_name = "马姐"
 	location_title = "公共配给站 · 第三领取窗"
 	greeting = "今天的水没有昨天黄。你就当这是好消息。"

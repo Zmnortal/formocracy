@@ -423,7 +423,7 @@ async function initialise() {
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     state.people = await response.json();
     populateCharacters();
-    const preferredPerson = state.people.find((person) => person.id === "PERSON-JIANG") || state.people[0];
+    const preferredPerson = state.people.find((person) => person.id === "PERSON-YE") || state.people[0];
     elements.characterSelect.value = preferredPerson.id;
     await loadCharacter(preferredPerson.id);
   } catch (error) {

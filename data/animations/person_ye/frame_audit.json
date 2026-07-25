@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-YE",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_ye_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_05_magenta.png",
+    "strip_06_10_magenta.png",
+    "strip_11_15_magenta.png",
+    "strip_16_20_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 36,
+    "role": "夜间交通调度员",
+    "palette": "蓝紫制服、浅灰高领衬衫、炭灰长裤、棕色调度包、临时回执红章",
+    "markers": [
+      "深色紧凑高髻与侧分刘海",
+      "冷静狭长的面容",
+      "蓝紫结构化调度制服夹克",
+      "宽翻领、银色纽扣与黄铜名牌",
+      "浅灰高领衬衫",
+      "炭灰直筒宽腿长裤",
+      "左侧棕色斜挎调度包",
+      "低帮黑色工作鞋"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "以夜间调度员的克制精确感调整背带，在长条路线板上核对夜车票根、蓝线地图与未进入官方时刻表的真实路线。",
+    "approved": "归市与临时安置获准后只短暂露出释然，随即收好路线板和调度令牌，准备返回夜间排线。",
+    "rejected": "先显出克制的受伤，再同时展示有效本市身份证与仍待盖章的安置回执；即使当前住址不被承认，仍继续记录真实发生的夜路。"
+  },
+  "prop_ownership": {
+    "crossbody_dispatch_satchel_and_brass_name_badge": "属于叶蓁的固定职业识别物，在全部动作中持续保留。",
+    "route_clipboard_night_ticket_blue_line_map_city_id_housing_receipt_and_dispatch_token": "属于叶蓁的路线证据、归市身份与临时安置材料，可在紧张、批准、驳回和离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

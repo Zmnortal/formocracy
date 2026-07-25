@@ -41,6 +41,9 @@ var next_inventory_serial := 1
 var water_covered_until_day := 1
 var water_deprived := false
 var last_personal_review_results: Array[Dictionary] = []
+var newspaper_subscriptions: Dictionary = {}
+var newspaper_read_history: Dictionary = {}
+var last_newspaper_submission_result: Dictionary = {}
 
 var active_checkpoint_id := ""
 

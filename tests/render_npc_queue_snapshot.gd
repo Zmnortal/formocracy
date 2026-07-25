@@ -30,7 +30,8 @@ func run() -> void:
 	await create_timer(0.25).timeout
 	current_scene.manager.npc_performance.skip_requested = false
 	current_scene.manager.npc_performance.react_and_leave("批准")
-	var deadline := Time.get_ticks_msec() + 6000
+	# 气泡约五秒后，人物还会完整走出画面并完成队列补位。
+	var deadline := Time.get_ticks_msec() + 8500
 	while current_scene.manager.npc_performance.state != "FRONT_STAGED" and Time.get_ticks_msec() < deadline:
 		await process_frame
 	assert(current_scene.manager.npc_performance.state == "FRONT_STAGED", "first queued applicant must finish promotion")

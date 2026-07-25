@@ -1,5 +1,6 @@
 extends Control
 
+const UI := preload("res://scripts/ui/bureau_ui.gd")
 const MAIN_SCENE := "res://main.tscn"
 const CONFIG_PATH := "res://data/narrative/pre_work_sequence.json"
 const DESIGN_SIZE := Vector2(1280.0, 720.0)
@@ -21,6 +22,9 @@ var preserve_arrival_ambience := false
 var day_content: Dictionary = {}
 var walk_lines: Array[String] = []
 var dialogue_box: DialogueBox
+var available_newspapers: Array[Dictionary] = []
+var selected_newspaper: Dictionary = {}
+var newspaper_selector: Control
 
 @onready var backdrop: TextureRect = $Backdrop
 @onready var mood_tint: ColorRect = $MoodTint
@@ -41,10 +45,11 @@ func _ready() -> void:
 	Sfx.stop_walking()
 	day_content = _load_day_content()
 	walk_lines = _read_walk_lines(day_content)
+	_build_newspaper_selector()
 	_build_dialogue_box()
 	get_viewport().size_changed.connect(_fit_to_window)
 	_fit_to_window()
-	_show_newspaper()
+	_begin_newspaper_flow()
 	fade.visible = true
 	fade.modulate.a = 1.0
 	var reveal := create_tween()
@@ -59,22 +64,185 @@ func _build_dialogue_box() -> void:
 	dialogue_box.advance_requested.connect(advance_sequence)
 
 
-# 在家中展示当天报纸头版；报纸内容由七日配置驱动。
-func _show_newspaper() -> void:
+# 根据有效订阅开始晨间读报；多份报纸先选头条，只有官方报时直接精读。
+func _begin_newspaper_flow() -> void:
+	available_newspapers = WorkdayState.manager.get_available_newspapers()
+	var already_read := WorkdayState.manager.get_read_newspaper()
+	if not already_read.is_empty():
+		for item in available_newspapers:
+			if WorkdayContext.read_string(item, "id") == already_read:
+				selected_newspaper = item
+				_show_newspaper(item)
+				_show_departure_prompt()
+				return
+	if available_newspapers.size() <= 1:
+		_choose_newspaper(available_newspapers[0] if not available_newspapers.is_empty() else {})
+	else:
+		_show_newspaper_selection()
+
+
+# 构建最多四份报纸并列的晨间头条选择层；正文仍复用既有报纸面板。
+func _build_newspaper_selector() -> void:
+	newspaper_selector = Control.new()
+	newspaper_selector.name = "NewspaperSelector"
+	newspaper_selector.position = Vector2(44, 92)
+	newspaper_selector.size = Vector2(1192, 472)
+	newspaper_selector.visible = false
+	add_child(newspaper_selector)
+	move_child(newspaper_selector, slide_flash.get_index())
+
+
+# 展示所有到报的头条与摘要。只有玩家按下某张报纸的“精读”按钮才会继续。
+func _show_newspaper_selection() -> void:
+	phase = "newspaper_selection"
+	backdrop.texture = HOME_TEXTURE
+	backdrop.visible = true
+	frame_texture.visible = false
+	newspaper.visible = false
+	newspaper_selector.visible = true
+	mood_tint.color = Color(0.04, 0.055, 0.07, 0.42)
+	location_label.text = "06:24  /  职员宿舍 12-C"
+	for child in newspaper_selector.get_children():
+		child.queue_free()
+	var heading := _make_newspaper_label(
+		"今天送到门口的报纸 · 只能精读一份",
+		24,
+		Color("ded5b8")
+	)
+	heading.position = Vector2(0, 0)
+	heading.size = Vector2(1192, 42)
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	newspaper_selector.add_child(heading)
+	var note := _make_newspaper_label("其余报纸只保留头条与摘要；选择后不可改选", 14, Color("929b87"))
+	note.position = Vector2(0, 42)
+	note.size = Vector2(1192, 26)
+	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	newspaper_selector.add_child(note)
+	var card_width := 278.0
+	var gap := 20.0
+	var total_width := available_newspapers.size() * card_width + (available_newspapers.size() - 1) * gap
+	var start_x := (1192.0 - total_width) * 0.5
+	for index in available_newspapers.size():
+		var item: Dictionary = available_newspapers[index]
+		var card := _build_newspaper_card(item)
+		card.position = Vector2(start_x + index * (card_width + gap), 82)
+		newspaper_selector.add_child(card)
+	dialogue_box.close()
+	_publish_phase()
+
+
+func _build_newspaper_card(item: Dictionary) -> Panel:
+	var accent := Color(WorkdayContext.read_string(item, "accent", "a88948"))
+	var paper_color := Color(WorkdayContext.read_string(item, "paper_color", "d2c7a2"))
+	var issue := WorkdayContext.read_dictionary(item, "issue")
+	var card := Panel.new()
+	card.size = Vector2(278, 364)
+	card.clip_contents = true
+	var style := StyleBoxFlat.new()
+	style.bg_color = paper_color
+	style.border_color = accent
+	style.set_border_width_all(4)
+	style.shadow_color = Color(0, 0, 0, 0.55)
+	style.shadow_size = 8
+	style.shadow_offset = Vector2(5, 6)
+	card.add_theme_stylebox_override("panel", style)
+
+	var masthead := _make_newspaper_label(WorkdayContext.read_string(item, "name"), 23, Color("25231c"))
+	masthead.position = Vector2(16, 16)
+	masthead.size = Vector2(246, 34)
+	masthead.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card.add_child(masthead)
+
+	var stripe := ColorRect.new()
+	stripe.color = accent
+	stripe.position = Vector2(18, 57)
+	stripe.size = Vector2(242, 5)
+	card.add_child(stripe)
+
+	var tagline := _make_newspaper_label(
+		_wrap_card_text(WorkdayContext.read_string(item, "tagline"), 15),
+		11,
+		Color("5b5547")
+	)
+	tagline.position = Vector2(18, 70)
+	tagline.size = Vector2(242, 46)
+	tagline.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card.add_child(tagline)
+
+	var headline := _make_newspaper_label(WorkdayContext.read_string(issue, "headline"), 20, Color("201f19"))
+	headline.position = Vector2(18, 124)
+	headline.size = Vector2(242, 90)
+	headline.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	headline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	headline.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	card.add_child(headline)
+
+	var teaser := _make_newspaper_label(
+		_wrap_card_text(WorkdayContext.read_string(issue, "teaser"), 15),
+		13,
+		Color("4d493d")
+	)
+	teaser.position = Vector2(20, 222)
+	teaser.size = Vector2(238, 70)
+	teaser.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	teaser.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	teaser.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	card.add_child(teaser)
+
+	var read_button := Button.new()
+	read_button.text = "精读这份报纸"
+	read_button.position = Vector2(34, 310)
+	read_button.size = Vector2(210, 38)
+	read_button.add_theme_font_override("font", UI.PIXEL_FONT)
+	read_button.add_theme_font_size_override("font_size", 15)
+	read_button.pressed.connect(func(): _choose_newspaper(item))
+	card.add_child(read_button)
+	return card
+
+
+# 锁定当天选择，并展开该发行商的完整正文。
+func _choose_newspaper(item: Dictionary) -> void:
+	if item.is_empty():
+		return
+	selected_newspaper = item.duplicate(true)
+	newspaper_selector.visible = false
+	_show_newspaper(selected_newspaper)
+
+
+# 在家中展示选中报纸的完整头版。
+func _show_newspaper(item: Dictionary = {}) -> void:
 	phase = "newspaper"
+	if not item.is_empty():
+		selected_newspaper = item.duplicate(true)
+	if selected_newspaper.is_empty() and not available_newspapers.is_empty():
+		selected_newspaper = available_newspapers[0].duplicate(true)
+	var issue := WorkdayContext.read_dictionary(selected_newspaper, "issue")
 	backdrop.texture = HOME_TEXTURE
 	backdrop.visible = true
 	frame_texture.visible = false
 	newspaper.visible = true
+	newspaper_selector.visible = false
 	mood_tint.color = Color(0.04, 0.055, 0.07, 0.28)
 	location_label.text = "06:24  /  职员宿舍 12-C"
-	edition_label.text = "衡川日报 · 第十二区晨版\n%s" % WorkdayContext.read_string(day_content, "edition", "晨版")
-	headline_label.text = WorkdayContext.read_string(day_content, "headline", "今日行政规则等待发布")
-	article_label.text = WorkdayContext.read_string(day_content, "article", "窗口人员须在上班后收听内部广播。")
-	day_label.text = "第 %02d 工作日" % WorkdayState.day_number
+	var publisher_name := WorkdayContext.read_string(selected_newspaper, "name", "衡川日报")
+	edition_label.text = "%s\n%s" % [publisher_name, WorkdayContext.read_string(selected_newspaper, "tagline")]
+	headline_label.text = WorkdayContext.read_string(issue, "headline", "今日行政规则等待发布")
+	article_label.text = WorkdayContext.read_string(issue, "article", "窗口人员须在上班后收听内部广播。")
+	day_label.text = "第 %02d 工作日 · 今日精读" % WorkdayState.day_number
+	var accent := Color(WorkdayContext.read_string(selected_newspaper, "accent", "a88948"))
+	var paper_color := Color(WorkdayContext.read_string(selected_newspaper, "paper_color", "d2c7a2"))
+	var newspaper_style := StyleBoxFlat.new()
+	newspaper_style.bg_color = paper_color
+	newspaper_style.border_color = accent
+	newspaper_style.set_border_width_all(4)
+	newspaper_style.shadow_color = Color(0, 0, 0, 0.62)
+	newspaper_style.shadow_size = 13
+	newspaper_style.shadow_offset = Vector2(9, 10)
+	newspaper.add_theme_stylebox_override("panel", newspaper_style)
 	dialogue_box.show_line(
 		_player_speaker(),
-		WorkdayContext.read_string(day_content, "home_line", "今天的报纸没有更多说明。"),
+		WorkdayContext.read_string(issue, "reflection", "今天的报纸没有更多说明。"),
 		"player"
 	)
 	_publish_phase()
@@ -86,6 +254,9 @@ func advance_sequence() -> void:
 		return
 	match phase:
 		"newspaper":
+			if WorkdayState.manager.mark_newspaper_read(WorkdayContext.read_string(selected_newspaper, "id")):
+				_show_departure_prompt()
+		"departure_prompt":
 			_show_walk(0)
 		"walking":
 			var next_index := walk_index + 1
@@ -95,6 +266,13 @@ func advance_sequence() -> void:
 				_show_walk(next_index)
 		"arrival":
 			_enter_workday()
+
+
+# 精读完成后先给出独立的时间提示；该句仍需玩家再次确认才进入走路播片。
+func _show_departure_prompt() -> void:
+	phase = "departure_prompt"
+	dialogue_box.show_line(_player_speaker(), "时间已经不早了，该去上班了。", "player")
+	_publish_phase()
 
 
 # 复用已经确认的中性腿部侧视图；停顿拍同步停止脚步声。
@@ -157,7 +335,13 @@ func _enter_workday() -> void:
 func show_phase_for_tests(target_phase: String, index := 0) -> void:
 	match target_phase:
 		"newspaper":
-			_show_newspaper()
+			if available_newspapers.is_empty():
+				available_newspapers = WorkdayState.manager.get_available_newspapers()
+			_show_newspaper(available_newspapers[0] if not available_newspapers.is_empty() else {})
+		"newspaper_selection":
+			_show_newspaper_selection()
+		"departure_prompt":
+			_show_departure_prompt()
 		"walking":
 			_show_walk(index)
 		"arrival":
@@ -208,6 +392,28 @@ func _read_walk_lines(source: Dictionary) -> Array[String]:
 # 玩家心理活动沿用开局输入姓名，不补充主角性别。
 func _player_speaker() -> String:
 	return WorkdayState.player_name if not WorkdayState.player_name.is_empty() else "经办员"
+
+
+func _make_newspaper_label(text_value: String, font_size: int, color: Color) -> Label:
+	var label := Label.new()
+	label.text = text_value
+	label.add_theme_font_override("font", UI.PIXEL_FONT)
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	return label
+
+
+# 像素字体对连续中文的自动换行并不稳定，卡片摘要按可读字符数主动分行。
+func _wrap_card_text(text_value: String, characters_per_line: int) -> String:
+	var text := text_value.strip_edges()
+	if text.length() <= characters_per_line:
+		return text
+	var lines: Array[String] = []
+	var cursor := 0
+	while cursor < text.length():
+		lines.append(text.substr(cursor, characters_per_line))
+		cursor += characters_per_line
+	return "\n".join(lines)
 
 
 # 短促黑场只负责换拍质感，不触发下一句或下一张画面。

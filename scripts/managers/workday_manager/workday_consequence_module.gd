@@ -14,7 +14,9 @@ func _init(owner_state: WorkdayContext, config_gateway: WorkdayConfigGateway) ->
 
 
 # 评估决策正误并生成案件记录，应用政治信用与延迟问责后果。
-func record_case_result(case_data: Dictionary, stamp_type: String, procedure_errors: Array, elapsed_seconds: float, packed_document_ids: Array, document_stamps: Array) -> Dictionary:
+func record_case_result(
+	case_data: Dictionary, stamp_type: String, procedure_errors: Array, elapsed_seconds: float, packed_document_ids: Array, document_stamps: Array, envelope_snapshot: Dictionary
+) -> Dictionary:
 	var evaluation: Dictionary = (
 		config.evaluate_gameplay_case(case_data)
 		if case_data.has("rule_ids")
@@ -39,6 +41,7 @@ func record_case_result(case_data: Dictionary, stamp_type: String, procedure_err
 		"violation_ids": evaluation.get("violation_ids", []),
 		"procedure_errors": procedure_errors.duplicate(),
 		"packed_document_ids": packed_document_ids.duplicate(),
+		"envelope_snapshot": envelope_snapshot.duplicate(true),
 		"document_stamps": document_stamps.duplicate(true),
 		"elapsed_seconds": elapsed_seconds,
 		"performance": WorkdayContext.read_int(consequence, "performance"),

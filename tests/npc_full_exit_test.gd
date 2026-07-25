@@ -14,6 +14,8 @@ func run() -> void:
 		"res://scripts/managers/workbench_manager/workbench_npc_performance_module.gd"
 	)
 	var module: Variant = module_script.new(scene)
+	assert(is_equal_approx(module.FRONT_ACTOR_SCALE_MULTIPLIER, 1.56), "all front and queued NPC scales must receive the additional 1.2 multiplier")
+	assert(is_equal_approx(module.FRONT_ACTOR_VERTICAL_OFFSET, 120.0), "all front and queued NPC anchors must move down by about 150 display pixels")
 	var actor := AnimatedSprite2D.new()
 	var frames := SpriteFrames.new()
 	var image := Image.create(512, 768, false, Image.FORMAT_RGBA8)

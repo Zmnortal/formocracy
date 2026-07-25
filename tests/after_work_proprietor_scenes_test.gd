@@ -55,6 +55,12 @@ func _assert_scene(path: String, expected_name: String, expected_proprietor: Str
 	assert(scene.proprietor.texture != null, "proprietor focus mode must show a character state")
 	assert(scene.proprietor.get_meta("static_breathing_enabled", false), "proprietor must use the subtle static breathing effect")
 	assert(scene.proprietor.material is ShaderMaterial, "proprietor breathing must be rendered without moving its layout")
+	assert(scene.proprietor_idle_frames.size() == 4, "proprietor must have a restrained four-frame micro-expression")
+	assert(scene.proprietor.position.x >= 840.0, "half-body proprietor must be tucked into the right corner")
+	assert(
+		is_equal_approx(scene.proprietor.position.x + scene.proprietor.size.x, scene.DESIGN_SIZE.x),
+		"half-body proprietor must sit flush with the viewport edge",
+	)
 	assert(scene.left_actions.get_child_count() > 0, "scene must expose left-side actions")
 	assert(scene.right_actions.get_child_count() > 0, "scene must expose right-side actions")
 	var left_item = scene.left_actions.get_child(0)

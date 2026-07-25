@@ -54,5 +54,18 @@
     "required_fields": ["applicant_name", "residence", "request_reason"],
     "fulfillment_id": "FULFILLMENT-COMM-TERMINAL",
     "memory_clue_id": "MEMORY-OLD-CONTACT"
+  },
+  {
+    "id": "PERSONAL-FORM-NEWSPAPER-S01",
+    "name": "报刊订阅通行申请",
+    "form_code": "S-01/PRESS",
+    "version": "04",
+    "issuer_location_id": "LOCATION-FORM-SHOP",
+    "submission_location_id": "LOCATION-NEWSSTAND",
+    "fee": 1,
+    "status_on_purchase": "blank",
+    "description": "用于申请私人住所的定时报刊投递。每次送件另收核验费。",
+    "required_fields": ["publisher_id", "duration_days", "delivery_address", "identity_number", "signature"],
+    "fulfillment_id": "FULFILLMENT-NEWSPAPER-SUBSCRIPTION"
   }
 ]

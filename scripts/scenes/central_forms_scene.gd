@@ -9,6 +9,12 @@ func _configure_scene() -> void:
 		"success": preload("res://assets/characters/after_work/yuan_clerk/success.png"),
 		"reject": preload("res://assets/characters/after_work/yuan_clerk/reject.png"),
 	}
+	proprietor_idle_frames = [
+		preload("res://assets/characters/after_work/yuan_clerk/micro_expression/frame_00.png"),
+		preload("res://assets/characters/after_work/yuan_clerk/micro_expression/frame_01.png"),
+		preload("res://assets/characters/after_work/yuan_clerk/micro_expression/frame_02.png"),
+		preload("res://assets/characters/after_work/yuan_clerk/micro_expression/frame_03.png"),
+	]
 	proprietor_name = "袁科员"
 	location_title = "中央表单部 · 夜间受理"
 	greeting = "机器没坏。它只是不认可你放进去的东西。"

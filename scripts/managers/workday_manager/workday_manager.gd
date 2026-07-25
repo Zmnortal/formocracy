@@ -8,6 +8,7 @@ const ClockModule := preload("res://scripts/managers/workday_manager/workday_clo
 const SettlementModule := preload("res://scripts/managers/workday_manager/workday_settlement_module.gd")
 const ArchiveModule := preload("res://scripts/managers/workday_manager/workday_archive_module.gd")
 const PersonalFormModule := preload("res://scripts/managers/workday_manager/workday_personal_form_module.gd")
+const NewspaperModule := preload("res://scripts/managers/workday_manager/workday_newspaper_module.gd")
 const ConsequenceModule := preload("res://scripts/managers/workday_manager/workday_consequence_module.gd")
 const DeskLayoutModule := preload("res://scripts/managers/workday_manager/workday_desk_layout_module.gd")
 const ConfigGateway := preload("res://scripts/managers/workday_manager/workday_config_gateway.gd")
@@ -18,6 +19,7 @@ var _clock: WorkdayClockModule
 var _settlement: WorkdaySettlementModule
 var _archive: WorkdayArchiveModule
 var _personal_forms: WorkdayPersonalFormModule
+var _newspapers: WorkdayNewspaperModule
 var _consequences: WorkdayConsequenceModule
 var _desk_layout: WorkdayDeskLayoutModule
 
@@ -29,13 +31,22 @@ func _init(state: WorkdayContext) -> void:
 	_settlement = SettlementModule.new(state)
 	_archive = ArchiveModule.new(state)
 	_personal_forms = PersonalFormModule.new(state, _config)
+	_newspapers = NewspaperModule.new(state, _config)
 	_consequences = ConsequenceModule.new(state, _config)
 	_desk_layout = DeskLayoutModule.new(state)
 
 
 # 记录案件判断、经济后果与归档条目。
-func record_case_result(case_data: Dictionary, stamp_type: String, procedure_errors: Array = [], elapsed_seconds: float = 0.0, packed_document_ids: Array = [], document_stamps: Array = []) -> void:
-	var recorded := _consequences.record_case_result(case_data, stamp_type, procedure_errors, elapsed_seconds, packed_document_ids, document_stamps)
+func record_case_result(
+	case_data: Dictionary,
+	stamp_type: String,
+	procedure_errors: Array = [],
+	elapsed_seconds: float = 0.0,
+	packed_document_ids: Array = [],
+	document_stamps: Array = [],
+	envelope_snapshot: Dictionary = {}
+) -> void:
+	var recorded := _consequences.record_case_result(case_data, stamp_type, procedure_errors, elapsed_seconds, packed_document_ids, document_stamps, envelope_snapshot)
 	_archive.archive_record(recorded)
 	if _state.persistence_enabled:
 		_state.save_progress()
@@ -140,6 +151,36 @@ func get_blank_personal_forms() -> Array[Dictionary]:
 # 返回最近一次个人表单审核摘要。
 func get_personal_review_summary() -> Dictionary:
 	return _personal_forms.get_review_summary()
+
+
+# 返回报刊亭核验使用的玩家本市身份证明号。
+func get_player_identity_number() -> String:
+	return _newspapers.get_player_identity_number()
+
+
+# 向报刊亭送交一张订阅表；表单被吞入后才返回核验结果。
+func submit_newspaper_subscription(fields: Dictionary) -> Dictionary:
+	return _newspapers.submit_subscription(fields)
+
+
+# 返回当前日期所有可展示的报纸。
+func get_available_newspapers(day: int = -1) -> Array[Dictionary]:
+	return _newspapers.get_available_newspapers(day)
+
+
+# 登记当天唯一精读的报纸。
+func mark_newspaper_read(publisher_id: String, day: int = -1) -> bool:
+	return _newspapers.mark_newspaper_read(publisher_id, day)
+
+
+# 返回当天已经精读的报纸编号。
+func get_read_newspaper(day: int = -1) -> String:
+	return _newspapers.get_read_newspaper(day)
+
+
+# 返回最近一次报刊亭处理结果。
+func get_last_newspaper_submission_result() -> Dictionary:
+	return _newspapers.get_last_submission_result()
 
 
 # 返回当前拖拽响应倍率。

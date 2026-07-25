@@ -8,6 +8,7 @@ TEST_SCRIPTS := \
 	tests/core_gameplay_test.gd \
 	tests/document_visual_states_test.gd \
 	tests/document_repack_and_stamp_test.gd \
+	tests/envelope_freedom_test.gd \
 	tests/smoke_test.gd \
 	tests/desk_item_physics_test.gd \
 	tests/config_level_test.gd \

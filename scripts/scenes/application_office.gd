@@ -139,6 +139,11 @@ func build_scene() -> void:
 # 从 WorkdayState 读取空白表单库存并重建选择器；无表单时禁用填写区，否则加载第一张表单。
 func refresh_inventory() -> void:
 	blank_forms = WorkdayState.manager.get_blank_personal_forms()
+	blank_forms = blank_forms.filter(
+		func(item: Dictionary) -> bool:
+			var form := ConfigDatabase.get_ontology("personal_forms", String(item.get("form_type_id", "")))
+			return String(form.get("submission_location_id", "LOCATION-FORMS")) == "LOCATION-FORMS"
+	)
 	selector.clear()
 	for item in blank_forms:
 		var form := ConfigDatabase.get_ontology("personal_forms", String(item.get("form_type_id", "")))

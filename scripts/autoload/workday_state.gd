@@ -124,6 +124,9 @@ func start_new_game() -> void:
 	water_covered_until_day = 1
 	water_deprived = false
 	last_personal_review_results.clear()
+	newspaper_subscriptions.clear()
+	newspaper_read_history.clear()
+	last_newspaper_submission_result.clear()
 	active_checkpoint_id = ""
 	resume_loaded = false
 	persistence_enabled = true
@@ -162,6 +165,9 @@ func _capture_state() -> Dictionary:
 		"water_covered_until_day": water_covered_until_day,
 		"water_deprived": water_deprived,
 		"last_personal_review_results": last_personal_review_results,
+		"newspaper_subscriptions": newspaper_subscriptions,
+		"newspaper_read_history": newspaper_read_history,
+		"last_newspaper_submission_result": last_newspaper_submission_result,
 	}
 
 
@@ -215,6 +221,9 @@ func _apply_state(state: Dictionary) -> void:
 	water_covered_until_day = read_int(state, "water_covered_until_day", 1)
 	water_deprived = read_bool(state, "water_deprived")
 	last_personal_review_results.assign(read_array(state, "last_personal_review_results"))
+	newspaper_subscriptions = read_dictionary(state, "newspaper_subscriptions")
+	newspaper_read_history = read_dictionary(state, "newspaper_read_history")
+	last_newspaper_submission_result = read_dictionary(state, "last_newspaper_submission_result")
 
 
 # 测试与调试辅助方法。
@@ -249,5 +258,8 @@ func reset_for_tests() -> void:
 	water_covered_until_day = 1
 	water_deprived = false
 	last_personal_review_results.clear()
+	newspaper_subscriptions.clear()
+	newspaper_read_history.clear()
+	last_newspaper_submission_result.clear()
 	resume_loaded = false
 	persistence_enabled = false

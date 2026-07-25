@@ -1,13 +1,14 @@
 class_name WorkbenchCasePresenter
 extends RefCounted
 
-# 单个案件的文件袋、文件视图、缩略图、印章和重新装袋状态。
+# 单个案件的文件袋、文件视图、缩略图、印章和实时容器状态。
 
 const ENVELOPE_DESK_SIDE := preload("res://assets/documents/envelopes/bureau_envelope_desk_side.png")
 const ENVELOPE_CLOSED := preload("res://assets/documents/envelopes/bureau_envelope_closed.png")
 const ENVELOPE_UNSTRUNG := preload("res://assets/documents/envelopes/bureau_envelope_unstrung.png")
 const ENVELOPE_OPEN_EMPTY := preload("res://assets/documents/envelopes/bureau_envelope_open_empty.png")
 const ENVELOPE_OUTLINE_SHADER := preload("res://shaders/envelope_outline.gdshader")
+const ENVELOPE_DRAG_SURFACE := preload("res://scripts/ui/envelope_drag_surface.gd")
 const DOCUMENT_INSPECTION_SCALE := Vector2(0.36, 0.36)
 const DOCUMENT_DESK_SCALE := Vector2(0.36, 0.28)
 const DOCUMENT_PEEK_SCALE := Vector2(0.17, 0.17)
@@ -30,7 +31,10 @@ const ENVELOPE_FRONT_SIZE := Vector2(405, 420)
 const ENVELOPE_POCKET_WINDOW_POSITION := Vector2(86, 132)
 const ENVELOPE_POCKET_WINDOW_SIZE := Vector2(328, 68)
 const ENVELOPE_VISIBLE_BOUNDS := Rect2(82, 30, 348, 559)
-const ENVELOPE_CONTENT_OVERLAY_TOP := 12
+# 文件袋父节点可以在抓取时占用 999；其余桌面物件会依次降到 998、997……
+# 全部视觉子节点统一固定在父节点 -2，因此封皮最高只能是 997：
+# 既严格小于 999，也不会与重新计算后的最前普通物件（998）发生并列抢占。
+const ENVELOPE_ATOMIC_CONTENT_LAYER := -2
 const ENVELOPE_REPACK_ZONE := [
 	Vector2(86, 136),
 	Vector2(414, 136),
@@ -171,6 +175,7 @@ func _create_documents(raw_documents: Array) -> void:
 
 		all_document_views.append(document)
 		document_by_id[document.document_id] = document
+		packed_document_ids.append(document.document_id)
 		pocket_stack_ids.append(document.document_id)
 		if document.is_primary:
 			form = document
@@ -225,7 +230,7 @@ func _create_envelope() -> void:
 	envelope_repack_outline.size = ENVELOPE_VISIBLE_BOUNDS.size
 	envelope_repack_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	envelope_repack_outline.visible = false
-	envelope_repack_outline.z_index = 1
+	envelope_repack_outline.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	envelope_repack_outline.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 8, Color.WHITE, 3))
 	envelope.add_child(envelope_repack_outline)
 
@@ -249,7 +254,7 @@ func _create_envelope() -> void:
 	envelope_case_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	envelope_case_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	envelope_case_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope_case_label.z_index = 0
+	envelope_case_label.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 
 	envelope_flap = Button.new()
 	envelope_flap.name = "EnvelopeUpperOpenHitArea"
@@ -257,7 +262,7 @@ func _create_envelope() -> void:
 	envelope_flap.tooltip_text = "点击圆环或上部封盖拆开文件袋"
 	envelope_flap.disabled = true
 	envelope_flap.visible = false
-	envelope_flap.z_index = 0
+	envelope_flap.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	envelope_flap.focus_mode = Control.FOCUS_NONE
 	envelope_flap.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var transparent_button := WorkbenchUI.style_box(Color.TRANSPARENT, 0)
@@ -272,7 +277,7 @@ func _create_envelope() -> void:
 	thumbnail_tray = Panel.new()
 	thumbnail_tray.name = "DocumentPocketContents"
 	thumbnail_tray.visible = false
-	thumbnail_tray.z_index = 0
+	thumbnail_tray.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	thumbnail_tray.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	thumbnail_tray.clip_contents = true
 	thumbnail_tray.add_theme_stylebox_override("panel", WorkbenchUI.style_box(Color.TRANSPARENT, 0))
@@ -287,18 +292,19 @@ func _create_envelope() -> void:
 	envelope_front_cover.stretch_mode = TextureRect.STRETCH_SCALE
 	envelope_front_cover.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	envelope_front_cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	envelope_front_cover.z_index = 0
+	envelope_front_cover.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	envelope_front_cover.visible = false
 	envelope.add_child(envelope_front_cover)
 
-	envelope_drag_handle = Button.new()
+	envelope_drag_handle = ENVELOPE_DRAG_SURFACE.new()
 	envelope_drag_handle.name = "EnvelopeDragHandle"
 	envelope_drag_handle.text = ""
 	envelope_drag_handle.tooltip_text = "拖动文件袋"
 	envelope_drag_handle.visible = false
-	envelope_drag_handle.z_index = 0
+	envelope_drag_handle.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	envelope_drag_handle.focus_mode = Control.FOCUS_NONE
 	envelope_drag_handle.mouse_default_cursor_shape = Control.CURSOR_DRAG
+	envelope_drag_handle.set("hit_test", _envelope_drag_surface_has_point)
 	var drag_handle_style := WorkbenchUI.style_box(Color.TRANSPARENT, 0)
 	envelope_drag_handle.add_theme_stylebox_override("normal", drag_handle_style)
 	envelope_drag_handle.add_theme_stylebox_override("hover", drag_handle_style)
@@ -307,9 +313,24 @@ func _create_envelope() -> void:
 	_order_envelope_atomic_layers()
 
 
-# 文件袋对外只占一个 Z-index；内部依靠子节点顺序绘制，禁止封皮越过父级压住抽出的文件。
+# 当前指针下若存在更前方的文件或桌面道具，封皮拖拽面主动退出 GUI 命中。
+func _envelope_drag_surface_has_point(surface: Control, local_point: Vector2) -> bool:
+	if desk_items == null:
+		return true
+	var global_point := surface.get_global_transform() * local_point
+	var frontmost := desk_items._frontmost_item_at_global(global_point)
+	return not is_instance_valid(frontmost) or frontmost == envelope
+
+
+# 文件袋对外只占父节点的一个 Z-index；所有视觉子节点绑定在同一相对层。
+# 父节点抓取上限是 999，所以这里强制为 -2 后，有效层级最高为 997。
+# 文件袋内部的前后关系只由节点顺序决定，禁止再使用“父层级 + N”的算法。
 func _order_envelope_atomic_layers() -> void:
-	envelope_image.z_index = 0
+	for child_node: Node in envelope.get_children():
+		if child_node is CanvasItem:
+			var child := child_node as CanvasItem
+			child.z_as_relative = true
+			child.z_index = ENVELOPE_ATOMIC_CONTENT_LAYER
 	envelope.move_child(envelope_image, 0)
 	envelope.move_child(thumbnail_tray, 1)
 	envelope.move_child(envelope_front_cover, 2)
@@ -394,7 +415,7 @@ func set_envelope_on_desk(value: bool) -> void:
 
 # 点击桌面平放文件袋后，将其放大到遮挡 NPC 的 billboard 交互层。
 func expand_envelope_billboard() -> void:
-	if not envelope_on_desk or all_documents_packed() or envelope_billboard_expanded or envelope_transitioning:
+	if not envelope_on_desk or envelope_billboard_expanded or envelope_transitioning:
 		return
 	envelope_transitioning = true
 	envelope_billboard_expanded = true
@@ -476,7 +497,8 @@ func open_envelope() -> void:
 		desk_items.focus_item(envelope)
 	else:
 		envelope.z_index = ENVELOPE_BILLBOARD_LAYER
-	next_document_layer = maxi(next_document_layer, ENVELOPE_BILLBOARD_LAYER + ENVELOPE_CONTENT_OVERLAY_TOP)
+	# 文件抽出后只需排到文件袋父层级之上；不再额外 +N 制造失控的层级。
+	next_document_layer = maxi(next_document_layer, ENVELOPE_BILLBOARD_LAYER)
 	envelope_flap.disabled = true
 	envelope_flap.visible = false
 	envelope_front_cover.visible = false
@@ -504,8 +526,6 @@ func _play_opening_frames() -> void:
 
 # 从袋口抽出文件，或将桌面平放文件重新立到查验层。
 func open_document(document_id: String) -> void:
-	if packed_document_ids.has(document_id):
-		return
 	var document: DocumentView = document_by_id.get(document_id)
 	if not is_instance_valid(document):
 		return
@@ -536,6 +556,7 @@ func _extract_document_from_bag(document: DocumentView) -> void:
 		var preview_center_global := thumbnail.get_global_transform() * (thumbnail.size * 0.5)
 		start_center = root.to_local(preview_center_global)
 		thumbnail.visible = false
+	packed_document_ids.erase(document.document_id)
 	pocket_stack_ids.erase(document.document_id)
 	document.pivot_offset = document.size * 0.5
 	document.position = start_center - document.pivot_offset
@@ -695,13 +716,13 @@ func _set_repack_preview(active: bool) -> void:
 		envelope_repack_outline.visible = should_show
 
 
-# 将指定文档重新装袋；若全部装袋则提示可送入验收机器。
+# 将指定文档放回袋内；放回后仍可再次取出，不改变文件袋移动与归档权限。
 func pack_document(document_id: String) -> bool:
 	if document_id.is_empty() or packed_document_ids.has(document_id):
-		return all_documents_packed()
+		return not document_id.is_empty()
 	var document: DocumentView = document_by_id.get(document_id)
 	if not is_instance_valid(document):
-		return all_documents_packed()
+		return false
 	_set_repack_preview(false)
 	packed_document_ids.append(document_id)
 	pocket_stack_ids.erase(document_id)
@@ -716,17 +737,11 @@ func pack_document(document_id: String) -> bool:
 		thumbnail.visible = true
 	Sfx.play("ui_click")
 
-	if all_documents_packed():
-		_refresh_document_previews()
-		_refresh_inspection_dismiss_layer()
-		if is_instance_valid(desk.status_label):
-			desk.status_label.text = "全部文件已重新装袋；点击袋外收起后可送入验收区。"
-		return true
 	_refresh_document_previews()
 	_refresh_inspection_dismiss_layer()
 	if is_instance_valid(desk.status_label):
-		desk.status_label.text = "已收回文件；袋内仍缺 %d 份。" % (all_document_views.size() - packed_document_ids.size())
-	return false
+		desk.status_label.text = "文件已放回袋内；仍可再次取出、移动或直接归档。"
+	return true
 
 
 # 一键将所有文档重新装袋。
@@ -759,6 +774,10 @@ func _collapse_to_desk_flat() -> void:
 	collapse.tween_property(envelope, "rotation", 0.0, ENVELOPE_TRANSITION_DURATION)
 	collapse.tween_property(envelope, "scale", Vector2.ONE, ENVELOPE_TRANSITION_DURATION)
 	await collapse.finished
+	envelope.position = envelope_desk_position
+	envelope.size = ENVELOPE_DESK_SIZE
+	envelope.rotation = 0.0
+	envelope.scale = Vector2.ONE
 	if desk_items == null:
 		envelope.z_index = ENVELOPE_DESK_LAYER
 	envelope.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -815,7 +834,9 @@ func _layout_document_preview_slot(thumbnail: Button, slot: int, total: int) -> 
 	var normalized_slot := 0.5 if total <= 1 else float(slot) / float(total - 1)
 	thumbnail.position = Vector2(horizontal_margin + horizontal_span * normalized_slot, thumbnail_tray.size.y - thumbnail.size.y + sin(float(slot) * 1.7) * 3.0)
 	thumbnail.rotation = lerpf(-0.045, 0.045, normalized_slot)
-	thumbnail.z_index = slot
+	# 袋内缩略图与文件袋共用一个原子层，堆叠顺序由 move_child 决定。
+	# 禁止按 slot 增加 Z-index，否则父节点位于 999 时会再次突破层级上限。
+	thumbnail.z_index = 0
 	thumbnail_tray.move_child(thumbnail, thumbnail_tray.get_child_count() - 1)
 
 
@@ -919,9 +940,36 @@ func get_stamp_records() -> Array[Dictionary]:
 	return stamp_records.duplicate(true)
 
 
-# 判断是否所有文档都已重新装袋。
+# 判断当前袋内是否包含案件预期的全部文档；只供最终提交检查，禁止作为交互门禁。
 func all_documents_packed() -> bool:
 	return packed_document_ids.size() == all_document_views.size()
+
+
+# 在归档落下的一刻捕获文件袋内容，供评分、存档和日终验收读取。
+func _capture_envelope_snapshot() -> Dictionary:
+	var expected_document_ids: Array[String] = []
+	for document: DocumentView in all_document_views:
+		if is_instance_valid(document):
+			expected_document_ids.append(document.document_id)
+	var contained_document_ids: Array[String] = packed_document_ids.duplicate()
+	var missing_document_ids: Array[String] = []
+	for document_id: String in expected_document_ids:
+		if not contained_document_ids.has(document_id):
+			missing_document_ids.append(document_id)
+	var unexpected_document_ids: Array[String] = []
+	for document_id: String in contained_document_ids:
+		if not expected_document_ids.has(document_id):
+			unexpected_document_ids.append(document_id)
+	return {
+		"captured_at_msec": Time.get_ticks_msec(),
+		"envelope_opened": envelope_opened,
+		"envelope_on_desk": envelope_on_desk,
+		"document_count": contained_document_ids.size(),
+		"document_ids": contained_document_ids,
+		"expected_document_ids": expected_document_ids,
+		"missing_document_ids": missing_document_ids,
+		"unexpected_document_ids": unexpected_document_ids,
+	}
 
 
 # 从文件元数据读取 Vector2，避免交互状态直接依赖 Variant。

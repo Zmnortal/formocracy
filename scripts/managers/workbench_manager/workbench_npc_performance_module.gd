@@ -17,9 +17,11 @@ const FRAME_PATHS: Array[String] = [
 ]
 const DEFAULT_ANIMATION_TABLE := "res://data/animations/default_applicant/animation_table.json"
 const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd")
-const FRONT_ACTOR_SCALE_MULTIPLIER := 1.3
-# 设计画布会按当前窗口约 3 倍放大；70 个设计单位约等于实机截图中的 200 px。
-const FRONT_ACTOR_VERTICAL_OFFSET := 70.0
+const EXISTING_ACTOR_SCALE_MULTIPLIER := 1.3
+const GLOBAL_ACTOR_SCALE_ADJUSTMENT := 1.2
+const FRONT_ACTOR_SCALE_MULTIPLIER := EXISTING_ACTOR_SCALE_MULTIPLIER * GLOBAL_ACTOR_SCALE_ADJUSTMENT
+# 设计画布通常按实机约 3 倍显示；在原 70 单位基础上再下移 50，约等于 150 px。
+const FRONT_ACTOR_VERTICAL_OFFSET := 120.0
 const FRONT_POSITION := Vector2(620, 338 + FRONT_ACTOR_VERTICAL_OFFSET)
 const DELIVERY_POSITION := Vector2(634, 348 + FRONT_ACTOR_VERTICAL_OFFSET)
 const EXIT_MARGIN := 28.0

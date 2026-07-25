@@ -28,7 +28,11 @@ func run() -> void:
 	sequence.dialogue_box.reveal_current_line()
 	assert(sequence.phase == "newspaper", "the first input must only reveal the current line")
 	sequence.dialogue_box._handle_manual_advance()
-	assert(sequence.phase == "walking" and sequence.walk_index == 0, "the second input must enter the first walking beat")
+	assert(sequence.phase == "departure_prompt", "finishing the newspaper must show the going-to-work prompt")
+	assert(sequence.dialogue_box.dialogue_label.text.contains("该去上班了"), "the prompt must state that it is time to work")
+	sequence.dialogue_box.reveal_current_line()
+	sequence.dialogue_box._handle_manual_advance()
+	assert(sequence.phase == "walking" and sequence.walk_index == 0, "confirming the prompt must enter the first walking beat")
 	assert(sequence.frame_texture.texture.resource_path.ends_with("corridor_legs_01_step.png"), "walking must reuse the approved neutral leg artwork")
 	assert(sfx.walk_player.playing, "walking beats must play footsteps")
 

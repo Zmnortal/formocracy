@@ -100,6 +100,13 @@ func run() -> void:
 	assert(presenter.form.visible and supporting_document.visible, "thumbnail selection must allow multiple documents to stay expanded")
 	assert(not primary_preview.visible, "extracting a real document must remove its pocket preview")
 	assert(presenter.envelope_front_cover.z_index == presenter.envelope_image.z_index, "the envelope body and front cover must share one atomic external z-index")
+	manager.desk_items.focus_item(presenter.envelope)
+	assert(presenter.envelope.z_index == DeskItemController.HELD_LAYER, "the grabbed envelope parent must use the normal held layer")
+	assert(manager.desk_items._effective_z_index(presenter.envelope_front_cover) < DeskItemController.HELD_LAYER, "the envelope cover effective layer must remain strictly below 999")
+	assert(manager.desk_items._effective_z_index(presenter.envelope_repack_outline) < DeskItemController.HELD_LAYER, "every envelope visual child must remain strictly below 999")
+	for document: DocumentView in presenter.all_document_views:
+		if document.visible:
+			manager.desk_items.focus_item(document)
 	var envelope_cover_layer: int = manager.desk_items._effective_z_index(presenter.envelope_front_cover)
 	for document: DocumentView in presenter.all_document_views:
 		if document.visible:
@@ -235,7 +242,7 @@ func run() -> void:
 		assert(repacked_thumbnail.visible, "every returned document must remain visibly stacked inside the open envelope")
 	presenter.collapse_envelope_billboard()
 	await create_timer(0.3).timeout
-	assert(not presenter.envelope_billboard_expanded and presenter.envelope.size == Vector2(180, 126), "closing a repacked envelope must restore its compact side-flat state")
+	assert(not presenter.envelope_billboard_expanded and presenter.envelope.size.is_equal_approx(Vector2(180, 126)), "closing a repacked envelope must restore its compact side-flat state")
 	manager.input._set_machine_preview(presenter, true)
 	await create_timer(0.16).timeout
 	assert(presenter.envelope.scale.y < 0.7, "machine hover must tilt the envelope with pseudo-3D compression")

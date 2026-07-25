@@ -120,7 +120,7 @@ func _on_stamp_drag_motion(tool: Control) -> void:
 
 # 动画期间锁住实体印章，避免重复开始第二次盖章。
 func _can_begin_stamp_interaction(tool: Control, _local_position: Vector2) -> bool:
-	return not WorkdayContext.to_bool(tool.get_meta("stamp_animation_playing"))
+	return not WorkdayContext.to_bool(tool.get_meta("stamp_animation_playing", false))
 
 
 # 释放印章时只在有效文件上暂停落桌物理；无效落点直接交回统一重力。

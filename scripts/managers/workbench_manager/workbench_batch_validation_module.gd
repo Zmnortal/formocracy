@@ -225,7 +225,7 @@ func _add_texture(node_name: String, texture: Texture2D, texture_position: Vecto
 	return texture_rect
 
 
-# 打开视图，只把已有批准/驳回章的待验档案映射为文件袋队列。
+# 打开视图，把全部待验档案映射为文件袋队列，不按章或内容预筛选。
 func open() -> void:
 	selected_ids.clear()
 	archive_order.clear()
@@ -238,7 +238,7 @@ func open() -> void:
 	active_document_bag = null
 	for child: Node in archive_row.get_children():
 		child.queue_free()
-	var pending_archives := _get_stamped_pending_archives()
+	var pending_archives := _get_pending_archives()
 	for archive: Dictionary in pending_archives:
 		_add_archive_bag(archive)
 	overlay.visible = true
@@ -435,18 +435,14 @@ func _current_batch_limit() -> int:
 	return maxi(0, WorkdayState.machine_capacity)
 
 
-# 漏盖章档案仍保留在积压记录中，但不会出现在验收机的选择列表。
-func _get_stamped_pending_archives() -> Array[Dictionary]:
-	var stamped: Array[Dictionary] = []
-	for archive: Dictionary in WorkdayState.manager.get_pending_archives():
-		if WorkdayContext.read_string(archive, "decision") in ["批准", "驳回"]:
-			stamped.append(archive)
-	return stamped
+# 返回全部待验档案；错误内容由归档快照和程序记录表达，不在这里阻止送验。
+func _get_pending_archives() -> Array[Dictionary]:
+	return WorkdayState.manager.get_pending_archives()
 
 
 func _get_selected_archives() -> Array[Dictionary]:
 	var selected: Array[Dictionary] = []
-	for archive: Dictionary in _get_stamped_pending_archives():
+	for archive: Dictionary in _get_pending_archives():
 		if WorkdayContext.read_string(archive, "archive_id") in selected_ids:
 			selected.append(archive.duplicate(true))
 	return selected
@@ -473,8 +469,8 @@ func _send_validation_receipts(archives: Array[Dictionary]) -> void:
 
 
 func _refresh() -> void:
-	var stamped_pending := _get_stamped_pending_archives()
-	var pending_count := stamped_pending.size()
+	var pending_archives := _get_pending_archives()
+	var pending_count := pending_archives.size()
 	var batch_limit := _current_batch_limit()
 	var loaded_count := selected_ids.size() + (1 if ingesting else 0)
 	var selectable_count := maxi(0, pending_count - loaded_count)
@@ -496,11 +492,11 @@ func _refresh() -> void:
 		machine_state_label.text = "今日送验已达上限"
 		instruction_label.text = "无法继续送入；点击右侧“离开送验间”结算"
 	elif pending_count <= selected_ids.size():
-		machine_state_label.text = "没有更多已盖章档案"
+		machine_state_label.text = "没有更多待验档案"
 		instruction_label.text = "可点击右侧“离开送验间”结束本日"
 	elif selected_ids.is_empty():
 		machine_state_label.text = "现实验收机待机"
-		instruction_label.text = "可送验 0–%d 个；选择已盖章文件袋，或直接离开" % mini(batch_limit, pending_count)
+		instruction_label.text = "可送验 0–%d 个；选择任意文件袋，或直接离开" % mini(batch_limit, pending_count)
 	else:
 		machine_state_label.text = "已送入 %d 个文件袋" % selected_ids.size()
 		instruction_label.text = "还可送入 %d 个；也可以直接离开" % (batch_limit - selected_ids.size())

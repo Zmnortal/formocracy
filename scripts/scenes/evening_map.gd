@@ -10,7 +10,9 @@ const LOCATION_FORMS := "LOCATION-FORMS"
 const LOCATION_RATION := "LOCATION-RATION"
 const LOCATION_HOME := "LOCATION-HOME"
 const LOCATION_FORM_SHOP := "LOCATION-FORM-SHOP"
+const LOCATION_NEWSSTAND := "LOCATION-NEWSSTAND"
 const WATER_FORM_ID := "PERSONAL-FORM-WATER-R01"
+const NEWSPAPER_FORM_ID := "PERSONAL-FORM-NEWSPAPER-S01"
 
 const LOCATION_POSITIONS := {
 	LOCATION_OFFICE: Vector2(748, 520),
@@ -18,12 +20,14 @@ const LOCATION_POSITIONS := {
 	LOCATION_RATION: Vector2(640, 350),
 	LOCATION_HOME: Vector2(920, 540),
 	LOCATION_FORM_SHOP: Vector2(270, 420),
+	LOCATION_NEWSSTAND: Vector2(1052, 230),
 }
 const LOCATION_NAMES := {
 	LOCATION_FORMS: "中央表单部",
 	LOCATION_RATION: "公共配给站",
 	LOCATION_HOME: "职员宿舍 12-C",
 	LOCATION_FORM_SHOP: "第十二区合作供销社",
+	LOCATION_NEWSSTAND: "第十二区报刊亭",
 }
 
 var moving := false
@@ -58,6 +62,7 @@ var end_continue_label: Label
 @onready var ration_button: Button = $RationButton
 @onready var home_button: Button = $HomeButton
 @onready var shop_button: Button = $ShopButton
+@onready var kiosk_button: Button = $KioskButton
 @onready var arrival_card: Panel = $ArrivalCard
 @onready var arrival_title: Label = $ArrivalCard/Title
 @onready var arrival_body: Label = $ArrivalCard/Body
@@ -99,6 +104,7 @@ func _ready() -> void:
 	_connect_location_button(ration_button, LOCATION_RATION)
 	_connect_location_button(home_button, LOCATION_HOME)
 	_connect_location_button(shop_button, LOCATION_FORM_SHOP)
+	_connect_location_button(kiosk_button, LOCATION_NEWSSTAND)
 	buy_button.pressed.connect(purchase_water_form)
 	close_ration_button.pressed.connect(func(): ration_window.visible = false)
 	dossier_button.pressed.connect(_toggle_dossier)
@@ -218,6 +224,9 @@ func select_location(location_id: String) -> void:
 	if auto_open_location_scenes and location_id == LOCATION_HOME:
 		get_tree().change_scene_to_file("res://scenes/home_12c_scene.tscn")
 		return
+	if auto_open_location_scenes and location_id == LOCATION_NEWSSTAND:
+		get_tree().change_scene_to_file("res://scenes/newspaper_kiosk.tscn")
+		return
 	if WorkdayState.evening_actions_remaining <= 0 and location_id != LOCATION_HOME:
 		_start_end_of_night_sequence()
 
@@ -280,6 +289,8 @@ func _show_arrival_card(location_id: String) -> void:
 			_open_home_window()
 		LOCATION_FORM_SHOP:
 			arrival_body.text = "周姨仍在窗口后整理表单。\n今晚目录已经摆上柜台。"
+		LOCATION_NEWSSTAND:
+			arrival_body.text = "夜间投递验收机仍在运行。\n订阅表会先被吞入，再进行字段核验。"
 		_:
 			arrival_body.text = "特殊窗口仅在收到行政通知时办理。\n当前没有可办理事项。"
 	arrival_card.visible = true
@@ -455,14 +466,20 @@ func _refresh_purchase_ui() -> void:
 	var fee := int(form.get("fee", 0))
 	var owned := WorkdayState.manager.get_personal_form_count(WATER_FORM_ID, "blank")
 	var pending := WorkdayState.manager.get_personal_form_count(WATER_FORM_ID, "pending")
+	var newspaper_blank := WorkdayState.manager.get_personal_form_count(NEWSPAPER_FORM_ID, "blank")
+	var total_blank := WorkdayState.manager.get_blank_personal_forms().size()
 	balance_label.text = "账户余额  %03d 配给券" % WorkdayState.balance
-	dossier_button.text = "个人档案袋  空白 × %d  待处理 × %d" % [owned, pending]
+	dossier_button.text = "个人档案袋  空白 × %d  待处理 × %d" % [total_blank, pending]
 	buy_button.text = "购买空白表单  -%d" % fee
 	buy_button.disabled = purchasing or WorkdayState.balance < fee
-	if owned + pending <= 0:
+	if total_blank + pending <= 0:
 		dossier_contents.text = "档案袋内没有个人表单。"
 	else:
-		dossier_contents.text = "居民饮水配额领取申请\nR-01 / 空白 × %d / 待处理 × %d" % [owned, pending]
+		dossier_contents.text = (
+			"居民饮水配额领取申请\nR-01 / 空白 × %d / 待处理 × %d\n\n"
+			% [owned, pending]
+			+ "报刊订阅通行申请\nS-01 / 空白 × %d / 送交地点：第十二区报刊亭" % newspaper_blank
+		)
 
 
 # 在配给站购买空白饮水表并播放入袋动画。
@@ -526,6 +543,7 @@ func _set_location_buttons_enabled(enabled: bool) -> void:
 	ration_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
 	home_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0 or WorkdayState.evening_location_id == LOCATION_HOME
 	shop_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
+	kiosk_button.disabled = not enabled or WorkdayState.evening_actions_remaining <= 0
 
 
 # 返回当前所在地点的显示名称。

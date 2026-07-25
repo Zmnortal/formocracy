@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "character_id": "PERSON-SONG",
+  "audit_date": "2026-07-25",
+  "source_reference": "/Users/amin/Desktop/FORMOCRACY/asset_backups/person_song_official_sources_2026-07-25/concept.png",
+  "source_strips": [
+    "strip_01_05_magenta.png",
+    "strip_06_10_magenta.png",
+    "strip_11_15_magenta.png",
+    "strip_16_20_magenta.png"
+  ],
+  "transparency_processing": "Built-in ImageGen magenta chroma key; remove_chroma_key.py border sampling, soft matte and despill.",
+  "active_png_count": 20,
+  "canvas_size": [
+    512,
+    768
+  ],
+  "normalized_subject_height": 650,
+  "bottom_padding": 20,
+  "full_body_only": true,
+  "runtime_crop_or_clip": false,
+  "max_fps": 4,
+  "identity": {
+    "age": 52,
+    "role": "日终验收机房技师",
+    "palette": "深炭灰工装、氧化铜橙肩轭与领片、工具袋棕、诊断仪黄铜",
+    "markers": [
+      "带灰的深色短发",
+      "额头上的方形工业护目镜",
+      "狭长、疲惫而饱经风霜的面容",
+      "深炭灰机械师连体工装",
+      "氧化铜橙肩轭与领片",
+      "卷至前臂的袖口",
+      "左腰带扳手与螺丝刀的皮革工具袋",
+      "深棕重型工作靴"
+    ]
+  },
+  "performance_direction": {
+    "neutral": "以维护技师的熟练动作调护目镜、读取模拟诊断仪，并把人工校时记录与机器读数相互核对。",
+    "approved": "居留例外获准后只短暂释然，随即握稳诊断仪与紧急维修令，准备继续维护验收机并默认玩家已看见二十三分钟异常。",
+    "rejected": "居留受挫时先显出沉重失望，再展示旅行许可与维修令，最后冷静追查校时差；即使今晚无处可住，也先确保机器运行。"
+  },
+  "prop_ownership": {
+    "forehead_goggles_and_left_hip_tool_pouch": "属于宋铎的固定职业识别物，在全部动作中持续保留。",
+    "diagnostic_meter_sync_record_repair_order_and_travel_permit": "属于宋铎的技术与身份材料，可在紧张、批准、驳回和离场动作中出现。",
+    "golden_document_bag": "只出现在06–08递交三帧，交付后不再随人物移动。"
+  }
+}

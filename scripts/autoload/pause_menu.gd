@@ -19,6 +19,7 @@ const ALLOWED_SCENES := [
 	"res://scenes/central_forms_scene.tscn",
 	"res://scenes/ration_depot_scene.tscn",
 	"res://scenes/home_12c_scene.tscn",
+	"res://scenes/newspaper_kiosk.tscn",
 	"res://scenes/validation_preview.tscn",
 ]
 

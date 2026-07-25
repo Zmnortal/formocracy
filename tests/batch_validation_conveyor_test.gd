@@ -42,8 +42,8 @@ func run() -> void:
 		"machine intake must use the approved foreground asset"
 	)
 	assert(module.rail_machine_cap.texture.resource_path == "res://assets/concepts/endday_validation/validation_rail_machine_cap.png", "rail must use the approved split asset")
-	assert(module.archive_row.get_child_count() == 3, "only stamped pending archives may appear as document bags")
-	assert(not module.buttons.has("ARCHIVE-00004"), "an unstamped archive must not appear in the validation machine")
+	assert(module.archive_row.get_child_count() == 4, "every pending archive must appear regardless of stamp or envelope contents")
+	assert(module.buttons.has("ARCHIVE-00004"), "an unstamped archive must remain freely selectable for final validation")
 	assert(module.leave_button.visible and not module.leave_button.disabled, "the player must be able to leave without loading a bag")
 	assert(module.selected_ids.is_empty(), "no archive should be loaded before player input")
 

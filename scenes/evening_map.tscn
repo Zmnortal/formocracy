@@ -349,6 +349,22 @@ theme_override_styles/pressed = SubResource("LocationHover")
 theme_override_styles/disabled = SubResource("LocationDisabled")
 text = "职员宿舍 12-C\n回家"
 
+[node name="KioskButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 946.0
+offset_top = 128.0
+offset_right = 1160.0
+offset_bottom = 208.0
+theme_override_colors/font_color = Color(0.83, 0.73, 0.39, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.84, 0.45, 1)
+theme_override_colors/font_disabled_color = Color(0.40, 0.39, 0.29, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("LocationPanel")
+theme_override_styles/hover = SubResource("LocationHover")
+theme_override_styles/pressed = SubResource("LocationHover")
+theme_override_styles/disabled = SubResource("LocationDisabled")
+text = "第十二区报刊亭\n订阅表送验"
+
 [node name="PlayerToken" type="TextureRect" parent="."]
 texture_filter = 1
 layout_mode = 0

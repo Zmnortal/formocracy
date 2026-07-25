@@ -12,6 +12,7 @@ const NPC_STATIC_BREATHING := preload("res://scripts/ui/npc_static_breathing.gd"
 
 var background_texture: Texture2D
 var proprietor_textures: Dictionary
+var proprietor_idle_frames: Array[Texture2D] = []
 var proprietor_name := ""
 var location_title := ""
 var greeting := ""
@@ -25,12 +26,17 @@ var right_actions: VBoxContainer
 var dialogue_box: DialogueBox
 var balance_label: Label
 var focused := true
+var proprietor_state := "idle"
+var proprietor_expression_token := 0
+var proprietor_expression_rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	_configure_scene()
 	_build_scene()
 	_show_focus(greeting, "talk")
+	proprietor_expression_rng.seed = hash(proprietor_name)
+	_run_proprietor_micro_expressions()
 	get_viewport().size_changed.connect(_fit_to_window)
 	_fit_to_window()
 
@@ -77,8 +83,8 @@ func _build_scene() -> void:
 
 	proprietor = TextureRect.new()
 	proprietor.name = "Proprietor"
-	proprietor.position = Vector2(480, 105)
-	proprietor.size = Vector2(320, 440)
+	proprietor.position = Vector2(850, 155)
+	proprietor.size = Vector2(430, 565)
 	proprietor.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	proprietor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	proprietor.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -87,7 +93,7 @@ func _build_scene() -> void:
 	add_child(proprietor)
 
 	left_actions = _make_action_column(Vector2(44, 170))
-	right_actions = _make_action_column(Vector2(956, 170))
+	right_actions = _make_action_column(Vector2(350, 170))
 	add_child(left_actions)
 	add_child(right_actions)
 	_build_actions()
@@ -235,9 +241,9 @@ func _animate_button(button: Button, hovered: bool) -> void:
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(button, "scale", Vector2(1.012, 1.012) if hovered else Vector2.ONE, 0.08)
-	var tag := button.get_meta("paper_tag", null) as PanelContainer
-	if tag == null:
+	if not button.has_meta("paper_tag"):
 		return
+	var tag := button.get_meta("paper_tag") as PanelContainer
 	var destination: Vector2 = tag.get_meta("shown_position") if hovered else tag.get_meta("hidden_position")
 	var tag_tween := create_tween().set_parallel(true)
 	tag_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -263,8 +269,8 @@ func _show_focus(text: String, state := "talk", speaker_kind := "npc") -> void:
 	shade.visible = true
 	left_actions.visible = true
 	right_actions.visible = true
-	proprietor.position = Vector2(430, 82)
-	proprietor.size = Vector2(420, 520)
+	proprietor.position = Vector2(850, 155)
+	proprietor.size = Vector2(430, 565)
 	_set_proprietor_state(state)
 	dialogue_box.show_line(proprietor_name, text, speaker_kind)
 
@@ -275,7 +281,27 @@ func _show_feedback(text: String, success: bool) -> void:
 
 
 func _set_proprietor_state(state: String) -> void:
+	proprietor_expression_token += 1
+	proprietor_state = state
 	proprietor.texture = proprietor_textures.get(state, proprietor_textures.get("idle"))
+
+
+func _run_proprietor_micro_expressions() -> void:
+	while is_inside_tree():
+		await get_tree().create_timer(proprietor_expression_rng.randf_range(4.5, 8.0)).timeout
+		if proprietor_idle_frames.is_empty() or not is_instance_valid(proprietor):
+			continue
+		var token := proprietor_expression_token
+		for frame_texture in proprietor_idle_frames:
+			if token != proprietor_expression_token:
+				break
+			proprietor.texture = frame_texture
+			await get_tree().create_timer(0.075).timeout
+		if token == proprietor_expression_token:
+			proprietor.texture = proprietor_textures.get(
+				proprietor_state,
+				proprietor_textures.get("idle"),
+			)
 
 
 func _chat() -> void:
